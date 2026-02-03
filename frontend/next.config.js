@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Rimuoviamo output: 'standalone' per usare il default Vercel (serverless)
-  // che supporta pagine dinamiche
+  // Directory di output per Vercel
+  distDir: '.next',
   
   // Immagini ottimizzate
   images: {
