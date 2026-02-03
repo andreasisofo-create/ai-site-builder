@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configurazione per export statico (opzionale) o serverless
-  output: 'standalone',
+  // Rimuoviamo output: 'standalone' per usare il default Vercel (serverless)
+  // che supporta pagine dinamiche
   
   // Immagini ottimizzate
   images: {
