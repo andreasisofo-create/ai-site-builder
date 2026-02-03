@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "E:\\sito\\Site Bullder"
+      ]
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://sitebuilder:sitebuilder123@localhost:5432/sitebuilder"
+      ]
+    },
+    "git": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-git",
+        "E:\\sito\\Site Bullder"
+      ]
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch"
+      ]
+    },
+    "commands": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-commands",
+        "--allow",
+        "docker,vercel,git,npm,node,uv,python"
+      ]
+    }
+  }
+}
