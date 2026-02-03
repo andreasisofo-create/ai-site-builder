@@ -12,15 +12,172 @@ import {
   ArrowRightIcon,
   ZapIcon,
   ShieldIcon,
-  ClockIcon
+  ClockIcon,
+  ImageIcon,
+  LayoutIcon,
+  CodeIcon
 } from "lucide-react";
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [lang, setLang] = useState<'en' | 'it'>('it');
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
+
+  const t = {
+    en: {
+      nav: {
+        features: "Features",
+        howItWorks: "How It Works",
+        pricing: "Pricing",
+        faq: "FAQ",
+        getStarted: "Get Started"
+      },
+      hero: {
+        badge: "Powered by Kimi AI 2.5",
+        title1: "Your ideas go in.",
+        title2: "Your site comes out.",
+        subtitle: "Create stunning, professional websites in minutes with our AI-powered builder. No coding required. Just describe what you want and watch the magic happen.",
+        ctaPrimary: "Create Your Site Free",
+        ctaSecondary: "See How It Works",
+        stat1: "Average Build Time",
+        stat2: "Starting Price",
+        stat3: "Yours to Keep"
+      },
+      features: {
+        title: "Built for high standards.",
+        subtitle: "More than just a good-looking site.",
+        items: [
+          { title: "AI-Powered Design", desc: "Our advanced AI understands your vision and creates stunning, tailored designs that match your brand perfectly." },
+          { title: "Lightning Fast", desc: "Get your complete website in under 60 seconds. No waiting, no hassle. Just instant results." },
+          { title: "Fully Customizable", desc: "Every element is editable. Change colors, text, images, and layouts with our intuitive editor." },
+          { title: "Secure & Reliable", desc: "Enterprise-grade security with SSL certificates, DDoS protection, and 99.9% uptime guarantee." },
+          { title: "Free Domain Included", desc: "Get a free subdomain or connect your own custom domain. We handle all the technical setup." },
+          { title: "No Hidden Fees", desc: "Pay once, own forever. No monthly subscriptions, no recurring charges. Your site is 100% yours." }
+        ]
+      },
+      howItWorks: {
+        title: "How to create a website with AI.",
+        subtitle: "Four simple steps to your dream website.",
+        steps: [
+          { title: "Describe Your Vision", desc: "Tell our AI about your business, your style, and what you need. The more details, the better." },
+          { title: "AI Generates Your Site", desc: "Our Kimi-powered engine creates a complete website with stunning design in under 60 seconds." },
+          { title: "Refine & Customize", desc: "Make adjustments with our visual editor or chat with AI to modify any element instantly." },
+          { title: "Publish & Go Live", desc: "Choose your domain, connect it, and launch your site to the world. It's that simple." }
+        ]
+      },
+      pricing: {
+        title: "Simple, transparent pricing.",
+        subtitle: "Pay once. Own forever. No hidden fees.",
+        popular: "Most Popular",
+        plans: [
+          { name: "Starter", price: "Free", period: "Build your site", features: ["Create up to 3 projects", "AI preview & editing", "Basic templates"] },
+          { name: "Homepage", price: "€200", period: "One-time payment", features: ["1 Professional Homepage", "Custom Domain", "SSL Certificate", "Hosting Included", "Unlimited Edits (30 days)"] },
+          { name: "Extra Pages", price: "€70", period: "Per additional page", features: ["About, Services, Contact", "Gallery, Portfolio, Blog", "AI-generated content", "Matching design"] }
+        ]
+      },
+      faq: {
+        title: "Frequently asked questions.",
+        items: [
+          { q: "What is AI Site Builder?", a: "AI Site Builder is a revolutionary tool that uses advanced AI (Kimi 2.5) to create professional websites in minutes. You simply describe your business and vision, and our AI generates a complete, customized website ready to publish." },
+          { q: "How long does it take to create a website?", a: "Most websites are generated in under 60 seconds. After that, you can spend as much time as you want refining and customizing until it's perfect." },
+          { q: "Do I need coding skills?", a: "Absolutely not! Our platform is designed for everyone. The AI handles all the technical aspects, and our visual editor makes customization simple and intuitive." },
+          { q: "Can I use my own domain?", a: "Yes! You can connect any custom domain you own, or get a free subdomain (yoursite.ourdomain.com). We handle all the technical DNS configuration for you." },
+          { q: "What do I get for €200?", a: "You get a complete, professional homepage with custom design, hosting, SSL certificate, and your chosen domain. You own the site 100% with no recurring fees. Additional pages are €70 each." },
+          { q: "Can I edit my site after publishing?", a: "Yes! You have 30 days of unlimited edits included. After that, you can still make changes anytime through our editor or contact us for assistance." }
+        ]
+      },
+      cta: {
+        title: "Ready to create your site?",
+        subtitle: "Join thousands of businesses who've transformed their online presence with AI Site Builder.",
+        button: "Start Building Free"
+      },
+      footer: {
+        rights: "© 2026 AI Site Builder. All rights reserved.",
+        privacy: "Privacy",
+        terms: "Terms",
+        contact: "Contact"
+      }
+    },
+    it: {
+      nav: {
+        features: "Funzionalità",
+        howItWorks: "Come Funziona",
+        pricing: "Prezzi",
+        faq: "FAQ",
+        getStarted: "Inizia Ora"
+      },
+      hero: {
+        badge: "Powered by Kimi AI 2.5",
+        title1: "Descrivi la tua idea.",
+        title2: "Il sito arriva subito.",
+        subtitle: "Crea siti web professionali e straordinari in pochi minuti con il nostro builder AI. Nessun codice richiesto. Descrivi cosa vuoi e guarda la magia accadere.",
+        ctaPrimary: "Crea il Tuo Sito Gratis",
+        ctaSecondary: "Vedi Come Funziona",
+        stat1: "Tempo Medio di Creazione",
+        stat2: "Prezzo di Partenza",
+        stat3: "È Tutto Tuo"
+      },
+      features: {
+        title: "Costruito per standard elevati.",
+        subtitle: "Molto più di un semplice bel sito.",
+        items: [
+          { title: "Design AI-Powered", desc: "La nostra AI avanzata capisce la tua visione e crea design straordinari e su misura che corrispondono perfettamente al tuo brand." },
+          { title: "Velocità Fulminea", desc: "Ottieni il tuo sito web completo in meno di 60 secondi. Nessuna attesa, nessun problema. Solo risultati istantanei." },
+          { title: "Completamente Personalizzabile", desc: "Ogni elemento è modificabile. Cambia colori, testo, immagini e layout con il nostro editor intuitivo." },
+          { title: "Sicuro e Affidabile", desc: "Sicurezza di livello enterprise con certificati SSL, protezione DDoS e garanzia di uptime 99.9%." },
+          { title: "Dominio Incluso Gratis", desc: "Ottieni un sottodominio gratuito o collega il tuo dominio personalizzato. Gestiamo noi tutta la configurazione tecnica." },
+          { title: "Nessun Costo Nascosto", desc: "Paga una volta, tuo per sempre. Nessun abbonamento mensile, nessun addebito ricorrente. Il sito è 100% tuo." }
+        ]
+      },
+      howItWorks: {
+        title: "Come creare un sito web con l'AI.",
+        subtitle: "Quattro semplici passaggi per il sito dei tuoi sogni.",
+        steps: [
+          { title: "Descrivi la Tua Visione", desc: "Parla alla nostra AI della tua attività, del tuo stile e di cosa ti serve. Più dettagli, meglio è." },
+          { title: "L'AI Genera il Tuo Sito", desc: "Il nostro motore Kimi crea un sito web completo con design straordinario in meno di 60 secondi." },
+          { title: "Perfeziona e Personalizza", desc: "Apporta modifiche con il nostro editor visuale o chatta con l'AI per modificare qualsiasi elemento istantaneamente." },
+          { title: "Pubblica e Vai Online", desc: "Scegli il tuo dominio, collegalo e lancia il tuo sito nel mondo. È semplice così." }
+        ]
+      },
+      pricing: {
+        title: "Prezzi semplici e trasparenti.",
+        subtitle: "Paga una volta. Tuo per sempre. Nessun costo nascosto.",
+        popular: "Più Popolare",
+        plans: [
+          { name: "Starter", price: "Gratis", period: "Costruisci il tuo sito", features: ["Crea fino a 3 progetti", "Anteprima e editing AI", "Template di base"] },
+          { name: "Homepage", price: "€200", period: "Pagamento unico", features: ["1 Homepage Professionale", "Dominio Personalizzato", "Certificato SSL", "Hosting Incluso", "Modifiche Illimitate (30 giorni)"] },
+          { name: "Pagine Extra", price: "€70", period: "Per pagina aggiuntiva", features: ["Chi Siamo, Servizi, Contatti", "Galleria, Portfolio, Blog", "Contenuti generati da AI", "Design coordinato"] }
+        ]
+      },
+      faq: {
+        title: "Domande frequenti.",
+        items: [
+          { q: "Cos'è AI Site Builder?", a: "AI Site Builder è uno strumento rivoluzionario che utilizza l'AI avanzata (Kimi 2.5) per creare siti web professionali in pochi minuti. Descrivi semplicemente la tua attività e la tua visione, e la nostra AI genera un sito web completo e personalizzato pronto per essere pubblicato." },
+          { q: "Quanto tempo ci vuole per creare un sito web?", a: "La maggior parte dei siti web viene generata in meno di 60 secondi. Dopo di che, puoi dedicare tutto il tempo che vuoi a perfezionare e personalizzare finché non è perfetto." },
+          { q: "Ho bisogno di competenze di programmazione?", a: "Assolutamente no! La nostra piattaforma è progettata per tutti. L'AI gestisce tutti gli aspetti tecnici, e il nostro editor visuale rende la personalizzazione semplice e intuitiva." },
+          { q: "Posso usare il mio dominio?", a: "Sì! Puoi collegare qualsiasi dominio personalizzato che possiedi, oppure ottenere un sottodominio gratuito (iltuosito.ilnostrodominio.com). Gestiamo noi tutta la configurazione tecnica DNS per te." },
+          { q: "Cosa ottengo per €200?", a: "Ottieni una homepage completa e professionale con design personalizzato, hosting, certificato SSL e il dominio scelto. Il sito è tuo al 100% senza costi ricorrenti. Le pagine aggiuntive sono €70 ciascuna." },
+          { q: "Posso modificare il sito dopo la pubblicazione?", a: "Sì! Hai inclusi 30 giorni di modifiche illimitate. Dopo di che, puoi comunque apportare modifiche in qualsiasi momento attraverso il nostro editor o contattarci per assistenza." }
+        ]
+      },
+      cta: {
+        title: "Pronto a creare il tuo sito?",
+        subtitle: "Unisciti a migliaia di attività che hanno trasformato la loro presenza online con AI Site Builder.",
+        button: "Inizia a Costruire Gratis"
+      },
+      footer: {
+        rights: "© 2026 AI Site Builder. Tutti i diritti riservati.",
+        privacy: "Privacy",
+        terms: "Termini",
+        contact: "Contatti"
+      }
+    }
+  };
+
+  const current = t[lang];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
@@ -39,71 +196,110 @@ export default function LandingPage() {
             </div>
             <span className="text-xl font-bold">AI Site Builder</span>
           </div>
+          
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-slate-400 hover:text-white transition-colors">Features</a>
-            <a href="#how-it-works" className="text-slate-400 hover:text-white transition-colors">How It Works</a>
-            <a href="#pricing" className="text-slate-400 hover:text-white transition-colors">Pricing</a>
-            <a href="#faq" className="text-slate-400 hover:text-white transition-colors">FAQ</a>
+            <a href="#features" className="text-slate-400 hover:text-white transition-colors">{current.nav.features}</a>
+            <a href="#how-it-works" className="text-slate-400 hover:text-white transition-colors">{current.nav.howItWorks}</a>
+            <a href="#pricing" className="text-slate-400 hover:text-white transition-colors">{current.nav.pricing}</a>
+            <a href="#faq" className="text-slate-400 hover:text-white transition-colors">{current.nav.faq}</a>
           </div>
-          <Link 
-            href="/dashboard" 
-            className="px-6 py-2.5 bg-white text-slate-950 rounded-full font-semibold hover:bg-slate-200 transition-colors"
-          >
-            Get Started
-          </Link>
+
+          <div className="flex items-center gap-4">
+            {/* Language Toggle */}
+            <button 
+              onClick={() => setLang(lang === 'en' ? 'it' : 'en')}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/20 text-sm hover:bg-white/5 transition-colors"
+            >
+              <GlobeIcon className="w-4 h-4" />
+              {lang === 'en' ? 'EN 🇬🇧' : 'IT 🇮🇹'}
+            </button>
+            
+            <Link 
+              href="/dashboard" 
+              className="px-6 py-2.5 bg-white text-slate-950 rounded-full font-semibold hover:bg-slate-200 transition-colors"
+            >
+              {current.nav.getStarted}
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
       <section className="relative z-10 pt-20 pb-32">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm mb-8">
-            <SparklesIcon className="w-4 h-4" />
-            <span>Powered by Kimi AI 2.5</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Your ideas go in.
-            <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Your site comes out.
-            </span>
-          </h1>
-          
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-10">
-            Create stunning, professional websites in minutes with our AI-powered builder. 
-            No coding required. Just describe what you want and watch the magic happen.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link 
-              href="/dashboard"
-              className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full font-semibold text-lg hover:opacity-90 transition-opacity flex items-center gap-2"
-            >
-              <RocketIcon className="w-5 h-5" />
-              Create Your Site Free
-            </Link>
-            <a 
-              href="#how-it-works"
-              className="px-8 py-4 border border-white/20 rounded-full font-semibold text-lg hover:bg-white/5 transition-colors flex items-center gap-2"
-            >
-              See How It Works
-            </a>
-          </div>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm mb-8">
+                <SparklesIcon className="w-4 h-4" />
+                <span>{current.hero.badge}</span>
+              </div>
+              
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                {current.hero.title1}
+                <br />
+                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  {current.hero.title2}
+                </span>
+              </h1>
+              
+              <p className="text-xl text-slate-400 mb-10">
+                {current.hero.subtitle}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                <Link 
+                  href="/dashboard"
+                  className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full font-semibold text-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+                >
+                  <RocketIcon className="w-5 h-5" />
+                  {current.hero.ctaPrimary}
+                </Link>
+                <a 
+                  href="#how-it-works"
+                  className="px-8 py-4 border border-white/20 rounded-full font-semibold text-lg hover:bg-white/5 transition-colors"
+                >
+                  {current.hero.ctaSecondary}
+                </a>
+              </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mt-20 pt-10 border-t border-white/10">
-            <div>
-              <div className="text-3xl font-bold text-white">60s</div>
-              <div className="text-slate-500">Average Build Time</div>
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-8 mt-12 pt-10 border-t border-white/10">
+                <div>
+                  <div className="text-3xl font-bold text-white">60s</div>
+                  <div className="text-slate-500 text-sm">{current.hero.stat1}</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-white">€200</div>
+                  <div className="text-slate-500 text-sm">{current.hero.stat2}</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-white">100%</div>
+                  <div className="text-slate-500 text-sm">{current.hero.stat3}</div>
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-white">€200</div>
-              <div className="text-slate-500">Starting Price</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-white">100%</div>
-              <div className="text-slate-500">Yours to Keep</div>
+
+            {/* Hero Image */}
+            <div className="relative">
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                <img 
+                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop" 
+                  alt="Website Builder Dashboard"
+                  className="w-full h-auto"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-sm font-medium">AI Generating Website...</span>
+                    </div>
+                    <div className="mt-2 h-2 bg-white/20 rounded-full overflow-hidden">
+                      <div className="h-full w-3/4 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -114,44 +310,29 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Built for high standards.
+              {current.features.title}
             </h2>
             <p className="text-xl text-slate-400">
-              More than just a good-looking site.
+              {current.features.subtitle}
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard 
-              icon={<ZapIcon className="w-8 h-8" />}
-              title="AI-Powered Design"
-              description="Our advanced AI understands your vision and creates stunning, tailored designs that match your brand perfectly."
-            />
-            <FeatureCard 
-              icon={<ClockIcon className="w-8 h-8" />}
-              title="Lightning Fast"
-              description="Get your complete website in under 60 seconds. No waiting, no hassle. Just instant results."
-            />
-            <FeatureCard 
-              icon={<PaletteIcon className="w-8 h-8" />}
-              title="Fully Customizable"
-              description="Every element is editable. Change colors, text, images, and layouts with our intuitive editor."
-            />
-            <FeatureCard 
-              icon={<ShieldIcon className="w-8 h-8" />}
-              title="Secure & Reliable"
-              description="Enterprise-grade security with SSL certificates, DDoS protection, and 99.9% uptime guarantee."
-            />
-            <FeatureCard 
-              icon={<GlobeIcon className="w-8 h-8" />}
-              title="Free Domain Included"
-              description="Get a free subdomain or connect your own custom domain. We handle all the technical setup."
-            />
-            <FeatureCard 
-              icon={<CheckIcon className="w-8 h-8" />}
-              title="No Hidden Fees"
-              description="Pay once, own forever. No monthly subscriptions, no recurring charges. Your site is 100% yours."
-            />
+            {current.features.items.map((item, idx) => (
+              <FeatureCard 
+                key={idx}
+                icon={[
+                  <ZapIcon className="w-8 h-8" />,
+                  <ClockIcon className="w-8 h-8" />,
+                  <PaletteIcon className="w-8 h-8" />,
+                  <ShieldIcon className="w-8 h-8" />,
+                  <GlobeIcon className="w-8 h-8" />,
+                  <CheckIcon className="w-8 h-8" />
+                ][idx]}
+                title={item.title}
+                description={item.desc}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -161,34 +342,32 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              How to create a website with AI.
+              {current.howItWorks.title}
             </h2>
             <p className="text-xl text-slate-400">
-              Four simple steps to your dream website.
+              {current.howItWorks.subtitle}
             </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
-            <StepCard 
-              number="1"
-              title="Describe Your Vision"
-              description="Tell our AI about your business, your style, and what you need. The more details, the better."
+            {current.howItWorks.steps.map((step, idx) => (
+              <StepCard 
+                key={idx}
+                number={(idx + 1).toString()}
+                title={step.title}
+                description={step.desc}
+              />
+            ))}
+          </div>
+
+          {/* Screenshot Demo */}
+          <div className="mt-20 relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+            <img 
+              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=700&fit=crop" 
+              alt="AI Builder Interface"
+              className="w-full h-auto"
             />
-            <StepCard 
-              number="2"
-              title="AI Generates Your Site"
-              description="Our Kimi-powered engine creates a complete website with stunning design in under 60 seconds."
-            />
-            <StepCard 
-              number="3"
-              title="Refine & Customize"
-              description="Make adjustments with our visual editor or chat with AI to modify any element instantly."
-            />
-            <StepCard 
-              number="4"
-              title="Publish & Go Live"
-              description="Choose your domain, connect it, and launch your site to the world. It's that simple."
-            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
           </div>
         </div>
       </section>
@@ -198,103 +377,40 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Simple, transparent pricing.
+              {current.pricing.title}
             </h2>
             <p className="text-xl text-slate-400">
-              Pay once. Own forever. No hidden fees.
+              {current.pricing.subtitle}
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Free Plan */}
-            <div className="p-8 rounded-2xl border border-white/10 bg-slate-900/50">
-              <div className="text-sm font-medium text-slate-400 mb-2">Starter</div>
-              <div className="text-4xl font-bold mb-1">Free</div>
-              <div className="text-slate-500 mb-6">Build your site</div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  Create up to 3 projects
-                </li>
-                <li className="flex items-center gap-3 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  AI preview & editing
-                </li>
-                <li className="flex items-center gap-3 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  Basic templates
-                </li>
-              </ul>
-              <button className="w-full py-3 border border-white/20 rounded-full font-semibold hover:bg-white/5 transition-colors">
-                Start Free
-              </button>
-            </div>
-
-            {/* Homepage Plan */}
-            <div className="p-8 rounded-2xl border-2 border-indigo-500 bg-gradient-to-b from-indigo-500/10 to-transparent relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-indigo-500 rounded-full text-sm font-medium">
-                Most Popular
+            {current.pricing.plans.map((plan, idx) => (
+              <div key={idx} className={`p-8 rounded-2xl border ${idx === 1 ? 'border-2 border-indigo-500 bg-gradient-to-b from-indigo-500/10 to-transparent relative' : 'border-white/10 bg-slate-900/50'}`}>
+                {idx === 1 && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-indigo-500 rounded-full text-sm font-medium">
+                    {current.pricing.popular}
+                  </div>
+                )}
+                <div className="text-sm font-medium text-slate-400 mb-2">{plan.name}</div>
+                <div className="text-4xl font-bold mb-1">{plan.price}</div>
+                <div className="text-slate-500 mb-6">{plan.period}</div>
+                <ul className="space-y-4 mb-8">
+                  {plan.features.map((feature, fidx) => (
+                    <li key={fidx} className="flex items-center gap-3">
+                      <CheckIcon className="w-5 h-5 text-indigo-500" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link 
+                  href="/dashboard"
+                  className={`w-full py-3 rounded-full font-semibold text-center block ${idx === 1 ? 'bg-indigo-600 hover:bg-indigo-500' : 'border border-white/20 hover:bg-white/5'} transition-colors`}
+                >
+                  {idx === 0 ? 'Start Free' : idx === 1 ? (lang === 'en' ? 'Get Started' : 'Inizia') : (lang === 'en' ? 'Add Pages' : 'Aggiungi Pagine')}
+                </Link>
               </div>
-              <div className="text-sm font-medium text-indigo-400 mb-2">Homepage</div>
-              <div className="text-4xl font-bold mb-1">€200</div>
-              <div className="text-slate-500 mb-6">One-time payment</div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  1 Professional Homepage
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  Custom Domain
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  SSL Certificate
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  Hosting Included
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  Unlimited Edits (30 days)
-                </li>
-              </ul>
-              <Link 
-                href="/dashboard"
-                className="w-full py-3 bg-indigo-600 rounded-full font-semibold hover:bg-indigo-500 transition-colors text-center block"
-              >
-                Get Started
-              </Link>
-            </div>
-
-            {/* Extra Pages */}
-            <div className="p-8 rounded-2xl border border-white/10 bg-slate-900/50">
-              <div className="text-sm font-medium text-slate-400 mb-2">Extra Pages</div>
-              <div className="text-4xl font-bold mb-1">€70</div>
-              <div className="text-slate-500 mb-6">Per additional page</div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  About, Services, Contact
-                </li>
-                <li className="flex items-center gap-3 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  Gallery, Portfolio, Blog
-                </li>
-                <li className="flex items-center gap-3 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  AI-generated content
-                </li>
-                <li className="flex items-center gap-3 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-indigo-500" />
-                  Matching design
-                </li>
-              </ul>
-              <button className="w-full py-3 border border-white/20 rounded-full font-semibold hover:bg-white/5 transition-colors">
-                Add Pages
-              </button>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -304,47 +420,20 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Frequently asked questions.
+              {current.faq.title}
             </h2>
           </div>
 
           <div className="space-y-4">
-            <FaqItem 
-              question="What is AI Site Builder?"
-              answer="AI Site Builder is a revolutionary tool that uses advanced AI (Kimi 2.5) to create professional websites in minutes. You simply describe your business and vision, and our AI generates a complete, customized website ready to publish."
-              isOpen={openFaq === 0}
-              onClick={() => toggleFaq(0)}
-            />
-            <FaqItem 
-              question="How long does it take to create a website?"
-              answer="Most websites are generated in under 60 seconds. After that, you can spend as much time as you want refining and customizing until it's perfect."
-              isOpen={openFaq === 1}
-              onClick={() => toggleFaq(1)}
-            />
-            <FaqItem 
-              question="Do I need coding skills?"
-              answer="Absolutely not! Our platform is designed for everyone. The AI handles all the technical aspects, and our visual editor makes customization simple and intuitive."
-              isOpen={openFaq === 2}
-              onClick={() => toggleFaq(2)}
-            />
-            <FaqItem 
-              question="Can I use my own domain?"
-              answer="Yes! You can connect any custom domain you own, or get a free subdomain (yoursite.ourdomain.com). We handle all the technical DNS configuration for you."
-              isOpen={openFaq === 3}
-              onClick={() => toggleFaq(3)}
-            />
-            <FaqItem 
-              question="What do I get for €200?"
-              answer="You get a complete, professional homepage with custom design, hosting, SSL certificate, and your chosen domain. You own the site 100% with no recurring fees. Additional pages are €70 each."
-              isOpen={openFaq === 4}
-              onClick={() => toggleFaq(4)}
-            />
-            <FaqItem 
-              question="Can I edit my site after publishing?"
-              answer="Yes! You have 30 days of unlimited edits included. After that, you can still make changes anytime through our editor or contact us for assistance."
-              isOpen={openFaq === 5}
-              onClick={() => toggleFaq(5)}
-            />
+            {current.faq.items.map((item, idx) => (
+              <FaqItem 
+                key={idx}
+                question={item.q}
+                answer={item.a}
+                isOpen={openFaq === idx}
+                onClick={() => toggleFaq(idx)}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -354,16 +443,16 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="p-12 md:p-16 rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-700 text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Ready to create your site?
+              {current.cta.title}
             </h2>
             <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-              Join thousands of businesses who've transformed their online presence with AI Site Builder.
+              {current.cta.subtitle}
             </p>
             <Link 
               href="/dashboard"
               className="inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-600 rounded-full font-bold text-lg hover:bg-slate-100 transition-colors"
             >
-              Start Building Free
+              {current.cta.button}
               <ArrowRightIcon className="w-5 h-5" />
             </Link>
           </div>
@@ -381,12 +470,12 @@ export default function LandingPage() {
               <span className="font-bold">AI Site Builder</span>
             </div>
             <div className="text-slate-500 text-sm">
-              © 2026 AI Site Builder. All rights reserved.
+              {current.footer.rights}
             </div>
             <div className="flex items-center gap-6">
-              <a href="#" className="text-slate-400 hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors">Terms</a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors">Contact</a>
+              <a href="#" className="text-slate-400 hover:text-white transition-colors">{current.footer.privacy}</a>
+              <a href="#" className="text-slate-400 hover:text-white transition-colors">{current.footer.terms}</a>
+              <a href="#" className="text-slate-400 hover:text-white transition-colors">{current.footer.contact}</a>
             </div>
           </div>
         </div>
