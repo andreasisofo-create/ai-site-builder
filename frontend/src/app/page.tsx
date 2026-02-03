@@ -217,7 +217,7 @@ export default function LandingPage() {
             </button>
             
             <Link 
-              href="/dashboard" 
+              href="/auth" 
               className="px-6 py-2.5 bg-white text-slate-950 rounded-full font-semibold hover:bg-slate-200 transition-colors"
             >
               {current.nav.getStarted}
@@ -250,7 +250,7 @@ export default function LandingPage() {
               
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <Link 
-                  href="/dashboard"
+                  href="/auth"
                   className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full font-semibold text-lg hover:opacity-90 transition-opacity flex items-center gap-2"
                 >
                   <RocketIcon className="w-5 h-5" />
@@ -406,7 +406,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Link 
-                  href="/dashboard"
+                  href="/auth"
                   className={`w-full py-3 rounded-full font-semibold text-center block ${idx === 1 ? 'bg-blue-600 hover:bg-blue-500' : 'border border-white/20 hover:bg-white/5'} transition-colors`}
                 >
                   {idx === 0 ? (lang === 'en' ? 'Start Free' : 'Inizia Gratis') : idx === 1 ? (lang === 'en' ? 'Get Started' : 'Inizia') : (lang === 'en' ? 'Add Pages' : 'Aggiungi Pagine')}
@@ -451,7 +451,7 @@ export default function LandingPage() {
               {current.cta.subtitle}
             </p>
             <Link 
-              href="/dashboard"
+              href="/auth"
               className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-full font-bold text-lg hover:bg-slate-100 transition-colors"
             >
               {current.cta.button}
