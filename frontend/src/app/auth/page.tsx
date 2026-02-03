@@ -11,6 +11,7 @@ import {
   ArrowRightIcon,
   UserIcon
 } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(false);
@@ -39,9 +40,8 @@ export default function AuthPage() {
     window.location.href = '/dashboard';
   };
 
-  const handleGoogleLogin = () => {
-    // Implementa OAuth Google
-    console.log("Google login");
+  const handleGoogleLogin = async () => {
+    await signIn("google", { callbackUrl: "/dashboard" });
   };
 
   const handleCodeChange = (index: number, value: string) => {
@@ -63,15 +63,14 @@ export default function AuthPage() {
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12">
         <div className="w-full max-w-md">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-3 mb-12">
+          <div className="flex items-center justify-center mb-12">
             <Image 
               src="/logo.png" 
               alt="E-quipe Logo" 
-              width={40} 
-              height={40}
-              className="h-10 w-auto"
+              width={48} 
+              height={48}
+              className="h-12 w-auto"
             />
-            <span className="text-2xl font-bold text-white">E-quipe</span>
           </div>
 
           {step === 'form' ? (
