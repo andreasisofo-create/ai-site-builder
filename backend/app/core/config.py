@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     SECRET_KEY: str = "your-secret-key-change-in-production"
     
-    # Database
-    DATABASE_URL: str = "postgresql://sitebuilder:sitebuilder123@localhost:5432/sitebuilder"
+    # Database (SQLite per Render - funziona subito)
+    DATABASE_URL: str = "sqlite:///./sitebuilder.db"
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
+    
+    # Google OAuth
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
     
     class Config:
         env_file = ".env"
