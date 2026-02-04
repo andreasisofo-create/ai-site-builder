@@ -9,7 +9,8 @@ import {
   EyeIcon, 
   EyeOffIcon, 
   ArrowRightIcon,
-  UserIcon
+  UserIcon,
+  AlertCircleIcon
 } from "lucide-react";
 import { signIn } from "next-auth/react";
 
@@ -19,15 +20,37 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [error, setError] = useState("");
   const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simula invio codice di verifica
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setLoading(false);
-    setStep('verify');
+    setError("");
+
+    if (isLogin) {
+      // Login con credentials
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: "/dashboard",
+      });
+
+      if (result?.error) {
+        setError("Email o password non validi");
+        setLoading(false);
+      } else {
+        window.location.href = "/dashboard";
+      }
+    } else {
+      // Registrazione - simula invio codice di verifica
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setLoading(false);
+      setStep('verify');
+    }
   };
 
   const handleVerify = async (e: React.FormEvent) => {
@@ -109,6 +132,13 @@ export default function AuthPage() {
                 </div>
               </div>
 
+              {error && (
+                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-2 text-red-400 text-sm">
+                  <AlertCircleIcon className="w-4 h-4 flex-shrink-0" />
+                  {error}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 {!isLogin && (
                   <div>
@@ -120,6 +150,8 @@ export default function AuthPage() {
                       <input
                         type="text"
                         required
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                         className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
                         placeholder="Mario Rossi"
                       />
@@ -153,6 +185,8 @@ export default function AuthPage() {
                     <input
                       type={showPassword ? "text" : "password"}
                       required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
                       placeholder="••••••••"
                     />

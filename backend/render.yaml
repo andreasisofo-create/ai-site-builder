@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: site-builder-api
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "cd app && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: site-builder-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: site-builder-redis
+          property: connectionString
+
+databases:
+  - name: site-builder-db
+    databaseName: sitebuilder
+    user: sitebuilder
+
+redis:
+  - name: site-builder-redis
+    ipAllowList: []

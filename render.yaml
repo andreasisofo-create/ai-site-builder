@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: site-builder-api
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "cd app && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: postgresql://postgres:E-quipe!12345@db.xdnpsxjjaupmxocjkngt.supabase.co:5432/postgres
+      - key: GOOGLE_CLIENT_ID
+        value: 27507120933-d9kbo0ln3dckm0m99l68dbr7dem78k5n.apps.googleusercontent.com
+      - key: GOOGLE_CLIENT_SECRET
+        value: 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
+      - key: CORS_ORIGINS
+        value: '["https://site-generator-v2.vercel.app"]'
