@@ -13,15 +13,7 @@ if settings.DATABASE_URL.startswith("sqlite"):
         connect_args={"check_same_thread": False}
     )
 else:
-    # Usa pg8000 per PostgreSQL (compatibile con Python 3.13)
-    db_url = settings.DATABASE_URL
-    if db_url.startswith("postgresql://"):
-        db_url = db_url.replace("postgresql://", "postgresql+pg8000://", 1)
-    # SSL richiesto per Supabase
-    engine = create_engine(
-        db_url,
-        connect_args={"ssl_context": True}
-    )
+    engine = create_engine(settings.DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
