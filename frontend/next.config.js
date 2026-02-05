@@ -14,8 +14,8 @@ const nextConfig = {
 
     return [
       {
-        // Escludi le rotte di NextAuth dal proxy verso il backend
-        source: '/api/((?!auth).*)',
+        // Escludi le rotte di NextAuth e init dal proxy verso il backend
+        source: '/api/((?!auth|init).*)',
         destination: `${apiUrl}/api/:path*`,
       },
     ];

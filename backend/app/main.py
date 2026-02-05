@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Site Builder API",
     description="API per la creazione e gestione di siti web",
-    version="0.1.0",
+    version="0.1.1",
     lifespan=lifespan,
 )
 
@@ -52,7 +52,7 @@ app.include_router(generate.router, prefix="/api/generate", tags=["generate"])
 async def root():
     return {
         "message": "Site Builder API",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "docs": "/docs",
     }
 
