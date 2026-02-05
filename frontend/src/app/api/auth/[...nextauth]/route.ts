@@ -86,8 +86,8 @@ const handler = NextAuth({
     },
     async jwt({ token, user, account }) {
       // Salva il token del backend nel JWT
-      if (user?.backendToken) {
-        token.backendToken = user.backendToken;
+      if ((user as any)?.backendToken) {
+        token.backendToken = (user as any).backendToken;
       }
       return token;
     },
