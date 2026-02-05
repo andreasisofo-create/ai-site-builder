@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+// @ts-ignore - NextAuth types issue
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -24,7 +25,6 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Login tradizionale via backend
         const res = await fetch(`${API_URL}/api/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -41,6 +41,7 @@ const handler = NextAuth({
           id: String(data.user.id),
           email: data.user.email,
           name: data.user.full_name,
+          // @ts-ignore
           backendToken: data.access_token,
         };
       },
@@ -53,9 +54,8 @@ const handler = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile }: any) {
       if (account?.provider === "google") {
-        // Invia il token al backend per creare/autenticare l'utente
         try {
           const res = await fetch(`${API_URL}/api/auth/oauth`, {
             method: "POST",
@@ -73,7 +73,7 @@ const handler = NextAuth({
           }
 
           const data = await res.json();
-          // Salva il token del backend nell'user
+          // @ts-ignore
           user.backendToken = data.access_token;
           user.id = String(data.user.id);
           return true;
@@ -84,16 +84,14 @@ const handler = NextAuth({
       }
       return true;
     },
-    async jwt({ token, user, account }) {
-      // Salva il token del backend nel JWT 
-      if ((user as any)?.backendToken) {
-        token.backendToken = (user as any).backendToken;
+    async jwt({ token, user, account }: any) {
+      if (user?.backendToken) {
+        token.backendToken = user.backendToken;
       }
       return token;
     },
-    async session({ session, token }) {
-      // Passa il token del backend alla sessione
-      session.backendToken = token.backendToken as string;
+    async session({ session, token }: any) {
+      session.backendToken = token.backendToken;
       return session;
     },
   },

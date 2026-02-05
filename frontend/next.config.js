@@ -2,24 +2,25 @@
 const nextConfig = {
   // Directory di output per Vercel
   distDir: '.next',
-  
+
   // Immagini ottimizzate
   images: {
     unoptimized: true,
   },
-  
+
   // Rewrites per API
   async rewrites() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    
+
     return [
       {
-        source: '/api/:path*',
+        // Escludi le rotte di NextAuth dal proxy verso il backend
+        source: '/api/((?!auth).*)',
         destination: `${apiUrl}/api/:path*`,
       },
     ];
   },
-  
+
   // Headers per sicurezza
   async headers() {
     return [
@@ -38,10 +39,10 @@ const nextConfig = {
       },
     ];
   },
-  
+
   // Trailing slash per SEO
   trailingSlash: false,
-  
+
   // Compressione
   compress: true,
 };
