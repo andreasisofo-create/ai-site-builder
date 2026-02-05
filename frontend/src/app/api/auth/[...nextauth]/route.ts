@@ -41,7 +41,7 @@ const handler = NextAuth({
           id: String(data.user.id),
           email: data.user.email,
           name: data.user.full_name,
-          accessToken: data.access_token,
+          backendToken: data.access_token,
         };
       },
     }),
@@ -88,9 +88,6 @@ const handler = NextAuth({
       // Salva il token del backend nel JWT
       if (user?.backendToken) {
         token.backendToken = user.backendToken;
-      }
-      if (user?.accessToken) {
-        token.backendToken = user.accessToken;
       }
       return token;
     },

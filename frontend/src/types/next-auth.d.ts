@@ -13,6 +13,7 @@ declare module "next-auth" {
 
   interface User {
     backendToken?: string;
+    accessToken?: string;
     id?: string;
   }
 }
