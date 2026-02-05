@@ -1,5 +1,3 @@
-"""Utilities per autenticazione"""
-
 import { getSession } from "next-auth/react";
 
 /**
