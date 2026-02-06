@@ -1,6 +1,8 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials"; // Added
 import { query } from "@/lib/db";
+import bcrypt from "bcryptjs"; // Added
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -15,20 +17,64 @@ const authOptions: NextAuthOptions = {
         },
       },
     }),
+    // Added CredentialsProvider
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email e Password richiesti");
+        }
+
+        try {
+          // Check if user exists
+          const result = await query(
+            "SELECT * FROM users WHERE email = $1",
+            [credentials.email]
+          );
+
+          if (result.rows.length === 0) {
+            throw new Error("Nessun utente trovato con questa email");
+          }
+
+          const user = result.rows[0];
+
+          // If user exists but only has OAuth (no password hash)
+          if (!user.hashed_password) {
+            throw new Error("Account creato con Google. Usa il login con Google.");
+          }
+
+          // Check password
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.hashed_password
+          );
+
+          if (!isValid) {
+            throw new Error("Password non corretta");
+          }
+
+          return {
+            id: user.id.toString(),
+            name: user.full_name,
+            email: user.email,
+            image: user.avatar_url,
+          };
+        } catch (error: any) {
+          console.error("Authorize Error:", error.message);
+          throw new Error(error.message || "Errore di autenticazione");
+        }
+      },
+    }),
   ],
   callbacks: {
     async signIn({ user, account, profile }: any) {
       if (account?.provider === "google") {
         try {
           console.log('[AUTH] Tentativo signIn per:', user.email);
-
-          // Usiamo l'approccio UPSERT (Insert o Update) che è più atomico e sicuro
-          // Nota: la tua tabella `users` ha colonne diverse dall'esempio di Claude, quindi adatto la query alle TUE colonne (oauth_id, ecc)
-
-          /*
-             Struttura tabella users (da init-db):
-             id, email, full_name, avatar_url, oauth_provider, oauth_id, is_active...
-          */
 
           // Prima logica: Check esistenza per oauth_id
           const existingUser = await query(
@@ -42,7 +88,7 @@ const authOptions: NextAuthOptions = {
             return true;
           }
 
-          // Seconda logica: Check esistenza per email (per collegare account esistenti)
+          // Seconda logica: Check esistenza per email
           const existingEmail = await query(
             'SELECT id FROM users WHERE email = $1',
             [user.email]
@@ -79,10 +125,10 @@ const authOptions: NextAuthOptions = {
             code: error.code,
             detail: error.detail,
           });
-          return false; // Questo causa AccessDenied, ma ora vedremo il log su Vercel
+          return false;
         }
       }
-      return true;
+      return true; // Credentials provider allows sign in by default if authorize returns user
     },
     async jwt({ token, user }: any) {
       if (user) {
@@ -100,9 +146,9 @@ const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth',
-    error: '/auth/error', // Per vedere meglio errori se ci sono
+    error: '/auth/error',
   },
-  debug: true, // Attiva debug log su Vercel
+  debug: true,
 };
 
 const handler = NextAuth(authOptions);
