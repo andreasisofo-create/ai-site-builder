@@ -3,8 +3,16 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+import enum
 
 from app.core.database import Base
+
+
+class SiteStatus(str, enum.Enum):
+    DRAFT = "draft"
+    GENERATING = "generating"
+    READY = "ready"
+    PUBLISHED = "published"
 
 
 class Site(Base):
@@ -22,15 +30,20 @@ class Site(Base):
     custom_js = Column(Text)
     
     # Stato
+    status = Column(String, default=SiteStatus.DRAFT.value)
     is_published = Column(Boolean, default=False)
     published_at = Column(DateTime(timezone=True))
+    
+    # Preview
+    thumbnail = Column(String)
+    html_content = Column(Text)  # HTML generato dall'AI
     
     # Deploy
     vercel_project_id = Column(String)
     domain = Column(String)
     
     # Relazioni
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     owner = relationship("User", backref="sites")
     
     # Timestamp

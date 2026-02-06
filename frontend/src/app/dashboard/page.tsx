@@ -30,44 +30,8 @@ import {
   ArrowUpRightIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-
-interface Site {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  thumbnail?: string;
-  is_published: boolean;
-  status: "draft" | "generating" | "ready" | "published";
-  last_edited: string;
-  created_at: string;
-}
-
-// Mock data per visualizzazione
-const MOCK_SITES: Site[] = [
-  {
-    id: 1,
-    name: "Ristorante Da Mario",
-    slug: "ristorante-da-mario",
-    description: "Sito web per ristorante italiano tradizionale",
-    thumbnail: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop",
-    is_published: true,
-    status: "published",
-    last_edited: "2024-01-15T10:30:00",
-    created_at: "2024-01-10T08:00:00",
-  },
-  {
-    id: 2,
-    name: "Studio Legale Rossi",
-    slug: "studio-legale-rossi",
-    description: "Studio legale specializzato in diritto commerciale",
-    thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop",
-    is_published: false,
-    status: "ready",
-    last_edited: "2024-01-14T16:45:00",
-    created_at: "2024-01-12T09:30:00",
-  },
-];
+import { fetchSites, deleteSite, Site } from "@/lib/api";
+import GenerationCounter from "@/components/GenerationCounter";
 
 const SIDEBAR_ITEMS = [
   { icon: FolderIcon, label: "Progetti", active: true },
@@ -80,18 +44,58 @@ const SIDEBAR_ITEMS = [
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [sites, setSites] = useState<Site[]>(MOCK_SITES);
-  const [loading, setLoading] = useState(false);
+  const [sites, setSites] = useState<Site[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeFilter, setActiveFilter] = useState<"all" | "published" | "draft">("all");
+  const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
+  // Carica siti dal backend
+  useEffect(() => {
+    if (status === "authenticated") {
+      loadSites();
+    }
+  }, [status]);
+
+  // Redirect se non autenticato
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/auth");
     }
   }, [status, router]);
+
+  const loadSites = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchSites();
+      setSites(data);
+    } catch (error: any) {
+      toast.error(error.message || "Errore nel caricamento siti");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteSite = async (siteId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Sei sicuro di voler eliminare questo sito?")) return;
+    
+    try {
+      setIsDeleting(siteId);
+      await deleteSite(siteId);
+      toast.success("Sito eliminato");
+      setSites(sites.filter(s => s.id !== siteId));
+      if (selectedSite?.id === siteId) {
+        setSelectedSite(null);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Errore nell'eliminazione");
+    } finally {
+      setIsDeleting(null);
+    }
+  };
 
   const filteredSites = sites.filter((site) => {
     const matchesSearch = site.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -107,6 +111,7 @@ export default function Dashboard() {
   };
 
   const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("it-IT", {
       day: "numeric",
@@ -142,7 +147,7 @@ export default function Dashboard() {
     }
   };
 
-  if (status === "loading") {
+  if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -200,14 +205,10 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Upgrade Card */}
+        {/* Upgrade Card / Generation Counter */}
         {sidebarOpen && (
-          <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-gradient-to-br from-violet-600/20 to-blue-600/20 border border-white/10">
-            <p className="text-sm font-medium mb-1">Piano Starter</p>
-            <p className="text-xs text-slate-400 mb-3">3 progetti rimasti</p>
-            <button className="w-full py-2 text-xs font-medium bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
-              Aggiorna Piano
-            </button>
+          <div className="absolute bottom-4 left-4 right-4">
+            <GenerationCounter />
           </div>
         )}
       </aside>
@@ -262,7 +263,7 @@ export default function Dashboard() {
               <div className="w-px h-6 bg-white/10 mx-1" />
               <button className="flex items-center gap-3 pl-2 pr-3 py-1.5 hover:bg-white/5 rounded-lg transition-colors">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-sm font-medium">
-                  {session?.user?.name?.[0] || "U"}
+                  {session?.user?.name?.[0] || session?.user?.email?.[0] || "U"}
                 </div>
                 <ChevronDownIcon className="w-4 h-4 text-slate-400 hidden sm:block" />
               </button>
@@ -317,17 +318,24 @@ export default function Dashboard() {
               <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center mb-6">
                 <FolderIcon className="w-10 h-10 text-slate-500" />
               </div>
-              <h3 className="text-lg font-medium mb-2">Nessun progetto trovato</h3>
+              <h3 className="text-lg font-medium mb-2">
+                {searchQuery ? "Nessun progetto trovato" : "Nessun progetto ancora"}
+              </h3>
               <p className="text-slate-400 text-sm max-w-sm mb-6">
-                Inizia creando il tuo primo sito web professionale con l&apos;AI
+                {searchQuery 
+                  ? "Prova a modificare la ricerca"
+                  : "Inizia creando il tuo primo sito web professionale con l'AI"
+                }
               </p>
-              <button
-                onClick={createSite}
-                className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-all"
-              >
-                <PlusIcon className="w-5 h-5" />
-                Crea Progetto
-              </button>
+              {!searchQuery && (
+                <button
+                  onClick={createSite}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-all"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  Crea Progetto
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -381,11 +389,23 @@ export default function Dashboard() {
 
                     {/* Actions */}
                     <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 bg-black/60 backdrop-blur-sm rounded-lg hover:bg-black/80 transition-colors">
+                      <Link
+                        href={`/editor/${site.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-2 bg-black/60 backdrop-blur-sm rounded-lg hover:bg-black/80 transition-colors"
+                      >
                         <PencilIcon className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 bg-black/60 backdrop-blur-sm rounded-lg hover:bg-red-500/80 transition-colors">
-                        <TrashIcon className="w-4 h-4" />
+                      </Link>
+                      <button 
+                        onClick={(e) => handleDeleteSite(site.id, e)}
+                        disabled={isDeleting === site.id}
+                        className="p-2 bg-black/60 backdrop-blur-sm rounded-lg hover:bg-red-500/80 transition-colors disabled:opacity-50"
+                      >
+                        {isDeleting === site.id ? (
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                          <TrashIcon className="w-4 h-4" />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -405,7 +425,7 @@ export default function Dashboard() {
                     <div className="flex items-center gap-3 mt-3 text-xs text-slate-500">
                       <span className="flex items-center gap-1">
                         <ClockIcon className="w-3.5 h-3.5" />
-                        {formatDate(site.last_edited)}
+                        {formatDate(site.updated_at || site.created_at)}
                       </span>
                       {site.is_published && (
                         <Link
@@ -427,7 +447,7 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* Inspector Sidebar (Right) - Mostrato quando un progetto è selezionato */}
+      {/* Inspector Sidebar (Right) */}
       {selectedSite && (
         <aside className="fixed right-0 top-0 h-full w-80 bg-[#111] border-l border-white/5 z-40 overflow-y-auto">
           <div className="p-4 border-b border-white/5 flex items-center justify-between">
@@ -520,7 +540,7 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Ultima modifica</span>
-                <span className="text-slate-300">{formatDate(selectedSite.last_edited)}</span>
+                <span className="text-slate-300">{formatDate(selectedSite.updated_at || selectedSite.created_at)}</span>
               </div>
             </div>
           </div>

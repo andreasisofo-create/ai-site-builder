@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -17,13 +19,12 @@ import {
   XMarkIcon,
   LightBulbIcon,
   ColorSwatchIcon,
-  FontFamilyIcon,
-  Bars3Icon,
   ChevronRightIcon,
-  WrenchIcon,
   RocketLaunchIcon,
+  CrownIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+import { createSite, generateWebsite, updateSite, generateSlug, CreateSiteData, getQuota, upgradeToPremium } from "@/lib/api";
 
 const STEPS = [
   { id: 1, title: "Brand", icon: BuildingStorefrontIcon },
@@ -52,18 +53,19 @@ const STYLES = [
 ];
 
 const COLORS = [
-  { id: "blue", label: "Blu", class: "bg-blue-500" },
-  { id: "violet", label: "Viola", class: "bg-violet-500" },
-  { id: "emerald", label: "Verde", class: "bg-emerald-500" },
-  { id: "rose", label: "Rosa", class: "bg-rose-500" },
-  { id: "amber", label: "Ambra", class: "bg-amber-500" },
-  { id: "slate", label: "Grigio", class: "bg-slate-500" },
+  { id: "blue", label: "Blu", hex: "#3b82f6", class: "bg-blue-500" },
+  { id: "violet", label: "Viola", hex: "#8b5cf6", class: "bg-violet-500" },
+  { id: "emerald", label: "Verde", hex: "#10b981", class: "bg-emerald-500" },
+  { id: "rose", label: "Rosa", hex: "#f43f5e", class: "bg-rose-500" },
+  { id: "amber", label: "Ambra", hex: "#f59e0b", class: "bg-amber-500" },
+  { id: "slate", label: "Grigio", hex: "#64748b", class: "bg-slate-500" },
 ];
 
 export default function NewProjectPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [createdSiteId, setCreatedSiteId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -114,12 +116,111 @@ export default function NewProjectPage() {
     }));
   };
 
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
+
   const handleGenerate = async () => {
+    if (!formData.businessName.trim()) {
+      toast.error("Inserisci il nome del business");
+      return;
+    }
+
     setIsGenerating(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    toast.success("Sito generato con successo!");
-    router.push("/dashboard");
+    
+    try {
+      // Step 1: Verifica quota prima di iniziare
+      toast.loading("Verifica quota...", { id: "check" });
+      const quota = await getQuota();
+      
+      if (!quota.has_remaining_generations) {
+        toast.dismiss("check");
+        setShowUpgradeModal(true);
+        setIsGenerating(false);
+        return;
+      }
+      toast.dismiss("check");
+
+      // Step 2: Crea il sito sul backend
+      toast.loading("Creazione progetto...", { id: "create" });
+      
+      const siteData: CreateSiteData = {
+        name: formData.businessName,
+        slug: generateSlug(formData.businessName),
+        description: formData.description,
+      };
+      
+      const site = await createSite(siteData);
+      setCreatedSiteId(site.id);
+      toast.success("Progetto creato!", { id: "create" });
+
+      // Step 3: Aggiorna stato a "generating"
+      await updateSite(site.id, { status: "generating" });
+
+      // Step 4: Chiama l'AI per generare il sito
+      toast.loading("Generazione sito con AI... (60-90s)", { id: "generate" });
+      
+      const colorHex = COLORS.find(c => c.id === formData.primaryColor)?.hex;
+      
+      const generateResult = await generateWebsite({
+        business_name: formData.businessName,
+        business_description: formData.description + (formData.tagline ? ` - ${formData.tagline}` : ""),
+        sections: formData.sections,
+        style_preferences: {
+          primary_color: colorHex,
+          mood: STYLES.find(s => s.id === formData.style)?.label,
+        },
+        logo_url: formData.logo || undefined,
+        reference_analysis: formData.referenceImage || undefined,
+      });
+
+      if (!generateResult.success || !generateResult.html_content) {
+        throw new Error(generateResult.error || "Errore nella generazione");
+      }
+
+      // Step 5: Salva l'HTML generato
+      await updateSite(site.id, {
+        html_content: generateResult.html_content,
+        status: "ready",
+        thumbnail: `https://placehold.co/600x400/1a1a1a/666?text=${encodeURIComponent(formData.businessName)}`,
+      });
+
+      // Mostra messaggio con generazioni rimanenti
+      const remaining = generateResult.quota?.remaining_generations;
+      if (remaining !== undefined && remaining > 0) {
+        toast.success(`Sito generato! Ti rimangono ${remaining} generazioni`, { id: "generate" });
+      } else if (remaining === 0) {
+        toast.success("Sito generato! Hai esaurito le generazioni gratuite", { id: "generate" });
+      } else {
+        toast.success("Sito generato con successo!", { id: "generate" });
+      }
+      
+      // Redirect all'editor
+      router.push(`/editor/${site.id}`);
+      
+    } catch (error: any) {
+      // Gestione errore quota specifico
+      if (error.isQuotaError || error.quota?.upgrade_required) {
+        setShowUpgradeModal(true);
+      } else {
+        toast.error(error.message || "Errore nella generazione", { id: "generate" });
+      }
+      setIsGenerating(false);
+    }
+  };
+
+  const handleUpgrade = async () => {
+    try {
+      setIsUpgrading(true);
+      await upgradeToPremium();
+      toast.success("Upgrade completato! Ora hai generazioni illimitate");
+      setShowUpgradeModal(false);
+      // Riprova la generazione
+      handleGenerate();
+    } catch (error: any) {
+      toast.error(error.message || "Errore nell'upgrade");
+    } finally {
+      setIsUpgrading(false);
+    }
   };
 
   const canProceed = () => {
@@ -589,7 +690,7 @@ export default function NewProjectPage() {
         <div className="h-full max-w-7xl mx-auto px-6 flex items-center justify-between">
           <button
             onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
-            disabled={currentStep === 1}
+            disabled={currentStep === 1 || isGenerating}
             className="flex items-center gap-2 px-6 py-2.5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <ArrowLeftIcon className="w-4 h-4" />
@@ -609,7 +710,7 @@ export default function NewProjectPage() {
                 setCurrentStep((prev) => Math.min(STEPS.length, prev + 1));
               }
             }}
-            disabled={!canProceed()}
+            disabled={!canProceed() || isGenerating}
             className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-medium transition-all"
           >
             {currentStep === STEPS.length ? "Genera" : "Avanti"}
@@ -617,6 +718,87 @@ export default function NewProjectPage() {
           </button>
         </div>
       </footer>
+
+      {/* Upgrade Modal */}
+      <Transition appear show={showUpgradeModal} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={() => setShowUpgradeModal(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/80" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#111] border border-white/10 p-6 text-left align-middle shadow-xl transition-all">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                      <SparklesIcon className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    <Dialog.Title as="h3" className="text-xl font-semibold mb-2">
+                      Hai esaurito le generazioni gratuite
+                    </Dialog.Title>
+                    
+                    <p className="text-slate-400 mb-6">
+                      Hai usato tutte le tue 2 generazioni di test. 
+                      Passa a Premium per generazioni illimitate.
+                    </p>
+
+                    <div className="bg-white/5 rounded-xl p-4 mb-6">
+                      <div className="flex items-center justify-center gap-2 text-amber-400 mb-2">
+                        <SparklesIcon className="w-5 h-5" />
+                        <span className="font-semibold">Piano Premium</span>
+                      </div>
+                      <ul className="text-sm text-slate-400 space-y-1">
+                        <li>✓ Generazioni illimitate</li>
+                        <li>✓ Esporta codice sorgente</li>
+                        <li>✓ Supporto prioritario</li>
+                        <li>✓ Nessuna filigrana</li>
+                      </ul>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowUpgradeModal(false)}
+                        className="flex-1 px-4 py-2.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                      >
+                        Più tardi
+                      </button>
+                      <button
+                        onClick={handleUpgrade}
+                        disabled={isUpgrading}
+                        className="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 rounded-lg font-medium transition-all disabled:opacity-50"
+                      >
+                        {isUpgrading ? "Attivazione..." : "Attiva Premium (DEMO)"}
+                      </button>
+                    </div>
+                    
+                    <p className="text-xs text-slate-500 mt-4">
+                      DEMO: In produzione qui ci sarà il checkout Stripe
+                    </p>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </div>
   );
 }

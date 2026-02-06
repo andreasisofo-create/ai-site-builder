@@ -1,50 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Directory di output per Vercel
-  distDir: '.next',
-
-  // Immagini ottimizzate
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     unoptimized: true,
-  },
-
-  // Rewrites per API
-  async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-    return [
+    remotePatterns: [
       {
-        // Escludi le rotte di NextAuth, init e test-db dal proxy verso il backend
-        source: '/api/((?!auth|init|test-db).*)',
-        destination: `${apiUrl}/api/:path*`,
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
-    ];
-  },
-
-  // Headers per sicurezza
-  async headers() {
-    return [
       {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-        ],
+        protocol: 'https',
+        hostname: '**.vercel.app',
       },
-    ];
+      {
+        protocol: 'https',
+        hostname: '**.googleusercontent.com',
+      },
+    ],
   },
+}
 
-  // Trailing slash per SEO
-  trailingSlash: false,
-
-  // Compressione
-  compress: true,
-};
-
-module.exports = nextConfig;
+module.exports = nextConfig

@@ -18,8 +18,18 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
     
-    # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173", "https://site-generator-v2.vercel.app"]
+    # CORS - Accetta richieste da questi domini
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        # Aggiungi qui il tuo dominio Vercel dopo il deploy:
+        # "https://tuosito.vercel.app",
+        # "https://www.tuodominio.com",
+    ]
+    
+    # Se impostato a true, permette richieste da qualsiasi origine (NON sicuro per produzione!)
+    CORS_ALLOW_ALL: bool = False
     
     # JWT
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

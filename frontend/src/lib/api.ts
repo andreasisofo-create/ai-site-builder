@@ -1,47 +1,197 @@
 /** Client API per comunicare con il backend */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+import { getSession } from "next-auth/react";
 
-export async function fetchSites() {
-  const res = await fetch(`${API_BASE}/api/sites/`);
-  if (!res.ok) throw new Error("Errore nel caricamento siti");
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+/** Ottiene il token JWT dalla sessione */
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const session = await getSession();
+  const token = session?.accessToken || session?.access_token;
+  
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
+  return headers;
+}
+
+/** Gestisce le risposte API */
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Errore sconosciuto" }));
+    // Se è un errore di quota, lancia con struttura specifica
+    if (res.status === 403 && error.detail?.upgrade_required) {
+      const quotaError = new Error(error.detail.message || "Quota esaurita");
+      (quotaError as any).quota = error.detail;
+      (quotaError as any).isQuotaError = true;
+      throw quotaError;
+    }
+    throw new Error(error.detail?.message || error.detail || `Errore ${res.status}`);
+  }
   return res.json();
 }
 
-export async function createSite(name: string, slug: string) {
+// ============ USER / QUOTA ============
+
+export interface UserQuota {
+  is_premium: boolean;
+  generations_used: number;
+  generations_limit: number;
+  remaining_generations: number;
+  has_remaining_generations: boolean;
+}
+
+export async function getQuota(): Promise<UserQuota> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/auth/quota`, { headers });
+  return handleResponse<UserQuota>(res);
+}
+
+export async function upgradeToPremium(): Promise<{ success: boolean; message: string }> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/generate/upgrade`, {
+    method: "POST",
+    headers,
+  });
+  return handleResponse(res);
+}
+
+// ============ SITES ============
+
+export interface Site {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  status: "draft" | "generating" | "ready" | "published";
+  is_published: boolean;
+  thumbnail?: string;
+  html_content?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateSiteData {
+  name: string;
+  slug: string;
+  description?: string;
+  template?: string;
+}
+
+export async function fetchSites(): Promise<Site[]> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/`, { headers });
+  return handleResponse<Site[]>(res);
+}
+
+export async function createSite(data: CreateSiteData): Promise<Site> {
+  const headers = await getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/sites/`, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ name, slug }),
+    headers,
+    body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Errore nella creazione");
-  return res.json();
+  return handleResponse<Site>(res);
 }
 
-export async function getSite(id: number) {
-  const res = await fetch(`${API_BASE}/api/sites/${id}`);
-  if (!res.ok) throw new Error("Sito non trovato");
-  return res.json();
+export async function getSite(id: number): Promise<Site> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${id}`, { headers });
+  return handleResponse<Site>(res);
 }
 
-export async function updateSite(id: number, data: Partial<{ name: string; config: object }>) {
-  const params = new URLSearchParams();
-  if (data.name) params.append("name", data.name);
-  if (data.config) params.append("config", JSON.stringify(data.config));
-  
+export async function updateSite(
+  id: number,
+  data: Partial<Omit<Site, "id" | "created_at" | "updated_at">>
+): Promise<Site> {
+  const headers = await getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/sites/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params,
+    headers,
+    body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Errore nell'aggiornamento");
-  return res.json();
+  return handleResponse<Site>(res);
 }
 
-export async function fetchComponents(siteId: number) {
-  const res = await fetch(`${API_BASE}/api/components/site/${siteId}`);
-  if (!res.ok) throw new Error("Errore nel caricamento componenti");
-  return res.json();
+export async function deleteSite(id: number): Promise<void> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${id}`, {
+    method: "DELETE",
+    headers,
+  });
+  await handleResponse(res);
+}
+
+export async function getSitePreview(id: number): Promise<{ html: string; name: string; status: string }> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${id}/preview`, { headers });
+  return handleResponse(res);
+}
+
+// ============ AI GENERATION ============
+
+export interface GenerateRequest {
+  business_name: string;
+  business_description: string;
+  sections?: string[];
+  style_preferences?: {
+    primary_color?: string;
+    secondary_color?: string;
+    font_family?: string;
+    mood?: string;
+  };
+  reference_analysis?: string;
+  logo_url?: string;
+}
+
+export interface GenerateResponse {
+  success: boolean;
+  html_content?: string;
+  model_used?: string;
+  tokens_input?: number;
+  tokens_output?: number;
+  cost_usd?: number;
+  generation_time_ms?: number;
+  error?: string;
+  quota?: {
+    generations_used: number;
+    generations_limit: number;
+    remaining_generations: number;
+    is_premium: boolean;
+  };
+}
+
+export async function generateWebsite(data: GenerateRequest): Promise<GenerateResponse> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/generate/website`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<GenerateResponse>(res);
+}
+
+// ============ COMPONENTS ============
+
+export interface Component {
+  id: number;
+  name: string;
+  type: string;
+  content: object;
+  styles: object;
+  order: number;
+  is_visible: boolean;
+}
+
+export async function fetchComponents(siteId: number): Promise<Component[]> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/components/site/${siteId}`, { headers });
+  return handleResponse<Component[]>(res);
 }
 
 export async function createComponent(
@@ -50,16 +200,30 @@ export async function createComponent(
   type: string,
   content?: object,
   styles?: object
-) {
-  const params = new URLSearchParams({ site_id: String(siteId), name, type });
-  if (content) params.append("content", JSON.stringify(content));
-  if (styles) params.append("styles", JSON.stringify(styles));
-  
+): Promise<Component> {
+  const headers = await getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/components/`, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params,
+    headers,
+    body: JSON.stringify({
+      site_id: siteId,
+      name,
+      type,
+      content: content || {},
+      styles: styles || {},
+    }),
   });
-  if (!res.ok) throw new Error("Errore nella creazione componente");
-  return res.json();
+  return handleResponse<Component>(res);
+}
+
+// ============ UTILS ============
+
+/** Genera uno slug univoco dal nome */
+export function generateSlug(name: string): string {
+  const base = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  const timestamp = Date.now().toString(36).slice(-4);
+  return `${base}-${timestamp}`;
 }

@@ -1,8 +1,10 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials"; // Added
+import CredentialsProvider from "next-auth/providers/credentials";
 import { query } from "@/lib/db";
-import bcrypt from "bcryptjs"; // Added
+import bcrypt from "bcryptjs";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -17,7 +19,6 @@ const authOptions: NextAuthOptions = {
         },
       },
     }),
-    // Added CredentialsProvider
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -30,38 +31,30 @@ const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Check if user exists
-          const result = await query(
-            "SELECT * FROM users WHERE email = $1",
-            [credentials.email]
-          );
+          // Chiamata diretta al backend FastAPI per login
+          const formData = new URLSearchParams();
+          formData.append("username", credentials.email);
+          formData.append("password", credentials.password);
 
-          if (result.rows.length === 0) {
-            throw new Error("Nessun utente trovato con questa email");
+          const res = await fetch(`${API_BASE}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formData,
+          });
+
+          if (!res.ok) {
+            const error = await res.json().catch(() => ({}));
+            throw new Error(error.detail || "Credenziali non valide");
           }
 
-          const user = result.rows[0];
-
-          // If user exists but only has OAuth (no password hash)
-          if (!user.hashed_password) {
-            throw new Error("Account creato con Google. Usa il login con Google.");
-          }
-
-          // Check password
-          const isValid = await bcrypt.compare(
-            credentials.password,
-            user.hashed_password
-          );
-
-          if (!isValid) {
-            throw new Error("Password non corretta");
-          }
-
+          const data = await res.json();
+          
           return {
-            id: user.id.toString(),
-            name: user.full_name,
-            email: user.email,
-            image: user.avatar_url,
+            id: data.user.id.toString(),
+            name: data.user.full_name,
+            email: data.user.email,
+            image: data.user.avatar_url,
+            accessToken: data.access_token,
           };
         } catch (error: any) {
           console.error("Authorize Error:", error.message);
@@ -74,81 +67,97 @@ const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }: any) {
       if (account?.provider === "google") {
         try {
-          console.log('[AUTH] Tentativo signIn per:', user.email);
+          console.log('[AUTH] Tentativo signIn Google per:', user.email);
 
-          // Prima logica: Check esistenza per oauth_id
+          // Prima: sincronizza utente nel nostro DB
           const existingUser = await query(
             'SELECT id FROM users WHERE oauth_id = $1',
             [account.providerAccountId]
           );
 
+          let userId: string;
+
           if (existingUser.rows.length > 0) {
-            console.log('[AUTH] Utente trovato per OAUTH_ID');
-            user.id = existingUser.rows[0].id.toString();
-            return true;
-          }
-
-          // Seconda logica: Check esistenza per email
-          const existingEmail = await query(
-            'SELECT id FROM users WHERE email = $1',
-            [user.email]
-          );
-
-          if (existingEmail.rows.length > 0) {
-            console.log('[AUTH] Utente trovato per EMAIL. Aggiorno OAuth info.');
-            const dbUser = existingEmail.rows[0];
-            await query(
-              `UPDATE users SET oauth_provider = $1, oauth_id = $2, avatar_url = COALESCE($3, avatar_url), updated_at = NOW() WHERE id = $4`,
-              ['google', account.providerAccountId, user.image, dbUser.id]
+            console.log('[AUTH] Utente Google trovato');
+            userId = existingUser.rows[0].id.toString();
+          } else {
+            // Check per email
+            const existingEmail = await query(
+              'SELECT id FROM users WHERE email = $1',
+              [user.email]
             );
-            user.id = dbUser.id.toString();
-            return true;
+
+            if (existingEmail.rows.length > 0) {
+              console.log('[AUTH] Utente trovato per EMAIL. Aggiorno OAuth.');
+              const dbUser = existingEmail.rows[0];
+              await query(
+                `UPDATE users SET oauth_provider = $1, oauth_id = $2, avatar_url = COALESCE($3, avatar_url), updated_at = NOW() WHERE id = $4`,
+                ['google', account.providerAccountId, user.image, dbUser.id]
+              );
+              userId = dbUser.id.toString();
+            } else {
+              // Crea nuovo utente
+              console.log('[AUTH] Creazione NUOVO utente Google');
+              const newUser = await query(
+                `INSERT INTO users (email, full_name, avatar_url, oauth_provider, oauth_id, is_active, is_superuser, created_at, updated_at)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+                   RETURNING id`,
+                [user.email, user.name, user.image, 'google', account.providerAccountId, true, false]
+              );
+              userId = newUser.rows[0].id.toString();
+            }
           }
 
-          // Terza logica: Creazione nuovo utente
-          console.log('[AUTH] Creazione NUOVO utente');
-          const newUser = await query(
-            `INSERT INTO users (email, full_name, avatar_url, oauth_provider, oauth_id, is_active, is_superuser, created_at, updated_at)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
-               RETURNING id`,
-            [user.email, user.name, user.image, 'google', account.providerAccountId, true, false]
-          );
+          // Ora ottieni il JWT dal backend chiamando l'endpoint OAuth
+          const oauthRes = await fetch(`${API_BASE}/api/auth/oauth`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              provider: "google",
+              id_token: account.id_token,
+            }),
+          });
 
-          user.id = newUser.rows[0].id.toString();
+          if (oauthRes.ok) {
+            const oauthData = await oauthRes.json();
+            user.accessToken = oauthData.access_token;
+          }
+
+          user.id = userId;
           return true;
 
         } catch (error: any) {
           console.error('[AUTH FAIL]', {
-            step: 'signIn callback',
-            user: user.email,
+            step: 'signIn callback Google',
             error: error.message,
-            code: error.code,
-            detail: error.detail,
           });
           return false;
         }
       }
-      return true; // Credentials provider allows sign in by default if authorize returns user
+      return true;
     },
-    async jwt({ token, user }: any) {
+    async jwt({ token, user, account }: any) {
+      // Salva i dati utente nel token JWT
       if (user) {
         token.id = user.id;
+        token.accessToken = user.accessToken;
       }
       return token;
     },
     async session({ session, token }: any) {
+      // Espone i dati nella sessione client-side
       if (session.user) {
-        // @ts-ignore
         session.user.id = token.id;
+        session.accessToken = token.accessToken;
       }
       return session;
     },
   },
   pages: {
     signIn: '/auth',
-    error: '/auth/error',
+    error: '/auth',
   },
-  debug: true,
+  debug: process.env.NODE_ENV === "development",
 };
 
 const handler = NextAuth(authOptions);

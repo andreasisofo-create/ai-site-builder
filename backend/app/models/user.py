@@ -19,7 +19,26 @@ class User(Base):
     oauth_provider = Column(String, nullable=True)  # 'google', 'github', etc.
     oauth_id = Column(String, nullable=True, unique=True, index=True)  # ID esterno OAuth
     
+    # Subscription & Generations
+    is_premium = Column(Boolean, default=False)  # Ha pagato per generazioni illimitate
+    generations_used = Column(Integer, default=0)  # Quante generazioni ha fatto
+    generations_limit = Column(Integer, default=2)  # Limite gratuito (2)
+    
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    @property
+    def has_remaining_generations(self) -> bool:
+        """Controlla se l'utente ha ancora generazioni disponibili."""
+        if self.is_premium or self.is_superuser:
+            return True
+        return self.generations_used < self.generations_limit
+    
+    @property
+    def remaining_generations(self) -> int:
+        """Ritorna il numero di generazioni rimanenti."""
+        if self.is_premium or self.is_superuser:
+            return -1  # Illimitate
+        return max(0, self.generations_limit - self.generations_used)

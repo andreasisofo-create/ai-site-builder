@@ -138,7 +138,7 @@ async def oauth_login(data: OAuthLoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me")
 async def me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    """Ottiene info utente corrente"""
+    """Ottiene info utente corrente con informazioni generazioni"""
     payload = decode_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Token non valido")
@@ -155,4 +155,21 @@ async def me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db))
         "full_name": user.full_name,
         "avatar_url": user.avatar_url,
         "oauth_provider": user.oauth_provider,
+        "is_premium": user.is_premium,
+        "generations_used": user.generations_used,
+        "generations_limit": user.generations_limit,
+        "remaining_generations": user.remaining_generations,
+        "has_remaining_generations": user.has_remaining_generations,
+    }
+
+
+@router.get("/quota")
+async def get_quota(current_user: User = Depends(get_current_active_user)):
+    """Ottiene solo le informazioni sulle quote/generazioni"""
+    return {
+        "is_premium": current_user.is_premium,
+        "generations_used": current_user.generations_used,
+        "generations_limit": current_user.generations_limit,
+        "remaining_generations": current_user.remaining_generations,
+        "has_remaining_generations": current_user.has_remaining_generations,
     }
