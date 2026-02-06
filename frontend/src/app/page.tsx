@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { 
+import {
   ArrowRightIcon,
   SparklesIcon,
-  ZapIcon,
-  PaletteIcon,
+  BoltIcon,     // Was ZapIcon
+  SwatchIcon,   // Was PaletteIcon
   GlobeAltIcon,
   DevicePhoneMobileIcon,
   CursorArrowRaysIcon,
@@ -38,7 +38,7 @@ export default function LandingPage() {
       description: "Descrivi il tuo business e ottieni un sito professionale in 60 secondi. L'AI crea layout, testi e design su misura."
     },
     {
-      icon: PaletteIcon,
+      icon: SwatchIcon,
       title: "Design Completo",
       description: "Ogni sito include hero, about, servizi, contatti e footer. Design responsive e moderno con Tailwind CSS."
     },
@@ -159,9 +159,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
-      }`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
+        }`}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
@@ -182,13 +181,13 @@ export default function LandingPage() {
 
             {/* CTA */}
             <div className="hidden lg:flex items-center gap-4">
-              <Link 
-                href="/auth" 
+              <Link
+                href="/auth"
                 className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
               >
                 Accedi
               </Link>
-              <Link 
+              <Link
                 href="/auth"
                 className="px-5 py-2.5 bg-white text-black rounded-full text-sm font-semibold hover:bg-slate-200 transition-colors"
               >
@@ -197,7 +196,7 @@ export default function LandingPage() {
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
+            <button
               className="lg:hidden p-2 hover:bg-white/5 rounded-lg transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
@@ -253,12 +252,12 @@ export default function LandingPage() {
               </h1>
 
               <p className="text-lg lg:text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-                Descrivi il tuo business, carica il logo e lascia che la nostra AI 
+                Descrivi il tuo business, carica il logo e lascia che la nostra AI
                 crei un sito web completo, responsive e pronto per pubblicare.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                <Link 
+                <Link
                   href="/auth"
                   className="group w-full sm:w-auto px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center justify-center gap-2"
                 >
@@ -304,7 +303,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Mock Content */}
                 <div className="aspect-[4/3] relative">
                   <Image
@@ -314,7 +313,7 @@ export default function LandingPage() {
                     className="object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 to-transparent" />
-                  
+
                   {/* Mock UI Elements */}
                   <div className="absolute inset-0 p-6 flex flex-col justify-between">
                     <div className="flex items-center justify-between">
@@ -385,14 +384,14 @@ export default function LandingPage() {
               <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent"> andare online</span>
             </h2>
             <p className="text-lg text-slate-400">
-              Non serve essere designer o sviluppatori. La nostra AI crea siti professionali 
+              Non serve essere designer o sviluppatori. La nostra AI crea siti professionali
               che sembrano fatti a mano da un esperto.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="group p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all"
               >
@@ -417,7 +416,7 @@ export default function LandingPage() {
                 <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent"> in 4 passaggi</span>
               </h2>
               <p className="text-lg text-slate-400 mb-12">
-                Abbiamo semplificato il processo di creazione di un sito web. 
+                Abbiamo semplificato il processo di creazione di un sito web.
                 Nessuna competenza tecnica richiesta.
               </p>
 
@@ -447,12 +446,12 @@ export default function LandingPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-violet-600/20" />
               </div>
-              
+
               {/* Stats Floating Card */}
               <div className="absolute -bottom-6 -left-6 p-6 rounded-2xl bg-[#111] border border-white/10 shadow-2xl">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                    <ZapIcon className="w-7 h-7 text-emerald-400" />
+                    <BoltIcon className="w-7 h-7 text-emerald-400" />
                   </div>
                   <div>
                     <p className="text-3xl font-bold">60s</p>
@@ -479,7 +478,7 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5"
               >
@@ -521,13 +520,12 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {pricingPlans.map((plan, idx) => (
-              <div 
+              <div
                 key={idx}
-                className={`relative p-6 lg:p-8 rounded-2xl border ${
-                  plan.popular 
-                    ? "bg-gradient-to-b from-blue-600/10 to-transparent border-blue-500/30" 
-                    : "bg-white/[0.02] border-white/5"
-                }`}
+                className={`relative p-6 lg:p-8 rounded-2xl border ${plan.popular
+                  ? "bg-gradient-to-b from-blue-600/10 to-transparent border-blue-500/30"
+                  : "bg-white/[0.02] border-white/5"
+                  }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -536,7 +534,7 @@ export default function LandingPage() {
                     </span>
                   </div>
                 )}
-                
+
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold mb-2">{plan.name}</h3>
                   <p className="text-slate-400 text-sm">{plan.description}</p>
@@ -558,11 +556,10 @@ export default function LandingPage() {
 
                 <Link
                   href="/auth"
-                  className={`block w-full py-3 rounded-full font-semibold text-center transition-all ${
-                    plan.popular
-                      ? "bg-white text-black hover:bg-slate-200"
-                      : "bg-white/5 border border-white/10 hover:bg-white/10"
-                  }`}
+                  className={`block w-full py-3 rounded-full font-semibold text-center transition-all ${plan.popular
+                    ? "bg-white text-black hover:bg-slate-200"
+                    : "bg-white/5 border border-white/10 hover:bg-white/10"
+                    }`}
                 >
                   {plan.cta}
                 </Link>
@@ -579,25 +576,25 @@ export default function LandingPage() {
             {/* Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-violet-600 to-purple-700" />
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
-            
+
             {/* Content */}
             <div className="relative text-center">
               <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-6">
                 Pronto a creare il tuo sito?
               </h2>
               <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-                Unisciti a migliaia di business che hanno già trasformato 
+                Unisciti a migliaia di business che hanno già trasformato
                 la loro presenza online con E-quipe.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link 
+                <Link
                   href="/auth"
                   className="group px-8 py-4 bg-white text-blue-600 rounded-full font-semibold text-lg hover:bg-slate-100 transition-all flex items-center gap-2"
                 >
                   Inizia Gratuitamente
                   <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link 
+                <Link
                   href="/dashboard"
                   className="px-8 py-4 bg-white/10 border border-white/20 rounded-full font-semibold text-lg hover:bg-white/20 transition-all"
                 >
@@ -621,11 +618,11 @@ export default function LandingPage() {
                 <span className="text-lg font-semibold">E-quipe</span>
               </Link>
               <p className="text-slate-400 max-w-sm">
-                La piattaforma AI che crea siti web professionali in 60 secondi. 
+                La piattaforma AI che crea siti web professionali in 60 secondi.
                 Nessun codice, nessun abbonamento.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Prodotto</h4>
               <ul className="space-y-2 text-slate-400">
@@ -634,7 +631,7 @@ export default function LandingPage() {
                 <li><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Supporto</h4>
               <ul className="space-y-2 text-slate-400">
@@ -644,7 +641,7 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-          
+
           <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-slate-500 text-sm">
               © 2026 E-quipe. Tutti i diritti riservati.
