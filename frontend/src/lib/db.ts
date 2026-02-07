@@ -1,10 +1,10 @@
 import { Pool } from 'pg';
 
-// Costruisci la connection string con password encodata
+// DIRECT CONNECTION (for Vercel serverless - no Static IP needed)
 const user = 'postgres.xdnpsxjjaupmxocjkngt';
 const password = encodeURIComponent('E-quipe!12345'); // ! → %21
-const host = 'aws-1-eu-west-1.pooler.supabase.com';
-const port = 6543;
+const host = 'db.xdnpsxjjaupmxocjkngt.supabase.co'; // Direct connection host
+const port = 5432; // Direct connection port (not pooler 6543)
 const database = 'postgres';
 
 const connectionString = `postgresql://${user}:${password}@${host}:${port}/${database}`;
@@ -12,20 +12,17 @@ const connectionString = `postgresql://${user}:${password}@${host}:${port}/${dat
 export const pool = new Pool({
     connectionString,
     ssl: { rejectUnauthorized: false },
-    // PgBouncer transaction mode configs
     connectionTimeoutMillis: 10000,
-    max: 5, // Keep pool small for serverless
+    max: 1, // Serverless: 1 connection per function invocation
 });
 
-// Helper per query senza prepared statements (fondamentale per PgBouncer)
+// Helper for queries (works with both pooler and direct)
 export async function query(text: string, params?: any[]) {
     const client = await pool.connect();
     try {
-        // Si noti l'uso di un oggetto query senza 'name' per evitare prepared statements
         const result = await client.query({
             text,
             values: params,
-            // rowMode: undefined (default)
         });
         return result;
     } catch (error: any) {
