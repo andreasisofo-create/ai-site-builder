@@ -23,13 +23,14 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://localhost:5173",
         "http://127.0.0.1:3000",
-        # Aggiungi qui il tuo dominio Vercel dopo il deploy:
-        # "https://tuosito.vercel.app",
-        # "https://www.tuodominio.com",
+        # Domini Vercel (frontend produzione)
+        "https://site-generator-v2.vercel.app",
+        "https://www.site-generator-v2.vercel.app",
     ]
     
     # Se impostato a true, permette richieste da qualsiasi origine (NON sicuro per produzione!)
-    CORS_ALLOW_ALL: bool = False
+    # Utile per debugging temporaneo
+    CORS_ALLOW_ALL: bool = True  # ATTENZIONE: Cambia a False dopo aver verificato tutto funzioni
     
     # JWT
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

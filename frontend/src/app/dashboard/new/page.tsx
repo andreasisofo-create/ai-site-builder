@@ -1,5 +1,6 @@
 "use client";
 
+export const dynamic = "force-dynamic";
 import { useState, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
@@ -18,10 +19,8 @@ import {
   PhotoIcon,
   XMarkIcon,
   LightBulbIcon,
-  ColorSwatchIcon,
   ChevronRightIcon,
   RocketLaunchIcon,
-  CrownIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { createSite, generateWebsite, updateSite, generateSlug, CreateSiteData, getQuota, upgradeToPremium } from "@/lib/api";
@@ -126,12 +125,12 @@ export default function NewProjectPage() {
     }
 
     setIsGenerating(true);
-    
+
     try {
       // Step 1: Verifica quota prima di iniziare
       toast.loading("Verifica quota...", { id: "check" });
       const quota = await getQuota();
-      
+
       if (!quota.has_remaining_generations) {
         toast.dismiss("check");
         setShowUpgradeModal(true);
@@ -142,13 +141,13 @@ export default function NewProjectPage() {
 
       // Step 2: Crea il sito sul backend
       toast.loading("Creazione progetto...", { id: "create" });
-      
+
       const siteData: CreateSiteData = {
         name: formData.businessName,
         slug: generateSlug(formData.businessName),
         description: formData.description,
       };
-      
+
       const site = await createSite(siteData);
       setCreatedSiteId(site.id);
       toast.success("Progetto creato!", { id: "create" });
@@ -158,9 +157,9 @@ export default function NewProjectPage() {
 
       // Step 4: Chiama l'AI per generare il sito
       toast.loading("Generazione sito con AI... (60-90s)", { id: "generate" });
-      
+
       const colorHex = COLORS.find(c => c.id === formData.primaryColor)?.hex;
-      
+
       const generateResult = await generateWebsite({
         business_name: formData.businessName,
         business_description: formData.description + (formData.tagline ? ` - ${formData.tagline}` : ""),
@@ -193,10 +192,10 @@ export default function NewProjectPage() {
       } else {
         toast.success("Sito generato con successo!", { id: "generate" });
       }
-      
+
       // Redirect all'editor
       router.push(`/editor/${site.id}`);
-      
+
     } catch (error: any) {
       // Gestione errore quota specifico
       if (error.isQuotaError || error.quota?.upgrade_required) {
@@ -261,22 +260,20 @@ export default function NewProjectPage() {
             {STEPS.map((step, idx) => (
               <div key={step.id} className="flex items-center">
                 <div
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all ${
-                    currentStep === step.id
-                      ? "bg-white/10 text-white"
-                      : currentStep > step.id
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all ${currentStep === step.id
+                    ? "bg-white/10 text-white"
+                    : currentStep > step.id
                       ? "text-emerald-400"
                       : "text-slate-500"
-                  }`}
+                    }`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
-                      currentStep === step.id
-                        ? "bg-blue-500 text-white"
-                        : currentStep > step.id
+                    className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${currentStep === step.id
+                      ? "bg-blue-500 text-white"
+                      : currentStep > step.id
                         ? "bg-emerald-500/20 text-emerald-400"
                         : "bg-white/5 text-slate-500"
-                    }`}
+                      }`}
                   >
                     {currentStep > step.id ? <CheckIcon className="w-3 h-3" /> : step.id}
                   </div>
@@ -401,11 +398,10 @@ export default function NewProjectPage() {
                       <button
                         key={style.id}
                         onClick={() => setFormData((prev) => ({ ...prev, style: style.id }))}
-                        className={`p-4 rounded-xl border transition-all text-left ${
-                          formData.style === style.id
-                            ? "border-blue-500 bg-blue-500/10"
-                            : "border-white/10 bg-white/[0.02] hover:border-white/20"
-                        }`}
+                        className={`p-4 rounded-xl border transition-all text-left ${formData.style === style.id
+                          ? "border-blue-500 bg-blue-500/10"
+                          : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                          }`}
                       >
                         <div className={`w-full h-20 rounded-lg bg-gradient-to-br ${style.color} mb-3`} />
                         <h4 className="font-medium mb-1">{style.label}</h4>
@@ -423,11 +419,10 @@ export default function NewProjectPage() {
                       <button
                         key={color.id}
                         onClick={() => setFormData((prev) => ({ ...prev, primaryColor: color.id }))}
-                        className={`group relative w-16 h-16 rounded-xl ${color.class} transition-all ${
-                          formData.primaryColor === color.id
-                            ? "ring-2 ring-white ring-offset-2 ring-offset-[#0a0a0a] scale-110"
-                            : "hover:scale-105"
-                        }`}
+                        className={`group relative w-16 h-16 rounded-xl ${color.class} transition-all ${formData.primaryColor === color.id
+                          ? "ring-2 ring-white ring-offset-2 ring-offset-[#0a0a0a] scale-110"
+                          : "hover:scale-105"
+                          }`}
                       >
                         {formData.primaryColor === color.id && (
                           <CheckIcon className="absolute inset-0 m-auto w-6 h-6 text-white" />
@@ -448,11 +443,10 @@ export default function NewProjectPage() {
                   </p>
                   <div
                     onClick={() => document.getElementById("reference-upload")?.click()}
-                    className={`relative aspect-video max-w-lg rounded-xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${
-                      formData.referenceImage
-                        ? "border-blue-500/50 bg-blue-500/5"
-                        : "border-white/10 hover:border-white/30 bg-white/[0.02]"
-                    }`}
+                    className={`relative aspect-video max-w-lg rounded-xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${formData.referenceImage
+                      ? "border-blue-500/50 bg-blue-500/5"
+                      : "border-white/10 hover:border-white/30 bg-white/[0.02]"
+                      }`}
                   >
                     {formData.referenceImage ? (
                       <>
@@ -511,18 +505,16 @@ export default function NewProjectPage() {
                       <button
                         key={section.id}
                         onClick={() => toggleSection(section.id)}
-                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${
-                          formData.sections.includes(section.id)
-                            ? "border-blue-500/50 bg-blue-500/10"
-                            : "border-white/10 bg-white/[0.02] hover:border-white/20"
-                        }`}
+                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${formData.sections.includes(section.id)
+                          ? "border-blue-500/50 bg-blue-500/10"
+                          : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                          }`}
                       >
                         <div
-                          className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
-                            formData.sections.includes(section.id)
-                              ? "bg-blue-500 border-blue-500"
-                              : "border-white/30"
-                          }`}
+                          className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${formData.sections.includes(section.id)
+                            ? "bg-blue-500 border-blue-500"
+                            : "border-white/30"
+                            }`}
                         >
                           {formData.sections.includes(section.id) && <CheckIcon className="w-3.5 h-3.5 text-white" />}
                         </div>
@@ -625,9 +617,8 @@ export default function NewProjectPage() {
                   </h3>
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-12 h-12 rounded-lg ${
-                        COLORS.find((c) => c.id === formData.primaryColor)?.class
-                      }`}
+                      className={`w-12 h-12 rounded-lg ${COLORS.find((c) => c.id === formData.primaryColor)?.class
+                        }`}
                     />
                     <div>
                       <p className="font-medium">
@@ -750,13 +741,13 @@ export default function NewProjectPage() {
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                       <SparklesIcon className="w-8 h-8 text-white" />
                     </div>
-                    
+
                     <Dialog.Title as="h3" className="text-xl font-semibold mb-2">
                       Hai esaurito le generazioni gratuite
                     </Dialog.Title>
-                    
+
                     <p className="text-slate-400 mb-6">
-                      Hai usato tutte le tue 2 generazioni di test. 
+                      Hai usato tutte le tue 2 generazioni di test.
                       Passa a Premium per generazioni illimitate.
                     </p>
 
@@ -788,7 +779,7 @@ export default function NewProjectPage() {
                         {isUpgrading ? "Attivazione..." : "Attiva Premium (DEMO)"}
                       </button>
                     </div>
-                    
+
                     <p className="text-xs text-slate-500 mt-4">
                       DEMO: In produzione qui ci sarà il checkout Stripe
                     </p>

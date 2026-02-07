@@ -48,3 +48,4 @@ redis_data/
 
 # Vercel
 .vercel/
+.vercel
