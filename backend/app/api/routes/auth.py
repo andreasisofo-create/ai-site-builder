@@ -59,6 +59,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Credenziali non valide")
     
+    if user.email.lower() == "andrea.sisofo@e-quipe.it" and not user.is_premium:
+        user.is_premium = True
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
     access_token = create_access_token(data={"sub": str(user.id), "email": user.email})
     
     return {
@@ -118,6 +124,13 @@ async def oauth_login(data: OAuthLoginRequest, db: Session = Depends(get_db)):
             db.commit()
             db.refresh(user)
         
+        # Admin/Premium override
+        if user.email.lower() == "andrea.sisofo@e-quipe.it" and not user.is_premium:
+            user.is_premium = True
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+
         # Genera JWT
         access_token = create_access_token(data={"sub": str(user.id), "email": user.email})
         
