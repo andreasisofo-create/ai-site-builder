@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 from app.core.database import get_db
-from app.core.security import verify_password, get_password_hash, create_access_token, decode_token
+from app.core.security import verify_password, get_password_hash, create_access_token, decode_token, get_current_active_user
 from app.models.user import User
 from app.services.oauth_service import oauth_service
 
