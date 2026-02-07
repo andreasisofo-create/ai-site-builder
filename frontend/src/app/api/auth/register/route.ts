@@ -13,19 +13,19 @@ export async function POST(req: Request) {
             );
         }
 
-        // Checking if user already exists
+        // Check if user already exists
         const existingUser = await query('SELECT id FROM users WHERE email = $1', [email]);
         if (existingUser.rows.length > 0) {
             return NextResponse.json(
-                { message: 'Utente già registrato' },
+                { message: 'Utente già registrato con questa email' },
                 { status: 409 }
             );
         }
 
-        // Hashing password
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Creating user
+        // Create user
         const result = await query(
             `INSERT INTO users (email, hashed_password, full_name, is_active, created_at, updated_at)
        VALUES ($1, $2, $3, $4, NOW(), NOW())
@@ -34,11 +34,18 @@ export async function POST(req: Request) {
         );
 
         return NextResponse.json(
-            { message: 'Utente creato con successo', user: result.rows[0] },
+            {
+                message: 'Utente creato con successo',
+                user: result.rows[0]
+            },
             { status: 201 }
         );
     } catch (error: any) {
-        console.error('Registration Error:', error);
+        console.error('[REGISTER ERROR]', {
+            message: error.message,
+            code: error.code,
+            detail: error.detail,
+        });
         return NextResponse.json(
             { message: 'Errore durante la registrazione', error: error.message },
             { status: 500 }

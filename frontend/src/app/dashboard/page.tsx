@@ -4,8 +4,8 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useAuth, useRequireAuth } from "@/lib/auth-context";
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -75,7 +75,8 @@ const STYLE_PRESETS = [
 ];
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  useRequireAuth("/auth");
   const router = useRouter();
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(false); // Default to false to show UI immediately
@@ -86,41 +87,10 @@ export default function Dashboard() {
 
   // Carica siti dal backend
   useEffect(() => {
-    // TEMPORARY: Disabled for preview
-    // if (status === "authenticated") {
-    //   loadSites();
-    // }
-
-    // TEMPORARY: Mock data for preview
-    setSites([
-      {
-        id: 1,
-        name: "My Awesome Agency",
-        slug: "my-agency",
-        is_published: true,
-        created_at: new Date().toISOString(),
-        thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
-        status: "published"
-      },
-      {
-        id: 2,
-        name: "Portfolio 2024",
-        slug: "portfolio-2024",
-        is_published: false,
-        created_at: new Date().toISOString(),
-        thumbnail: "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=600&h=400&fit=crop",
-        status: "ready"
-      }
-    ]);
-  }, [status]);
-
-  // Redirect se non autenticato
-  useEffect(() => {
-    // TEMPORARY: Commented out to allow viewing dashboard without login
-    // if (status === "unauthenticated") {
-    //   router.push("/auth");
-    // }
-  }, [status, router]);
+    if (isAuthenticated) {
+      loadSites();
+    }
+  }, [isAuthenticated]);
 
   const loadSites = async () => {
     try {
@@ -302,7 +272,7 @@ export default function Dashboard() {
             </button>
 
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-sm font-bold border border-white/10">
-              {session?.user?.name?.[0] || "U"}
+              {user?.full_name?.[0] || user?.email?.[0] || "U"}
             </div>
           </div>
         </header>

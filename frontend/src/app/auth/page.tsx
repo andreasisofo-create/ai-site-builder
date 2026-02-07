@@ -12,7 +12,7 @@ import {
   UserIcon,
   AlertCircleIcon
 } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(false);
@@ -23,6 +23,8 @@ export default function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
 
+  const { login, register, googleLogin } = useAuth();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -30,56 +32,29 @@ export default function AuthPage() {
 
     if (isLogin) {
       // Login logic
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError(result.error);
+      const result = await login(email, password);
+      
+      if (!result.success) {
+        setError(result.error || "Errore durante il login");
         setLoading(false);
       } else {
         window.location.href = "/dashboard";
       }
     } else {
       // Registration logic
-      try {
-        const res = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, fullName }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || "Qualcosa è andato storto");
-        }
-
-        // Auto login after registration
-        const result = await signIn("credentials", {
-          email,
-          password,
-          redirect: false,
-        });
-
-        if (result?.error) {
-          setError("Registration successful, but login failed. Please sign in.");
-          setIsLogin(true);
-          setLoading(false);
-        } else {
-          window.location.href = "/dashboard";
-        }
-      } catch (err: any) {
-        setError(err.message);
+      const result = await register(email, password, fullName);
+      
+      if (!result.success) {
+        setError(result.error || "Errore durante la registrazione");
         setLoading(false);
+      } else {
+        window.location.href = "/dashboard";
       }
     }
   };
 
   const handleGoogleLogin = async () => {
-    await signIn("google", { callbackUrl: "/dashboard" });
+    googleLogin();
   };
 
   return (
@@ -257,7 +232,7 @@ export default function AuthPage() {
         <div className="relative z-10 flex flex-col justify-center items-center p-12 text-center">
           <div className="max-w-md">
             <blockquote className="text-2xl font-medium text-white mb-6">
-              "E-quipe ha trasformato la nostra presenza online in modo incredibile. Il sito è professionale e perfetto per il nostro business."
+              &ldquo;E-quipe ha trasformato la nostra presenza online in modo incredibile. Il sito è professionale e perfetto per il nostro business.&rdquo;
             </blockquote>
             <div className="flex items-center justify-center gap-3">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold">

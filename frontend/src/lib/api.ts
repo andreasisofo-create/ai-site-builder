@@ -1,28 +1,42 @@
 /** Client API per comunicare con il backend */
 
-import { getSession } from "next-auth/react";
+const API_BASE = typeof window === 'undefined'
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")
+  : "";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+/** Ottiene il token JWT dal localStorage */
+function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("token");
+}
 
-/** Ottiene il token JWT dalla sessione */
+/** Ottiene gli headers di autenticazione */
 async function getAuthHeaders(): Promise<Record<string, string>> {
-  const session = await getSession();
-  const token = session?.accessToken || session?.access_token;
-  
+  const token = getToken();
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  
+
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
-  
+
   return headers;
 }
 
 /** Gestisce le risposte API */
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
+    // Se 401 Unauthorized, redirect al login
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      if (typeof window !== "undefined") {
+        window.location.href = "/auth";
+      }
+    }
+
     const error = await res.json().catch(() => ({ detail: "Errore sconosciuto" }));
     // Se è un errore di quota, lancia con struttura specifica
     if (res.status === 403 && error.detail?.upgrade_required) {
@@ -47,13 +61,13 @@ export interface UserQuota {
 }
 
 export async function getQuota(): Promise<UserQuota> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/auth/quota`, { headers });
   return handleResponse<UserQuota>(res);
 }
 
 export async function upgradeToPremium(): Promise<{ success: boolean; message: string }> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/generate/upgrade`, {
     method: "POST",
     headers,
@@ -84,13 +98,13 @@ export interface CreateSiteData {
 }
 
 export async function fetchSites(): Promise<Site[]> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/sites/`, { headers });
   return handleResponse<Site[]>(res);
 }
 
 export async function createSite(data: CreateSiteData): Promise<Site> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/sites/`, {
     method: "POST",
     headers,
@@ -100,7 +114,7 @@ export async function createSite(data: CreateSiteData): Promise<Site> {
 }
 
 export async function getSite(id: number): Promise<Site> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/sites/${id}`, { headers });
   return handleResponse<Site>(res);
 }
@@ -109,7 +123,7 @@ export async function updateSite(
   id: number,
   data: Partial<Omit<Site, "id" | "created_at" | "updated_at">>
 ): Promise<Site> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/sites/${id}`, {
     method: "PUT",
     headers,
@@ -119,7 +133,7 @@ export async function updateSite(
 }
 
 export async function deleteSite(id: number): Promise<void> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/sites/${id}`, {
     method: "DELETE",
     headers,
@@ -128,7 +142,7 @@ export async function deleteSite(id: number): Promise<void> {
 }
 
 export async function getSitePreview(id: number): Promise<{ html: string; name: string; status: string }> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/sites/${id}/preview`, { headers });
   return handleResponse(res);
 }
@@ -167,7 +181,7 @@ export interface GenerateResponse {
 }
 
 export async function generateWebsite(data: GenerateRequest): Promise<GenerateResponse> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/generate/website`, {
     method: "POST",
     headers,
@@ -189,7 +203,7 @@ export interface Component {
 }
 
 export async function fetchComponents(siteId: number): Promise<Component[]> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/components/site/${siteId}`, { headers });
   return handleResponse<Component[]>(res);
 }
@@ -201,7 +215,7 @@ export async function createComponent(
   content?: object,
   styles?: object
 ): Promise<Component> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/components/`, {
     method: "POST",
     headers,
