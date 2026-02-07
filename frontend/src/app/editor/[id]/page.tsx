@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { 
-  ArrowLeftIcon, 
-  EyeIcon, 
+import {
+  ArrowLeftIcon,
+  EyeIcon,
   PaperAirplaneIcon,
-  DevicePhoneIcon,
+  DevicePhoneMobileIcon,
   ComputerDesktopIcon,
   ArrowPathIcon,
   CheckCircleIcon,
@@ -21,7 +21,7 @@ export default function Editor() {
   const params = useParams();
   const router = useRouter();
   const siteId = params.id as string;
-  
+
   const [site, setSite] = useState<Site | null>(null);
   const [loading, setLoading] = useState(true);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
@@ -48,10 +48,10 @@ export default function Editor() {
 
   const handlePublish = async () => {
     if (!site) return;
-    
+
     try {
       setIsPublishing(true);
-      await updateSite(site.id, { 
+      await updateSite(site.id, {
         is_published: true,
         status: "published",
       });
@@ -66,7 +66,7 @@ export default function Editor() {
 
   const getStatusBadge = () => {
     if (!site) return null;
-    
+
     switch (site.status) {
       case "published":
         return (
@@ -126,8 +126,8 @@ export default function Editor() {
       <header className="h-16 bg-[#111] border-b border-white/5 sticky top-0 z-50">
         <div className="h-full px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link 
-              href="/dashboard" 
+            <Link
+              href="/dashboard"
               className="p-2 -ml-2 hover:bg-white/5 rounded-lg transition-colors"
             >
               <ArrowLeftIcon className="w-5 h-5" />
@@ -140,33 +140,31 @@ export default function Editor() {
               {getStatusBadge()}
             </div>
           </div>
-          
+
           {/* Center: Preview Controls */}
           <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
             <button
               onClick={() => setPreviewMode("desktop")}
-              className={`p-2 rounded-md transition-all ${
-                previewMode === "desktop" 
-                  ? "bg-white/10 text-white" 
-                  : "text-slate-400 hover:text-white"
-              }`}
+              className={`p-2 rounded-md transition-all ${previewMode === "desktop"
+                ? "bg-white/10 text-white"
+                : "text-slate-400 hover:text-white"
+                }`}
               title="Desktop view"
             >
               <ComputerDesktopIcon className="w-5 h-5" />
             </button>
             <button
               onClick={() => setPreviewMode("mobile")}
-              className={`p-2 rounded-md transition-all ${
-                previewMode === "mobile" 
-                  ? "bg-white/10 text-white" 
-                  : "text-slate-400 hover:text-white"
-              }`}
+              className={`p-2 rounded-md transition-all ${previewMode === "mobile"
+                ? "bg-white/10 text-white"
+                : "text-slate-400 hover:text-white"
+                }`}
               title="Mobile view"
             >
-              <DevicePhoneIcon className="w-5 h-5" />
+              <DevicePhoneMobileIcon className="w-5 h-5" />
             </button>
           </div>
-          
+
           {/* Right: Actions */}
           <div className="flex items-center gap-3">
             {site.is_published ? (
@@ -255,7 +253,7 @@ export default function Editor() {
         {/* Center - Preview Iframe */}
         <div className="flex-1 bg-[#0a0a0a] relative overflow-hidden flex items-center justify-center p-8">
           {/* Grid Background */}
-          <div 
+          <div
             className="absolute inset-0 opacity-20"
             style={{
               backgroundImage: `
@@ -265,14 +263,13 @@ export default function Editor() {
               backgroundSize: '20px 20px'
             }}
           />
-          
+
           {/* Iframe Container */}
-          <div 
-            className={`relative bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${
-              previewMode === "mobile" 
-                ? "w-[375px] h-[812px]" 
-                : "w-full max-w-6xl h-full max-h-[calc(100vh-120px)]"
-            }`}
+          <div
+            className={`relative bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${previewMode === "mobile"
+              ? "w-[375px] h-[812px]"
+              : "w-full max-w-6xl h-full max-h-[calc(100vh-120px)]"
+              }`}
           >
             {site.html_content ? (
               <iframe
