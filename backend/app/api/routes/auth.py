@@ -595,6 +595,8 @@ async def migrate_db(db: Session = Depends(get_db)):
             ("custom_js", "TEXT"),
             ("vercel_project_id", "VARCHAR"),
             ("domain", "VARCHAR"),
+            ("generation_step", "INTEGER DEFAULT 0"),
+            ("generation_message", "VARCHAR DEFAULT ''"),
         ]
 
         tables = [("users", users_columns), ("sites", sites_columns)]
@@ -617,6 +619,25 @@ async def migrate_db(db: Session = Depends(get_db)):
                 except Exception as e:
                     db.rollback()
                     errors.append(f"{table_name}.{col_name}: {str(e)}")
+
+        # Crea tabella site_versions se non esiste
+        try:
+            db.execute(text("""
+                CREATE TABLE IF NOT EXISTS site_versions (
+                    id SERIAL PRIMARY KEY,
+                    site_id INTEGER NOT NULL REFERENCES sites(id),
+                    html_content TEXT NOT NULL,
+                    version_number INTEGER NOT NULL,
+                    change_description VARCHAR DEFAULT '',
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                )
+            """))
+            db.execute(text("CREATE INDEX IF NOT EXISTS ix_site_versions_site_id ON site_versions(site_id)"))
+            db.commit()
+            added.append("site_versions (tabella)")
+        except Exception as e:
+            db.rollback()
+            errors.append(f"site_versions: {str(e)}")
 
         return {
             "success": True,
