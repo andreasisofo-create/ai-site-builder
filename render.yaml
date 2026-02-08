@@ -25,4 +25,4 @@ services:
       - key: OPENROUTER_API_KEY
         value: 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
       - key: RENDER_EXTERNAL_URL
-        value: https://ai-site-builder-jr2g.onrender.com
+        value: https://ai-site-builder-jz2g.onrender.com

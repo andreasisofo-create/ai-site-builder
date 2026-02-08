@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://ai-site-builder-jr2g.onrender.com/api/:path*"
+      "destination": "https://ai-site-builder-jz2g.onrender.com/api/:path*"
     }
   ]
 }
