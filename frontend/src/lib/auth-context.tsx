@@ -45,14 +45,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Load token from localStorage on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
+    const userStr = localStorage.getItem("user");
 
-    if (token && user) {
-      setState({
-        token,
-        user: JSON.parse(user),
-        isLoading: false,
-        isAuthenticated: true,
+    if (token && userStr) {
+      try {
+        setState({
+          token,
+          user: JSON.parse(userStr),
+          isLoading: false,
+          isAuthenticated: true,
+        });
+      } catch {
+        // user JSON corrotto, prova a recuperare dal backend
+        fetchUser(token).then((user) => {
+          if (user) {
+            localStorage.setItem("user", JSON.stringify(user));
+            setState({ token, user, isLoading: false, isAuthenticated: true });
+          } else {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            setState((prev) => ({ ...prev, isLoading: false }));
+          }
+        });
+      }
+    } else if (token) {
+      // Token presente ma user mancante - prova a recuperare
+      fetchUser(token).then((user) => {
+        if (user) {
+          localStorage.setItem("user", JSON.stringify(user));
+          setState({ token, user, isLoading: false, isAuthenticated: true });
+        } else {
+          localStorage.removeItem("token");
+          setState((prev) => ({ ...prev, isLoading: false }));
+        }
       });
     } else {
       setState((prev) => ({ ...prev, isLoading: false }));

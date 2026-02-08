@@ -31,9 +31,32 @@ function AuthCallbackContent() {
           if (res.ok) {
             const userData = await res.json();
             localStorage.setItem("user", JSON.stringify(userData));
+          } else {
+            console.warn("Fetch /api/auth/me failed:", res.status);
+            // Salva user minimo dal token JWT (base64)
+            try {
+              const payload = JSON.parse(atob(token.split(".")[1]));
+              const minimalUser = {
+                id: parseInt(payload.sub),
+                email: payload.email || "",
+                full_name: "",
+              };
+              localStorage.setItem("user", JSON.stringify(minimalUser));
+            } catch (decodeErr) {
+              console.error("JWT decode failed:", decodeErr);
+            }
           }
         } catch (e) {
           console.error("Errore fetch user dopo OAuth:", e);
+          // Fallback: salva user minimo dal token
+          try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            localStorage.setItem("user", JSON.stringify({
+              id: parseInt(payload.sub),
+              email: payload.email || "",
+              full_name: "",
+            }));
+          } catch {}
         }
         router.push("/dashboard");
       })();
