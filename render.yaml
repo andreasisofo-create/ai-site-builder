@@ -21,7 +21,7 @@ services:
       - key: CORS_ORIGINS
         value: '["https://site-generator-v2.vercel.app"]'
       - key: KIMI_API_KEY
-        value: sk-83mQ9P3T6WRkham1Thm1HIWocRkGzhgvmG1cTjPS6vzpYyMe
+        value: sk-v1FgtopqYso120PkokZK5bOjrqeJWDtvmlPvmIEhLPgbO1Jn
       - key: OPENROUTER_API_KEY
         value: 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
       - key: MICROSOFT_CLIENT_ID
