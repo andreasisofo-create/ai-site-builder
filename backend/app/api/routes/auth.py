@@ -45,6 +45,7 @@ class TokenResponse(BaseModel):
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
+FRONTEND_URL = "https://site-generator-v2.vercel.app"
 
 
 # ============= ROUTES =============
@@ -214,8 +215,9 @@ async def google_oauth_redirect(redirect_to: Optional[str] = None):
     # Aggiungi state che include anche il redirect_to (codificato)
     state_data = f"{state}:{base64.urlsafe_b64encode(redirect_to.encode()).decode() if redirect_to else ''}"
     params["state"] = state_data
-    
-    auth_url = f"{GOOGLE_AUTH_URL}?" + "&".join(f"{k}={v}" for k, v in params.items())
+
+    from urllib.parse import urlencode
+    auth_url = f"{GOOGLE_AUTH_URL}?{urlencode(params)}"
     
     return RedirectResponse(url=auth_url)
 
@@ -231,25 +233,27 @@ async def google_oauth_callback(
     """
     Callback da Google OAuth - scambia il codice con un token e autentica l'utente
     """
+    frontend_auth = f"{FRONTEND_URL}/auth"
+    frontend_callback = f"{FRONTEND_URL}/auth/callback"
+
     # Gestisci errori
     if error:
-        return RedirectResponse(url=f"/auth?error={error}")
-    
+        return RedirectResponse(url=f"{frontend_auth}?error={error}")
+
     if not code:
-        return RedirectResponse(url="/auth?error=no_code")
-    
-    # Verifica state (CSRF protection) - opzionale per semplicità
-    # stored_state = request.cookies.get("oauth_state")
-    # if not state or state != stored_state:
-    #     return RedirectResponse(url="/auth?error=invalid_state")
-    
+        return RedirectResponse(url=f"{frontend_auth}?error=no_code")
+
     try:
         # Determina la callback URL corretta (deve matchare quella usata nel redirect)
         if settings.RENDER_EXTERNAL_URL:
             redirect_uri = f"{settings.RENDER_EXTERNAL_URL}/api/auth/oauth/callback"
         else:
             redirect_uri = "http://localhost:8000/api/auth/oauth/callback"
-        
+
+        print(f"OAuth callback - redirect_uri: {redirect_uri}")
+        print(f"OAuth callback - client_id: {settings.GOOGLE_CLIENT_ID[:20]}...")
+        print(f"OAuth callback - client_secret set: {bool(settings.GOOGLE_CLIENT_SECRET)}")
+
         # Scambia il codice con un token
         async with httpx.AsyncClient() as client:
             token_response = await client.post(
@@ -262,32 +266,37 @@ async def google_oauth_callback(
                     "grant_type": "authorization_code",
                 }
             )
-            
+
             if token_response.status_code != 200:
-                print(f"Token exchange failed: {token_response.text}")
-                return RedirectResponse(url="/auth?error=token_exchange_failed")
-            
+                error_detail = token_response.text
+                print(f"Token exchange failed ({token_response.status_code}): {error_detail}")
+                # Includi dettaglio errore nel redirect per debug
+                from urllib.parse import quote
+                return RedirectResponse(
+                    url=f"{frontend_auth}?error=token_exchange_failed&detail={quote(error_detail[:200])}"
+                )
+
             token_data = token_response.json()
             access_token = token_data.get("access_token")
             id_token = token_data.get("id_token")
-        
+
         # Ottieni info utente
         if id_token:
             user_info = await oauth_service.verify_google_id_token(id_token)
         elif access_token:
             user_info = await oauth_service.verify_google_token(access_token)
         else:
-            return RedirectResponse(url="/auth?error=no_token")
-        
+            return RedirectResponse(url=f"{frontend_auth}?error=no_token")
+
         if not user_info:
-            return RedirectResponse(url="/auth?error=invalid_token")
-        
+            return RedirectResponse(url=f"{frontend_auth}?error=invalid_token")
+
         # Cerca o crea utente
         user = db.query(User).filter(User.oauth_id == user_info["oauth_id"]).first()
-        
+
         if not user:
             user = db.query(User).filter(User.email == user_info["email"]).first()
-            
+
             if user:
                 user.oauth_provider = "google"
                 user.oauth_id = user_info["oauth_id"]
@@ -303,36 +312,37 @@ async def google_oauth_callback(
                     hashed_password=None,
                 )
                 db.add(user)
-            
+
             db.commit()
             db.refresh(user)
-        
+
         # Admin override
         if user.email.lower() == "andrea.sisofo@e-quipe.it" and not user.is_premium:
             user.is_premium = True
             db.add(user)
             db.commit()
             db.refresh(user)
-        
+
         # Genera JWT
         jwt_token = create_access_token(data={"sub": str(user.id), "email": user.email})
-        
+
         # Reindirizza al frontend con il token
         # Estrai redirect_to dallo state (formato: state:base64_redirect)
-        frontend_redirect = "http://localhost:3000/auth/callback"  # default
+        final_redirect = frontend_callback
         if state and ":" in state:
             try:
                 _, encoded_redirect = state.split(":", 1)
                 if encoded_redirect:
-                    frontend_redirect = base64.urlsafe_b64decode(encoded_redirect.encode()).decode()
+                    final_redirect = base64.urlsafe_b64decode(encoded_redirect.encode()).decode()
             except:
                 pass
-             
-        return RedirectResponse(url=f"{frontend_redirect}?token={jwt_token}")
-        
+
+        return RedirectResponse(url=f"{final_redirect}?token={jwt_token}")
+
     except Exception as e:
         print(f"Errore OAuth callback: {e}")
-        return RedirectResponse(url="/auth?error=server_error")
+        from urllib.parse import quote
+        return RedirectResponse(url=f"{frontend_auth}?error=server_error&detail={quote(str(e)[:200])}")
 
 
 @router.get("/me")
@@ -371,6 +381,20 @@ async def get_quota(current_user: User = Depends(get_current_active_user)):
         "generations_limit": current_user.generations_limit,
         "remaining_generations": current_user.remaining_generations,
         "has_remaining_generations": current_user.has_remaining_generations,
+    }
+
+
+@router.get("/debug-oauth")
+async def debug_oauth():
+    """Debug: mostra configurazione OAuth (senza segreti)"""
+    return {
+        "google_client_id_set": bool(settings.GOOGLE_CLIENT_ID),
+        "google_client_id_prefix": settings.GOOGLE_CLIENT_ID[:20] + "..." if settings.GOOGLE_CLIENT_ID else "NOT SET",
+        "google_client_secret_set": bool(settings.GOOGLE_CLIENT_SECRET),
+        "google_client_secret_length": len(settings.GOOGLE_CLIENT_SECRET) if settings.GOOGLE_CLIENT_SECRET else 0,
+        "render_external_url": settings.RENDER_EXTERNAL_URL or "NOT SET",
+        "callback_url": f"{settings.RENDER_EXTERNAL_URL}/api/auth/oauth/callback" if settings.RENDER_EXTERNAL_URL else "NOT SET",
+        "frontend_url": FRONTEND_URL,
     }
 
 
