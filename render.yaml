@@ -24,5 +24,9 @@ services:
         value: sk-83mQ9P3T6WRkham1Thm1HIWocRkGzhgvmG1cTjPS6vzpYyMe
       - key: OPENROUTER_API_KEY
         value: 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
+      - key: MICROSOFT_CLIENT_ID
+        sync: false
+      - key: MICROSOFT_CLIENT_SECRET
+        sync: false
       - key: RENDER_EXTERNAL_URL
         value: https://ai-site-builder-jz2g.onrender.com
