@@ -58,7 +58,7 @@ FRONTEND_URL = "https://site-generator-v2.vercel.app"
 async def register(data: RegisterRequest, db: Session = Depends(get_db)):
     """Registra un nuovo utente"""
     # Verifica se esiste già
-    existing = db.query(User).filter(User.email == data.email).first()
+    existing = db.query(User).filter(User.email.ilike(data.email)).first()
     if existing:
         # Se l'utente esiste ma non ha password (OAuth), imposta la password
         if not existing.hashed_password:
@@ -86,7 +86,7 @@ async def register(data: RegisterRequest, db: Session = Depends(get_db)):
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """Login utente"""
-    user = db.query(User).filter(User.email == form_data.username).first()
+    user = db.query(User).filter(User.email.ilike(form_data.username)).first()
     if not user or not user.hashed_password or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Credenziali non valide")
     
@@ -140,7 +140,7 @@ async def oauth_login(data: OAuthLoginRequest, db: Session = Depends(get_db)):
         
         if not user:
             # Cerca per email
-            user = db.query(User).filter(User.email == user_info["email"]).first()
+            user = db.query(User).filter(User.email.ilike(user_info["email"])).first()
             
             if user:
                 # Collega OAuth all'account esistente
@@ -299,7 +299,7 @@ async def google_oauth_callback(
         user = db.query(User).filter(User.oauth_id == user_info["oauth_id"]).first()
 
         if not user:
-            user = db.query(User).filter(User.email == user_info["email"]).first()
+            user = db.query(User).filter(User.email.ilike(user_info["email"])).first()
 
             if user:
                 user.oauth_provider = "google"
@@ -433,7 +433,7 @@ async def microsoft_oauth_callback(
         user = db.query(User).filter(User.oauth_id == user_info["oauth_id"]).first()
 
         if not user:
-            user = db.query(User).filter(User.email == user_info["email"]).first()
+            user = db.query(User).filter(User.email.ilike(user_info["email"])).first()
 
             if user:
                 user.oauth_provider = "microsoft"
@@ -533,7 +533,7 @@ async def debug_oauth():
 @router.post("/set-password")
 async def set_password(data: RegisterRequest, db: Session = Depends(get_db)):
     """Imposta password per un account OAuth (senza password)"""
-    user = db.query(User).filter(User.email == data.email).first()
+    user = db.query(User).filter(User.email.ilike(data.email)).first()
     if not user:
         raise HTTPException(status_code=404, detail="Utente non trovato")
 
