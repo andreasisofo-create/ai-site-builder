@@ -44,37 +44,35 @@ class SwarmGenerator:
     ) -> Dict[str, Any]:
         """
         Sub-agente 1: Analisi layout e struttura.
-        Thinking mode per ragionamento profondo sulla griglia.
+        Instant mode per velocita' (analisi semplice, non serve deep reasoning).
         """
-        prompt = f"""Analyze the ideal layout structure for a one-page website.
+        prompt = f"""Analyze the ideal layout for a one-page website. Be concise.
 
 BUSINESS: {business_description}
 SECTIONS: {', '.join(sections)}
 
-Provide a JSON-like structured analysis:
-1. Grid system recommendation (single column, two column, asymmetric)
-2. Section ordering and hierarchy
-3. Spacing strategy (compact, spacious, mixed)
-4. Key visual elements per section (hero image, cards, testimonials grid, etc.)
-5. Mobile layout adaptations
-6. Navigation style (sticky, transparent, solid)
+Provide briefly:
+1. Grid system (single/two column)
+2. Section ordering
+3. Key visual elements per section
+4. Navigation style (sticky/transparent)
 
-Be specific and technical. Focus on Tailwind CSS grid/flex patterns."""
+Focus on Tailwind CSS patterns. Keep response under 300 words."""
 
         if reference_image_url:
             result = await self.kimi.call_with_image(
                 prompt=prompt,
                 image_url=reference_image_url,
-                max_tokens=1500,
-                thinking=True,
-                timeout=90.0,
+                max_tokens=800,
+                thinking=False,
+                timeout=60.0,
             )
         else:
             result = await self.kimi.call(
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=1500,
-                thinking=True,
-                timeout=90.0,
+                max_tokens=800,
+                thinking=False,
+                timeout=60.0,
             )
 
         if result["success"]:
@@ -93,7 +91,7 @@ Be specific and technical. Focus on Tailwind CSS grid/flex patterns."""
     ) -> Dict[str, Any]:
         """
         Sub-agente 2: Analisi colori e tipografia.
-        Thinking mode per reasoning su palette e font.
+        Instant mode per velocita'.
         """
         style_str = ""
         if style_preferences:
@@ -102,37 +100,35 @@ Be specific and technical. Focus on Tailwind CSS grid/flex patterns."""
 
         style_section = f"STYLE PREFERENCES:\n{style_str}" if style_str else ""
 
-        prompt = f"""Define the complete color palette and typography for a website.
+        prompt = f"""Define color palette and typography for a website. Be concise.
 
 BUSINESS: {business_name} - {business_description}
 {style_section}
 
 Provide:
-1. Primary color (hex) and its usage (headers, CTAs, accents)
-2. Secondary color (hex) and its usage
-3. Accent color (hex) for highlights
-4. Background colors (light sections, dark sections, gradients)
-5. Text colors (headings, body, muted, links)
-6. Font recommendations (heading font, body font) from Google Fonts
-7. Color contrast check (WCAG AA compliance notes)
-8. Mood keywords that the palette evokes
+1. Primary color (hex)
+2. Secondary color (hex)
+3. Accent color (hex)
+4. Background colors (light/dark)
+5. Text colors
+6. Font pair from Google Fonts
 
-Use Tailwind CSS color naming conventions where possible."""
+Use Tailwind CSS naming. Keep under 200 words."""
 
         if reference_image_url:
             result = await self.kimi.call_with_image(
                 prompt=prompt,
                 image_url=reference_image_url,
-                max_tokens=1500,
-                thinking=True,
-                timeout=90.0,
+                max_tokens=800,
+                thinking=False,
+                timeout=60.0,
             )
         else:
             result = await self.kimi.call(
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=1500,
-                thinking=True,
-                timeout=90.0,
+                max_tokens=800,
+                thinking=False,
+                timeout=60.0,
             )
 
         if result["success"]:
@@ -183,7 +179,7 @@ Make the hero section particularly impactful."""
 
         result = await self.kimi.call(
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=2000,
+            max_tokens=1500,
             thinking=False,  # Instant mode - veloce
             timeout=60.0,
         )
@@ -291,7 +287,7 @@ Generate the complete HTML now."""
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=8000,
+            max_tokens=4096,
             thinking=False,  # Instant mode: Phase 1 gia' fornisce analisi dettagliate
             timeout=120.0,
         )
@@ -386,13 +382,45 @@ IMPORTANT:
 
         Fase 1: 3 analisi PARALLELE via asyncio.gather()
         Fase 2: Genera HTML con risultati merged
-        Fase 3: Review e fix
+        Fase 3: Review (solo con reference image)
 
         Returns:
             {"success": True, "html_content": str, "model_used": str,
              "tokens_input": int, "tokens_output": int, "cost_usd": float,
              "generation_time_ms": int, "pipeline_steps": int}
         """
+        try:
+            return await asyncio.wait_for(
+                self._generate_pipeline(
+                    business_name=business_name,
+                    business_description=business_description,
+                    sections=sections,
+                    style_preferences=style_preferences,
+                    reference_image_url=reference_image_url,
+                    reference_analysis=reference_analysis,
+                    logo_url=logo_url,
+                    contact_info=contact_info,
+                    on_progress=on_progress,
+                ),
+                timeout=180.0,  # Hard timeout: 3 minuti
+            )
+        except asyncio.TimeoutError:
+            logger.error("[Swarm] TIMEOUT: generazione superato 180s")
+            return {"success": False, "error": "Timeout: la generazione ha impiegato troppo tempo. Riprova."}
+
+    async def _generate_pipeline(
+        self,
+        business_name: str,
+        business_description: str,
+        sections: List[str],
+        style_preferences: Optional[Dict[str, Any]] = None,
+        reference_image_url: Optional[str] = None,
+        reference_analysis: Optional[str] = None,
+        logo_url: Optional[str] = None,
+        contact_info: Optional[Dict[str, str]] = None,
+        on_progress: ProgressCallback = None,
+    ) -> Dict[str, Any]:
+        """Pipeline interna di generazione."""
         start_time = time.time()
         total_tokens_in = 0
         total_tokens_out = 0
