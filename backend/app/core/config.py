@@ -1,5 +1,6 @@
 """Configurazione applicazione"""
 
+import os
 from pydantic_settings import BaseSettings
 from typing import List
 
@@ -40,10 +41,17 @@ class Settings(BaseSettings):
     VERCEL_TOKEN: str = ""
     VERCEL_TEAM_ID: str = ""
     
-    # Kimi API (AI Generation) - Diretta
+    # Kimi / Moonshot API (AI Generation) - Diretta
+    # Accetta sia KIMI_API_KEY che MOONSHOT_API_KEY come env var
     KIMI_API_KEY: str = ""
+    MOONSHOT_API_KEY: str = ""
     KIMI_API_URL: str = "https://api.moonshot.cn/v1"
     KIMI_MODEL: str = "kimi-k2.5"
+
+    @property
+    def active_api_key(self) -> str:
+        """Ritorna la prima API key disponibile (MOONSHOT > KIMI)."""
+        return self.MOONSHOT_API_KEY or self.KIMI_API_KEY
     
     # AI Configuration
     AI_MAX_TOKENS: int = 6000

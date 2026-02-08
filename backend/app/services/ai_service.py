@@ -27,11 +27,13 @@ class AIService:
     """Servizio per generazione AI tramite Kimi API diretta."""
 
     def __init__(self):
-        self.api_key = settings.KIMI_API_KEY
         self.api_url = "https://api.moonshot.cn/v1"
-        self.headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+
+    @property
+    def headers(self) -> dict:
+        return {
+            "Authorization": f"Bearer {settings.active_api_key}",
+            "Content-Type": "application/json",
         }
 
     async def _call_kimi(

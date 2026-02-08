@@ -29,7 +29,7 @@ class KimiClient:
     @property
     def _headers(self) -> Dict[str, str]:
         return {
-            "Authorization": f"Bearer {settings.KIMI_API_KEY}",
+            "Authorization": f"Bearer {settings.active_api_key}",
             "Content-Type": "application/json",
         }
 

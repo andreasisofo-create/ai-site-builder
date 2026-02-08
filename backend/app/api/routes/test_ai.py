@@ -19,11 +19,11 @@ async def test_kimi_connection():
     """
     try:
         # Verifica che la API key sia impostata
-        if not settings.KIMI_API_KEY:
-            logger.error("KIMI_API_KEY non impostata!")
+        if not settings.active_api_key:
+            logger.error("KIMI/MOONSHOT API KEY non impostata!")
             return {
                 "status": "error",
-                "message": "KIMI_API_KEY non configurata",
+                "message": "KIMI_API_KEY o MOONSHOT_API_KEY non configurata",
                 "configured": False
             }
         
@@ -60,7 +60,7 @@ async def test_kimi_connection():
         return {
             "status": "error",
             "message": str(e),
-            "configured": bool(settings.KIMI_API_KEY)
+            "configured": bool(settings.active_api_key)
         }
 
 
@@ -70,9 +70,11 @@ async def test_env():
     Testa che le variabili ambiente siano caricate.
     ATTENZIONE: Non mostrare in produzione!
     """
+    key = settings.active_api_key
     return {
-        "kimi_api_key_configured": bool(settings.KIMI_API_KEY),
-        "kimi_api_key_preview": settings.KIMI_API_KEY[:10] + "..." if settings.KIMI_API_KEY else None,
+        "api_key_configured": bool(key),
+        "api_key_source": "MOONSHOT_API_KEY" if settings.MOONSHOT_API_KEY else ("KIMI_API_KEY" if settings.KIMI_API_KEY else "none"),
+        "api_key_preview": key[:10] + "..." if key else None,
         "kimi_api_url": settings.KIMI_API_URL,
         "debug": settings.DEBUG,
         "database_url_configured": bool(settings.DATABASE_URL),
