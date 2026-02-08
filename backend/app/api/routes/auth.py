@@ -567,8 +567,13 @@ async def migrate_db(db: Session = Depends(get_db)):
     from app.core.database import engine
     
     try:
-        # Lista colonne da aggiungere con i loro tipi SQL
-        columns_to_add = [
+        inspector = inspect(engine)
+        added = []
+        skipped = []
+        errors = []
+
+        # Migrazioni per tabella users
+        users_columns = [
             ("oauth_id", "VARCHAR"),
             ("oauth_provider", "VARCHAR"),
             ("avatar_url", "VARCHAR"),
@@ -576,30 +581,43 @@ async def migrate_db(db: Session = Depends(get_db)):
             ("generations_limit", "INTEGER DEFAULT 2"),
             ("is_premium", "BOOLEAN DEFAULT FALSE"),
         ]
-        
-        # Ottieni colonne esistenti
-        inspector = inspect(engine)
-        existing_columns = {col['name'] for col in inspector.get_columns('users')}
-        
-        added = []
-        skipped = []
-        errors = []
-        
-        for col_name, col_type in columns_to_add:
-            if col_name in existing_columns:
-                skipped.append(col_name)
-                continue
-            
+
+        # Migrazioni per tabella sites
+        sites_columns = [
+            ("status", "VARCHAR DEFAULT 'draft'"),
+            ("is_published", "BOOLEAN DEFAULT FALSE"),
+            ("published_at", "TIMESTAMP"),
+            ("thumbnail", "VARCHAR"),
+            ("html_content", "TEXT"),
+            ("template", "VARCHAR DEFAULT 'default'"),
+            ("config", "TEXT"),
+            ("custom_css", "TEXT"),
+            ("custom_js", "TEXT"),
+            ("vercel_project_id", "VARCHAR"),
+            ("domain", "VARCHAR"),
+        ]
+
+        tables = [("users", users_columns), ("sites", sites_columns)]
+
+        for table_name, columns_to_add in tables:
             try:
-                # SQLite supporta ADD COLUMN
-                db.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
-                db.commit()
-                added.append(col_name)
-            except Exception as e:
-                db.rollback()
-                # Se fallisce (es: duplicato non rilevato), logga e continua
-                errors.append(f"{col_name}: {str(e)}")
-        
+                existing_columns = {col['name'] for col in inspector.get_columns(table_name)}
+            except Exception:
+                skipped.append(f"{table_name}: tabella non esiste")
+                continue
+
+            for col_name, col_type in columns_to_add:
+                if col_name in existing_columns:
+                    skipped.append(f"{table_name}.{col_name}")
+                    continue
+                try:
+                    db.execute(text(f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type}"))
+                    db.commit()
+                    added.append(f"{table_name}.{col_name}")
+                except Exception as e:
+                    db.rollback()
+                    errors.append(f"{table_name}.{col_name}: {str(e)}")
+
         return {
             "success": True,
             "added_columns": added,
