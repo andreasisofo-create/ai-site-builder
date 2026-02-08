@@ -209,87 +209,51 @@ Make the hero section particularly impactful."""
         contact_info: Optional[Dict[str, str]] = None,
     ) -> Dict[str, Any]:
         """
-        Fase 2: Genera HTML completo usando i risultati delle 3 analisi parallele.
-        Thinking mode per generazione di codice complesso.
+        Fase 2: Genera HTML completo.
+        Prompt semplificato per ridurre tempo di generazione.
         """
-        style_str = ""
-        if style_preferences:
-            for k, v in style_preferences.items():
-                style_str += f"- {k}: {v}\n"
+        color_hint = ""
+        if style_preferences and style_preferences.get("primary_color"):
+            color_hint = f"Primary color: {style_preferences['primary_color']}. "
+
+        logo_hint = f'<img src="{logo_url}" alt="{business_name}" class="h-10">' if logo_url else ""
 
         contact_str = ""
         if contact_info:
             for k, v in contact_info.items():
-                contact_str += f"- {k}: {v}\n"
+                contact_str += f"{k}: {v}, "
 
-        system_prompt = """You are an expert frontend developer specializing in Tailwind CSS.
-Generate a complete, production-ready HTML5 one-page website.
+        prompt = f"""Generate a simple, professional one-page HTML website.
 
-STRICT RULES:
-1. Semantic HTML5 with Tailwind CSS utility classes
-2. Use Tailwind CDN: <script src="https://cdn.tailwindcss.com"></script>
-3. Mobile-first responsive design (375px, 768px, 1440px)
-4. Use placeholder images from https://placehold.co with descriptive alt text
-5. Working contact form with labels, names, submit button
-6. Smooth scroll navigation + mobile hamburger menu (vanilla JS)
-7. Meta tags: charset UTF-8, viewport, description, og:title, og:description
-8. NO external CSS files - Tailwind utilities only
-9. NO JavaScript frameworks - vanilla JS only
-10. Google Fonts via CDN link if recommended
-11. All interactive elements have hover/focus states
-12. Images use lazy loading (loading="lazy")
-13. All content in Italian
+BUSINESS: {business_name} - {business_description}
+SECTIONS: {', '.join(sections)}
+{color_hint}
+{f'CONTACT: {contact_str}' if contact_str else ''}
 
-OUTPUT: Return ONLY the complete HTML between ```html and ``` tags. No explanations."""
-
-        user_prompt = f"""Generate a complete one-page website using these pre-analyzed specifications:
-
-=== BUSINESS ===
-Name: {business_name}
-Description: {business_description}
-
-=== LAYOUT ANALYSIS (from layout agent) ===
-{layout_analysis}
-
-=== COLOR & TYPOGRAPHY (from color agent) ===
+DESIGN BRIEF:
 {color_analysis}
 
-=== SEO TEXTS (from SEO agent) ===
+TEXTS (use these Italian texts):
 {seo_texts}
 
-=== SECTIONS ===
-{', '.join(sections)}
-{f'''
-=== STYLE PREFERENCES ===
-{style_str}''' if style_str else ''}
-{f'''
-=== REFERENCE STYLE ===
-{reference_analysis}
-Match this visual style closely.''' if reference_analysis else ''}
-{f'''
-=== LOGO ===
-Use this URL for the logo: {logo_url}''' if logo_url else ''}
-{f'''
-=== CONTACT INFO ===
-{contact_str}''' if contact_str else ''}
+RULES:
+- Complete HTML5 document with <!DOCTYPE html>
+- Tailwind CSS via CDN: <script src="https://cdn.tailwindcss.com"></script>
+- Responsive (mobile + desktop)
+- Hamburger menu with vanilla JS
+- Contact form with name, email, message fields
+- Footer with copyright
+- All text in Italian
+- Max 150 lines of HTML
+- NO explanations, ONLY HTML code between ```html and ``` tags
+{f'- Logo: {logo_hint}' if logo_hint else ''}
 
-IMPORTANT:
-- Use the exact colors, fonts, and layout from the analyses above
-- Use the exact Italian texts from the SEO analysis
-- Ensure smooth scroll, hamburger menu, and responsive design work
-- Minimum 5 complete sections
-- Professional, polished result
+Generate the HTML now."""
 
-Generate the complete HTML now."""
-
-        # Streaming per evitare timeout su generazioni lunghe
-        result = await self.kimi.call_stream(
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            max_tokens=6000,
-            thinking=False,  # Instant mode: Phase 1 gia' fornisce analisi dettagliate
+        result = await self.kimi.call(
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=4000,
+            thinking=False,
             timeout=300.0,
         )
 
@@ -403,10 +367,10 @@ IMPORTANT:
                     contact_info=contact_info,
                     on_progress=on_progress,
                 ),
-                timeout=180.0,  # Hard timeout: 3 minuti
+                timeout=360.0,  # Hard timeout: 6 minuti
             )
         except asyncio.TimeoutError:
-            logger.error("[Swarm] TIMEOUT: generazione superato 180s")
+            logger.error("[Swarm] TIMEOUT: generazione superato 360s")
             return {"success": False, "error": "Timeout: la generazione ha impiegato troppo tempo. Riprova."}
 
     async def _generate_pipeline(
@@ -613,11 +577,10 @@ Instructions:
 4. Return ONLY HTML between ```html and ``` tags"""
 
         start_time = time.time()
-        # Streaming per evitare timeout su refine lunghi
-        result = await self.kimi.call_stream(
+        result = await self.kimi.call(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=8000,
-            thinking=False,  # Instant mode per velocita'
+            thinking=False,
             timeout=300.0,
         )
 
