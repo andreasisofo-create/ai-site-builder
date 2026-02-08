@@ -58,7 +58,11 @@ function AuthCallbackContent() {
             }));
           } catch {}
         }
-        router.push("/dashboard");
+        // Force full page load so AuthProvider re-mounts and reads the updated localStorage.
+        // The callback page is already a full page load (from OAuth redirect), so this is fine.
+        // Using router.push would NOT work because the AuthProvider's mount useEffect
+        // already ran before the token was set in localStorage.
+        window.location.href = "/dashboard";
       })();
     } else {
       setTimeout(() => router.push("/auth"), 1000);

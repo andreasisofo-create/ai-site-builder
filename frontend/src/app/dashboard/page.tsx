@@ -157,15 +157,14 @@ export default function Dashboard() {
     }
   };
 
-  /*
-  if (status === "loading" || loading) {
+  // Show loading screen while auth state is settling
+  if (authLoading || (!isAuthenticated && typeof window !== "undefined" && !!localStorage.getItem("token"))) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
-  */
 
   const filteredSites = sites.filter((site) =>
     site.name.toLowerCase().includes(searchQuery.toLowerCase())

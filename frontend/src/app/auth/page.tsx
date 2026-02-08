@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -24,8 +24,17 @@ export default function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
 
-  const { login, register, googleLogin, microsoftLogin } = useAuth();
+  const { login, register, googleLogin, microsoftLogin, isAuthenticated } = useAuth();
   const router = useRouter();
+
+  // Navigate to dashboard when auth state confirms authentication.
+  // This ensures navigation happens AFTER React state is committed,
+  // avoiding race conditions with useRequireAuth on the dashboard.
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,18 +47,16 @@ export default function AuthPage() {
       if (!result.success) {
         setError(result.error || "Errore durante il login");
         setLoading(false);
-      } else {
-        router.push("/dashboard");
       }
+      // Navigation handled by useEffect when isAuthenticated changes
     } else {
       const result = await register(email, password, fullName);
 
       if (!result.success) {
         setError(result.error || "Errore durante la registrazione");
         setLoading(false);
-      } else {
-        router.push("/dashboard");
       }
+      // Navigation handled by useEffect when isAuthenticated changes
     }
   };
 

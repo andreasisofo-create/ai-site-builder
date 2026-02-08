@@ -223,7 +223,12 @@ export function useRequireAuth(redirectUrl = "/auth") {
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated && !hasRedirected.current) {
+    // Also check localStorage for token as safety net against React state timing issues.
+    // After login(), setState is batched and may not be committed when the dashboard mounts.
+    // The token in localStorage is set synchronously before navigation, so it's always reliable.
+    const hasToken = typeof window !== "undefined" && !!localStorage.getItem("token");
+
+    if (!isLoading && !isAuthenticated && !hasToken && !hasRedirected.current) {
       hasRedirected.current = true;
       router.replace(redirectUrl);
     }
