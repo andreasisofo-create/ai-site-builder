@@ -73,9 +73,9 @@ class KimiClient:
             "temperature": temperature,
         }
 
-        # Kimi K2.5: per disabilitare Thinking, passare thinking=False
+        # Kimi K2.5: per disabilitare Thinking (Instant mode)
         if not thinking:
-            payload["thinking"] = False
+            payload["thinking"] = {"type": "disabled"}
 
         try:
             client = await self._get_client()

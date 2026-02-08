@@ -132,16 +132,27 @@ export default function NewProjectPage() {
 
     pollingRef.current = setInterval(async () => {
       try {
-        const status = await getGenerationStatus(siteId);
+        const genStatus = await getGenerationStatus(siteId);
         setGenerationProgress({
-          step: status.step,
-          totalSteps: status.total_steps,
-          message: status.message,
-          percentage: status.percentage,
+          step: genStatus.step,
+          totalSteps: genStatus.total_steps,
+          message: genStatus.message,
+          percentage: genStatus.percentage,
         });
 
-        if (!status.is_generating) {
-          if (pollingRef.current) clearInterval(pollingRef.current);
+        // Generazione completata - naviga all'editor
+        if (!genStatus.is_generating && genStatus.status === "ready") {
+          stopProgressPolling();
+          setGenerationProgress({ step: 3, totalSteps: 3, message: "Completato!", percentage: 100 });
+          toast.success("Sito generato con successo!");
+          setTimeout(() => router.push(`/editor/${siteId}`), 1000);
+        }
+
+        // Generazione fallita - torna a draft
+        if (!genStatus.is_generating && genStatus.status === "draft" && genStatus.message) {
+          stopProgressPolling();
+          setIsGenerating(false);
+          toast.error(genStatus.message || "Errore nella generazione");
         }
       } catch {
         // Ignore polling errors
@@ -188,7 +199,7 @@ export default function NewProjectPage() {
       // Start polling per progress
       startProgressPolling(site.id);
 
-      // Chiama l'AI pipeline (con site_id per progress tracking)
+      // Avvia generazione in background (ritorna subito)
       setGenerationProgress({ step: 1, totalSteps: 3, message: "Avvio generazione AI...", percentage: 10 });
 
       const colorHex = COLORS.find(c => c.id === formData.primaryColor)?.hex;
@@ -209,29 +220,17 @@ export default function NewProjectPage() {
         site_id: site.id,
       });
 
-      stopProgressPolling();
-
-      if (!generateResult.success || !generateResult.html_content) {
-        throw new Error(generateResult.error || "Errore nella generazione");
+      if (!generateResult.success) {
+        throw new Error(generateResult.error || "Errore nell'avvio della generazione");
       }
-
-      setGenerationProgress({ step: 3, totalSteps: 3, message: "Completato!", percentage: 100 });
 
       // Aggiorna thumbnail
       await updateSite(site.id, {
         thumbnail: `https://placehold.co/600x400/1a1a1a/666?text=${encodeURIComponent(formData.businessName)}`,
       });
 
-      // Toast con info quota
-      const remaining = generateResult.quota?.remaining_generations;
-      if (remaining !== undefined && remaining >= 0) {
-        toast.success(`Sito generato! Generazioni rimanenti: ${remaining}`);
-      } else {
-        toast.success("Sito generato con successo!");
-      }
-
-      // Redirect all'editor
-      router.push(`/editor/${site.id}`);
+      // Il polling gestira' il completamento e la navigazione all'editor
+      toast.success("Generazione avviata! Attendere...");
 
     } catch (error: any) {
       stopProgressPolling();

@@ -62,7 +62,7 @@ def api_call(method, path, data=None, auth=False, expect_status=None):
     req = urllib.request.Request(url, data=body, headers=headers, method=method)
 
     try:
-        response = urllib.request.urlopen(req, timeout=30)
+        response = urllib.request.urlopen(req, timeout=180)
         status = response.status
         resp_body = json.loads(response.read().decode("utf-8"))
         return status, resp_body

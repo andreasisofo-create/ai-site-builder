@@ -1,8 +1,11 @@
 """
 Routes per generazione AI siti web.
 Include: generazione pipeline, refine via chat, status tracking, export.
+La generazione gira in background (asyncio.create_task) per evitare
+il timeout di 30s del proxy Render free tier.
 """
 
+import asyncio
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
@@ -11,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from app.services.swarm_generator import swarm
 from app.services.ai_service import ai_service  # fallback
-from app.core.database import get_db
+from app.core.database import get_db, SessionLocal
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.models.site import Site
@@ -84,47 +87,37 @@ def _save_version(db: Session, site: Site, html_content: str, description: str):
     db.flush()
 
 
-# ============ GENERATION ENDPOINTS ============
+# ============ BACKGROUND GENERATION TASK ============
 
-@router.post("/website")
-async def generate_website(
+async def _run_generation_background(
     request: GenerateRequest,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    user_id: int,
+    site_id: int | None,
 ):
     """
-    Genera un sito web completo usando AI pipeline a 3 step.
-    Richiede autenticazione. Controlla il limite di generazioni gratuite.
+    Esegue la generazione in background con una sessione DB propria.
+    Necessario per evitare il timeout di 30s del proxy Render free tier.
     """
-    # Controlla limite generazioni
-    if not current_user.has_remaining_generations:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "message": "Hai esaurito le generazioni gratuite",
-                "generations_used": current_user.generations_used,
-                "generations_limit": current_user.generations_limit,
-                "upgrade_required": True,
-            },
-        )
-
-    # Se site_id fornito, aggiorna il progresso sul sito
-    site = None
-    if request.site_id:
-        site = db.query(Site).filter(
-            Site.id == request.site_id,
-            Site.owner_id == current_user.id,
-        ).first()
-
-    def on_progress(step: int, message: str):
-        """Callback per aggiornare progresso generazione sul DB."""
-        if site:
-            site.generation_step = step
-            site.generation_message = message
-            site.status = "generating"
-            db.commit()
-
+    db = SessionLocal()
     try:
+        site = None
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            logger.error(f"[BG] User {user_id} non trovato")
+            return
+
+        if site_id:
+            site = db.query(Site).filter(Site.id == site_id, Site.owner_id == user_id).first()
+
+        def on_progress(step: int, message: str):
+            if site:
+                site.generation_step = step
+                site.generation_message = message
+                site.status = "generating"
+                db.commit()
+
+        logger.info(f"[BG] Inizio generazione per user {user_id}, site {site_id}")
+
         result = await swarm.generate(
             business_name=request.business_name,
             business_description=request.business_description,
@@ -138,19 +131,19 @@ async def generate_website(
         )
 
         if not result.get("success"):
-            # Reset progress on failure
+            logger.error(f"[BG] Generazione fallita: {result.get('error')}")
             if site:
                 site.generation_step = 0
-                site.generation_message = ""
+                site.generation_message = result.get("error", "Errore generazione")
                 site.status = "draft"
                 db.commit()
-            raise HTTPException(status_code=500, detail=result.get("error", "Unknown error"))
+            return
 
-        # Incrementa contatore generazioni (se non è premium)
-        if not current_user.is_premium and not current_user.is_superuser:
-            current_user.generations_used += 1
+        # Incrementa contatore generazioni
+        if not user.is_premium and not user.is_superuser:
+            user.generations_used += 1
 
-        # Se site_id fornito, salva HTML e versione
+        # Salva HTML e versione
         if site and result.get("html_content"):
             site.html_content = result["html_content"]
             site.status = "ready"
@@ -159,32 +152,76 @@ async def generate_website(
             _save_version(db, site, result["html_content"], "Generazione iniziale AI")
 
         db.commit()
-
         logger.info(
-            f"Generazione pipeline completata per user {current_user.id}: "
-            f"{current_user.generations_used}/{current_user.generations_limit}"
+            f"[BG] Generazione completata per user {user_id}: "
+            f"{result.get('generation_time_ms')}ms, ${result.get('cost_usd')}"
         )
 
-        # Aggiungi info quote alla risposta
-        result["quota"] = {
-            "generations_used": current_user.generations_used,
-            "generations_limit": current_user.generations_limit,
-            "remaining_generations": current_user.remaining_generations,
-            "is_premium": current_user.is_premium,
-        }
-
-        return result
-
-    except HTTPException:
-        raise
     except Exception as e:
-        logger.exception("Errore generazione sito")
+        logger.exception(f"[BG] Errore generazione background")
+        if site_id:
+            try:
+                site = db.query(Site).filter(Site.id == site_id).first()
+                if site:
+                    site.generation_step = 0
+                    site.generation_message = str(e)[:200]
+                    site.status = "draft"
+                    db.commit()
+            except Exception:
+                pass
+    finally:
+        db.close()
+
+
+# ============ GENERATION ENDPOINTS ============
+
+@router.post("/website")
+async def generate_website(
+    request: GenerateRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Avvia generazione sito in background e ritorna subito.
+    Il frontend fa polling su GET /api/generate/status/{site_id}.
+    """
+    # Controlla limite generazioni
+    if not current_user.has_remaining_generations:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "message": "Hai esaurito le generazioni gratuite",
+                "generations_used": current_user.generations_used,
+                "generations_limit": current_user.generations_limit,
+                "upgrade_required": True,
+            },
+        )
+
+    # Imposta sito in stato "generating" subito
+    site = None
+    if request.site_id:
+        site = db.query(Site).filter(
+            Site.id == request.site_id,
+            Site.owner_id == current_user.id,
+        ).first()
         if site:
+            site.status = "generating"
             site.generation_step = 0
-            site.generation_message = ""
-            site.status = "draft"
+            site.generation_message = "Avvio generazione..."
             db.commit()
-        raise HTTPException(status_code=500, detail=str(e))
+
+    # Lancia generazione in background
+    asyncio.create_task(
+        _run_generation_background(request, current_user.id, request.site_id)
+    )
+
+    return {
+        "success": True,
+        "message": "Generazione avviata in background",
+        "site_id": request.site_id,
+        "status": "generating",
+        "poll_url": f"/api/generate/status/{request.site_id}" if request.site_id else None,
+    }
 
 
 # ============ REFINE (CHAT) ============
