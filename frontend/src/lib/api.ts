@@ -28,16 +28,15 @@ function getAuthHeaders(): Record<string, string> {
 /** Gestisce le risposte API */
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    // Se 401 Unauthorized, redirect al login
+    const error = await res.json().catch(() => ({ detail: "Errore sconosciuto" }));
+
+    // Se 401 Unauthorized, lancia errore (il context auth gestirà il redirect)
     if (res.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      if (typeof window !== "undefined") {
-        window.location.href = "/auth";
-      }
+      const authError = new Error(error.detail || "Non autorizzato");
+      (authError as any).status = 401;
+      throw authError;
     }
 
-    const error = await res.json().catch(() => ({ detail: "Errore sconosciuto" }));
     // Se è un errore di quota, lancia con struttura specifica
     if (res.status === 403 && error.detail?.upgrade_required) {
       const quotaError = new Error(error.detail.message || "Quota esaurita");
