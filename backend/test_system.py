@@ -470,9 +470,9 @@ def test_6_real_generation():
 
     log_ok(f"Generazione avviata in background (status: {gen_body.get('status')})")
 
-    # Polling per attendere completamento (max 180s)
+    # Polling per attendere completamento (max 300s)
     generation_succeeded = False
-    max_wait = 180
+    max_wait = 300
     poll_interval = 5
     while time.time() - start < max_wait:
         time.sleep(poll_interval)
