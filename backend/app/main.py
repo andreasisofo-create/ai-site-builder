@@ -21,25 +21,27 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-logger.info("🚀 Inizializzazione backend...")
+logger.info("Inizializzazione backend...")
 
 # Import config
 try:
     from app.core.config import settings
-    logger.info("✅ Config caricata")
+    logger.info("Config caricata")
 except Exception as e:
-    logger.error(f"❌ Errore caricamento config: {e}")
+    logger.error(f"Errore caricamento config: {e}")
     logger.error(traceback.format_exc())
     raise
 
-# Import database
+# Import database (non crashare se il DB non e' raggiungibile)
+engine = None
+Base = None
 try:
     from app.core.database import engine, Base
-    logger.info("✅ Database module caricato")
+    logger.info("Database module caricato")
 except Exception as e:
-    logger.error(f"❌ Errore caricamento database: {e}")
+    logger.error(f"Errore caricamento database: {e}")
     logger.error(traceback.format_exc())
-    raise
+    logger.warning("Il server partira' senza database - gli endpoint DB non funzioneranno")
 
 # ===== MIDDLEWARE CORS PERSONALIZZATO =====
 # Questo gestisce CORS per TUTTE le richieste, inclusi gli errori
@@ -80,22 +82,25 @@ class CORSMiddlewareCustom(BaseHTTPMiddleware):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Gestione del ciclo di vita dell'applicazione"""
-    logger.info("🚀 Avvio Site Builder API...")
-    
-    try:
-        logger.info("📦 Connessione al database...")
-        Base.metadata.create_all(bind=engine)
-        logger.info("✅ Database inizializzato correttamente")
-    except Exception as e:
-        logger.error(f"❌ Errore connessione database: {e}")
-        logger.error(traceback.format_exc())
-    
+    logger.info("Avvio Site Builder API...")
+
+    if engine and Base:
+        try:
+            logger.info("Connessione al database...")
+            Base.metadata.create_all(bind=engine)
+            logger.info("Database inizializzato correttamente")
+        except Exception as e:
+            logger.error(f"Errore connessione database: {e}")
+            logger.error(traceback.format_exc())
+    else:
+        logger.warning("Database non disponibile - skip inizializzazione tabelle")
+
     yield
-    
-    logger.info("👋 Server spento")
+
+    logger.info("Server spento")
 
 # Creazione app
-logger.info("🏗️  Creazione FastAPI app...")
+logger.info("Creazione FastAPI app...")
 app = FastAPI(
     title="Site Builder API",
     description="API per la creazione e gestione di siti web",
@@ -106,7 +111,7 @@ app = FastAPI(
 )
 
 # CORS Middleware CUSTOM - DEVE ESSERE IL PRIMO!
-logger.info("🔧 Configurazione CORS custom...")
+logger.info("Configurazione CORS custom...")
 app.add_middleware(CORSMiddlewareCustom)
 
 # Anche il CORS standard di FastAPI (doppia protezione)
@@ -124,7 +129,7 @@ app.add_middleware(
     expose_headers=["*"],
     max_age=3600,
 )
-logger.info("✅ CORS configurato")
+logger.info("CORS configurato")
 
 # Error handler globale
 @app.exception_handler(Exception)
@@ -136,29 +141,36 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 # Import e registrazione routes
-logger.info("📝 Registrazione routes...")
+logger.info("Registrazione routes...")
 try:
-    from app.api.routes import sites, components, deploy, auth, generate
-
+    from app.api.routes import auth
     app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+    logger.info("Route auth registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route auth: {e}")
+    logger.error(traceback.format_exc())
+
+try:
+    from app.api.routes import sites, components, deploy, generate
     app.include_router(sites.router, prefix="/api/sites", tags=["sites"])
     app.include_router(components.router, prefix="/api/components", tags=["components"])
     app.include_router(deploy.router, prefix="/api/deploy", tags=["deploy"])
     app.include_router(generate.router, prefix="/api", tags=["generate"])
-
-    # test_ai e' opzionale
-    try:
-        from app.api.routes import test_ai
-        app.include_router(test_ai.router, prefix="/api", tags=["test"])
-        logger.info("✅ Test routes registrate")
-    except ImportError:
-        logger.warning("⚠️ test_ai routes non trovate, skip")
-
-    logger.info("✅ Routes registrate")
+    logger.info("Route principali registrate")
 except Exception as e:
-    logger.error(f"❌ Errore registrazione routes: {e}")
+    logger.error(f"Errore registrazione routes principali: {e}")
     logger.error(traceback.format_exc())
-    raise
+
+try:
+    from app.api.routes import test_ai
+    app.include_router(test_ai.router, prefix="/api", tags=["test"])
+    logger.info("Test routes registrate")
+except ImportError:
+    pass
+except Exception as e:
+    logger.error(f"Errore registrazione test routes: {e}")
+
+logger.info("Routes registrate")
 
 # ===== ENDPOINTS BASE (senza prefisso /api) =====
 @app.get("/")
@@ -200,7 +212,7 @@ async def head_endpoints():
     """Gestisce richieste HEAD per health checks"""
     return JSONResponse(content={})
 
-logger.info("✅ App inizializzata!")
+logger.info("App inizializzata!")
 
 if __name__ == "__main__":
     import uvicorn
