@@ -171,8 +171,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const googleLogin = () => {
-    // Redirect to backend OAuth endpoint
-    window.location.href = `/api/auth/oauth/google?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
+    // Redirect diretto al backend Render (bypassa proxy Vercel per evitare cold start page)
+    const backendUrl = "https://ai-site-builder-jz2g.onrender.com";
+    window.location.href = `${backendUrl}/api/auth/oauth/google?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
   };
 
   const refreshUser = async () => {
