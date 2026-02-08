@@ -14,11 +14,10 @@ import {
   ExclamationCircleIcon,
   SparklesIcon,
   ChatBubbleLeftRightIcon,
-  ArrowDownTrayIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import { getSite, updateSite, refineWebsite, exportSite, Site } from "@/lib/api";
+import { getSite, updateSite, refineWebsite, Site } from "@/lib/api";
 
 interface ChatMessage {
   id: string;
@@ -45,7 +44,6 @@ export default function Editor() {
   const [loading, setLoading] = useState(true);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
   const [isPublishing, setIsPublishing] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
 
   // Chat state
   const [chatOpen, setChatOpen] = useState(false);
@@ -102,20 +100,6 @@ export default function Editor() {
       toast.error(error.message || "Errore nella pubblicazione");
     } finally {
       setIsPublishing(false);
-    }
-  };
-
-  const handleExport = async () => {
-    if (!site) return;
-
-    try {
-      setIsExporting(true);
-      await exportSite(site.id, site.name);
-      toast.success("File HTML scaricato!");
-    } catch (error: any) {
-      toast.error(error.message || "Errore durante l'export");
-    } finally {
-      setIsExporting(false);
     }
   };
 
@@ -290,21 +274,6 @@ export default function Editor() {
             >
               <ChatBubbleLeftRightIcon className="w-4 h-4" />
               <span className="hidden md:inline">Chat AI</span>
-            </button>
-
-            {/* Export */}
-            <button
-              onClick={handleExport}
-              disabled={isExporting || !site.html_content}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all disabled:opacity-50"
-              title="Scarica HTML"
-            >
-              {isExporting ? (
-                <ArrowPathIcon className="w-4 h-4 animate-spin" />
-              ) : (
-                <ArrowDownTrayIcon className="w-4 h-4" />
-              )}
-              <span className="hidden md:inline">Scarica</span>
             </button>
 
             {/* Publish */}
