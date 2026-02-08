@@ -2,7 +2,10 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+// Usa path relativi per sfruttare il proxy Next.js -> Backend
+// In sviluppo: localhost:3000/api -> localhost:8000/api
+// In produzione: vercel.app/api -> render.com/api
+const API_BASE = "";  // Path relativi, es: "/api/auth/login"
 
 export interface User {
   id: number;
@@ -59,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Fetch user data with token
   const fetchUser = useCallback(async (token: string): Promise<User | null> => {
     try {
-      const res = await fetch(`${API_BASE}/api/auth/me`, {
+      const res = await fetch(`/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -79,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       formData.append("username", email);
       formData.append("password", password);
 
-      const res = await fetch(`${API_BASE}/api/auth/login`, {
+      const res = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData,
@@ -112,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, password: string, fullName: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const res = await fetch(`${API_BASE}/api/auth/register`, {
+      const res = await fetch(`/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, full_name: fullName }),
@@ -144,7 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const googleLogin = () => {
     // Redirect to backend OAuth endpoint
-    window.location.href = `${API_BASE}/api/auth/oauth/google?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
+    window.location.href = `/api/auth/oauth/google?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
   };
 
   const refreshUser = async () => {

@@ -27,9 +27,8 @@ const nextConfig = {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     return [
       {
-        // Proxy to Python Backend for everything EXCEPT auth routes
-        // This regex means: match /api/ANYTHING where NOT starting with 'auth'
-        source: '/api/((?!auth).*)',
+        // Proxy TUTTE le chiamate API al backend Python
+        source: '/api/:path*',
         destination: `${apiUrl}/api/:path*`,
       },
     ];

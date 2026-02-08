@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     SECRET_KEY: str = "your-secret-key-change-in-production"
     
-    # Database (SQLite per Render - funziona subito)
-    DATABASE_URL: str = "sqlite:///./sitebuilder.db"
+    # Database (PostgreSQL - Supabase in produzione, locale via Docker)
+    DATABASE_URL: str = "postgresql://sitebuilder:sitebuilder123@localhost:5432/sitebuilder"
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     CORS_ALLOW_ALL: bool = True  # ATTENZIONE: Cambia a False dopo aver verificato tutto funzioni
     
     # JWT
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 giorni
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # Vercel
@@ -62,6 +62,9 @@ class Settings(BaseSettings):
     # Google OAuth
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
+    
+    # Render
+    RENDER_EXTERNAL_URL: str = ""  # Populated automatically by Render
     
     class Config:
         env_file = ".env"

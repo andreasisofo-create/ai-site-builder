@@ -2,8 +2,9 @@ services:
   - type: web
     name: site-builder-api
     runtime: python
+    rootDir: backend
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "cd app && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -14,6 +15,14 @@ services:
       - key: GOOGLE_CLIENT_ID
         value: 27507120933-d9kbo0ln3dckm0m99l68dbr7dem78k5n.apps.googleusercontent.com
       - key: GOOGLE_CLIENT_SECRET
-        value: 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
+        value: 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
+      - key: CORS_ALLOW_ALL
+        value: "true"
       - key: CORS_ORIGINS
         value: '["https://site-generator-v2.vercel.app"]'
+      - key: KIMI_API_KEY
+        value: sk-83mQ9P3T6WRkham1Thm1HIWocRkGzhgvmG1cTjPS6vzpYyMe
+      - key: OPENROUTER_API_KEY
+        value: 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
+      - key: RENDER_EXTERNAL_URL
+        value: https://ai-site-builder-jr2g.onrender.com

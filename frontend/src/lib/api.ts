@@ -1,8 +1,8 @@
 /** Client API per comunicare con il backend */
 
-const API_BASE = typeof window === 'undefined'
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")
-  : "";
+// Usa path relativi per sfruttare il proxy Next.js -> Backend
+// Il rewrite in next.config.js inoltra /api/* al backend
+const API_BASE = "";  // Path relativi: "/api/..."
 
 /** Ottiene il token JWT dal localStorage */
 function getToken(): string | null {
@@ -11,7 +11,7 @@ function getToken(): string | null {
 }
 
 /** Ottiene gli headers di autenticazione */
-async function getAuthHeaders(): Promise<Record<string, string>> {
+function getAuthHeaders(): Record<string, string> {
   const token = getToken();
 
   const headers: Record<string, string> = {

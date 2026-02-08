@@ -3,22 +3,15 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
 function AuthCallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if we are running on Vercel/Next.js environment or local/legacy
-    // With NextAuth (new flow), this page might not even be used, as NextAuth handles callbacks internally.
-    // However, if it's used for custom verify flows, we keep it.
-
     const token = searchParams.get("token");
     const errorParam = searchParams.get("error");
 
-    // ... identifying connection ...
     console.log("AuthCallback loaded", { token: !!token, error: errorParam });
 
     if (errorParam) {
@@ -29,12 +22,22 @@ function AuthCallbackContent() {
 
     if (token) {
       localStorage.setItem("token", token);
-      // Removed complex fetch logic for now to avoid errors on build if API is unreachable.
-      // Just redirect to dashboard if token exists.
-      router.push("/dashboard");
+      // Fetch user data e salva in localStorage, poi redirect
+      (async () => {
+        try {
+          const res = await fetch("/api/auth/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            const userData = await res.json();
+            localStorage.setItem("user", JSON.stringify(userData));
+          }
+        } catch (e) {
+          console.error("Errore fetch user dopo OAuth:", e);
+        }
+        router.push("/dashboard");
+      })();
     } else {
-      // If no token, maybe it's just a direct visit?
-      // Redirect to auth after a delay
       setTimeout(() => router.push("/auth"), 1000);
     }
   }, [searchParams, router]);
