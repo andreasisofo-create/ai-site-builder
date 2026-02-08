@@ -15,7 +15,7 @@ services:
       - key: GOOGLE_CLIENT_ID
         value: 27507120933-d9kbo0ln3dckm0m99l68dbr7dem78k5n.apps.googleusercontent.com
       - key: GOOGLE_CLIENT_SECRET
-        value: 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
+        value: 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
       - key: CORS_ALLOW_ALL
         value: "true"
       - key: CORS_ORIGINS
