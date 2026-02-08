@@ -1,8 +1,8 @@
 /** Client API per comunicare con il backend */
 
-// Usa path relativi per sfruttare il proxy Next.js -> Backend
-// Il rewrite in next.config.js inoltra /api/* al backend
-const API_BASE = "";  // Path relativi: "/api/..."
+// Chiama il backend Render direttamente (con CORS).
+// Il proxy Vercel rewrite perde l'header Authorization su redirect cross-origin.
+const API_BASE = "https://ai-site-builder-jz2g.onrender.com";
 
 /** Ottiene il token JWT dal localStorage */
 function getToken(): string | null {

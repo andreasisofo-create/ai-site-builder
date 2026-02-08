@@ -23,9 +23,10 @@ function AuthCallbackContent() {
     if (token) {
       localStorage.setItem("token", token);
       // Fetch user data e salva in localStorage, poi redirect
+      const BACKEND_URL = "https://ai-site-builder-jz2g.onrender.com";
       (async () => {
         try {
-          const res = await fetch("/api/auth/me", {
+          const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) {
