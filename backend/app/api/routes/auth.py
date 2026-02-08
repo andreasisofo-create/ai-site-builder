@@ -374,6 +374,33 @@ async def get_quota(current_user: User = Depends(get_current_active_user)):
     }
 
 
+@router.post("/set-password")
+async def set_password(data: RegisterRequest, db: Session = Depends(get_db)):
+    """Imposta password per un account OAuth (senza password)"""
+    user = db.query(User).filter(User.email == data.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+
+    if user.hashed_password:
+        raise HTTPException(status_code=400, detail="L'utente ha gia' una password")
+
+    try:
+        user.hashed_password = get_password_hash(data.password)
+    except Exception as e:
+        # Fallback: usa bcrypt direttamente se passlib fallisce
+        import bcrypt
+        salt = bcrypt.gensalt()
+        user.hashed_password = bcrypt.hashpw(data.password.encode('utf-8'), salt).decode('utf-8')
+
+    if data.full_name:
+        user.full_name = data.full_name
+
+    db.commit()
+    db.refresh(user)
+
+    return {"message": "Password impostata", "user_id": user.id}
+
+
 @router.post("/migrate-db")
 async def migrate_db(db: Session = Depends(get_db)):
     """
