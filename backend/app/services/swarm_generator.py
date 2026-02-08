@@ -282,14 +282,15 @@ IMPORTANT:
 
 Generate the complete HTML now."""
 
-        result = await self.kimi.call(
+        # Streaming per evitare timeout su generazioni lunghe
+        result = await self.kimi.call_stream(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
             max_tokens=6000,
             thinking=False,  # Instant mode: Phase 1 gia' fornisce analisi dettagliate
-            timeout=120.0,
+            timeout=300.0,
         )
 
         if result["success"]:
@@ -612,11 +613,12 @@ Instructions:
 4. Return ONLY HTML between ```html and ``` tags"""
 
         start_time = time.time()
-        result = await self.kimi.call(
+        # Streaming per evitare timeout su refine lunghi
+        result = await self.kimi.call_stream(
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=12000,
+            max_tokens=8000,
             thinking=False,  # Instant mode per velocita'
-            timeout=180.0,
+            timeout=300.0,
         )
 
         if not result["success"]:

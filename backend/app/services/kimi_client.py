@@ -2,9 +2,11 @@
 Client dedicato per Kimi K2.5 API (Moonshot).
 Supporta Thinking mode e Instant mode.
 Usa httpx.AsyncClient persistente per evitare overhead di connessione.
+Supporta streaming SSE per chiamate lunghe (evita timeout).
 """
 
 import httpx
+import json
 import logging
 import re
 from typing import Dict, Any, Optional, List
@@ -107,6 +109,87 @@ class KimiClient:
             return {"success": False, "error": "Timeout: la richiesta ha impiegato troppo tempo"}
         except Exception as e:
             logger.exception("Errore chiamata Kimi API")
+            return {"success": False, "error": str(e)}
+
+    async def call_stream(
+        self,
+        messages: List[Dict[str, Any]],
+        max_tokens: int = 6000,
+        thinking: bool = False,
+        timeout: float = 300.0,
+    ) -> Dict[str, Any]:
+        """
+        Chiamata con streaming SSE. Evita timeout per generazioni lunghe.
+        I token arrivano incrementalmente, il read timeout si resetta ad ogni chunk.
+
+        Returns:
+            {"success": True, "content": str, "tokens_input": int, "tokens_output": int}
+            oppure {"success": False, "error": str}
+        """
+        temperature = 1.0 if thinking else 0.6
+
+        payload: Dict[str, Any] = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "stream": True,
+        }
+
+        if not thinking:
+            payload["thinking"] = {"type": "disabled"}
+
+        try:
+            client = await self._get_client()
+            collected_content = []
+            tokens_in = 0
+            tokens_out = 0
+
+            async with client.stream(
+                "POST",
+                f"{self.api_url}/chat/completions",
+                json=payload,
+                timeout=timeout,
+            ) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if not line.startswith("data: "):
+                        continue
+                    data_str = line[6:]  # Remove "data: " prefix
+                    if data_str.strip() == "[DONE]":
+                        break
+                    try:
+                        chunk = json.loads(data_str)
+                        delta = chunk.get("choices", [{}])[0].get("delta", {})
+                        if delta.get("content"):
+                            collected_content.append(delta["content"])
+                        # Usage info in last chunk
+                        usage = chunk.get("usage")
+                        if usage:
+                            tokens_in = usage.get("prompt_tokens", 0)
+                            tokens_out = usage.get("completion_tokens", 0)
+                    except json.JSONDecodeError:
+                        continue
+
+            content = "".join(collected_content)
+            if not content:
+                return {"success": False, "error": "Nessun contenuto ricevuto dallo streaming"}
+
+            return {
+                "success": True,
+                "content": content,
+                "tokens_input": tokens_in,
+                "tokens_output": tokens_out,
+            }
+
+        except httpx.HTTPStatusError as e:
+            error_msg = self._handle_http_error(e)
+            return {"success": False, "error": error_msg}
+        except httpx.TimeoutException:
+            logger.error("Timeout calling Kimi API (stream)")
+            return {"success": False, "error": "Timeout: la richiesta ha impiegato troppo tempo"}
+        except Exception as e:
+            logger.exception("Errore chiamata Kimi API (stream)")
             return {"success": False, "error": str(e)}
 
     async def call_with_image(
