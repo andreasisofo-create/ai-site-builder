@@ -1,10 +1,11 @@
 "use client";
 
 export const dynamic = "force-dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Menu, Transition } from "@headlessui/react";
 import { useAuth, useRequireAuth } from "@/lib/auth-context";
 import {
   PlusIcon,
@@ -30,6 +31,9 @@ import {
   PlayCircleIcon,
   ArrowRightIcon,
   ArrowUpRightIcon,
+  ArrowRightStartOnRectangleIcon,
+  UserCircleIcon,
+  StarIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { fetchSites, deleteSite, Site } from "@/lib/api";
@@ -75,7 +79,7 @@ const STYLE_PRESETS = [
 ];
 
 export default function Dashboard() {
-  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   useRequireAuth("/auth");
   const router = useRouter();
   const [sites, setSites] = useState<Site[]>([]);
@@ -271,9 +275,77 @@ export default function Dashboard() {
               Crea nuovo sito
             </button>
 
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-sm font-bold border border-white/10">
-              {user?.full_name?.[0] || user?.email?.[0] || "U"}
-            </div>
+            <Menu as="div" className="relative">
+              <Menu.Button className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-sm font-bold border border-white/10 cursor-pointer hover:ring-2 hover:ring-violet-400/50 transition-all">
+                {user?.full_name?.[0] || user?.email?.[0] || "U"}
+              </Menu.Button>
+
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-150"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-100"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 mt-2 w-72 origin-top-right rounded-xl bg-[#1a1a1a] border border-white/10 shadow-2xl shadow-black/50 z-50 overflow-hidden focus:outline-none">
+                  {/* Header profilo */}
+                  <div className="px-4 py-4 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-base font-bold flex-shrink-0">
+                        {user?.full_name?.[0] || user?.email?.[0] || "U"}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">
+                          {user?.full_name || "Utente"}
+                        </p>
+                        <p className="text-xs text-slate-400 truncate">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Abbonamento */}
+                  <div className="px-4 py-3 border-b border-white/10">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-400">Piano</span>
+                      {(user as any)?.is_premium ? (
+                        <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 text-xs font-medium flex items-center gap-1">
+                          <StarIcon className="w-3 h-3" />
+                          Premium
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-medium">
+                          Free
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Logout */}
+                  <div className="p-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          onClick={() => {
+                            logout();
+                            router.push("/auth");
+                          }}
+                          className={`${
+                            active ? "bg-white/5" : ""
+                          } w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 transition-colors`}
+                        >
+                          <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
+                          Esci
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
           </div>
         </header>
 
