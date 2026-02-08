@@ -446,8 +446,8 @@ def test_6_real_generation():
     site_id = body["id"]
     log_ok(f"Sito test creato (id: {site_id})")
 
-    # Lancia generazione
-    print(f"\n  [INFO] Lancio generazione per sito {site_id}... (puo' impiegare 30-60s)")
+    # Lancia generazione (ritorna subito, gira in background)
+    print(f"\n  [INFO] Lancio generazione per sito {site_id}... (background, polling ogni 5s)")
     start = time.time()
 
     gen_status, gen_body = api_call("POST", "/api/generate/website", {
@@ -458,17 +458,63 @@ def test_6_real_generation():
         "site_id": site_id,
     }, auth=True)
 
-    elapsed = time.time() - start
+    if gen_status == 403:
+        log_ok(f"Generazione bloccata da quota -> {gen_status} (corretto se limite raggiunto)")
+        api_call("DELETE", f"/api/sites/{site_id}", auth=True)
+        log_ok("Sito test eliminato")
+        return
+    elif gen_status != 200 or not gen_body.get("success"):
+        log_fail(f"Avvio generazione -> {gen_status}", str(gen_body))
+        api_call("DELETE", f"/api/sites/{site_id}", auth=True)
+        return
 
-    if gen_status == 200 and gen_body.get("success"):
-        html_len = len(gen_body.get("html_content", ""))
-        model = gen_body.get("model_used", "?")
-        cost = gen_body.get("cost_usd", 0)
-        gen_time = gen_body.get("generation_time_ms", 0)
-        log_ok(f"Generazione completata in {elapsed:.1f}s (HTML: {html_len} chars, model: {model}, cost: ${cost})")
+    log_ok(f"Generazione avviata in background (status: {gen_body.get('status')})")
 
-        # Verifica che l'HTML contenga elementi essenziali
-        html = gen_body.get("html_content", "")
+    # Polling per attendere completamento (max 180s)
+    generation_succeeded = False
+    max_wait = 180
+    poll_interval = 5
+    while time.time() - start < max_wait:
+        time.sleep(poll_interval)
+        elapsed = time.time() - start
+        ps, pb = api_call("GET", f"/api/generate/status/{site_id}", auth=True)
+        if ps != 200:
+            print(f"  [INFO] Polling status -> {ps} ({elapsed:.0f}s)")
+            continue
+
+        site_status = pb.get("status", "?")
+        step = pb.get("step", 0)
+        total = pb.get("total_steps", 3)
+        pct = pb.get("percentage", 0)
+        msg = pb.get("message", "")
+        print(f"  [INFO] Polling: status={site_status}, step={step}/{total}, {pct}% - {msg} ({elapsed:.0f}s)")
+
+        if site_status == "ready":
+            generation_succeeded = True
+            log_ok(f"Generazione completata in {elapsed:.1f}s")
+            break
+        elif site_status == "draft" and msg:
+            log_fail(f"Generazione fallita in {elapsed:.1f}s", msg)
+            break
+        elif not pb.get("is_generating") and site_status != "generating":
+            log_fail(f"Stato inatteso: {site_status}", str(pb))
+            break
+
+    if not generation_succeeded and time.time() - start >= max_wait:
+        log_fail(f"Generazione timeout dopo {max_wait}s", "Background task troppo lento")
+
+    # Verifica sito aggiornato
+    status, body = api_call("GET", f"/api/sites/{site_id}", auth=True)
+    if status == 200:
+        site_status = body.get("status", "?")
+        has_html = bool(body.get("html_content"))
+        log_ok(f"Sito dopo generazione: status={site_status}, has_html={has_html}")
+    else:
+        log_fail(f"GET sito dopo generazione -> {status}", str(body))
+
+    # Verifica HTML
+    if generation_succeeded and status == 200:
+        html = body.get("html_content", "")
         checks = {
             "<!DOCTYPE": "DOCTYPE declaration",
             "tailwindcss": "Tailwind CDN",
@@ -482,40 +528,8 @@ def test_6_real_generation():
             else:
                 log_fail(f"HTML manca: {desc}")
 
-        # Verifica quota aggiornata
-        if gen_body.get("quota"):
-            q = gen_body["quota"]
-            log_ok(f"Quota: {q.get('generations_used')}/{q.get('generations_limit')} (premium: {q.get('is_premium')})")
-
-    elif gen_status == 403:
-        log_ok(f"Generazione bloccata da quota -> {gen_status} (corretto se limite raggiunto)")
-    elif gen_status == 500:
-        error_detail = gen_body.get("detail", str(gen_body))
-        log_fail(f"Generazione fallita (500) in {elapsed:.1f}s", error_detail)
-    else:
-        log_fail(f"Generazione -> {gen_status}", str(gen_body))
-        # Cleanup
-        api_call("DELETE", f"/api/sites/{site_id}", auth=True)
-        return
-
-    # Verifica sito aggiornato
-    status, body = api_call("GET", f"/api/sites/{site_id}", auth=True)
-    if status == 200:
-        site_status = body.get("status", "?")
-        has_html = bool(body.get("html_content"))
-        log_ok(f"Sito dopo generazione: status={site_status}, has_html={has_html}")
-    else:
-        log_fail(f"GET sito dopo generazione -> {status}", str(body))
-
-    # Test status endpoint
-    status, body = api_call("GET", f"/api/generate/status/{site_id}", auth=True)
-    if status == 200:
-        log_ok(f"Status generazione: step={body.get('step')}/{body.get('total_steps')}, status={body.get('status')}")
-    else:
-        log_fail(f"GET /api/generate/status/{site_id} -> {status}", str(body))
-
-    # Test refine
-    if gen_status == 200 and gen_body.get("success"):
+    # Test refine (solo se generazione riuscita)
+    if generation_succeeded:
         print(f"\n  [INFO] Test refine (chat AI)...")
         ref_start = time.time()
         status, body = api_call("POST", "/api/generate/refine", {
@@ -532,12 +546,14 @@ def test_6_real_generation():
         else:
             log_fail(f"Refine -> {status}", str(body))
 
-    # Test preview
-    status, body = api_call("GET", f"/api/sites/{site_id}/preview", auth=True)
-    if status == 200 and body.get("html"):
-        log_ok(f"Preview: {len(body['html'])} chars")
-    else:
-        log_fail(f"Preview -> {status}", str(body))
+    # Test preview (solo se generazione riuscita)
+    if generation_succeeded:
+        status, body = api_call("GET", f"/api/sites/{site_id}/preview", auth=True)
+        if status == 200:
+            # Preview returns raw HTML, try to parse length
+            log_ok(f"Preview OK -> {status}")
+        else:
+            log_fail(f"Preview -> {status}", str(body))
 
     # Cleanup: elimina sito test
     api_call("DELETE", f"/api/sites/{site_id}", auth=True)
