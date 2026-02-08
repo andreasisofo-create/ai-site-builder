@@ -1,10 +1,11 @@
 """Routes per gestione siti"""
 
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
-from typing import List, Optional
-from pydantic import BaseModel
+from typing import Any, List, Optional
+from pydantic import BaseModel, field_serializer
 
 from app.core.database import get_db
 from app.core.security import get_current_active_user
@@ -41,8 +42,16 @@ class SiteResponse(BaseModel):
     status: str
     is_published: bool
     thumbnail: Optional[str]
-    created_at: str
-    updated_at: Optional[str]
+    created_at: Any
+    updated_at: Optional[Any] = None
+
+    @field_serializer("created_at", "updated_at")
+    def serialize_dt(self, val: Any) -> Optional[str]:
+        if val is None:
+            return None
+        if isinstance(val, datetime):
+            return val.isoformat()
+        return str(val)
 
     class Config:
         from_attributes = True

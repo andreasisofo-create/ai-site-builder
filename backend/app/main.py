@@ -227,6 +227,28 @@ async def health_check():
 async def ping():
     return {"pong": True, "status": "alive"}
 
+@app.get("/debug/imports")
+async def debug_imports():
+    """Diagnostica: prova a importare ogni modulo e riporta errori."""
+    results = {}
+    modules = [
+        "app.services.sanitizer",
+        "app.services.kimi_client",
+        "app.services.swarm_generator",
+        "app.services.ai_service",
+        "app.api.routes.sites",
+        "app.api.routes.generate",
+        "app.api.routes.components",
+        "app.api.routes.deploy",
+    ]
+    for mod_name in modules:
+        try:
+            __import__(mod_name)
+            results[mod_name] = "OK"
+        except Exception as e:
+            results[mod_name] = f"ERRORE: {type(e).__name__}: {e}"
+    return results
+
 @app.head("/")
 @app.head("/health")
 async def head_endpoints():
