@@ -40,7 +40,9 @@ ALLOWED_DOMAINS = [
 ]
 
 # Tag HTML pericolosi da rimuovere
-DANGEROUS_TAGS = ["script", "iframe", "object", "embed", "applet", "form"]
+# NOTA: "script" NON e' in lista perche' serve per Tailwind CDN e vanilla JS menu.
+# Gli script vengono filtrati selettivamente in sanitize_output().
+DANGEROUS_TAGS = ["iframe", "object", "embed", "applet"]
 
 # Event handler inline da rimuovere
 EVENT_HANDLERS = [
@@ -93,6 +95,48 @@ def sanitize_input(
     return business_name, business_description, sections or []
 
 
+# Script src consentiti (CDN whitelist)
+ALLOWED_SCRIPT_SRCS = [
+    "cdn.tailwindcss.com",
+    "unpkg.com",
+    "cdnjs.cloudflare.com",
+    "fonts.googleapis.com",
+]
+
+
+def _sanitize_scripts(html: str) -> str:
+    """
+    Filtra script tag selettivamente:
+    - Mantieni <script src="..."> da CDN whitelistate
+    - Mantieni <script>...</script> inline (vanilla JS per menu toggle, smooth scroll)
+    - Rimuovi script con src da domini non consentiti
+    """
+    import re as _re
+
+    def _check_script(match):
+        tag = match.group(0)
+        # Script con src
+        src_match = _re.search(r'src\s*=\s*["\']([^"\']+)["\']', tag)
+        if src_match:
+            src_url = src_match.group(1)
+            # Controlla se il dominio e' nella whitelist
+            for allowed in ALLOWED_SCRIPT_SRCS:
+                if allowed in src_url:
+                    return tag  # Mantieni
+            logger.warning(f"Blocked script src: {src_url}")
+            return ""  # Rimuovi
+        # Script inline (senza src) - mantieni per vanilla JS
+        return tag
+
+    html = _re.sub(
+        r'<script[^>]*>.*?</script>',
+        _check_script,
+        html,
+        flags=_re.DOTALL | _re.IGNORECASE,
+    )
+    return html
+
+
 def sanitize_output(html: str) -> str:
     """
     Sanitizza HTML generato dall'AI.
@@ -101,8 +145,11 @@ def sanitize_output(html: str) -> str:
     if not html:
         return html
 
-    # Rimuovi tag pericolosi (tranne <form> che serve per i form di contatto)
-    tags_to_remove = [t for t in DANGEROUS_TAGS if t != "form"]
+    # Rimuovi script pericolosi ma mantieni Tailwind CDN e inline vanilla JS
+    html = _sanitize_scripts(html)
+
+    # Rimuovi tag pericolosi (iframe, object, embed, applet)
+    tags_to_remove = DANGEROUS_TAGS
     for tag in tags_to_remove:
         # Rimuovi tag apertura e chiusura con contenuto
         html = re.sub(

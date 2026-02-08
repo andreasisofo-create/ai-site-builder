@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 
-from app.services.ai_service import ai_service
+from app.services.swarm_generator import swarm
+from app.services.ai_service import ai_service  # fallback
 from app.core.database import get_db
 from app.core.security import get_current_active_user
 from app.models.user import User
@@ -124,7 +125,7 @@ async def generate_website(
             db.commit()
 
     try:
-        result = await ai_service.generate_website_pipeline(
+        result = await swarm.generate(
             business_name=request.business_name,
             business_description=request.business_description,
             sections=request.sections,
@@ -211,7 +212,7 @@ async def refine_website(
         raise HTTPException(status_code=400, detail="Il sito non ha ancora contenuto HTML")
 
     try:
-        result = await ai_service.refine_page(
+        result = await swarm.refine(
             current_html=site.html_content,
             modification_request=request.message,
             section_to_modify=request.section,
@@ -292,14 +293,41 @@ async def get_generation_status(
 @router.post("/analyze-image")
 async def analyze_image(request: ImageAnalysisRequest):
     """Analizza un'immagine di riferimento per estrarre stile."""
-    try:
-        result = await ai_service.analyze_image_style(request.image_url)
+    from app.services.kimi_client import kimi
 
-        if not result.get("success"):
+    prompt = """Analyze this website screenshot and describe:
+1. Color palette (primary, secondary, accent colors in hex format)
+2. Typography style (modern, classic, bold, minimal, elegant)
+3. Layout structure (clean, busy, grid-based, fluid, centered)
+4. Overall mood/atmosphere (professional, playful, elegant, corporate, cozy)
+5. Key design elements that stand out
+
+Be specific and concise. Format as a structured list."""
+
+    try:
+        result = await kimi.call_with_image(
+            prompt=prompt,
+            image_url=request.image_url,
+            max_tokens=1500,
+            thinking=True,
+            timeout=90.0,
+        )
+
+        if not result["success"]:
             raise HTTPException(status_code=500, detail=result.get("error", "Unknown error"))
 
-        return result
+        return {
+            "success": True,
+            "analysis": result["content"],
+            "tokens_used": result.get("tokens_input", 0) + result.get("tokens_output", 0),
+            "cost_usd": kimi.calculate_cost(
+                result.get("tokens_input", 0),
+                result.get("tokens_output", 0),
+            ),
+        }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("Errore analisi immagine")
         raise HTTPException(status_code=500, detail=str(e))
