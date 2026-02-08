@@ -292,8 +292,8 @@ Generate the complete HTML now."""
                 {"role": "user", "content": user_prompt},
             ],
             max_tokens=12000,
-            thinking=True,  # Thinking per codice complesso
-            timeout=180.0,
+            thinking=False,  # Instant mode: Phase 1 gia' fornisce analisi dettagliate
+            timeout=120.0,
         )
 
         if result["success"]:
@@ -484,28 +484,35 @@ IMPORTANT:
         total_tokens_in += html_result.get("tokens_input", 0)
         total_tokens_out += html_result.get("tokens_output", 0)
 
-        # ===== FASE 3: Review e Fix =====
-        if on_progress:
-            on_progress(3, "Revisione e ottimizzazione...")
+        if on_progress and not reference_image_url:
+            on_progress(3, "Finalizzazione...")
 
-        logger.info("[Swarm] === FASE 3: Review HTML ===")
-        phase3_start = time.time()
+        # ===== FASE 3: Review (solo con reference image) =====
+        phase3_time = 0.0
+        if reference_image_url:
+            if on_progress:
+                on_progress(3, "Revisione con immagine di riferimento...")
 
-        review_result = await self._review_html(
-            html=html_content,
-            business_name=business_name,
-            reference_image_url=reference_image_url,
-        )
+            logger.info("[Swarm] === FASE 3: Review con reference image ===")
+            phase3_start = time.time()
 
-        phase3_time = time.time() - phase3_start
-        logger.info(f"[Swarm] Fase 3 completata in {phase3_time:.1f}s")
+            review_result = await self._review_html(
+                html=html_content,
+                business_name=business_name,
+                reference_image_url=reference_image_url,
+            )
 
-        if review_result["success"]:
-            html_content = review_result["content"]
-            total_tokens_in += review_result.get("tokens_input", 0)
-            total_tokens_out += review_result.get("tokens_output", 0)
+            phase3_time = time.time() - phase3_start
+            logger.info(f"[Swarm] Fase 3 completata in {phase3_time:.1f}s")
+
+            if review_result["success"]:
+                html_content = review_result["content"]
+                total_tokens_in += review_result.get("tokens_input", 0)
+                total_tokens_out += review_result.get("tokens_output", 0)
+            else:
+                logger.warning(f"[Swarm] Review fallita, uso output Fase 2: {review_result.get('error')}")
         else:
-            logger.warning(f"[Swarm] Review fallita, uso output Fase 2: {review_result.get('error')}")
+            logger.info("[Swarm] Fase 3 skippata (nessuna reference image)")
 
         # Sanitizza output finale
         html_content = sanitize_output(html_content)
