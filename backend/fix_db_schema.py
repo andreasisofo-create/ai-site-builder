@@ -60,31 +60,38 @@ def fix_sqlite_schema():
 def fix_postgres_schema():
     """Versione PostgreSQL (se serve)"""
     import psycopg2
-    
+
     # URL PostgreSQL - usa variabile d'ambiente se disponibile
     DATABASE_URL = os.getenv(
-        "DATABASE_URL", 
+        "DATABASE_URL",
         "postgresql://postgres:E-quipe!12345@db.xdnpsxjjaupmxocjkngt.supabase.co:5432/postgres"
     )
-    
+
     print(f"🔌 Connessione a PostgreSQL...")
     try:
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
-        
+
+        # Users table columns
         columns_to_add = [
-            ("oauth_id", "VARCHAR UNIQUE"),
-            ("oauth_provider", "VARCHAR"),
-            ("avatar_url", "VARCHAR"),
-            ("generations_used", "INTEGER DEFAULT 0"),
-            ("generations_limit", "INTEGER DEFAULT 2"),
-            ("is_premium", "BOOLEAN DEFAULT FALSE")
+            ("users", "oauth_id", "VARCHAR UNIQUE"),
+            ("users", "oauth_provider", "VARCHAR"),
+            ("users", "avatar_url", "VARCHAR"),
+            ("users", "generations_used", "INTEGER DEFAULT 0"),
+            ("users", "generations_limit", "INTEGER DEFAULT 2"),
+            ("users", "is_premium", "BOOLEAN DEFAULT FALSE"),
         ]
-        
-        for col_name, col_type in columns_to_add:
+
+        # Sites table columns
+        columns_to_add += [
+            ("sites", "generation_step", "INTEGER DEFAULT 0"),
+            ("sites", "generation_message", "VARCHAR DEFAULT ''"),
+        ]
+
+        for table, col_name, col_type in columns_to_add:
             try:
-                print(f"👉 Aggiunta colonna '{col_name}'...", end=" ")
-                cur.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_type};")
+                print(f"👉 {table}.{col_name}...", end=" ")
+                cur.execute(f"ALTER TABLE {table} ADD COLUMN {col_name} {col_type};")
                 conn.commit()
                 print("✅")
             except psycopg2.errors.DuplicateColumn:
@@ -93,7 +100,27 @@ def fix_postgres_schema():
             except Exception as e:
                 conn.rollback()
                 print(f"❌ {e}")
-        
+
+        # Create site_versions table if not exists
+        try:
+            print("👉 Creazione tabella site_versions...", end=" ")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS site_versions (
+                    id SERIAL PRIMARY KEY,
+                    site_id INTEGER NOT NULL REFERENCES sites(id),
+                    html_content TEXT NOT NULL,
+                    version_number INTEGER NOT NULL,
+                    change_description VARCHAR DEFAULT '',
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS ix_site_versions_site_id ON site_versions(site_id);
+            """)
+            conn.commit()
+            print("✅")
+        except Exception as e:
+            conn.rollback()
+            print(f"❌ {e}")
+
         cur.close()
         conn.close()
         print("🚀 Schema PostgreSQL aggiornato!")

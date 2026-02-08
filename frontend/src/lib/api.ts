@@ -159,7 +159,10 @@ export interface GenerateRequest {
     mood?: string;
   };
   reference_analysis?: string;
+  reference_image_url?: string;
   logo_url?: string;
+  contact_info?: Record<string, string>;
+  site_id?: number;
 }
 
 export interface GenerateResponse {
@@ -170,6 +173,7 @@ export interface GenerateResponse {
   tokens_output?: number;
   cost_usd?: number;
   generation_time_ms?: number;
+  pipeline_steps?: number;
   error?: string;
   quota?: {
     generations_used: number;
@@ -187,6 +191,72 @@ export async function generateWebsite(data: GenerateRequest): Promise<GenerateRe
     body: JSON.stringify(data),
   });
   return handleResponse<GenerateResponse>(res);
+}
+
+// ============ REFINE (CHAT AI) ============
+
+export interface RefineRequest {
+  site_id: number;
+  message: string;
+  section?: string;
+}
+
+export interface RefineResponse {
+  success: boolean;
+  html_content?: string;
+  model_used?: string;
+  generation_time_ms?: number;
+}
+
+export async function refineWebsite(data: RefineRequest): Promise<RefineResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/generate/refine`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<RefineResponse>(res);
+}
+
+// ============ GENERATION STATUS ============
+
+export interface GenerationStatus {
+  site_id: number;
+  status: string;
+  is_generating: boolean;
+  step: number;
+  total_steps: number;
+  percentage: number;
+  message: string;
+}
+
+export async function getGenerationStatus(siteId: number): Promise<GenerationStatus> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/generate/status/${siteId}`, { headers });
+  return handleResponse<GenerationStatus>(res);
+}
+
+// ============ EXPORT ============
+
+export async function exportSite(siteId: number, siteName: string): Promise<void> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${siteId}/export`, { headers });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Errore export" }));
+    throw new Error(error.detail || "Errore durante l'export");
+  }
+
+  // Scarica come file
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${siteName.toLowerCase().replace(/\s+/g, "-")}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
 }
 
 // ============ COMPONENTS ============

@@ -38,10 +38,14 @@ class Site(Base):
     thumbnail = Column(String)
     html_content = Column(Text)  # HTML generato dall'AI
     
+    # Generation progress tracking
+    generation_step = Column(Integer, default=0)  # 0=idle, 1=analyzing, 2=generating, 3=reviewing
+    generation_message = Column(String, default="")
+
     # Deploy
     vercel_project_id = Column(String)
     domain = Column(String)
-    
+
     # Relazioni
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     owner = relationship("User", backref="sites")

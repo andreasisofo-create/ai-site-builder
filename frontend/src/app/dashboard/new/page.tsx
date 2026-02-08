@@ -23,7 +23,7 @@ import {
   RocketLaunchIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import { createSite, generateWebsite, updateSite, generateSlug, CreateSiteData, getQuota, upgradeToPremium } from "@/lib/api";
+import { createSite, generateWebsite, updateSite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus } from "@/lib/api";
 
 const STEPS = [
   { id: 1, title: "Brand", icon: BuildingStorefrontIcon },
@@ -118,6 +118,44 @@ export default function NewProjectPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
 
+  // Progress tracking state
+  const [generationProgress, setGenerationProgress] = useState({
+    step: 0,
+    totalSteps: 3,
+    message: "",
+    percentage: 0,
+  });
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startProgressPolling = (siteId: number) => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const status = await getGenerationStatus(siteId);
+        setGenerationProgress({
+          step: status.step,
+          totalSteps: status.total_steps,
+          message: status.message,
+          percentage: status.percentage,
+        });
+
+        if (!status.is_generating) {
+          if (pollingRef.current) clearInterval(pollingRef.current);
+        }
+      } catch {
+        // Ignore polling errors
+      }
+    }, 3000);
+  };
+
+  const stopProgressPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
   const handleGenerate = async () => {
     if (!formData.businessName.trim()) {
       toast.error("Inserisci il nome del business");
@@ -125,23 +163,19 @@ export default function NewProjectPage() {
     }
 
     setIsGenerating(true);
+    setGenerationProgress({ step: 0, totalSteps: 3, message: "Preparazione...", percentage: 0 });
 
     try {
-      // Step 1: Verifica quota prima di iniziare
-      toast.loading("Verifica quota...", { id: "check" });
+      // Verifica quota
       const quota = await getQuota();
-
       if (!quota.has_remaining_generations) {
-        toast.dismiss("check");
         setShowUpgradeModal(true);
         setIsGenerating(false);
         return;
       }
-      toast.dismiss("check");
 
-      // Step 2: Crea il sito sul backend
-      toast.loading("Creazione progetto...", { id: "create" });
-
+      // Crea il sito sul backend
+      setGenerationProgress({ step: 0, totalSteps: 3, message: "Creazione progetto...", percentage: 5 });
       const siteData: CreateSiteData = {
         name: formData.businessName,
         slug: generateSlug(formData.businessName),
@@ -150,13 +184,12 @@ export default function NewProjectPage() {
 
       const site = await createSite(siteData);
       setCreatedSiteId(site.id);
-      toast.success("Progetto creato!", { id: "create" });
 
-      // Step 3: Aggiorna stato a "generating"
-      await updateSite(site.id, { status: "generating" });
+      // Start polling per progress
+      startProgressPolling(site.id);
 
-      // Step 4: Chiama l'AI per generare il sito
-      toast.loading("Generazione sito con AI... (60-90s)", { id: "generate" });
+      // Chiama l'AI pipeline (con site_id per progress tracking)
+      setGenerationProgress({ step: 1, totalSteps: 3, message: "Avvio generazione AI...", percentage: 10 });
 
       const colorHex = COLORS.find(c => c.id === formData.primaryColor)?.hex;
 
@@ -169,41 +202,46 @@ export default function NewProjectPage() {
           mood: STYLES.find(s => s.id === formData.style)?.label,
         },
         logo_url: formData.logo || undefined,
-        reference_analysis: formData.referenceImage || undefined,
+        reference_image_url: formData.referenceImage || undefined,
+        contact_info: (formData.contactInfo.address || formData.contactInfo.phone || formData.contactInfo.email)
+          ? formData.contactInfo
+          : undefined,
+        site_id: site.id,
       });
+
+      stopProgressPolling();
 
       if (!generateResult.success || !generateResult.html_content) {
         throw new Error(generateResult.error || "Errore nella generazione");
       }
 
-      // Step 5: Salva l'HTML generato
+      setGenerationProgress({ step: 3, totalSteps: 3, message: "Completato!", percentage: 100 });
+
+      // Aggiorna thumbnail
       await updateSite(site.id, {
-        html_content: generateResult.html_content,
-        status: "ready",
         thumbnail: `https://placehold.co/600x400/1a1a1a/666?text=${encodeURIComponent(formData.businessName)}`,
       });
 
-      // Mostra messaggio con generazioni rimanenti
+      // Toast con info quota
       const remaining = generateResult.quota?.remaining_generations;
-      if (remaining !== undefined && remaining > 0) {
-        toast.success(`Sito generato! Ti rimangono ${remaining} generazioni`, { id: "generate" });
-      } else if (remaining === 0) {
-        toast.success("Sito generato! Hai esaurito le generazioni gratuite", { id: "generate" });
+      if (remaining !== undefined && remaining >= 0) {
+        toast.success(`Sito generato! Generazioni rimanenti: ${remaining}`);
       } else {
-        toast.success("Sito generato con successo!", { id: "generate" });
+        toast.success("Sito generato con successo!");
       }
 
       // Redirect all'editor
       router.push(`/editor/${site.id}`);
 
     } catch (error: any) {
-      // Gestione errore quota specifico
+      stopProgressPolling();
       if (error.isQuotaError || error.quota?.upgrade_required) {
         setShowUpgradeModal(true);
       } else {
-        toast.error(error.message || "Errore nella generazione", { id: "generate" });
+        toast.error(error.message || "Errore nella generazione");
       }
       setIsGenerating(false);
+      setGenerationProgress({ step: 0, totalSteps: 3, message: "", percentage: 0 });
     }
   };
 
@@ -648,28 +686,83 @@ export default function NewProjectPage() {
                   </div>
                 </div>
 
-                {/* Generate Button */}
-                <button
-                  onClick={handleGenerate}
-                  disabled={isGenerating}
-                  className="w-full py-4 bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl font-semibold text-lg hover:opacity-90 transition-all flex items-center justify-center gap-3 disabled:opacity-70"
-                >
-                  {isGenerating ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Generazione in corso...
-                    </>
-                  ) : (
-                    <>
+                {/* Generate Button / Progress */}
+                {isGenerating ? (
+                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium flex items-center gap-2">
+                        <SparklesIcon className="w-5 h-5 text-blue-400" />
+                        Generazione in corso
+                      </h3>
+                      <span className="text-sm text-slate-400">
+                        {generationProgress.step}/{generationProgress.totalSteps}
+                      </span>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="w-full bg-white/5 rounded-full h-2">
+                      <div
+                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-1000"
+                        style={{ width: `${Math.max(generationProgress.percentage, 5)}%` }}
+                      />
+                    </div>
+
+                    {/* Step Indicators */}
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { step: 1, label: "Analisi riferimento" },
+                        { step: 2, label: "Generazione HTML" },
+                        { step: 3, label: "Revisione e fix" },
+                      ].map(({ step, label }) => (
+                        <div
+                          key={step}
+                          className={`flex items-center gap-2 p-3 rounded-xl text-sm transition-all ${
+                            generationProgress.step === step
+                              ? "bg-blue-500/10 border border-blue-500/30 text-blue-400"
+                              : generationProgress.step > step
+                              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
+                              : "bg-white/[0.02] border border-white/5 text-slate-500"
+                          }`}
+                        >
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
+                            generationProgress.step === step
+                              ? "bg-blue-500 text-white"
+                              : generationProgress.step > step
+                              ? "bg-emerald-500 text-white"
+                              : "bg-white/10 text-slate-500"
+                          }`}>
+                            {generationProgress.step > step ? (
+                              <CheckIcon className="w-3 h-3" />
+                            ) : (
+                              step
+                            )}
+                          </div>
+                          <span className="truncate">{label}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Status Message */}
+                    <div className="flex items-center justify-center gap-2 text-slate-400 text-sm">
+                      <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                      {generationProgress.message || "Elaborazione..."}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleGenerate}
+                      className="w-full py-4 bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl font-semibold text-lg hover:opacity-90 transition-all flex items-center justify-center gap-3"
+                    >
                       <SparklesIcon className="w-5 h-5" />
                       Genera il Mio Sito
-                    </>
-                  )}
-                </button>
+                    </button>
 
-                <p className="text-center text-sm text-slate-500">
-                  Tempo stimato: 60-90 secondi
-                </p>
+                    <p className="text-center text-sm text-slate-500">
+                      Pipeline AI a 3 step - Tempo stimato: 90-120 secondi
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           )}
