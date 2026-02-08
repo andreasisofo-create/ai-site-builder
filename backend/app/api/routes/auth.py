@@ -55,6 +55,14 @@ async def register(data: RegisterRequest, db: Session = Depends(get_db)):
     # Verifica se esiste già
     existing = db.query(User).filter(User.email == data.email).first()
     if existing:
+        # Se l'utente esiste ma non ha password (OAuth), imposta la password
+        if not existing.hashed_password:
+            existing.hashed_password = get_password_hash(data.password)
+            if data.full_name:
+                existing.full_name = data.full_name
+            db.commit()
+            db.refresh(existing)
+            return {"message": "Password impostata", "user_id": existing.id}
         raise HTTPException(status_code=400, detail="Email già registrata")
 
     # Crea utente
