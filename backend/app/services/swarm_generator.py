@@ -287,7 +287,7 @@ Generate the complete HTML now."""
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=4096,
+            max_tokens=6000,
             thinking=False,  # Instant mode: Phase 1 gia' fornisce analisi dettagliate
             timeout=120.0,
         )
