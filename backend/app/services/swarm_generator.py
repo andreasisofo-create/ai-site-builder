@@ -100,10 +100,12 @@ Be specific and technical. Focus on Tailwind CSS grid/flex patterns."""
             for k, v in style_preferences.items():
                 style_str += f"- {k}: {v}\n"
 
+        style_section = f"STYLE PREFERENCES:\n{style_str}" if style_str else ""
+
         prompt = f"""Define the complete color palette and typography for a website.
 
 BUSINESS: {business_name} - {business_description}
-{f'STYLE PREFERENCES:\n{style_str}' if style_str else ''}
+{style_section}
 
 Provide:
 1. Primary color (hex) and its usage (headers, CTAs, accents)
@@ -156,12 +158,14 @@ Use Tailwind CSS color naming conventions where possible."""
             for k, v in contact_info.items():
                 contact_str += f"- {k}: {v}\n"
 
+        contact_section = f"CONTACT INFO:\n{contact_str}" if contact_str else ""
+
         prompt = f"""Generate SEO-optimized Italian text content for each section of a website.
 
 BUSINESS: {business_name}
 DESCRIPTION: {business_description}
 SECTIONS: {', '.join(sections)}
-{f'CONTACT INFO:\n{contact_str}' if contact_str else ''}
+{contact_section}
 
 For each section provide:
 - Heading (compelling, keyword-rich)
