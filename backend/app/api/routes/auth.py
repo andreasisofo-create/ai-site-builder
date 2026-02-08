@@ -572,6 +572,22 @@ async def migrate_db(db: Session = Depends(get_db)):
         skipped = []
         errors = []
 
+        # Fix: rendi hashed_password nullable (necessario per OAuth users)
+        try:
+            db.execute(text("ALTER TABLE users ALTER COLUMN hashed_password DROP NOT NULL"))
+            db.commit()
+            added.append("users.hashed_password: DROP NOT NULL")
+        except Exception:
+            db.rollback()  # gia' nullable, ignora
+
+        # Fix: rendi full_name nullable
+        try:
+            db.execute(text("ALTER TABLE users ALTER COLUMN full_name DROP NOT NULL"))
+            db.commit()
+            added.append("users.full_name: DROP NOT NULL")
+        except Exception:
+            db.rollback()
+
         # Migrazioni per tabella users
         users_columns = [
             ("oauth_id", "VARCHAR"),
