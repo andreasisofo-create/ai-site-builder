@@ -29,7 +29,7 @@ ProgressCallback = Optional[Callable[[int, str], None]]
 class SwarmGenerator:
     """Generatore siti web con esecuzione parallela a 3 fasi."""
 
-    def __init__(self, client: KimiClient | None = None):
+    def __init__(self, client: Optional[KimiClient] = None):
         self.kimi = client or kimi
 
     # =================================================================

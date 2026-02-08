@@ -151,14 +151,35 @@ except Exception as e:
     logger.error(traceback.format_exc())
 
 try:
-    from app.api.routes import sites, components, deploy, generate
+    from app.api.routes import sites
     app.include_router(sites.router, prefix="/api/sites", tags=["sites"])
-    app.include_router(components.router, prefix="/api/components", tags=["components"])
-    app.include_router(deploy.router, prefix="/api/deploy", tags=["deploy"])
-    app.include_router(generate.router, prefix="/api", tags=["generate"])
-    logger.info("Route principali registrate")
+    logger.info("Route sites registrate")
 except Exception as e:
-    logger.error(f"Errore registrazione routes principali: {e}")
+    logger.error(f"Errore registrazione route sites: {e}")
+    logger.error(traceback.format_exc())
+
+try:
+    from app.api.routes import generate
+    app.include_router(generate.router, prefix="/api", tags=["generate"])
+    logger.info("Route generate registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route generate: {e}")
+    logger.error(traceback.format_exc())
+
+try:
+    from app.api.routes import components
+    app.include_router(components.router, prefix="/api/components", tags=["components"])
+    logger.info("Route components registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route components: {e}")
+    logger.error(traceback.format_exc())
+
+try:
+    from app.api.routes import deploy
+    app.include_router(deploy.router, prefix="/api/deploy", tags=["deploy"])
+    logger.info("Route deploy registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route deploy: {e}")
     logger.error(traceback.format_exc())
 
 try:
