@@ -101,4 +101,33 @@ class OAuthService:
             return None
 
 
+    @staticmethod
+    async def verify_microsoft_token(access_token: str) -> Optional[Dict[str, Any]]:
+        """Verifica un token Microsoft e restituisce le info utente"""
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    "https://graph.microsoft.com/v1.0/me",
+                    headers={"Authorization": f"Bearer {access_token}"}
+                )
+
+                if response.status_code != 200:
+                    print(f"Microsoft userinfo failed: {response.text}")
+                    return None
+
+                data = response.json()
+
+                return {
+                    "oauth_id": data.get("id"),
+                    "email": data.get("mail") or data.get("userPrincipalName"),
+                    "full_name": data.get("displayName"),
+                    "avatar_url": None,
+                    "verified_email": True,
+                }
+
+        except Exception as e:
+            print(f"Errore verifica Microsoft token: {e}")
+            return None
+
+
 oauth_service = OAuthService()

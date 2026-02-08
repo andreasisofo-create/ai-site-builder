@@ -29,6 +29,7 @@ interface AuthContextType extends AuthState {
   register: (email: string, password: string, fullName: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   googleLogin: () => void;
+  microsoftLogin: () => void;
   refreshUser: () => Promise<void>;
 }
 
@@ -171,9 +172,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const googleLogin = () => {
-    // Redirect diretto al backend Render (bypassa proxy Vercel per evitare cold start page)
     const backendUrl = "https://ai-site-builder-jz2g.onrender.com";
     window.location.href = `${backendUrl}/api/auth/oauth/google?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
+  };
+
+  const microsoftLogin = () => {
+    const backendUrl = "https://ai-site-builder-jz2g.onrender.com";
+    window.location.href = `${backendUrl}/api/auth/oauth/microsoft?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
   };
 
   const refreshUser = async () => {
@@ -194,6 +199,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         googleLogin,
+        microsoftLogin,
         refreshUser,
       }}
     >

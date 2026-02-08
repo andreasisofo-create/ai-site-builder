@@ -62,6 +62,10 @@ class Settings(BaseSettings):
     # Google OAuth
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
+
+    # Microsoft OAuth
+    MICROSOFT_CLIENT_ID: str = ""
+    MICROSOFT_CLIENT_SECRET: str = ""
     
     # Render
     RENDER_EXTERNAL_URL: str = ""  # Populated automatically by Render

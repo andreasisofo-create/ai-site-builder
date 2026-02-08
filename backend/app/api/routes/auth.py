@@ -40,11 +40,15 @@ class TokenResponse(BaseModel):
     user: dict
 
 
-# ============= GOOGLE OAUTH CONFIG =============
+# ============= OAUTH CONFIG =============
 
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
+
+MICROSOFT_AUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize"
+MICROSOFT_TOKEN_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+
 FRONTEND_URL = "https://site-generator-v2.vercel.app"
 
 
@@ -341,6 +345,134 @@ async def google_oauth_callback(
 
     except Exception as e:
         print(f"Errore OAuth callback: {e}")
+        from urllib.parse import quote
+        return RedirectResponse(url=f"{frontend_auth}?error=server_error&detail={quote(str(e)[:200])}")
+
+
+@router.get("/oauth/microsoft")
+async def microsoft_oauth_redirect(redirect_to: Optional[str] = None):
+    """Reindirizza l'utente a Microsoft per l'autenticazione OAuth"""
+    if not settings.MICROSOFT_CLIENT_ID:
+        raise HTTPException(status_code=500, detail="Microsoft OAuth non configurato")
+
+    state = secrets.token_urlsafe(32)
+
+    if settings.RENDER_EXTERNAL_URL:
+        callback_url = f"{settings.RENDER_EXTERNAL_URL}/api/auth/oauth/microsoft/callback"
+    else:
+        callback_url = "http://localhost:8000/api/auth/oauth/microsoft/callback"
+
+    from urllib.parse import urlencode
+    params = {
+        "client_id": settings.MICROSOFT_CLIENT_ID,
+        "redirect_uri": callback_url,
+        "response_type": "code",
+        "scope": "openid email profile User.Read",
+        "state": f"{state}:{base64.urlsafe_b64encode(redirect_to.encode()).decode() if redirect_to else ''}",
+        "prompt": "select_account",
+    }
+
+    auth_url = f"{MICROSOFT_AUTH_URL}?{urlencode(params)}"
+    return RedirectResponse(url=auth_url)
+
+
+@router.get("/oauth/microsoft/callback")
+async def microsoft_oauth_callback(
+    request: Request,
+    code: Optional[str] = None,
+    error: Optional[str] = None,
+    state: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Callback da Microsoft OAuth"""
+    frontend_auth = f"{FRONTEND_URL}/auth"
+    frontend_callback = f"{FRONTEND_URL}/auth/callback"
+
+    if error:
+        return RedirectResponse(url=f"{frontend_auth}?error={error}")
+
+    if not code:
+        return RedirectResponse(url=f"{frontend_auth}?error=no_code")
+
+    try:
+        if settings.RENDER_EXTERNAL_URL:
+            redirect_uri = f"{settings.RENDER_EXTERNAL_URL}/api/auth/oauth/microsoft/callback"
+        else:
+            redirect_uri = "http://localhost:8000/api/auth/oauth/microsoft/callback"
+
+        async with httpx.AsyncClient() as client:
+            token_response = await client.post(
+                MICROSOFT_TOKEN_URL,
+                data={
+                    "code": code,
+                    "client_id": settings.MICROSOFT_CLIENT_ID,
+                    "client_secret": settings.MICROSOFT_CLIENT_SECRET,
+                    "redirect_uri": redirect_uri,
+                    "grant_type": "authorization_code",
+                    "scope": "openid email profile User.Read",
+                }
+            )
+
+            if token_response.status_code != 200:
+                error_detail = token_response.text
+                print(f"Microsoft token exchange failed: {error_detail}")
+                from urllib.parse import quote
+                return RedirectResponse(
+                    url=f"{frontend_auth}?error=token_exchange_failed&detail={quote(error_detail[:200])}"
+                )
+
+            token_data = token_response.json()
+            access_token = token_data.get("access_token")
+
+        user_info = await oauth_service.verify_microsoft_token(access_token)
+
+        if not user_info or not user_info.get("email"):
+            return RedirectResponse(url=f"{frontend_auth}?error=invalid_token")
+
+        # Cerca o crea utente
+        user = db.query(User).filter(User.oauth_id == user_info["oauth_id"]).first()
+
+        if not user:
+            user = db.query(User).filter(User.email == user_info["email"]).first()
+
+            if user:
+                user.oauth_provider = "microsoft"
+                user.oauth_id = user_info["oauth_id"]
+            else:
+                user = User(
+                    email=user_info["email"],
+                    full_name=user_info["full_name"],
+                    oauth_provider="microsoft",
+                    oauth_id=user_info["oauth_id"],
+                    hashed_password=None,
+                )
+                db.add(user)
+
+            db.commit()
+            db.refresh(user)
+
+        # Admin override
+        if user.email.lower() == "andrea.sisofo@e-quipe.it" and not user.is_premium:
+            user.is_premium = True
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+
+        jwt_token = create_access_token(data={"sub": str(user.id), "email": user.email})
+
+        final_redirect = frontend_callback
+        if state and ":" in state:
+            try:
+                _, encoded_redirect = state.split(":", 1)
+                if encoded_redirect:
+                    final_redirect = base64.urlsafe_b64decode(encoded_redirect.encode()).decode()
+            except:
+                pass
+
+        return RedirectResponse(url=f"{final_redirect}?token={jwt_token}")
+
+    except Exception as e:
+        print(f"Errore Microsoft OAuth callback: {e}")
         from urllib.parse import quote
         return RedirectResponse(url=f"{frontend_auth}?error=server_error&detail={quote(str(e)[:200])}")
 
