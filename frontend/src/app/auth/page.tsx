@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -24,6 +25,7 @@ export default function AuthPage() {
   const [error, setError] = useState("");
 
   const { login, register, googleLogin, microsoftLogin } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,24 +33,22 @@ export default function AuthPage() {
     setError("");
 
     if (isLogin) {
-      // Login logic
       const result = await login(email, password);
-      
+
       if (!result.success) {
         setError(result.error || "Errore durante il login");
         setLoading(false);
       } else {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       }
     } else {
-      // Registration logic
       const result = await register(email, password, fullName);
-      
+
       if (!result.success) {
         setError(result.error || "Errore durante la registrazione");
         setLoading(false);
       } else {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       }
     }
   };

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 // Usa path relativi per sfruttare il proxy Next.js -> Backend
 // In sviluppo: localhost:3000/api -> localhost:8000/api
@@ -168,7 +169,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading: false,
       isAuthenticated: false,
     });
-    window.location.href = "/auth";
   };
 
   const googleLogin = () => {
@@ -219,12 +219,15 @@ export function useAuth() {
 // Hook for protected routes
 export function useRequireAuth(redirectUrl = "/auth") {
   const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      window.location.href = redirectUrl;
+    if (!isLoading && !isAuthenticated && !hasRedirected.current) {
+      hasRedirected.current = true;
+      router.replace(redirectUrl);
     }
-  }, [isLoading, isAuthenticated, redirectUrl]);
+  }, [isLoading, isAuthenticated, redirectUrl, router]);
 
   return { isLoading, isAuthenticated };
 }
