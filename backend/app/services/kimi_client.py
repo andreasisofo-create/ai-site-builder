@@ -22,7 +22,7 @@ class KimiClient:
     """Client async per Kimi K2.5 API."""
 
     def __init__(self):
-        self.api_url = settings.KIMI_API_URL or "https://api.moonshot.cn/v1"
+        self.api_url = settings.KIMI_API_URL or "https://api.moonshot.ai/v1"
         self.model = settings.KIMI_MODEL or "kimi-k2.5"
         self._client: Optional[httpx.AsyncClient] = None
 

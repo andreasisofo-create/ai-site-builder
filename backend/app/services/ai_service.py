@@ -27,7 +27,7 @@ class AIService:
     """Servizio per generazione AI tramite Kimi API diretta."""
 
     def __init__(self):
-        self.api_url = "https://api.moonshot.cn/v1"
+        self.api_url = settings.KIMI_API_URL or "https://api.moonshot.ai/v1"
 
     @property
     def headers(self) -> dict:

@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     # Accetta sia KIMI_API_KEY che MOONSHOT_API_KEY come env var
     KIMI_API_KEY: str = ""
     MOONSHOT_API_KEY: str = ""
-    KIMI_API_URL: str = "https://api.moonshot.cn/v1"
+    KIMI_API_URL: str = "https://api.moonshot.ai/v1"
     KIMI_MODEL: str = "kimi-k2.5"
 
     @property
