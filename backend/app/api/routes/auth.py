@@ -15,6 +15,7 @@ from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token, decode_token, get_current_active_user
 from app.models.user import User
 from app.services.oauth_service import oauth_service
+from app.core.rate_limiter import limiter
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -55,8 +56,9 @@ FRONTEND_URL = "https://site-generator-v2.vercel.app"
 # ============= ROUTES =============
 
 @router.post("/register")
-async def register(data: RegisterRequest, db: Session = Depends(get_db)):
-    """Registra un nuovo utente"""
+@limiter.limit("5/day")
+async def register(request: Request, data: RegisterRequest, db: Session = Depends(get_db)):
+    """Registra un nuovo utente. Rate limit: 5 registrazioni/giorno per IP."""
     # Verifica se esiste già
     existing = db.query(User).filter(User.email.ilike(data.email)).first()
     if existing:
@@ -84,8 +86,9 @@ async def register(data: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    """Login utente"""
+@limiter.limit("10/hour")
+async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """Login utente. Rate limit: 10 tentativi/ora per IP."""
     user = db.query(User).filter(User.email.ilike(form_data.username)).first()
     if not user or not user.hashed_password or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Credenziali non valide")
@@ -157,9 +160,10 @@ async def oauth_login(data: OAuthLoginRequest, db: Session = Depends(get_db)):
                     oauth_provider="google",
                     oauth_id=user_info["oauth_id"],
                     hashed_password=None,  # No password per OAuth
+                    email_verified=True,  # Google verifica gia l'email
                 )
                 db.add(user)
-            
+
             db.commit()
             db.refresh(user)
         
@@ -314,6 +318,7 @@ async def google_oauth_callback(
                     oauth_provider="google",
                     oauth_id=user_info["oauth_id"],
                     hashed_password=None,
+                    email_verified=True,  # Google verifica gia l'email
                 )
                 db.add(user)
 
@@ -445,6 +450,7 @@ async def microsoft_oauth_callback(
                     oauth_provider="microsoft",
                     oauth_id=user_info["oauth_id"],
                     hashed_password=None,
+                    email_verified=True,  # Microsoft verifica gia l'email
                 )
                 db.add(user)
 
@@ -496,11 +502,26 @@ async def me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db))
         "full_name": user.full_name,
         "avatar_url": user.avatar_url,
         "oauth_provider": user.oauth_provider,
+        "plan": user.plan or "free",
+        "plan_label": user.plan_config.get("label", "Starter"),
         "is_premium": user.is_premium,
+        "email_verified": user.email_verified if user.email_verified is not None else False,
+        "can_publish": user.can_publish,
+        # Generazioni (rigenerazioni sito)
         "generations_used": user.generations_used,
         "generations_limit": user.generations_limit,
         "remaining_generations": user.remaining_generations,
         "has_remaining_generations": user.has_remaining_generations,
+        # Modifiche chat AI
+        "refines_used": user.refines_used or 0,
+        "refines_limit": user.refines_limit or 3,
+        "remaining_refines": user.remaining_refines,
+        "has_remaining_refines": user.has_remaining_refines,
+        # Pagine extra
+        "pages_used": user.pages_used or 0,
+        "pages_limit": user.pages_limit or 1,
+        "remaining_pages": user.remaining_pages,
+        "has_remaining_pages": user.has_remaining_pages,
     }
 
 
@@ -508,12 +529,72 @@ async def me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db))
 async def get_quota(current_user: User = Depends(get_current_active_user)):
     """Ottiene solo le informazioni sulle quote/generazioni"""
     return {
+        "plan": current_user.plan or "free",
+        "plan_label": current_user.plan_config.get("label", "Starter"),
         "is_premium": current_user.is_premium,
+        "email_verified": current_user.email_verified if current_user.email_verified is not None else False,
+        "can_publish": current_user.can_publish,
+        # Generazioni
         "generations_used": current_user.generations_used,
         "generations_limit": current_user.generations_limit,
         "remaining_generations": current_user.remaining_generations,
         "has_remaining_generations": current_user.has_remaining_generations,
+        # Modifiche chat AI
+        "refines_used": current_user.refines_used or 0,
+        "refines_limit": current_user.refines_limit or 3,
+        "remaining_refines": current_user.remaining_refines,
+        "has_remaining_refines": current_user.has_remaining_refines,
+        # Pagine extra
+        "pages_used": current_user.pages_used or 0,
+        "pages_limit": current_user.pages_limit or 1,
+        "remaining_pages": current_user.remaining_pages,
+        "has_remaining_pages": current_user.has_remaining_pages,
     }
+
+
+# ============= EMAIL VERIFICATION =============
+
+@router.post("/send-verification")
+@limiter.limit("3/hour")
+async def send_verification_email(request: Request, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """Invia email di verifica. Rate limit: 3/ora per IP."""
+    if current_user.email_verified:
+        return {"message": "Email gia' verificata"}
+
+    # Genera token di verifica
+    token = secrets.token_urlsafe(32)
+    current_user.email_verification_token = token
+    db.commit()
+
+    # TODO: Integrare servizio email reale (SendGrid, Resend, SMTP)
+    # Per ora logga il link di verifica (utile per test)
+    verify_url = f"{FRONTEND_URL}/auth/verify?token={token}"
+    import logging
+    logging.getLogger(__name__).info(
+        f"[EMAIL VERIFICATION] User {current_user.email} - Link: {verify_url}"
+    )
+
+    return {
+        "message": "Email di verifica inviata. Controlla la tua casella di posta.",
+        "debug_verify_url": verify_url,  # Rimuovere in produzione
+    }
+
+
+@router.get("/verify-email")
+async def verify_email(token: str, db: Session = Depends(get_db)):
+    """Verifica email tramite token."""
+    if not token:
+        raise HTTPException(status_code=400, detail="Token mancante")
+
+    user = db.query(User).filter(User.email_verification_token == token).first()
+    if not user:
+        raise HTTPException(status_code=400, detail="Token non valido o scaduto")
+
+    user.email_verified = True
+    user.email_verification_token = None  # Invalida il token dopo l'uso
+    db.commit()
+
+    return {"message": "Email verificata con successo!", "email": user.email}
 
 
 @router.get("/debug-oauth")
@@ -594,8 +675,16 @@ async def migrate_db(db: Session = Depends(get_db)):
             ("oauth_provider", "VARCHAR"),
             ("avatar_url", "VARCHAR"),
             ("generations_used", "INTEGER DEFAULT 0"),
-            ("generations_limit", "INTEGER DEFAULT 2"),
+            ("generations_limit", "INTEGER DEFAULT 1"),
             ("is_premium", "BOOLEAN DEFAULT FALSE"),
+            ("plan", "VARCHAR DEFAULT 'free'"),
+            ("last_reset_date", "DATE"),
+            ("email_verified", "BOOLEAN DEFAULT FALSE"),
+            ("email_verification_token", "VARCHAR"),
+            ("refines_used", "INTEGER DEFAULT 0"),
+            ("refines_limit", "INTEGER DEFAULT 3"),
+            ("pages_used", "INTEGER DEFAULT 0"),
+            ("pages_limit", "INTEGER DEFAULT 1"),
         ]
 
         # Migrazioni per tabella sites
@@ -654,6 +743,21 @@ async def migrate_db(db: Session = Depends(get_db)):
         except Exception as e:
             db.rollback()
             errors.append(f"site_versions: {str(e)}")
+
+        # Crea tabella global_counters per spending cap
+        try:
+            db.execute(text("""
+                CREATE TABLE IF NOT EXISTS global_counters (
+                    id SERIAL PRIMARY KEY,
+                    date DATE UNIQUE NOT NULL DEFAULT CURRENT_DATE,
+                    daily_generations INTEGER NOT NULL DEFAULT 0
+                )
+            """))
+            db.commit()
+            added.append("global_counters (tabella)")
+        except Exception as e:
+            db.rollback()
+            errors.append(f"global_counters: {str(e)}")
 
         return {
             "success": True,

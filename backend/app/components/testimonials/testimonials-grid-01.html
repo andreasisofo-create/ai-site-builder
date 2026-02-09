@@ -1,0 +1,26 @@
+<!-- Testimonials Grid: 3 testimonianze -->
+<section id="testimonials" class="py-20 bg-[var(--color-bg-alt)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Testimonianze</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)]">{{TESTIMONIALS_TITLE}}</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate="stagger">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="stagger-item bg-[var(--color-bg)] rounded-2xl p-8 shadow-sm">
+        <div class="text-[var(--color-primary)] text-4xl mb-4">&ldquo;</div>
+        <p class="text-[var(--color-text-muted)] leading-relaxed mb-6">{{TESTIMONIAL_TEXT}}</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[var(--color-primary)]/20 flex items-center justify-center text-sm font-bold text-[var(--color-primary)]">
+            {{TESTIMONIAL_INITIAL}}
+          </div>
+          <div>
+            <p class="font-semibold text-[var(--color-text)] text-sm">{{TESTIMONIAL_AUTHOR}}</p>
+            <p class="text-xs text-[var(--color-text-muted)]">{{TESTIMONIAL_ROLE}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+</section>

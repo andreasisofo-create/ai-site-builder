@@ -1,0 +1,149 @@
+{
+  "version": "1.0.0",
+  "categories": {
+    "hero": {
+      "label": "Hero",
+      "required": true,
+      "variants": [
+        {
+          "id": "hero-split-01",
+          "file": "hero/hero-split-01.html",
+          "name": "Split Hero",
+          "description": "Layout diviso: testo a sinistra, immagine a destra",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
+          "tags": ["modern", "corporate", "bold"]
+        },
+        {
+          "id": "hero-centered-02",
+          "file": "hero/hero-centered-02.html",
+          "name": "Centered Hero",
+          "description": "Testo centrato con sfondo gradiente",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
+          "tags": ["classic", "elegant", "cozy"]
+        },
+        {
+          "id": "hero-gradient-03",
+          "file": "hero/hero-gradient-03.html",
+          "name": "Gradient Hero",
+          "description": "Gradiente bold con testo animato e pattern",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
+          "tags": ["bold", "modern", "tech"]
+        }
+      ]
+    },
+    "about": {
+      "label": "Chi Siamo",
+      "required": false,
+      "variants": [
+        {
+          "id": "about-alternating-01",
+          "file": "about/about-alternating-01.html",
+          "name": "About Alternating",
+          "description": "Testo con 3 highlights numerici",
+          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_HIGHLIGHT_1", "ABOUT_HIGHLIGHT_2", "ABOUT_HIGHLIGHT_3", "ABOUT_HIGHLIGHT_NUM_1", "ABOUT_HIGHLIGHT_NUM_2", "ABOUT_HIGHLIGHT_NUM_3"],
+          "tags": ["modern", "corporate", "classic", "elegant"]
+        }
+      ]
+    },
+    "services": {
+      "label": "Servizi",
+      "required": false,
+      "variants": [
+        {
+          "id": "services-cards-grid-01",
+          "file": "services/services-cards-grid-01.html",
+          "name": "Services Cards Grid",
+          "description": "Griglia 3 colonne con card servizi",
+          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
+          "tags": ["modern", "corporate", "bold"]
+        },
+        {
+          "id": "services-bento-02",
+          "file": "services/services-bento-02.html",
+          "name": "Services Bento",
+          "description": "Layout bento asimmetrico",
+          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
+          "tags": ["modern", "tech", "bold"]
+        }
+      ]
+    },
+    "features": {
+      "label": "Caratteristiche",
+      "required": false,
+      "variants": [
+        {
+          "id": "features-icons-grid-01",
+          "file": "features/features-icons-grid-01.html",
+          "name": "Features Icons Grid",
+          "description": "Griglia 2x3 con icone emoji",
+          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
+          "tags": ["modern", "corporate", "classic", "tech"]
+        }
+      ]
+    },
+    "testimonials": {
+      "label": "Testimonianze",
+      "required": false,
+      "variants": [
+        {
+          "id": "testimonials-grid-01",
+          "file": "testimonials/testimonials-grid-01.html",
+          "name": "Testimonials Grid",
+          "description": "Griglia 3 testimonianze con avatar",
+          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS"],
+          "tags": ["modern", "corporate", "classic", "elegant"]
+        }
+      ]
+    },
+    "cta": {
+      "label": "Call to Action",
+      "required": false,
+      "variants": [
+        {
+          "id": "cta-banner-01",
+          "file": "cta/cta-banner-01.html",
+          "name": "CTA Banner",
+          "description": "Banner full-width con CTA",
+          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
+          "tags": ["modern", "bold", "corporate", "tech"]
+        }
+      ]
+    },
+    "contact": {
+      "label": "Contatti",
+      "required": false,
+      "variants": [
+        {
+          "id": "contact-form-01",
+          "file": "contact/contact-form-01.html",
+          "name": "Contact Form",
+          "description": "Form contatto con info aziendali",
+          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "CONTACT_ADDRESS", "CONTACT_PHONE", "CONTACT_EMAIL"],
+          "tags": ["modern", "corporate", "classic", "elegant"]
+        }
+      ]
+    },
+    "footer": {
+      "label": "Footer",
+      "required": true,
+      "variants": [
+        {
+          "id": "footer-multi-col-01",
+          "file": "footer/footer-multi-col-01.html",
+          "name": "Footer Multi Column",
+          "description": "Footer multi-colonna con link e social",
+          "placeholders": ["FOOTER_DESCRIPTION"],
+          "tags": ["modern", "corporate", "bold"]
+        },
+        {
+          "id": "footer-minimal-02",
+          "file": "footer/footer-minimal-02.html",
+          "name": "Footer Minimal",
+          "description": "Footer minimale su una riga",
+          "placeholders": ["FOOTER_DESCRIPTION"],
+          "tags": ["classic", "elegant", "cozy"]
+        }
+      ]
+    }
+  }
+}

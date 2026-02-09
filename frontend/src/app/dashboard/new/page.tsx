@@ -707,12 +707,17 @@ export default function NewProjectPage() {
                     </div>
 
                     {/* Step Indicators */}
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
+                    <div className={`grid gap-2 ${generationProgress.totalSteps >= 4 ? 'grid-cols-4' : 'grid-cols-3'}`}>
+                      {(generationProgress.totalSteps >= 4 ? [
+                        { step: 1, label: "Analisi stile e testi" },
+                        { step: 2, label: "Selezione componenti" },
+                        { step: 3, label: "Assemblaggio pagina" },
+                        { step: 4, label: "Finalizzazione" },
+                      ] : [
                         { step: 1, label: "Analisi riferimento" },
                         { step: 2, label: "Generazione HTML" },
                         { step: 3, label: "Revisione e fix" },
-                      ].map(({ step, label }) => (
+                      ]).map(({ step, label }) => (
                         <div
                           key={step}
                           className={`flex items-center gap-2 p-3 rounded-xl text-sm transition-all ${
@@ -758,7 +763,7 @@ export default function NewProjectPage() {
                     </button>
 
                     <p className="text-center text-sm text-slate-500">
-                      Pipeline AI a 3 step - Tempo stimato: 90-120 secondi
+                      Pipeline AI a 4 step - Tempo stimato: 40-60 secondi
                     </p>
                   </>
                 )}

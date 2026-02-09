@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{META_TITLE}}</title>
+  <meta name="description" content="{{META_DESCRIPTION}}">
+  <meta property="og:title" content="{{OG_TITLE}}">
+  <meta property="og:description" content="{{OG_DESCRIPTION}}">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family={{FONT_HEADING_URL}}&family={{FONT_BODY_URL}}&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: 'var(--color-primary)',
+            secondary: 'var(--color-secondary)',
+            accent: 'var(--color-accent)',
+          },
+          fontFamily: {
+            heading: ['var(--font-heading)', 'sans-serif'],
+            body: ['var(--font-body)', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root {
+      --color-primary: {{PRIMARY_COLOR}};
+      --color-secondary: {{SECONDARY_COLOR}};
+      --color-accent: {{ACCENT_COLOR}};
+      --color-bg: {{BG_COLOR}};
+      --color-bg-alt: {{BG_ALT_COLOR}};
+      --color-text: {{TEXT_COLOR}};
+      --color-text-muted: {{TEXT_MUTED_COLOR}};
+      --font-heading: '{{FONT_HEADING}}';
+      --font-body: '{{FONT_BODY}}';
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body), sans-serif; }
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading), sans-serif; }
+    [data-animate] { opacity: 0; }
+  </style>
+</head>

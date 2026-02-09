@@ -1,0 +1,35 @@
+<!-- Footer Multi Column: 3 colonne + bottom bar -->
+<footer id="footer" class="bg-[var(--color-text)] text-white pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+      <!-- Brand -->
+      <div>
+        <h3 class="text-xl font-bold font-heading mb-4">{{BUSINESS_NAME}}</h3>
+        <p class="text-white/60 leading-relaxed text-sm">{{FOOTER_DESCRIPTION}}</p>
+      </div>
+      <!-- Links -->
+      <div>
+        <h4 class="font-semibold mb-4 text-white/90">Link Utili</h4>
+        <nav class="space-y-3">
+          <a href="#hero" class="block text-white/60 hover:text-[var(--color-accent)] transition-colors text-sm">Home</a>
+          <a href="#about" class="block text-white/60 hover:text-[var(--color-accent)] transition-colors text-sm">Chi Siamo</a>
+          <a href="#services" class="block text-white/60 hover:text-[var(--color-accent)] transition-colors text-sm">Servizi</a>
+          <a href="#contact" class="block text-white/60 hover:text-[var(--color-accent)] transition-colors text-sm">Contatti</a>
+        </nav>
+      </div>
+      <!-- Contact -->
+      <div>
+        <h4 class="font-semibold mb-4 text-white/90">Contatti</h4>
+        <div class="space-y-3 text-sm text-white/60">
+          <p>{{BUSINESS_ADDRESS}}</p>
+          <p>{{BUSINESS_PHONE}}</p>
+          <p>{{BUSINESS_EMAIL}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- Bottom bar -->
+    <div class="border-t border-white/10 pt-8 text-center">
+      <p class="text-white/40 text-sm">&copy; {{CURRENT_YEAR}} {{BUSINESS_NAME}}. Tutti i diritti riservati.</p>
+    </div>
+  </div>
+</footer>

@@ -75,6 +75,11 @@ class Settings(BaseSettings):
     MICROSOFT_CLIENT_ID: str = ""
     MICROSOFT_CLIENT_SECRET: str = ""
     
+    # Generation Pipeline
+    GENERATION_PIPELINE: str = "databinding"  # "databinding" | "swarm" | "n8n"
+    N8N_WEBHOOK_URL: str = ""  # n8n webhook URL for external generation
+    N8N_CALLBACK_SECRET: str = ""  # Shared secret for n8n callback auth
+
     # Render
     RENDER_EXTERNAL_URL: str = ""  # Populated automatically by Render
     

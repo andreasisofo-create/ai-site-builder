@@ -1,0 +1,19 @@
+<!-- Services Bento: layout asimmetrico -->
+<section id="services" class="py-20 bg-[var(--color-bg-alt)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">I Nostri Servizi</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{SERVICES_SUBTITLE}}</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <div class="stagger-item bg-[var(--color-bg)] rounded-2xl p-8 border border-[var(--color-text)]/5 hover:border-[var(--color-primary)]/30 transition-colors first:md:col-span-2 first:lg:col-span-1">
+        <div class="w-14 h-14 flex items-center justify-center rounded-xl bg-[var(--color-primary)]/10 text-3xl mb-5">{{SERVICE_ICON}}</div>
+        <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-3">{{SERVICE_TITLE}}</h3>
+        <p class="text-[var(--color-text-muted)] leading-relaxed">{{SERVICE_DESCRIPTION}}</p>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

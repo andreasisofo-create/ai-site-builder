@@ -12,6 +12,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 # Configurazione logging PRIMA di tutto
 logging.basicConfig(
@@ -22,6 +24,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 logger.info("Inizializzazione backend...")
+
+# Rate Limiter (importato dal modulo dedicato per evitare import circolari)
+from app.core.rate_limiter import limiter
 
 # Import config
 try:
@@ -109,6 +114,11 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+# Rate Limiter - registra handler per 429 Too Many Requests
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+logger.info("Rate limiter configurato")
 
 # CORS Middleware CUSTOM - DEVE ESSERE IL PRIMO!
 logger.info("Configurazione CORS custom...")
