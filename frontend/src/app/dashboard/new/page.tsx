@@ -221,6 +221,152 @@ const SECTION_LABELS: Record<string, string> = {
   footer: "Footer completo",
 };
 
+// ============ PREVIEW GENERATOR ============
+
+function generateStylePreviewHtml(style: TemplateStyle, categoryLabel: string): string {
+  const p = style.primaryColor;
+  const s = style.secondaryColor;
+  const isDark = style.mood === "bold" || style.mood === "elegant" || style.mood === "corporate" || style.mood === "classic";
+  const bg = isDark ? "#0f0f0f" : "#ffffff";
+  const text = isDark ? "#ffffff" : "#1a1a1a";
+  const muted = isDark ? "#999999" : "#666666";
+  const cardBg = isDark ? "#1a1a1a" : "#f5f5f5";
+
+  const sectionHtml: Record<string, string> = {
+    hero: `
+      <section style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 40px;background:linear-gradient(135deg,${p}22,${s}22);position:relative;overflow:hidden">
+        <div style="position:absolute;top:-50%;right:-20%;width:500px;height:500px;border-radius:50%;background:${p}15"></div>
+        <div style="position:relative;z-index:1;max-width:700px">
+          <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:${p}20;color:${p};font-size:13px;margin-bottom:20px">${categoryLabel}</div>
+          <h1 style="font-size:clamp(32px,5vw,56px);font-weight:800;margin:0 0 16px;color:${text};line-height:1.1">Il Tuo Sito<br><span style="color:${p}">Professionale</span></h1>
+          <p style="color:${muted};font-size:18px;margin:0 0 32px;max-width:500px;margin-left:auto;margin-right:auto">Creato con AI - Design ${style.label}</p>
+          <div style="display:flex;gap:12px;justify-content:center">
+            <a style="padding:14px 32px;background:${p};color:white;border-radius:12px;font-weight:600;text-decoration:none;font-size:15px">Scopri di piu</a>
+            <a style="padding:14px 32px;background:${isDark ? '#ffffff15' : '#00000008'};color:${text};border-radius:12px;font-weight:600;text-decoration:none;font-size:15px;border:1px solid ${isDark ? '#ffffff20' : '#00000015'}">Contattaci</a>
+          </div>
+        </div>
+      </section>`,
+    about: `
+      <section style="padding:80px 40px;background:${bg}">
+        <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
+          <div>
+            <div style="font-size:12px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:12px;font-weight:600">Chi Siamo</div>
+            <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 16px">La nostra storia</h2>
+            <p style="color:${muted};line-height:1.8;font-size:15px">Offriamo servizi di qualita con passione e dedizione. La nostra esperienza ci permette di garantire risultati eccellenti per ogni cliente.</p>
+          </div>
+          <div style="aspect-ratio:4/3;background:linear-gradient(135deg,${p}30,${s}30);border-radius:16px"></div>
+        </div>
+      </section>`,
+    services: `
+      <section style="padding:80px 40px;background:${cardBg}">
+        <div style="max-width:900px;margin:0 auto;text-align:center">
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:12px;font-weight:600">Servizi</div>
+          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Cosa offriamo</h2>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+            ${[1,2,3].map(i => `
+              <div style="background:${bg};padding:32px 24px;border-radius:16px;text-align:center;border:1px solid ${isDark ? '#ffffff10' : '#00000008'}">
+                <div style="width:56px;height:56px;border-radius:14px;background:${p}15;margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
+                  <div style="width:24px;height:24px;border-radius:6px;background:${p}"></div>
+                </div>
+                <h3 style="font-size:17px;font-weight:600;color:${text};margin:0 0 8px">Servizio ${i}</h3>
+                <p style="color:${muted};font-size:14px;line-height:1.6;margin:0">Descrizione del servizio offerto ai nostri clienti</p>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </section>`,
+    gallery: `
+      <section style="padding:80px 40px;background:${bg}">
+        <div style="max-width:900px;margin:0 auto;text-align:center">
+          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Galleria</h2>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            ${[1,2,3,4,5,6].map(i => `
+              <div style="aspect-ratio:1;border-radius:12px;background:linear-gradient(${i*45}deg,${p}${20+i*5},${s}${20+i*5})"></div>
+            `).join("")}
+          </div>
+        </div>
+      </section>`,
+    testimonials: `
+      <section style="padding:80px 40px;background:${cardBg}">
+        <div style="max-width:900px;margin:0 auto;text-align:center">
+          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Testimonianze</h2>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px">
+            ${[1,2].map(() => `
+              <div style="background:${bg};padding:32px;border-radius:16px;text-align:left;border:1px solid ${isDark ? '#ffffff10' : '#00000008'}">
+                <div style="color:${p};font-size:32px;margin-bottom:12px">&ldquo;</div>
+                <p style="color:${muted};font-size:15px;line-height:1.7;margin:0 0 20px">Servizio eccellente, professionalita e risultati oltre le aspettative.</p>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="width:40px;height:40px;border-radius:50%;background:${p}20"></div>
+                  <div><div style="font-weight:600;color:${text};font-size:14px">Cliente Soddisfatto</div><div style="color:${muted};font-size:12px">Azienda</div></div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </section>`,
+    features: `
+      <section style="padding:80px 40px;background:${bg}">
+        <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+          <div>
+            <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 24px">Perche sceglierci</h2>
+            ${[1,2,3].map(i => `
+              <div style="display:flex;gap:16px;margin-bottom:20px">
+                <div style="width:40px;height:40px;border-radius:10px;background:${p}15;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+                  <div style="width:16px;height:16px;border-radius:4px;background:${p}"></div>
+                </div>
+                <div><h4 style="font-size:15px;font-weight:600;color:${text};margin:0 0 4px">Vantaggio ${i}</h4><p style="color:${muted};font-size:14px;margin:0">Breve descrizione del vantaggio offerto</p></div>
+              </div>
+            `).join("")}
+          </div>
+          <div style="aspect-ratio:1;background:linear-gradient(135deg,${p}20,${s}20);border-radius:16px"></div>
+        </div>
+      </section>`,
+    team: `
+      <section style="padding:80px 40px;background:${bg}">
+        <div style="max-width:900px;margin:0 auto;text-align:center">
+          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Il Nostro Team</h2>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+            ${[1,2,3].map(i => `
+              <div style="text-align:center">
+                <div style="width:100px;height:100px;border-radius:50%;background:${p}15;margin:0 auto 16px"></div>
+                <h4 style="font-size:16px;font-weight:600;color:${text};margin:0 0 4px">Membro ${i}</h4>
+                <p style="color:${muted};font-size:13px;margin:0">Ruolo professionale</p>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </section>`,
+    cta: `
+      <section style="padding:80px 40px;background:linear-gradient(135deg,${p},${s});text-align:center;border-radius:0">
+        <div style="max-width:600px;margin:0 auto">
+          <h2 style="font-size:36px;font-weight:700;color:white;margin:0 0 16px">Pronto per iniziare?</h2>
+          <p style="color:rgba(255,255,255,0.8);font-size:18px;margin:0 0 32px">Contattaci oggi per una consulenza gratuita</p>
+          <a style="display:inline-block;padding:16px 40px;background:white;color:${p};border-radius:12px;font-weight:700;text-decoration:none;font-size:16px">Contattaci Ora</a>
+        </div>
+      </section>`,
+    contact: `
+      <section style="padding:80px 40px;background:${cardBg}">
+        <div style="max-width:600px;margin:0 auto;text-align:center">
+          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Contattaci</h2>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="padding:16px;background:${bg};border-radius:12px;border:1px solid ${isDark ? '#ffffff15' : '#00000010'};color:${muted};text-align:left;font-size:14px">Nome e cognome</div>
+            <div style="padding:16px;background:${bg};border-radius:12px;border:1px solid ${isDark ? '#ffffff15' : '#00000010'};color:${muted};text-align:left;font-size:14px">Email</div>
+            <div style="padding:16px 16px 60px;background:${bg};border-radius:12px;border:1px solid ${isDark ? '#ffffff15' : '#00000010'};color:${muted};text-align:left;font-size:14px">Messaggio</div>
+            <button style="padding:16px;background:${p};color:white;border:none;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer">Invia Messaggio</button>
+          </div>
+        </div>
+      </section>`,
+    footer: `
+      <footer style="padding:40px;background:${isDark ? '#080808' : '#1a1a1a'};text-align:center">
+        <p style="color:#666;font-size:13px;margin:0">&copy; 2025 La Tua Azienda. Tutti i diritti riservati.</p>
+      </footer>`,
+  };
+
+  const body = style.sections.map(sec => sectionHtml[sec] || "").join("");
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${bg};color:${text};overflow-x:hidden}img{max-width:100%}a{text-decoration:none}</style></head><body>${body}</body></html>`;
+}
+
 // ============ COMPONENT ============
 
 function NewProjectContent() {
@@ -559,55 +705,81 @@ function NewProjectContent() {
 
           {/* ===== STEP 1: Scegli Stile ===== */}
           {currentStep === 1 && selectedCategory && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="text-center mb-12">
+            <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="text-center mb-8">
                 <div className="text-4xl mb-3">{selectedCategory.icon}</div>
                 <h1 className="text-3xl font-bold mb-3">Scegli lo stile per {selectedCategory.label}</h1>
-                <p className="text-slate-400">Ogni stile ha colori, layout e atmosfera diversi</p>
+                <p className="text-slate-400">Clicca su uno stile per vedere l&apos;anteprima del sito</p>
               </div>
 
-              <div className="grid sm:grid-cols-3 gap-6">
-                {selectedCategory.styles.map(style => (
-                  <button
-                    key={style.id}
-                    onClick={() => selectStyle(style)}
-                    className={`group relative rounded-2xl overflow-hidden border-2 transition-all text-left ${
-                      selectedStyle?.id === style.id
-                        ? "border-blue-500 shadow-lg shadow-blue-500/20"
-                        : "border-white/10 hover:border-white/30"
-                    }`}
-                  >
-                    <div className="aspect-[4/3] relative">
-                      <Image src={style.image} alt={style.label} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+              <div className="flex gap-6 h-[70vh]">
+                {/* Style selector - left sidebar */}
+                <div className="w-72 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
+                  {selectedCategory.styles.map(style => (
+                    <button
+                      key={style.id}
+                      onClick={() => selectStyle(style)}
+                      className={`w-full group relative rounded-xl overflow-hidden border-2 transition-all text-left ${
+                        selectedStyle?.id === style.id
+                          ? "border-blue-500 shadow-lg shadow-blue-500/20"
+                          : "border-white/10 hover:border-white/30"
+                      }`}
+                    >
+                      <div className="aspect-[16/9] relative">
+                        <Image src={style.image} alt={style.label} fill className="object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                      </div>
+                      <div className="p-3 bg-[#111]">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: style.primaryColor }} />
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: style.secondaryColor }} />
+                          <span className="text-xs font-medium text-white ml-auto">{style.label}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400">{style.description}</p>
+                      </div>
+                      {selectedStyle?.id === style.id && (
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+                          <CheckIcon className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Preview - main area */}
+                <div className="flex-1 rounded-2xl border border-white/10 overflow-hidden bg-[#111] flex flex-col">
+                  {selectedStyle ? (
+                    <>
+                      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-[#0a0a0a]">
+                        <div className="flex gap-1.5">
+                          <div className="w-3 h-3 rounded-full bg-red-500/60" />
+                          <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
+                          <div className="w-3 h-3 rounded-full bg-green-500/60" />
+                        </div>
+                        <div className="flex-1 text-center">
+                          <div className="inline-block px-4 py-1 rounded-md bg-white/5 text-xs text-slate-400">
+                            www.tuosito.it &mdash; {selectedStyle.label}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex-1 overflow-hidden">
+                        <iframe
+                          srcDoc={generateStylePreviewHtml(selectedStyle, selectedCategory.label)}
+                          className="w-full h-full border-0"
+                          title={`Preview ${selectedStyle.label}`}
+                          sandbox="allow-same-origin"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center text-slate-500">
+                      <div className="text-center">
+                        <PaintBrushIcon className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                        <p>Seleziona uno stile per vedere l&apos;anteprima</p>
+                      </div>
                     </div>
-                    <div className="p-4 bg-[#111]">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: style.primaryColor }} />
-                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: style.secondaryColor }} />
-                      </div>
-                      <h4 className="font-semibold text-white mb-1">{style.label}</h4>
-                      <p className="text-xs text-slate-400">{style.description}</p>
-                      <div className="mt-3 flex flex-wrap gap-1">
-                        {style.sections.slice(0, 4).map(s => (
-                          <span key={s} className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-slate-400">
-                            {SECTION_LABELS[s]?.split(" ")[0] || s}
-                          </span>
-                        ))}
-                        {style.sections.length > 4 && (
-                          <span className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-slate-400">
-                            +{style.sections.length - 4}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {selectedStyle?.id === style.id && (
-                      <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center">
-                        <CheckIcon className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                  </button>
-                ))}
+                  )}
+                </div>
               </div>
             </div>
           )}
