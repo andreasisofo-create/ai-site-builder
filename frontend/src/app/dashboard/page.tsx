@@ -47,34 +47,38 @@ const SIDEBAR_ITEMS = [
   { icon: ClockIcon, label: "Attività", active: false },
 ];
 
-const STYLE_PRESETS = [
+const TEMPLATE_CATEGORIES = [
   {
-    id: "modern",
-    label: "Agency Modern",
-    description: "Perfetto per agenzie e startup",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
-    color: "from-blue-600 to-indigo-600"
-  },
-  {
-    id: "bold",
-    label: "Creative Portfolio",
-    description: "Per designer e artisti",
-    image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=600&h=400&fit=crop",
-    color: "from-violet-600 to-purple-600"
-  },
-  {
-    id: "classic",
-    label: "Corporate Pro",
-    description: "Business e studi legali",
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop",
-    color: "from-slate-700 to-slate-900"
-  },
-  {
-    id: "cozy",
-    label: "Restaurant & Food",
-    description: "Ristoranti e locali",
+    id: "restaurant",
+    label: "Ristorante & Food",
+    description: "Ristoranti, bar, pizzerie, pasticcerie",
+    icon: "🍽️",
     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop",
-    color: "from-orange-500 to-amber-600"
+    styles: 3,
+  },
+  {
+    id: "agency",
+    label: "Agenzia & Startup",
+    description: "Agenzie digitali, startup tech, consulenza",
+    icon: "🚀",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
+    styles: 3,
+  },
+  {
+    id: "portfolio",
+    label: "Portfolio & Creativo",
+    description: "Fotografi, designer, artisti, freelancer",
+    icon: "🎨",
+    image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=600&h=400&fit=crop",
+    styles: 3,
+  },
+  {
+    id: "business",
+    label: "Business & Professionale",
+    description: "Studi legali, medici, consulenti, PMI",
+    icon: "💼",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop",
+    styles: 3,
   },
 ];
 
@@ -397,36 +401,25 @@ export default function Dashboard() {
           <section>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold">Inizia da un Template AI</h3>
-              <button className="text-sm text-blue-400 hover:text-blue-300">Vedi tutti</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <button
-                onClick={() => createSite()}
-                className="group relative aspect-[4/3] rounded-xl border border-white/10 bg-[#111] hover:border-blue-500/50 transition-all flex flex-col items-center justify-center gap-3 overflow-hidden"
-              >
-                <div className="w-12 h-12 rounded-full bg-blue-600/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <PlusIcon className="w-6 h-6 text-blue-500" />
-                </div>
-                <span className="font-medium text-slate-300 group-hover:text-white">Pagina Vuota</span>
-                <div className="absolute inset-0 border-2 border-blue-500 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity pointer-events-none" />
-              </button>
-
-              {STYLE_PRESETS.map((preset) => (
+              {TEMPLATE_CATEGORIES.map((category) => (
                 <div
-                  key={preset.id}
-                  onClick={() => createSite(preset.id)}
-                  className="group relative aspect-[4/3] rounded-xl border border-white/10 bg-[#111] overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-blue-900/10 transition-all"
+                  key={category.id}
+                  onClick={() => router.push(`/dashboard/new?template=${category.id}`)}
+                  className="group relative aspect-[4/3] rounded-xl border border-white/10 bg-[#111] overflow-hidden cursor-pointer hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-900/10 transition-all"
                 >
                   <Image
-                    src={preset.image}
-                    alt={preset.label}
+                    src={category.image}
+                    alt={category.label}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-4 flex flex-col justify-end">
-                    <h4 className="font-medium text-white translate-y-2 group-hover:translate-y-0 transition-transform">{preset.label}</h4>
-                    <p className="text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 delay-75">
-                      {preset.description}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent p-4 flex flex-col justify-end">
+                    <div className="text-2xl mb-1">{category.icon}</div>
+                    <h4 className="font-semibold text-white">{category.label}</h4>
+                    <p className="text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0 delay-75">
+                      {category.description} &middot; {category.styles} stili
                     </p>
                   </div>
                   <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
