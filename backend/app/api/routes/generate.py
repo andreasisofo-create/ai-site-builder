@@ -556,11 +556,12 @@ class N8nProgressRequest(BaseModel):
     step: int
     message: str
     secret: str
+    preview_data: Optional[Dict[str, Any]] = None
 
 
 class N8nCallbackRequest(BaseModel):
     site_id: int
-    html_content: str
+    html_content: Optional[str] = None
     site_data: Optional[Dict[str, Any]] = None
     generation_time_ms: Optional[int] = None
     secret: str
@@ -588,6 +589,8 @@ async def n8n_progress_update(
 
     site.generation_step = data.step
     site.generation_message = data.message
+    if data.preview_data:
+        site.config = {"_generation_preview": data.preview_data}
     db.commit()
 
     return {"success": True}
@@ -598,14 +601,27 @@ async def n8n_generation_callback(
     data: N8nCallbackRequest,
     db: Session = Depends(get_db),
 ):
-    """Riceve HTML completato da n8n al termine della generazione."""
+    """Riceve risultato da n8n. Se site_data presente senza html, assembla automaticamente."""
     _verify_n8n_secret(data.secret)
 
     site = db.query(Site).filter(Site.id == data.site_id).first()
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")
 
-    html_content = sanitize_output(data.html_content)
+    # Auto-assembly: se solo site_data, assembla HTML con TemplateAssembler
+    if not data.html_content and data.site_data:
+        from app.services.template_assembler import assembler
+        try:
+            html_content = assembler.assemble(data.site_data)
+            html_content = sanitize_output(html_content)
+        except Exception as e:
+            logger.error(f"[n8n] Assembly failed for site {data.site_id}: {e}")
+            raise HTTPException(status_code=500, detail=f"Assembly failed: {str(e)}")
+    elif data.html_content:
+        html_content = sanitize_output(data.html_content)
+    else:
+        raise HTTPException(status_code=400, detail="Either html_content or site_data required")
+
     site.html_content = html_content
     site.status = "ready"
     site.generation_step = 0
@@ -643,6 +659,7 @@ async def _trigger_n8n_generation(request: GenerateRequest, site_id: int):
         "callback_url": f"{settings.RENDER_EXTERNAL_URL}/api/generate/n8n-callback",
         "progress_url": f"{settings.RENDER_EXTERNAL_URL}/api/generate/n8n-progress",
         "secret": settings.N8N_CALLBACK_SECRET,
+        "moonshot_api_key": settings.active_api_key,
     }
 
     try:
