@@ -379,7 +379,7 @@ function NewProjectContent() {
 
   const [currentStep, setCurrentStep] = useState(initialCategory ? 1 : 0);
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | null>(initialCategory);
-  const [selectedStyle, setSelectedStyle] = useState<TemplateStyle | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<TemplateStyle | null>(initialCategory?.styles[0] || null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [createdSiteId, setCreatedSiteId] = useState<number | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -474,17 +474,16 @@ function NewProjectContent() {
     }));
   };
 
-  // Select category → go to styles
+  // Select category → go to styles (auto-select first style for preview)
   const selectCategory = (category: TemplateCategory) => {
     setSelectedCategory(category);
-    setSelectedStyle(null);
+    setSelectedStyle(category.styles[0] || null);
     setCurrentStep(1);
   };
 
-  // Select style → go to brand info
+  // Select style → just update preview (user clicks "Avanti" to proceed)
   const selectStyle = (style: TemplateStyle) => {
     setSelectedStyle(style);
-    setCurrentStep(2);
   };
 
   // Progress polling
