@@ -22,6 +22,7 @@ import {
   ChevronRightIcon,
   RocketLaunchIcon,
 } from "@heroicons/react/24/outline";
+import GenerationExperience, { type PreviewData } from "@/components/GenerationExperience";
 import toast from "react-hot-toast";
 import { createSite, generateWebsite, updateSite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus } from "@/lib/api";
 
@@ -125,6 +126,7 @@ export default function NewProjectPage() {
     message: "",
     percentage: 0,
   });
+  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startProgressPolling = (siteId: number) => {
@@ -139,6 +141,9 @@ export default function NewProjectPage() {
           message: genStatus.message,
           percentage: genStatus.percentage,
         });
+        if (genStatus.preview_data) {
+          setPreviewData(genStatus.preview_data);
+        }
 
         // Generazione completata - naviga all'editor
         if (!genStatus.is_generating && genStatus.status === "ready") {
@@ -174,6 +179,7 @@ export default function NewProjectPage() {
     }
 
     setIsGenerating(true);
+    setPreviewData(null);
     setGenerationProgress({ step: 0, totalSteps: 3, message: "Preparazione...", percentage: 0 });
 
     try {
@@ -240,6 +246,7 @@ export default function NewProjectPage() {
         toast.error(error.message || "Errore nella generazione");
       }
       setIsGenerating(false);
+      setPreviewData(null);
       setGenerationProgress({ step: 0, totalSteps: 3, message: "", percentage: 0 });
     }
   };
@@ -687,70 +694,14 @@ export default function NewProjectPage() {
 
                 {/* Generate Button / Progress */}
                 {isGenerating ? (
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium flex items-center gap-2">
-                        <SparklesIcon className="w-5 h-5 text-blue-400" />
-                        Generazione in corso
-                      </h3>
-                      <span className="text-sm text-slate-400">
-                        {generationProgress.step}/{generationProgress.totalSteps}
-                      </span>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="w-full bg-white/5 rounded-full h-2">
-                      <div
-                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-1000"
-                        style={{ width: `${Math.max(generationProgress.percentage, 5)}%` }}
-                      />
-                    </div>
-
-                    {/* Step Indicators */}
-                    <div className={`grid gap-2 ${generationProgress.totalSteps >= 4 ? 'grid-cols-4' : 'grid-cols-3'}`}>
-                      {(generationProgress.totalSteps >= 4 ? [
-                        { step: 1, label: "Analisi stile e testi" },
-                        { step: 2, label: "Selezione componenti" },
-                        { step: 3, label: "Assemblaggio pagina" },
-                        { step: 4, label: "Finalizzazione" },
-                      ] : [
-                        { step: 1, label: "Analisi riferimento" },
-                        { step: 2, label: "Generazione HTML" },
-                        { step: 3, label: "Revisione e fix" },
-                      ]).map(({ step, label }) => (
-                        <div
-                          key={step}
-                          className={`flex items-center gap-2 p-3 rounded-xl text-sm transition-all ${
-                            generationProgress.step === step
-                              ? "bg-blue-500/10 border border-blue-500/30 text-blue-400"
-                              : generationProgress.step > step
-                              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-                              : "bg-white/[0.02] border border-white/5 text-slate-500"
-                          }`}
-                        >
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
-                            generationProgress.step === step
-                              ? "bg-blue-500 text-white"
-                              : generationProgress.step > step
-                              ? "bg-emerald-500 text-white"
-                              : "bg-white/10 text-slate-500"
-                          }`}>
-                            {generationProgress.step > step ? (
-                              <CheckIcon className="w-3 h-3" />
-                            ) : (
-                              step
-                            )}
-                          </div>
-                          <span className="truncate">{label}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Status Message */}
-                    <div className="flex items-center justify-center gap-2 text-slate-400 text-sm">
-                      <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-                      {generationProgress.message || "Elaborazione..."}
-                    </div>
+                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                    <GenerationExperience
+                      step={generationProgress.step}
+                      totalSteps={generationProgress.totalSteps}
+                      message={generationProgress.message}
+                      percentage={generationProgress.percentage}
+                      previewData={previewData}
+                    />
                   </div>
                 ) : (
                   <>

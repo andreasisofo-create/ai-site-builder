@@ -228,6 +228,17 @@ export interface GenerationStatus {
   total_steps: number;
   percentage: number;
   message: string;
+  preview_data?: {
+    phase: "analyzing" | "theme_complete" | "content_complete" | "complete";
+    colors?: { primary: string; secondary: string; accent: string; bg: string; text: string };
+    font_heading?: string;
+    font_body?: string;
+    sections?: string[];
+    hero_title?: string;
+    hero_subtitle?: string;
+    hero_cta?: string;
+    services_titles?: string[];
+  } | null;
 }
 
 export async function getGenerationStatus(siteId: number): Promise<GenerationStatus> {

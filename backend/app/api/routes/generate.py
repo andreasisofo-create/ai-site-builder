@@ -142,11 +142,13 @@ async def _run_generation_background(
         if site_id:
             site = db.query(Site).filter(Site.id == site_id, Site.owner_id == user_id).first()
 
-        def on_progress(step: int, message: str):
+        def on_progress(step: int, message: str, preview_data: dict = None):
             if site:
                 site.generation_step = step
                 site.generation_message = message
                 site.status = "generating"
+                if preview_data:
+                    site.config = {"_generation_preview": preview_data}
                 db.commit()
 
         # Seleziona pipeline in base alla configurazione
@@ -399,6 +401,11 @@ async def get_generation_status(
     else:
         percentage = int((step / total_steps) * 100)
 
+    # Extract preview data if generating
+    preview_data = None
+    if is_generating and isinstance(site.config, dict):
+        preview_data = site.config.get("_generation_preview")
+
     return {
         "site_id": site.id,
         "status": site.status,
@@ -407,6 +414,7 @@ async def get_generation_status(
         "total_steps": total_steps,
         "percentage": percentage,
         "message": site.generation_message or "",
+        "preview_data": preview_data,
     }
 
 

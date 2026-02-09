@@ -32,7 +32,7 @@ from app.services.sanitizer import sanitize_input, sanitize_output
 
 logger = logging.getLogger(__name__)
 
-ProgressCallback = Optional[Callable[[int, str], None]]
+ProgressCallback = Optional[Callable[[int, str, Optional[Dict[str, Any]]], None]]
 
 
 class DataBindingGenerator:
@@ -342,7 +342,9 @@ Return ONLY the JSON object."""
 
         # === STEP 1+2 PARALLEL: Theme + Texts ===
         if on_progress:
-            on_progress(1, "Analisi stile e generazione testi...")
+            on_progress(1, "Analisi stile e generazione testi...", {
+                "phase": "analyzing",
+            })
 
         theme_task = self._generate_theme(
             business_name, business_description,
@@ -370,10 +372,22 @@ Return ONLY the JSON object."""
                 total_tokens_in += r.get("tokens_input", 0)
                 total_tokens_out += r.get("tokens_output", 0)
 
-        # === STEP 3: Component Selection ===
+        # Send preview: colors + fonts found
         if on_progress:
-            on_progress(2, "Selezione componenti...")
+            on_progress(2, "Palette e stile identificati", {
+                "phase": "theme_complete",
+                "colors": {
+                    "primary": theme.get("primary_color", "#3b82f6"),
+                    "secondary": theme.get("secondary_color", "#1e40af"),
+                    "accent": theme.get("accent_color", "#f59e0b"),
+                    "bg": theme.get("bg_color", "#ffffff"),
+                    "text": theme.get("text_color", "#0f172a"),
+                },
+                "font_heading": theme.get("font_heading", "Inter"),
+                "font_body": theme.get("font_body", "Inter"),
+            })
 
+        # === STEP 3: Component Selection ===
         mood = ""
         if style_preferences:
             mood = style_preferences.get("mood", "modern")
@@ -391,9 +405,20 @@ Return ONLY the JSON object."""
             total_tokens_in += selection_result.get("tokens_input", 0)
             total_tokens_out += selection_result.get("tokens_output", 0)
 
-        # === STEP 4: Assemble HTML ===
+        # Send preview: layout + texts
+        hero_texts = texts.get("hero", {})
+        services_texts = texts.get("services", {})
         if on_progress:
-            on_progress(3, "Assemblaggio pagina...")
+            on_progress(3, "Contenuti e layout pronti", {
+                "phase": "content_complete",
+                "sections": sections,
+                "hero_title": hero_texts.get("HERO_TITLE", ""),
+                "hero_subtitle": hero_texts.get("HERO_SUBTITLE", ""),
+                "hero_cta": hero_texts.get("HERO_CTA_TEXT", ""),
+                "services_titles": [
+                    s.get("SERVICE_TITLE", "") for s in services_texts.get("SERVICES", [])
+                ] if isinstance(services_texts.get("SERVICES"), list) else [],
+            })
 
         site_data = self._build_site_data(
             theme=theme,
@@ -413,7 +438,9 @@ Return ONLY the JSON object."""
             return {"success": False, "error": f"Errore assemblaggio: {str(e)}"}
 
         if on_progress:
-            on_progress(4, "Completato!")
+            on_progress(4, "Il tuo sito e' pronto!", {
+                "phase": "complete",
+            })
 
         generation_time = int((time.time() - start_time) * 1000)
         cost = self.kimi.calculate_cost(total_tokens_in, total_tokens_out)
