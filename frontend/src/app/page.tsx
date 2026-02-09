@@ -113,45 +113,48 @@ export default function LandingPage() {
       name: "Starter",
       price: "Gratis",
       period: "Per iniziare",
-      description: "Crea e personalizza il tuo sito",
+      description: "Prova la potenza dell'AI gratuitamente",
       features: [
-        "Crea fino a 3 progetti",
-        "Preview e editing completo",
-        "Template AI base",
-        "Esporta HTML"
+        "1 generazione AI",
+        "3 modifiche via chat",
+        "Preview completa del sito",
+        "Solo anteprima (no pubblicazione)"
       ],
       cta: "Inizia Gratis",
       popular: false
     },
     {
-      name: "Homepage",
+      name: "Creazione Sito",
       price: "€200",
       period: "Pagamento unico",
-      description: "Pubblica la tua homepage professionale",
+      description: "Il tuo sito professionale online",
       features: [
-        "1 Homepage completa",
-        "Design AI personalizzato",
-        "Dominio gratuito incluso",
-        "Certificato SSL",
+        "3 generazioni AI",
+        "20 modifiche via chat",
+        "Homepage + 1 pagina extra",
+        "Pubblicazione su sottodominio",
+        "Certificato SSL incluso",
         "Hosting illimitato",
-        "Modifiche per 30 giorni"
+        "Pagine aggiuntive a €70/cad."
       ],
       cta: "Crea il tuo sito",
       popular: true
     },
     {
-      name: "Pagine Extra",
-      price: "€70",
-      period: "Per pagina",
-      description: "Aggiungi pagine al tuo sito",
+      name: "Premium",
+      price: "€500",
+      period: "Pagamento unico",
+      description: "Tutto incluso, senza limiti",
       features: [
-        "Chi Siamo, Servizi, Contatti",
-        "Galleria e Portfolio",
-        "Blog e News",
-        "Design coordinato",
-        "SEO ottimizzata"
+        "5 generazioni AI",
+        "30 modifiche via chat",
+        "Pagine illimitate",
+        "Dominio personalizzato incluso",
+        "Certificato SSL incluso",
+        "Hosting illimitato",
+        "Priorità di generazione"
       ],
-      cta: "Aggiungi Pagine",
+      cta: "Scegli Premium",
       popular: false
     }
   ];
