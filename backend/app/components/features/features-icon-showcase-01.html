@@ -1,0 +1,68 @@
+<!-- Features Icon Showcase: large icons with radial glow in generous grid -->
+<section id="features" class="py-24 lg:py-32 bg-[var(--color-bg-alt)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Features</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{FEATURES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body">{{FEATURES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Icon Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10" data-animate="stagger">
+      <!-- REPEAT:FEATURES -->
+      <div class="stagger-item group" data-animate="bounce-in">
+        <div class="relative bg-[var(--color-bg)] rounded-3xl p-10 text-center
+                    border border-[var(--color-text)]/5 shadow-sm
+                    hover:shadow-2xl hover:-translate-y-2
+                    transition-all duration-600 ease-out overflow-hidden">
+
+          <!-- Radial glow behind icon -->
+          <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2
+                      w-40 h-40 rounded-full
+                      bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/10
+                      blur-3xl transition-all duration-700 pointer-events-none"></div>
+
+          <!-- Secondary glow ring -->
+          <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2
+                      w-28 h-28 rounded-full
+                      bg-[var(--color-secondary)]/0 group-hover:bg-[var(--color-secondary)]/8
+                      blur-2xl transition-all duration-500 delay-100 pointer-events-none"></div>
+
+          <!-- Large icon -->
+          <div class="relative z-10 mx-auto mb-8">
+            <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-[1.75rem] bg-[var(--color-primary)]/10
+                        flex items-center justify-center text-5xl md:text-6xl
+                        border border-[var(--color-primary)]/10
+                        group-hover:bg-[var(--color-primary)]/15 group-hover:border-[var(--color-primary)]/25
+                        group-hover:scale-110 group-hover:shadow-xl
+                        transition-all duration-500">
+              {{FEATURE_ICON}}
+            </div>
+          </div>
+
+          <!-- Title -->
+          <h3 class="relative z-10 text-xl font-bold font-heading text-[var(--color-text)] mb-3
+                     group-hover:text-[var(--color-primary)] transition-colors duration-300">
+            {{FEATURE_TITLE}}
+          </h3>
+
+          <!-- Description -->
+          <p class="relative z-10 text-sm text-[var(--color-text-muted)] leading-relaxed font-body max-w-xs mx-auto">
+            {{FEATURE_DESCRIPTION}}
+          </p>
+
+          <!-- Bottom accent dot -->
+          <div class="relative z-10 mt-6 w-2 h-2 rounded-full bg-[var(--color-primary)]/30 mx-auto
+                      group-hover:bg-[var(--color-primary)] group-hover:w-8 group-hover:h-1
+                      transition-all duration-500"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:FEATURES -->
+    </div>
+  </div>
+
+  <!-- Background decorations -->
+  <div class="absolute top-20 right-0 w-72 h-72 bg-[var(--color-primary)]/3 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-20 left-0 w-56 h-56 bg-[var(--color-accent)]/3 rounded-full blur-[100px] pointer-events-none"></div>
+</section>

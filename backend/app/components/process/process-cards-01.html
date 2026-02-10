@@ -1,0 +1,59 @@
+<!-- Process Cards: numbered cards with large background numbers and connecting arrows -->
+<section id="process" class="py-24 bg-[var(--color-bg-alt)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Il Nostro Processo</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-4">{{PROCESS_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{PROCESS_SUBTITLE}}</p>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative" data-animate="stagger">
+      <!-- Desktop connecting arrows between cards -->
+      <div class="hidden lg:flex absolute top-1/2 -translate-y-1/2 left-0 right-0 z-0 justify-around px-20 pointer-events-none">
+        <svg class="w-8 h-8 text-[var(--color-primary)]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        <svg class="w-8 h-8 text-[var(--color-primary)]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        <svg class="w-8 h-8 text-[var(--color-primary)]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </div>
+
+      <!-- REPEAT:PROCESS_STEPS -->
+      <div class="stagger-item relative z-10" data-animate="scale-in">
+        <div class="process-step-card group relative rounded-2xl p-8 bg-[var(--color-bg)] border border-[var(--color-text)]/[0.06] transition-all duration-500 hover:border-[var(--color-primary)]/20 hover:shadow-xl hover:-translate-y-1 h-full overflow-hidden">
+          <!-- Large background number -->
+          <div class="absolute -top-4 -right-2 text-[8rem] font-bold font-heading leading-none text-[var(--color-text)]/[0.03] group-hover:text-[var(--color-primary)]/[0.08] transition-colors duration-500 select-none pointer-events-none">
+            {{STEP_NUMBER}}
+          </div>
+
+          <!-- Content -->
+          <div class="relative z-10">
+            <!-- Step number badge -->
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-6 text-lg font-bold font-heading text-white transition-transform duration-300 group-hover:scale-110" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+              {{STEP_NUMBER}}
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors duration-300">{{STEP_TITLE}}</h3>
+
+            <!-- Description -->
+            <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{{STEP_DESCRIPTION}}</p>
+          </div>
+
+          <!-- Bottom accent line on hover -->
+          <div class="absolute bottom-0 left-0 right-0 h-1 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:PROCESS_STEPS -->
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="text-center mt-16" data-animate="fade-up">
+      <div class="inline-flex items-center gap-3 text-sm text-[var(--color-text-muted)]">
+        <div class="w-8 h-px bg-[var(--color-text)]/10"></div>
+        Pronto a iniziare?
+        <a href="#contact" class="font-semibold text-[var(--color-primary)] hover:underline underline-offset-4">Contattaci</a>
+        <div class="w-8 h-px bg-[var(--color-text)]/10"></div>
+      </div>
+    </div>
+  </div>
+</section>

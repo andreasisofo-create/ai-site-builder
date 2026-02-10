@@ -1,0 +1,79 @@
+<!-- Gallery Spotlight: featured hero image + smaller grid below -->
+<section id="gallery" class="py-24 bg-[var(--color-bg)] overflow-hidden relative">
+  <!-- Subtle background accent -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-primary)]/3 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Gallery</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{GALLERY_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body">{{GALLERY_SUBTITLE}}</p>
+    </div>
+
+    <!-- REPEAT:GALLERY_ITEMS -->
+    <!-- Featured Hero Image (first item renders large, rest render in grid via CSS) -->
+    <div class="gallery-spotlight-item" data-animate="fade-up">
+      <div class="group relative rounded-2xl overflow-hidden shadow-xl bg-[var(--color-bg-alt)]">
+        <div class="aspect-video overflow-hidden">
+          <img
+            src="{{GALLERY_IMAGE_URL}}"
+            alt="{{GALLERY_IMAGE_ALT}}"
+            class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            loading="lazy"
+          >
+        </div>
+        <!-- Title overlay at bottom -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex items-end">
+          <div class="p-6 md:p-10 w-full">
+            <div class="h-0.5 w-12 bg-[var(--color-primary)] rounded-full mb-4 transform origin-left group-hover:w-20 transition-all duration-500"></div>
+            <p class="text-white font-heading font-bold text-xl md:text-2xl transform group-hover:translate-x-2 transition-transform duration-500">{{GALLERY_CAPTION}}</p>
+          </div>
+        </div>
+        <!-- Corner accents -->
+        <div class="absolute top-5 left-5 w-10 h-10 border-t-2 border-l-2 border-white/0 group-hover:border-white/40 transition-all duration-500 rounded-tl-lg"></div>
+        <div class="absolute top-5 right-5 w-10 h-10 border-t-2 border-r-2 border-white/0 group-hover:border-white/40 transition-all duration-500 rounded-tr-lg"></div>
+      </div>
+    </div>
+    <!-- /REPEAT:GALLERY_ITEMS -->
+
+    <!-- CSS to lay out first item as hero, rest as grid -->
+    <style>
+      .gallery-spotlight-item { margin-bottom: 1.25rem; }
+      .gallery-spotlight-item:first-child { margin-bottom: 1.5rem; }
+      .gallery-spotlight-item:not(:first-child) {
+        display: inline-block;
+        width: calc(33.333% - 0.85rem);
+        vertical-align: top;
+        margin-right: 1.25rem;
+      }
+      .gallery-spotlight-item:not(:first-child):nth-child(3n+1) {
+        margin-right: 0;
+      }
+      .gallery-spotlight-item:not(:first-child) .aspect-video {
+        aspect-ratio: 4/3;
+      }
+      .gallery-spotlight-item:not(:first-child) p {
+        font-size: 1rem;
+      }
+      @media (max-width: 768px) {
+        .gallery-spotlight-item:not(:first-child) {
+          width: calc(50% - 0.625rem);
+        }
+        .gallery-spotlight-item:not(:first-child):nth-child(3n+1) {
+          margin-right: 1.25rem;
+        }
+        .gallery-spotlight-item:not(:first-child):nth-child(2n) {
+          margin-right: 0;
+        }
+      }
+      @media (max-width: 480px) {
+        .gallery-spotlight-item:not(:first-child) {
+          width: 100%;
+          margin-right: 0;
+          display: block;
+        }
+      }
+    </style>
+  </div>
+</section>

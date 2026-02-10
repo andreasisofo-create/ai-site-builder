@@ -17,7 +17,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import { getSite, updateSite, refineWebsite, Site } from "@/lib/api";
+import { getSite, updateSite, refineWebsite, deploySite, Site } from "@/lib/api";
 
 interface ChatMessage {
   id: string;
@@ -44,6 +44,7 @@ export default function Editor() {
   const [loading, setLoading] = useState(true);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
   const [isPublishing, setIsPublishing] = useState(false);
+  const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
 
   // Chat state
   const [chatOpen, setChatOpen] = useState(false);
@@ -66,7 +67,10 @@ export default function Editor() {
     if (site?.html_content) {
       setLiveHtml(site.html_content);
     }
-  }, [site?.html_content]);
+    if (site?.domain) {
+      setPublishedUrl(site.domain);
+    }
+  }, [site?.html_content, site?.domain]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -90,14 +94,18 @@ export default function Editor() {
 
     try {
       setIsPublishing(true);
-      await updateSite(site.id, {
-        is_published: true,
-        status: "published",
-      });
-      toast.success("Sito pubblicato con successo!");
+      const result = await deploySite(site.id);
+      if (result.success && result.url) {
+        setPublishedUrl(result.url);
+        toast.success("Sito pubblicato su Vercel!");
+      }
       loadSite();
     } catch (error: any) {
-      toast.error(error.message || "Errore nella pubblicazione");
+      if (error.isQuotaError || error.quota?.upgrade_required) {
+        toast.error("Passa al piano Base o Premium per pubblicare il sito.");
+      } else {
+        toast.error(error.message || "Errore nella pubblicazione");
+      }
     } finally {
       setIsPublishing(false);
     }
@@ -277,16 +285,30 @@ export default function Editor() {
             </button>
 
             {/* Publish */}
-            {site.is_published ? (
-              <a
-                href={`https://${site.slug}.e-quipe.app`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-              >
-                <EyeIcon className="w-4 h-4" />
-                Visita
-              </a>
+            {site.is_published || publishedUrl ? (
+              <div className="flex items-center gap-2">
+                <a
+                  href={publishedUrl || site.domain || `https://${site.slug}.vercel.app`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                >
+                  <EyeIcon className="w-4 h-4" />
+                  Visita
+                </a>
+                <button
+                  onClick={handlePublish}
+                  disabled={isPublishing}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all disabled:opacity-50"
+                  title="Aggiorna il deploy"
+                >
+                  {isPublishing ? (
+                    <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <ArrowPathIcon className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
             ) : (
               <button
                 onClick={handlePublish}

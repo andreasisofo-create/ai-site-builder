@@ -2,6 +2,7 @@
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Date
 from sqlalchemy.sql import func
+from datetime import datetime, timezone
 
 from app.core.database import Base
 
@@ -74,9 +75,13 @@ class User(Base):
     pages_used = Column(Integer, default=0)
     pages_limit = Column(Integer, default=1)
 
+    # Revolut
+    revolut_customer_id = Column(String, nullable=True, unique=True, index=True)
+
     # Email verification
     email_verified = Column(Boolean, default=False)
     email_verification_token = Column(String, nullable=True)
+    email_verification_token_created_at = Column(DateTime(timezone=True), nullable=True)
 
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
@@ -136,6 +141,15 @@ class User(Base):
         if self.is_premium or self.is_superuser:
             return -1
         return max(0, self.pages_limit - self.pages_used)
+
+    @property
+    def is_verification_token_valid(self) -> bool:
+        """Controlla se il token di verifica email e' ancora valido (24h)."""
+        if not self.email_verification_token or not self.email_verification_token_created_at:
+            return False
+        from datetime import timedelta
+        expiry = self.email_verification_token_created_at + timedelta(hours=24)
+        return datetime.now(timezone.utc) < expiry
 
     def activate_plan(self, plan_name: str):
         """Attiva un piano dopo il pagamento. Imposta tutti i limiti.

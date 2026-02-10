@@ -1,0 +1,63 @@
+<!-- About Magazine: editorial asymmetric layout with pull-quote and overlapping image -->
+<section id="about" class="py-24 lg:py-32 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Small caps label -->
+    <div data-animate="fade-up">
+      <p class="text-xs font-semibold tracking-[0.3em] uppercase text-[var(--color-primary)] mb-2">About</p>
+      <div class="w-12 h-px bg-[var(--color-primary)] mb-12"></div>
+    </div>
+
+    <!-- Magazine grid: asymmetric columns -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-start">
+      <!-- Text column -->
+      <div class="lg:col-span-5 lg:pr-4" data-animate="fade-up">
+        <!-- Pull-quote style title with drop cap feel -->
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[var(--color-text)] leading-[0.95] mb-8">
+          <span class="text-6xl md:text-7xl lg:text-8xl font-heading text-[var(--color-primary)] float-left mr-3 -mt-2 leading-[0.8]">{{ABOUT_TITLE}}</span>
+        </h2>
+        <div class="clear-both"></div>
+
+        <p class="text-lg md:text-xl font-heading italic text-[var(--color-text)] leading-relaxed mb-6 border-l-2 border-[var(--color-primary)] pl-6">
+          {{ABOUT_SUBTITLE}}
+        </p>
+
+        <div class="w-8 h-px bg-[var(--color-text)]/20 mb-6"></div>
+
+        <p class="text-[var(--color-text-muted)] leading-relaxed font-body text-base">
+          {{ABOUT_TEXT}}
+        </p>
+      </div>
+
+      <!-- Image column: overlapping offset -->
+      <div class="lg:col-span-7 relative" data-animate="reveal-right">
+        <div class="relative lg:-mr-16">
+          <!-- Decorative frame offset -->
+          <div class="absolute -top-4 -left-4 w-full h-full border border-[var(--color-primary)]/20 rounded-sm"></div>
+          <img
+            src="{{ABOUT_IMAGE_URL}}"
+            alt="{{ABOUT_IMAGE_ALT}}"
+            class="relative w-full h-[400px] lg:h-[540px] object-cover rounded-sm shadow-2xl"
+            loading="lazy"
+          />
+          <!-- Overlay caption strip -->
+          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
+            <p class="text-white/80 text-sm font-body tracking-wide">{{BUSINESS_NAME}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats horizontal strip -->
+    <div class="mt-16 lg:mt-24 border-t border-b border-[var(--color-text)]/10 py-10">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8" data-animate="stagger">
+        <!-- REPEAT:ABOUT_STATS -->
+        <div class="stagger-item text-center md:text-left">
+          <div class="text-3xl md:text-4xl font-heading font-bold text-[var(--color-primary)]" data-counter="{{STAT_NUMBER}}">0</div>
+          <div class="w-6 h-px bg-[var(--color-text)]/20 my-2 mx-auto md:mx-0"></div>
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-[var(--color-text-muted)] font-body">{{STAT_LABEL}}</p>
+        </div>
+        <!-- /REPEAT:ABOUT_STATS -->
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,94 @@
+<!-- Services Tabs: CSS-only tabbed interface with radio inputs -->
+<section id="services" class="py-24 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Our Services</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- CSS-only Tabs -->
+    <style>
+      .svc-tab-radio { display: none; }
+      .svc-tab-label {
+        position: relative;
+        cursor: pointer;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        transition: color 0.3s;
+        white-space: nowrap;
+      }
+      .svc-tab-label::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+        border-radius: 3px 3px 0 0;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+      .svc-tab-label:hover { color: var(--color-text); }
+      .svc-tab-content {
+        display: none;
+        animation: svcTabFadeIn 0.4s ease-out;
+      }
+      @keyframes svcTabFadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .svc-tab-radio:checked + .svc-tab-label {
+        color: var(--color-primary);
+      }
+      .svc-tab-radio:checked + .svc-tab-label::after {
+        transform: scaleX(1);
+      }
+      #svc-tab-1:checked ~ .svc-tab-panels .svc-panel-1,
+      #svc-tab-2:checked ~ .svc-tab-panels .svc-panel-2,
+      #svc-tab-3:checked ~ .svc-tab-panels .svc-panel-3,
+      #svc-tab-4:checked ~ .svc-tab-panels .svc-panel-4,
+      #svc-tab-5:checked ~ .svc-tab-panels .svc-panel-5,
+      #svc-tab-6:checked ~ .svc-tab-panels .svc-panel-6 {
+        display: block;
+      }
+    </style>
+
+    <div class="relative">
+      <!-- Tab bar with radio inputs -->
+      <div class="flex overflow-x-auto border-b border-[var(--color-text)]/10 mb-12 scrollbar-hide gap-2">
+        <!-- REPEAT:SERVICES -->
+        <input type="radio" name="svc-tabs" class="svc-tab-radio" id="svc-tab-{{INDEX}}" checked>
+        <label for="svc-tab-{{INDEX}}" class="svc-tab-label font-heading text-base md:text-lg">
+          <span class="mr-2">{{SERVICE_ICON}}</span> {{SERVICE_TITLE}}
+        </label>
+        <!-- /REPEAT:SERVICES -->
+      </div>
+
+      <!-- Tab Panels -->
+      <div class="svc-tab-panels">
+        <!-- REPEAT:SERVICES -->
+        <div class="svc-tab-content svc-panel-{{INDEX}}">
+          <div class="flex flex-col md:flex-row items-center gap-12 py-8">
+            <!-- Icon display -->
+            <div class="flex-shrink-0">
+              <div class="w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 border border-[var(--color-primary)]/15 flex items-center justify-center shadow-lg">
+                <span class="text-7xl md:text-8xl">{{SERVICE_ICON}}</span>
+              </div>
+            </div>
+            <!-- Content -->
+            <div class="flex-1 text-center md:text-left">
+              <h3 class="text-2xl md:text-3xl font-bold font-heading text-[var(--color-text)] mb-4">{{SERVICE_TITLE}}</h3>
+              <p class="text-[var(--color-text-muted)] text-lg leading-relaxed font-body max-w-2xl">{{SERVICE_DESCRIPTION}}</p>
+              <div class="mt-6 h-1 w-20 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full mx-auto md:mx-0"></div>
+            </div>
+          </div>
+        </div>
+        <!-- /REPEAT:SERVICES -->
+      </div>
+    </div>
+  </div>
+</section>

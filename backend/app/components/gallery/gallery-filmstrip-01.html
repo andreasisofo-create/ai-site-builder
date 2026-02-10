@@ -1,0 +1,89 @@
+<!-- Gallery Filmstrip: horizontal scrolling filmstrip with snap and decorative borders -->
+<section id="gallery" class="py-24 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Gallery</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{GALLERY_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body">{{GALLERY_SUBTITLE}}</p>
+    </div>
+  </div>
+
+  <!-- Filmstrip Container -->
+  <div class="relative" data-animate="fade-left">
+    <!-- Top decorative film border -->
+    <div class="h-3 bg-[var(--color-text)]/5 relative overflow-hidden mb-4">
+      <div class="absolute inset-y-0 left-0 right-0 flex">
+        <div class="flex gap-6 px-3 items-center w-full">
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrollable filmstrip -->
+    <div class="overflow-x-auto scrollbar-hide scroll-smooth" style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+      <div class="flex gap-6 px-6 md:px-12 pb-4" style="width: max-content;">
+        <!-- REPEAT:GALLERY_ITEMS -->
+        <div class="flex-shrink-0 w-72 md:w-80 lg:w-96 group" style="scroll-snap-align: start;">
+          <!-- Image card -->
+          <div class="relative rounded-xl overflow-hidden bg-[var(--color-bg-alt)] shadow-md hover:shadow-xl transition-shadow duration-500">
+            <div class="aspect-[3/2] overflow-hidden">
+              <img
+                src="{{GALLERY_IMAGE_URL}}"
+                alt="{{GALLERY_IMAGE_ALT}}"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+              >
+            </div>
+            <!-- Hover overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end">
+              <div class="p-5 w-full">
+                <div class="w-8 h-0.5 bg-[var(--color-primary)] rounded-full mb-2"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Caption below -->
+          <div class="mt-4 px-1">
+            <p class="text-[var(--color-text)] font-heading font-semibold text-base group-hover:text-[var(--color-primary)] transition-colors duration-300">{{GALLERY_CAPTION}}</p>
+          </div>
+        </div>
+        <!-- /REPEAT:GALLERY_ITEMS -->
+      </div>
+    </div>
+
+    <!-- Bottom decorative film border -->
+    <div class="h-3 bg-[var(--color-text)]/5 relative overflow-hidden mt-6">
+      <div class="absolute inset-y-0 left-0 right-0 flex">
+        <div class="flex gap-6 px-3 items-center w-full">
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+          <div class="w-4 h-1.5 bg-[var(--color-text)]/10 rounded-sm flex-shrink-0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll fade edges -->
+    <div class="absolute top-0 left-0 bottom-0 w-12 bg-gradient-to-r from-[var(--color-bg)] to-transparent pointer-events-none z-10"></div>
+    <div class="absolute top-0 right-0 bottom-0 w-12 bg-gradient-to-l from-[var(--color-bg)] to-transparent pointer-events-none z-10"></div>
+  </div>
+</section>

@@ -1,0 +1,76 @@
+<!-- About Split Scroll: sticky image left, scrolling content right -->
+<section id="about" class="py-24 lg:py-0 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-0">
+
+      <!-- Left: sticky image column -->
+      <div class="relative lg:sticky lg:top-0 lg:h-screen flex items-center lg:pr-12" data-animate="reveal-right">
+        <div class="relative w-full">
+          <img
+            src="{{ABOUT_IMAGE_URL}}"
+            alt="{{ABOUT_IMAGE_ALT}}"
+            class="w-full h-[400px] lg:h-[70vh] object-cover rounded-2xl lg:rounded-3xl shadow-2xl"
+            loading="lazy"
+          />
+          <!-- Floating business name badge -->
+          <div class="absolute -bottom-4 -right-4 lg:-right-6 bg-[var(--color-primary)] text-white px-6 py-3 rounded-xl shadow-lg">
+            <p class="text-sm font-heading font-bold tracking-wide">{{BUSINESS_NAME}}</p>
+          </div>
+          <!-- Decorative accent line -->
+          <div class="hidden lg:block absolute top-1/2 -right-8 w-px h-32 bg-gradient-to-b from-transparent via-[var(--color-primary)] to-transparent -translate-y-1/2"></div>
+        </div>
+      </div>
+
+      <!-- Right: scrolling content -->
+      <div class="lg:py-32 lg:pl-12 space-y-12" data-animate="stagger">
+        <!-- Label -->
+        <div class="stagger-item" data-animate="fade-up">
+          <p class="text-xs font-semibold tracking-[0.3em] uppercase text-[var(--color-primary)] mb-2">About Us</p>
+          <div class="w-10 h-px bg-[var(--color-primary)]"></div>
+        </div>
+
+        <!-- Title -->
+        <div class="stagger-item" data-animate="fade-up">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[var(--color-text)] leading-tight">
+            {{ABOUT_TITLE}}
+          </h2>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="stagger-item" data-animate="fade-up">
+          <p class="text-xl text-[var(--color-text)] font-heading font-medium leading-relaxed">
+            {{ABOUT_SUBTITLE}}
+          </p>
+        </div>
+
+        <!-- Body text -->
+        <div class="stagger-item" data-animate="fade-up">
+          <p class="text-[var(--color-text-muted)] leading-relaxed font-body text-base lg:text-lg">
+            {{ABOUT_TEXT}}
+          </p>
+        </div>
+
+        <!-- Divider -->
+        <div class="stagger-item w-full h-px bg-[var(--color-text)]/10" data-animate="fade-up"></div>
+
+        <!-- Stats flowing down -->
+        <div class="space-y-8">
+          <!-- REPEAT:ABOUT_STATS -->
+          <div class="stagger-item flex items-center gap-6 group" data-animate="fade-up">
+            <div class="flex-shrink-0 w-20 h-20 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-text)]/5 flex items-center justify-center group-hover:bg-[var(--color-primary)]/10 transition-colors duration-300">
+              <span class="text-2xl md:text-3xl font-heading font-bold text-[var(--color-primary)]" data-counter="{{STAT_NUMBER}}">0</span>
+            </div>
+            <div>
+              <p class="text-base font-semibold text-[var(--color-text)] font-heading">{{STAT_LABEL}}</p>
+              <div class="mt-1 w-8 h-0.5 bg-[var(--color-primary)]/30 rounded-full group-hover:w-16 transition-all duration-500"></div>
+            </div>
+          </div>
+          <!-- /REPEAT:ABOUT_STATS -->
+        </div>
+
+        <!-- Bottom spacer for scroll room -->
+        <div class="h-8 lg:h-16"></div>
+      </div>
+    </div>
+  </div>
+</section>

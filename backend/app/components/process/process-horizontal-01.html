@@ -1,0 +1,57 @@
+<!-- Process Horizontal: steps with connecting dashed line, responsive vertical on mobile -->
+<section id="process" class="py-24 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Come Funziona</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-4">{{PROCESS_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{PROCESS_SUBTITLE}}</p>
+    </div>
+
+    <!-- Steps Container -->
+    <div class="relative" data-animate="stagger">
+      <!-- Desktop connecting dashed line -->
+      <div class="hidden md:block absolute top-10 left-0 right-0 z-0">
+        <div class="mx-auto" style="width: 70%; height: 2px; background-image: linear-gradient(to right, var(--color-primary) 50%, transparent 50%); background-size: 12px 2px;"></div>
+      </div>
+
+      <!-- Mobile connecting line -->
+      <div class="md:hidden absolute left-[1.95rem] top-10 bottom-10 w-0.5 z-0" style="background-image: linear-gradient(to bottom, var(--color-primary) 50%, transparent 50%); background-size: 2px 12px;"></div>
+
+      <!-- Steps Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12 md:gap-6 relative z-10">
+        <!-- REPEAT:PROCESS_STEPS -->
+        <div class="stagger-item" data-animate="fade-up">
+          <div class="flex md:flex-col items-start md:items-center gap-5 md:gap-0 pl-14 md:pl-0">
+            <!-- Number circle -->
+            <div class="flex-shrink-0 md:mb-6 relative">
+              <div class="w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl bg-[var(--color-bg)]" style="border: 3px solid var(--color-primary);">
+                <span class="text-2xl font-bold font-heading text-[var(--color-primary)]">{{STEP_NUMBER}}</span>
+              </div>
+              <!-- Decorative outer ring -->
+              <div class="absolute -inset-2 rounded-full border-2 border-dashed opacity-20" style="border-color: var(--color-primary);"></div>
+            </div>
+
+            <!-- Mobile dot on line -->
+            <div class="md:hidden absolute left-4 w-4 h-4 rounded-full border-4 border-[var(--color-bg)] shadow-sm" style="background: var(--color-primary);"></div>
+
+            <!-- Step content -->
+            <div class="md:text-center mt-0 md:mt-0">
+              <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-2">{{STEP_TITLE}}</h3>
+              <p class="text-sm text-[var(--color-text-muted)] leading-relaxed max-w-xs mx-auto">{{STEP_DESCRIPTION}}</p>
+            </div>
+          </div>
+        </div>
+        <!-- /REPEAT:PROCESS_STEPS -->
+      </div>
+    </div>
+
+    <!-- Bottom decorative arrow -->
+    <div class="flex justify-center mt-16" data-animate="fade-up">
+      <a href="#contact" class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white transition-all duration-300 hover:opacity-90 hover:shadow-lg" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+        Inizia Ora
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </a>
+    </div>
+  </div>
+</section>

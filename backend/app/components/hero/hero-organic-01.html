@@ -1,0 +1,87 @@
+<!-- Hero Organic: nature-inspired flowing shapes with warm, soft aesthetics -->
+<section id="hero" class="min-h-screen relative overflow-hidden bg-[var(--color-bg)]">
+
+  <!-- Soft blob background shapes -->
+  <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-[20%] -right-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full blur-[80px]" style="background: var(--color-primary); opacity: 0.06;" data-animate="float"></div>
+    <div class="absolute -bottom-[15%] -left-[10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full blur-[80px]" style="background: var(--color-accent); opacity: 0.06;" data-animate="float"></div>
+    <div class="absolute top-[30%] left-[40%] w-[30vw] h-[30vw] max-w-[400px] max-h-[400px] rounded-full blur-[60px]" style="background: var(--color-secondary); opacity: 0.04;" data-animate="float"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="relative z-50 px-6 md:px-10 lg:px-16 py-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3" data-animate="fade-down">
+        <img src="{{LOGO_URL}}" alt="" class="h-9 w-auto object-contain">
+        <span class="font-heading text-base font-medium text-[var(--color-text)] tracking-wide">{{BUSINESS_NAME}}</span>
+      </a>
+      <button class="w-10 h-10 rounded-full bg-[var(--color-bg-alt)] flex items-center justify-center group hover:bg-[var(--color-primary)] transition-colors" aria-label="Menu">
+        <div class="flex flex-col gap-1">
+          <span class="w-4 h-0.5 rounded-full bg-[var(--color-text)] group-hover:bg-white transition-colors"></span>
+          <span class="w-3 h-0.5 rounded-full bg-[var(--color-text)] group-hover:bg-white transition-colors"></span>
+        </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-10 lg:px-16 py-12 md:py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center" style="min-height: calc(100vh - 160px);">
+
+      <!-- Left: Text content -->
+      <div class="order-2 lg:order-1">
+        <!-- Organic badge -->
+        <div class="inline-flex items-center gap-2 bg-[var(--color-bg-alt)] rounded-full px-4 py-2 mb-8" data-animate="fade-right">
+          <div class="w-2 h-2 rounded-full" style="background: var(--color-primary);"></div>
+          <span class="font-body text-xs tracking-wider uppercase text-[var(--color-text-muted)]">{{BUSINESS_NAME}}</span>
+        </div>
+
+        <h1 class="font-heading text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-semibold text-[var(--color-text)] leading-[1.15] mb-6" data-animate="fade-up">
+          {{HERO_TITLE}}
+        </h1>
+
+        <p class="font-body text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed mb-10 max-w-md" data-animate="fade-up">
+          {{HERO_SUBTITLE}}
+        </p>
+
+        <!-- Soft rounded CTA -->
+        <div class="flex flex-wrap items-center gap-4" data-animate="fade-up">
+          <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-3 px-8 py-4 rounded-full font-body font-semibold text-sm text-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02]" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); box-shadow: 0 8px 30px -10px var(--color-primary);">
+            {{HERO_CTA_TEXT}}
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+          <a href="#about" class="inline-flex items-center gap-2 px-6 py-4 rounded-full font-body text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            Scopri di pi&ugrave;
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Overlapping organic image containers -->
+      <div class="order-1 lg:order-2 relative" data-animate="fade-left">
+        <!-- Main image: large rounded blob -->
+        <div class="relative z-10">
+          <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full aspect-[4/5] object-cover rounded-[2rem] md:rounded-[3rem] shadow-xl" loading="eager">
+        </div>
+
+        <!-- Decorative floating circles -->
+        <div class="absolute -top-4 -right-4 w-24 h-24 md:w-32 md:h-32 rounded-full z-0" style="background: var(--color-primary); opacity: 0.1;" data-animate="float"></div>
+        <div class="absolute -bottom-6 -left-6 w-20 h-20 md:w-28 md:h-28 rounded-full z-20 border-4 border-[var(--color-bg)] overflow-hidden shadow-lg" data-animate="float">
+          <div class="w-full h-full rounded-full" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); opacity: 0.15;"></div>
+        </div>
+        <div class="absolute top-[20%] -left-8 w-16 h-16 rounded-full z-0" style="background: var(--color-accent); opacity: 0.08;" data-animate="float"></div>
+
+        <!-- Soft shadow underneath -->
+        <div class="absolute bottom-0 left-[10%] right-[10%] h-16 rounded-full blur-2xl" style="background: var(--color-primary); opacity: 0.08;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wavy SVG divider at bottom -->
+  <div class="absolute bottom-0 left-0 right-0 z-20 pointer-events-none">
+    <svg class="w-full h-16 md:h-24" viewBox="0 0 1440 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,64 C360,96 720,32 1080,64 C1260,80 1380,88 1440,80 L1440,96 L0,96 Z" fill="var(--color-bg-alt)" opacity="0.5"/>
+      <path d="M0,80 C240,64 480,96 720,80 C960,64 1200,88 1440,72 L1440,96 L0,96 Z" fill="var(--color-bg-alt)"/>
+    </svg>
+  </div>
+</section>

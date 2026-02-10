@@ -14,6 +14,8 @@ export interface User {
   avatar_url?: string;
   is_active: boolean;
   is_superuser: boolean;
+  is_premium?: boolean;
+  plan?: string;
   created_at?: string;
 }
 

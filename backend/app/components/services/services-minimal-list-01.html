@@ -1,0 +1,54 @@
+<!-- Services Minimal List: editorial numbered list with clean typography -->
+<section id="services" class="py-24 bg-[var(--color-bg)]">
+  <div class="max-w-5xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Our Services</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Service List -->
+    <div data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <div class="stagger-item group">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-8 py-8 px-4 -mx-4 rounded-2xl transition-all duration-300 hover:bg-[var(--color-bg-alt)]/50">
+          <!-- Number -->
+          <div class="flex-shrink-0">
+            <span class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-text)]/10 group-hover:text-[var(--color-primary)] transition-colors duration-300 tabular-nums">
+              {{INDEX_PADDED}}
+            </span>
+          </div>
+
+          <!-- Icon -->
+          <div class="flex-shrink-0">
+            <div class="w-14 h-14 rounded-xl bg-[var(--color-bg-alt)] flex items-center justify-center text-3xl group-hover:bg-[var(--color-primary)]/10 transition-colors duration-300">
+              {{SERVICE_ICON}}
+            </div>
+          </div>
+
+          <!-- Title & Description -->
+          <div class="flex-1 min-w-0">
+            <h3 class="text-xl font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300 mb-1">
+              {{SERVICE_TITLE}}
+            </h3>
+            <p class="text-[var(--color-text-muted)] leading-relaxed font-body">
+              {{SERVICE_DESCRIPTION}}
+            </p>
+          </div>
+
+          <!-- Arrow indicator -->
+          <div class="flex-shrink-0 hidden md:block">
+            <svg class="w-5 h-5 text-[var(--color-text)]/20 group-hover:text-[var(--color-primary)] group-hover:translate-x-1 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Separator -->
+        <div class="h-px bg-[var(--color-text)]/8 group-last:hidden"></div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

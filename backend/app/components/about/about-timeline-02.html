@@ -1,0 +1,64 @@
+<!-- About Timeline Story: vertical timeline with alternating milestones -->
+<section id="about" class="py-24 lg:py-32 bg-[var(--color-bg-alt)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-8" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Our Story</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{ABOUT_TITLE}}</h2>
+      <p class="text-lg text-[var(--color-text-muted)] font-body leading-relaxed">{{ABOUT_SUBTITLE}}</p>
+    </div>
+
+    <!-- Top image -->
+    <div class="max-w-2xl mx-auto mb-16" data-animate="scale-in">
+      <div class="relative rounded-2xl overflow-hidden shadow-xl">
+        <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="w-full h-64 md:h-80 object-cover" loading="lazy" />
+        <div class="absolute inset-0 bg-gradient-to-t from-[var(--color-primary)]/30 to-transparent"></div>
+      </div>
+    </div>
+
+    <!-- About text -->
+    <div class="max-w-2xl mx-auto text-center mb-20" data-animate="fade-up">
+      <p class="text-[var(--color-text-muted)] leading-relaxed font-body">{{ABOUT_TEXT}}</p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="relative max-w-4xl mx-auto">
+      <!-- Central vertical line -->
+      <div class="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-accent)] md:-translate-x-px"></div>
+
+      <div class="space-y-16 md:space-y-20">
+        <!-- REPEAT:ABOUT_STATS -->
+        <div class="stagger-item relative flex items-start md:odd:flex-row md:even:flex-row-reverse group">
+          <!-- Content card -->
+          <div class="ml-16 md:ml-0 md:w-[calc(50%-2rem)]" data-animate="fade-right">
+            <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg border border-[var(--color-text)]/5 hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+              <div class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-primary)] mb-2" data-counter="{{STAT_NUMBER}}">0</div>
+              <p class="text-lg font-semibold font-heading text-[var(--color-text)] mb-2">{{STAT_LABEL}}</p>
+              <div class="w-10 h-0.5 bg-[var(--color-primary)]/30 rounded-full"></div>
+            </div>
+          </div>
+
+          <!-- Timeline dot -->
+          <div class="absolute left-6 md:left-1/2 -translate-x-1/2 top-8">
+            <div class="w-4 h-4 rounded-full bg-[var(--color-primary)] border-4 border-[var(--color-bg-alt)] shadow-lg z-10 relative">
+              <div class="absolute inset-0 rounded-full bg-[var(--color-primary)] animate-ping opacity-20"></div>
+            </div>
+          </div>
+
+          <!-- Spacer for other side -->
+          <div class="hidden md:block md:w-[calc(50%-2rem)]"></div>
+        </div>
+        <!-- /REPEAT:ABOUT_STATS -->
+      </div>
+
+      <!-- End cap -->
+      <div class="absolute left-6 md:left-1/2 -bottom-3 -translate-x-1/2">
+        <div class="w-2.5 h-2.5 rounded-full bg-[var(--color-accent)]/40"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background blurs -->
+  <div class="absolute top-20 left-0 w-72 h-72 bg-[var(--color-primary)]/5 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-20 right-0 w-56 h-56 bg-[var(--color-secondary)]/5 rounded-full blur-3xl pointer-events-none"></div>
+</section>

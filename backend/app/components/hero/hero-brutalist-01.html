@@ -1,0 +1,75 @@
+<!-- Hero Brutalist: raw, harsh, oversized typography with intentional misalignment -->
+<section id="hero" class="min-h-screen relative overflow-hidden" style="background: var(--color-bg);">
+  <!-- Visible grid lines -->
+  <div class="absolute inset-0 z-0 pointer-events-none" style="background-image: linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px); background-size: 25% 33.33vh; opacity: 0.04;"></div>
+
+  <!-- Oversized decorative number -->
+  <div class="absolute top-0 right-0 z-0 pointer-events-none select-none font-heading font-black leading-none" style="font-size: clamp(20rem, 40vw, 50rem); color: var(--color-primary); opacity: 0.04;">01</div>
+
+  <!-- Navigation -->
+  <nav class="relative z-50 border-b-2 border-[var(--color-text)]">
+    <div class="flex items-center justify-between px-4 py-3">
+      <a href="#" class="flex items-center gap-2 font-heading font-black uppercase tracking-tighter text-[var(--color-text)]" data-animate="fade-down">
+        <img src="{{LOGO_URL}}" alt="" class="h-7 w-auto object-contain grayscale">
+        <span class="text-sm border-l-2 border-[var(--color-text)] pl-2">{{BUSINESS_NAME}}</span>
+      </a>
+      <button class="p-2 border-2 border-[var(--color-text)] group hover:bg-[var(--color-text)] transition-colors" aria-label="Menu">
+        <div class="flex flex-col gap-1">
+          <span class="w-6 h-0.5 bg-[var(--color-text)] group-hover:bg-[var(--color-bg)] transition-colors"></span>
+          <span class="w-6 h-0.5 bg-[var(--color-text)] group-hover:bg-[var(--color-bg)] transition-colors"></span>
+          <span class="w-6 h-0.5 bg-[var(--color-text)] group-hover:bg-[var(--color-bg)] transition-colors"></span>
+        </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="relative z-10 px-4 md:px-8 lg:px-12 py-12 md:py-20">
+    <div class="grid grid-cols-12 gap-0 items-end min-h-[70vh]">
+
+      <!-- Giant title spanning full width, intentionally breaking grid -->
+      <div class="col-span-12 lg:col-span-10 relative">
+        <p class="text-xs md:text-sm font-body font-bold uppercase tracking-[0.5em] mb-4 text-[var(--color-text-muted)] border-l-4 border-[var(--color-primary)] pl-3" data-animate="fade-right">
+          {{HERO_SUBTITLE}}
+        </p>
+        <h1 class="font-heading font-black uppercase leading-[0.85] tracking-tighter text-[var(--color-text)]" style="font-size: clamp(4rem, 12vw, 10rem);" data-animate="text-split">
+          {{HERO_TITLE}}
+        </h1>
+      </div>
+
+      <!-- Accent block - intentionally offset -->
+      <div class="col-span-12 lg:col-span-2 lg:-ml-20 mt-8 lg:mt-0 relative z-20">
+        <div class="bg-[var(--color-primary)] p-4 md:p-6 inline-block" data-animate="scale-in">
+          <span class="text-white font-heading font-black text-xs tracking-[0.3em] uppercase block">Est.</span>
+          <span class="text-white font-heading font-black text-3xl">2024</span>
+        </div>
+      </div>
+
+      <!-- Bottom row: image + CTA -->
+      <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-0 mt-8 border-t-2 border-[var(--color-text)] pt-6">
+        <!-- Image: raw, no rounding -->
+        <div class="md:col-span-5 lg:col-span-4 relative" data-animate="fade-up">
+          <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full aspect-[4/3] object-cover grayscale hover:grayscale-0 transition-all duration-700 border-2 border-[var(--color-text)]" loading="eager">
+          <div class="absolute -bottom-2 -right-2 w-full h-full border-2 border-[var(--color-primary)] -z-10"></div>
+        </div>
+
+        <!-- Spacer -->
+        <div class="hidden md:block md:col-span-2 lg:col-span-4"></div>
+
+        <!-- CTA area -->
+        <div class="md:col-span-5 lg:col-span-4 flex flex-col justify-end mt-6 md:mt-0" data-animate="fade-left">
+          <p class="text-[var(--color-text-muted)] font-body text-sm leading-relaxed mb-6 max-w-xs border-l-2 border-[var(--color-text-muted)] pl-4">
+            {{HERO_SUBTITLE}}
+          </p>
+          <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-4 bg-[var(--color-text)] text-[var(--color-bg)] px-8 py-4 font-heading font-black text-sm uppercase tracking-[0.2em] hover:bg-[var(--color-primary)] hover:text-white transition-colors group w-fit">
+            {{HERO_CTA_TEXT}}
+            <svg class="w-5 h-5 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="square" d="M5 12h14m-6-6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom decorative stripe -->
+  <div class="absolute bottom-0 left-0 right-0 h-2" style="background: var(--color-primary);"></div>
+</section>

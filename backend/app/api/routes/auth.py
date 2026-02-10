@@ -10,11 +10,14 @@ from sqlalchemy.orm import Session
 from typing import Optional
 import httpx
 
+from datetime import datetime, timezone
+
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token, decode_token, get_current_active_user
 from app.models.user import User
 from app.services.oauth_service import oauth_service
+from app.services.email_service import send_verification_email
 from app.core.rate_limiter import limiter
 
 router = APIRouter()
@@ -82,7 +85,22 @@ async def register(request: Request, data: RegisterRequest, db: Session = Depend
     db.commit()
     db.refresh(user)
 
-    return {"message": "Utente creato", "user_id": user.id}
+    # Invio email di verifica se configurato
+    verification_sent = False
+    if settings.EMAIL_VERIFICATION_REQUIRED and settings.RESEND_API_KEY:
+        token = secrets.token_urlsafe(32)
+        user.email_verification_token = token
+        user.email_verification_token_created_at = datetime.now(timezone.utc)
+        db.commit()
+
+        verify_url = f"{FRONTEND_URL}/auth/verify?token={token}"
+        verification_sent = send_verification_email(user.email, verify_url)
+
+    return {
+        "message": "Utente creato",
+        "user_id": user.id,
+        "verification_email_sent": verification_sent,
+    }
 
 
 @router.post("/login")
@@ -112,6 +130,7 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
             "is_active": user.is_active,
             "is_superuser": user.is_superuser,
             "is_premium": user.is_premium,
+            "email_verified": user.email_verified or False,
         }
     }
 
@@ -556,33 +575,36 @@ async def get_quota(current_user: User = Depends(get_current_active_user)):
 
 @router.post("/send-verification")
 @limiter.limit("3/hour")
-async def send_verification_email(request: Request, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def send_verification(request: Request, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Invia email di verifica. Rate limit: 3/ora per IP."""
     if current_user.email_verified:
         return {"message": "Email gia' verificata"}
 
-    # Genera token di verifica
+    # Genera token di verifica con timestamp per scadenza 24h
     token = secrets.token_urlsafe(32)
     current_user.email_verification_token = token
+    current_user.email_verification_token_created_at = datetime.now(timezone.utc)
     db.commit()
 
-    # TODO: Integrare servizio email reale (SendGrid, Resend, SMTP)
-    # Per ora logga il link di verifica (utile per test)
     verify_url = f"{FRONTEND_URL}/auth/verify?token={token}"
-    import logging
-    logging.getLogger(__name__).info(
-        f"[EMAIL VERIFICATION] User {current_user.email} - Link: {verify_url}"
-    )
 
-    return {
+    # Invia email tramite Resend (se configurato)
+    email_sent = send_verification_email(current_user.email, verify_url)
+
+    response = {
         "message": "Email di verifica inviata. Controlla la tua casella di posta.",
-        "debug_verify_url": verify_url,  # Rimuovere in produzione
     }
+
+    # In sviluppo (senza Resend configurato), includi il link per debug
+    if not email_sent:
+        response["debug_verify_url"] = verify_url
+
+    return response
 
 
 @router.get("/verify-email")
 async def verify_email(token: str, db: Session = Depends(get_db)):
-    """Verifica email tramite token."""
+    """Verifica email tramite token. Il token scade dopo 24 ore."""
     if not token:
         raise HTTPException(status_code=400, detail="Token mancante")
 
@@ -590,8 +612,20 @@ async def verify_email(token: str, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=400, detail="Token non valido o scaduto")
 
+    # Controlla scadenza token (24h)
+    if not user.is_verification_token_valid:
+        # Invalida il token scaduto
+        user.email_verification_token = None
+        user.email_verification_token_created_at = None
+        db.commit()
+        raise HTTPException(
+            status_code=400,
+            detail="Il link di verifica e' scaduto. Richiedi un nuovo link dalla dashboard."
+        )
+
     user.email_verified = True
-    user.email_verification_token = None  # Invalida il token dopo l'uso
+    user.email_verification_token = None
+    user.email_verification_token_created_at = None
     db.commit()
 
     return {"message": "Email verificata con successo!", "email": user.email}
@@ -681,6 +715,7 @@ async def migrate_db(db: Session = Depends(get_db)):
             ("last_reset_date", "DATE"),
             ("email_verified", "BOOLEAN DEFAULT FALSE"),
             ("email_verification_token", "VARCHAR"),
+            ("email_verification_token_created_at", "TIMESTAMPTZ"),
             ("refines_used", "INTEGER DEFAULT 0"),
             ("refines_limit", "INTEGER DEFAULT 3"),
             ("pages_used", "INTEGER DEFAULT 0"),

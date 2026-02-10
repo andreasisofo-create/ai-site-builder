@@ -201,6 +201,14 @@ except Exception as e:
     logger.error(traceback.format_exc())
 
 try:
+    from app.api.routes import payments
+    app.include_router(payments.router, prefix="/api/payments", tags=["payments"])
+    logger.info("Route payments registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route payments: {e}")
+    logger.error(traceback.format_exc())
+
+try:
     from app.api.routes import test_ai
     app.include_router(test_ai.router, prefix="/api", tags=["test"])
     logger.info("Test routes registrate")

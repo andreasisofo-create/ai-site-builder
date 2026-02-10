@@ -66,6 +66,13 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
+
+    # Resend (email transazionali)
+    RESEND_API_KEY: str = ""
+    RESEND_FROM_EMAIL: str = "Site Builder <noreply@sitebuilder.it>"
+
+    # Email verification
+    EMAIL_VERIFICATION_REQUIRED: bool = False  # Se True, richiede verifica email alla registrazione
     
     # Google OAuth
     GOOGLE_CLIENT_ID: str = ""
@@ -75,6 +82,11 @@ class Settings(BaseSettings):
     MICROSOFT_CLIENT_ID: str = ""
     MICROSOFT_CLIENT_SECRET: str = ""
     
+    # Revolut Merchant API (pagamenti una tantum)
+    REVOLUT_API_KEY: str = ""           # API key da Revolut Business > API Settings
+    REVOLUT_WEBHOOK_SECRET: str = ""    # Signing secret per verificare webhook
+    REVOLUT_SANDBOX: bool = True        # True = sandbox, False = produzione
+
     # Generation Pipeline
     GENERATION_PIPELINE: str = "databinding"  # "databinding" | "swarm" | "n8n"
     N8N_WEBHOOK_URL: str = ""  # n8n webhook URL for external generation

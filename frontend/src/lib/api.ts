@@ -85,6 +85,8 @@ export interface Site {
   is_published: boolean;
   thumbnail?: string;
   html_content?: string;
+  domain?: string;
+  vercel_project_id?: string;
   created_at: string;
   updated_at?: string;
 }
@@ -271,6 +273,43 @@ export async function exportSite(siteId: number, siteName: string): Promise<void
   window.URL.revokeObjectURL(url);
 }
 
+// ============ DEPLOY ============
+
+export interface DeployResponse {
+  success: boolean;
+  site_id: number;
+  deployment_id: string;
+  url: string;
+  project_id: string;
+  status: string;
+}
+
+export interface DeployStatusResponse {
+  site_id: number;
+  is_published: boolean;
+  status: string;
+  domain: string | null;
+  vercel_project_id: string | null;
+  published_at: string | null;
+  vercel_status?: string;
+  vercel_url?: string;
+}
+
+export async function deploySite(siteId: number): Promise<DeployResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/deploy/${siteId}`, {
+    method: "POST",
+    headers,
+  });
+  return handleResponse<DeployResponse>(res);
+}
+
+export async function getDeployStatus(siteId: number): Promise<DeployStatusResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/deploy/${siteId}/status`, { headers });
+  return handleResponse<DeployStatusResponse>(res);
+}
+
 // ============ COMPONENTS ============
 
 export interface Component {
@@ -309,6 +348,36 @@ export async function createComponent(
     }),
   });
   return handleResponse<Component>(res);
+}
+
+// ============ PAYMENTS / REVOLUT ============
+
+export interface CheckoutResponse {
+  checkout_url: string;
+  order_id: string;
+}
+
+export interface PaymentStatus {
+  plan: string;
+  plan_label: string;
+  has_paid: boolean;
+  revolut_customer_id: string | null;
+}
+
+export async function createCheckoutSession(plan: "base" | "premium"): Promise<CheckoutResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/payments/create-checkout`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ plan }),
+  });
+  return handleResponse<CheckoutResponse>(res);
+}
+
+export async function getPaymentStatus(): Promise<PaymentStatus> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/payments/status`, { headers });
+  return handleResponse<PaymentStatus>(res);
 }
 
 // ============ UTILS ============

@@ -1,0 +1,52 @@
+<!-- Features Bento Grid: first feature highlighted large, rest in compact cells -->
+<section id="features" class="py-24 lg:py-32 bg-[var(--color-bg)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Features</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{FEATURES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body">{{FEATURES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[minmax(220px,auto)]" data-animate="stagger">
+      <!-- REPEAT:FEATURES -->
+      <div class="stagger-item first:md:col-span-2 first:lg:col-span-2 first:lg:row-span-2 relative group rounded-3xl bg-[var(--color-bg-alt)] border border-[var(--color-text)]/5 p-8 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-1" data-animate="scale-in">
+        <!-- Background icon decoration -->
+        <div class="absolute -top-6 -right-6 text-[8rem] leading-none opacity-[0.04] pointer-events-none select-none transition-transform duration-700 group-hover:scale-110 group-hover:opacity-[0.08]">
+          {{FEATURE_ICON}}
+        </div>
+
+        <!-- Glass overlay subtle -->
+        <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/0 to-[var(--color-primary)]/[0.02] rounded-3xl pointer-events-none"></div>
+
+        <!-- Content -->
+        <div class="relative z-10 h-full flex flex-col justify-between">
+          <div>
+            <!-- Icon -->
+            <div class="w-14 h-14 rounded-2xl bg-[var(--color-primary)]/10 flex items-center justify-center text-2xl mb-6 group-hover:bg-[var(--color-primary)]/20 group-hover:shadow-lg transition-all duration-300">
+              {{FEATURE_ICON}}
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              {{FEATURE_TITLE}}
+            </h3>
+          </div>
+
+          <!-- Description -->
+          <p class="text-sm text-[var(--color-text-muted)] leading-relaxed font-body mt-auto">
+            {{FEATURE_DESCRIPTION}}
+          </p>
+        </div>
+
+        <!-- Bottom accent line -->
+        <div class="absolute bottom-0 left-8 right-8 h-0.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+      </div>
+      <!-- /REPEAT:FEATURES -->
+    </div>
+  </div>
+
+  <!-- Background glow -->
+  <div class="absolute top-1/3 right-0 w-80 h-80 bg-[var(--color-primary)]/3 rounded-full blur-[100px] pointer-events-none"></div>
+</section>

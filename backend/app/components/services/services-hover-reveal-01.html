@@ -1,0 +1,47 @@
+<!-- Services Hover Reveal: glassmorphism cards with hover rotation and description reveal -->
+<section id="services" class="py-24 bg-[var(--color-bg)] overflow-hidden relative">
+  <!-- Ambient background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 left-10 w-80 h-80 bg-[var(--color-primary)]/6 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-10 right-10 w-72 h-72 bg-[var(--color-secondary)]/6 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">What We Do</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <div class="stagger-item group perspective-[1200px]">
+        <div class="relative bg-[var(--color-bg-alt)]/60 backdrop-blur-xl rounded-2xl border border-[var(--color-text)]/8 overflow-hidden transition-all duration-500 hover:border-[var(--color-primary)]/30 hover:shadow-2xl hover:shadow-[var(--color-primary)]/10 hover:-translate-y-2 hover:rotate-1">
+          <!-- Gradient overlay on hover -->
+          <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/0 via-[var(--color-primary)]/0 to-[var(--color-secondary)]/0 group-hover:from-[var(--color-primary)]/8 group-hover:via-transparent group-hover:to-[var(--color-secondary)]/8 transition-all duration-700"></div>
+
+          <div class="relative p-10">
+            <!-- Icon -->
+            <div class="text-5xl mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3">
+              {{SERVICE_ICON}}
+            </div>
+            <!-- Title -->
+            <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              {{SERVICE_TITLE}}
+            </h3>
+            <!-- Description: hidden by default, revealed on hover -->
+            <div class="overflow-hidden transition-all duration-500 ease-out max-h-0 opacity-0 group-hover:max-h-40 group-hover:opacity-100">
+              <p class="text-[var(--color-text-muted)] leading-relaxed font-body pt-1">{{SERVICE_DESCRIPTION}}</p>
+            </div>
+          </div>
+
+          <!-- Animated bottom border line -->
+          <div class="h-[3px] bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

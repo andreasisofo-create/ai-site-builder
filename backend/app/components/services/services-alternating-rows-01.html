@@ -1,0 +1,48 @@
+<!-- Services Alternating Rows: zigzag layout with large icons and accent separators -->
+<section id="services" class="py-24 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Our Services</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Alternating Rows -->
+    <div class="space-y-0">
+      <!-- REPEAT:SERVICES -->
+      <div class="group">
+        <!-- Row content: uses odd/even CSS for zigzag -->
+        <div class="flex flex-col md:flex-row items-center gap-10 md:gap-16 py-16 md:odd:flex-row md:even:flex-row-reverse" data-animate="fade-left">
+          <!-- Icon side -->
+          <div class="flex-shrink-0" data-animate="scale-in">
+            <div class="relative">
+              <!-- Colored circle behind icon -->
+              <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-[var(--color-primary)]/15 to-[var(--color-secondary)]/15 flex items-center justify-center group-hover:from-[var(--color-primary)]/25 group-hover:to-[var(--color-secondary)]/25 transition-all duration-500">
+                <span class="text-6xl md:text-7xl transition-transform duration-500 group-hover:scale-110">{{SERVICE_ICON}}</span>
+              </div>
+              <!-- Decorative ring -->
+              <div class="absolute inset-0 rounded-full border-2 border-dashed border-[var(--color-primary)]/20 group-hover:border-[var(--color-primary)]/40 group-hover:rotate-45 transition-all duration-700"></div>
+            </div>
+          </div>
+
+          <!-- Text side -->
+          <div class="flex-1 text-center md:text-left">
+            <h3 class="text-2xl md:text-3xl font-bold font-heading text-[var(--color-text)] mb-4 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              {{SERVICE_TITLE}}
+            </h3>
+            <p class="text-[var(--color-text-muted)] text-lg leading-relaxed font-body max-w-xl">
+              {{SERVICE_DESCRIPTION}}
+            </p>
+            <!-- Accent underline -->
+            <div class="mt-6 h-1 w-16 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] rounded-full mx-auto md:mx-0 group-hover:w-24 transition-all duration-500"></div>
+          </div>
+        </div>
+
+        <!-- Separator line -->
+        <div class="h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/20 to-transparent"></div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

@@ -1,0 +1,60 @@
+<!-- Contact Cards: 3 info cards + compact inline form -->
+<section id="contact" class="py-24 bg-[var(--color-bg-alt)] relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4 font-body">Contattaci</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-3">{{CONTACT_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-xl mx-auto font-body">{{CONTACT_SUBTITLE}}</p>
+    </div>
+    <!-- Contact Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16" data-animate="stagger">
+      <!-- Phone Card -->
+      <div class="stagger-item group bg-[var(--color-bg)] rounded-2xl p-8 text-center border border-[var(--color-text)]/5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+        <div class="w-14 h-14 mx-auto mb-5 rounded-2xl flex items-center justify-center transition-colors duration-300" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); opacity: 0.12;">
+        </div>
+        <div class="w-14 h-14 mx-auto -mt-[calc(3.5rem+1.25rem)] mb-5 rounded-2xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-2 font-body">Telefono</p>
+        <a href="tel:{{BUSINESS_PHONE}}" class="text-lg font-bold font-heading text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors">{{BUSINESS_PHONE}}</a>
+      </div>
+      <!-- Email Card -->
+      <div class="stagger-item group bg-[var(--color-bg)] rounded-2xl p-8 text-center border border-[var(--color-text)]/5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+        <div class="w-14 h-14 mx-auto mb-5 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-secondary), var(--color-accent)); opacity: 0.12;">
+        </div>
+        <div class="w-14 h-14 mx-auto -mt-[calc(3.5rem+1.25rem)] mb-5 rounded-2xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-[var(--color-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-2 font-body">Email</p>
+        <a href="mailto:{{BUSINESS_EMAIL}}" class="text-lg font-bold font-heading text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors break-all">{{BUSINESS_EMAIL}}</a>
+      </div>
+      <!-- Address Card -->
+      <div class="stagger-item group bg-[var(--color-bg)] rounded-2xl p-8 text-center border border-[var(--color-text)]/5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+        <div class="w-14 h-14 mx-auto mb-5 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-accent), var(--color-primary)); opacity: 0.12;">
+        </div>
+        <div class="w-14 h-14 mx-auto -mt-[calc(3.5rem+1.25rem)] mb-5 rounded-2xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-2 font-body">Indirizzo</p>
+        <p class="text-lg font-bold font-heading text-[var(--color-text)]">{{BUSINESS_ADDRESS}}</p>
+      </div>
+    </div>
+    <!-- Compact Form -->
+    <div class="max-w-3xl mx-auto" data-animate="fade-up">
+      <form class="flex flex-col sm:flex-row gap-3" onsubmit="event.preventDefault(); alert('Messaggio inviato!');">
+        <input type="email" required placeholder="La tua email" class="flex-1 px-5 py-4 rounded-xl border border-[var(--color-text)]/10 bg-[var(--color-bg)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30 transition-all font-body">
+        <input type="text" required placeholder="Il tuo messaggio" class="flex-[2] px-5 py-4 rounded-xl border border-[var(--color-text)]/10 bg-[var(--color-bg)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30 transition-all font-body">
+        <button type="submit" class="px-8 py-4 rounded-xl font-bold font-heading text-white hover:opacity-90 hover:shadow-lg transition-all whitespace-nowrap" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+          Invia
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

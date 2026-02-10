@@ -1,0 +1,62 @@
+<!-- FAQ Search: search-style layout with decorative input and visible cards -->
+<section id="faq" class="py-24 bg-[var(--color-bg-alt)] overflow-hidden">
+  <div class="max-w-4xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-10" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Centro Assistenza</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-4">{{FAQ_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-xl mx-auto">{{FAQ_SUBTITLE}}</p>
+    </div>
+
+    <!-- Decorative Search Input -->
+    <div class="max-w-2xl mx-auto mb-14" data-animate="fade-up">
+      <div class="relative">
+        <div class="absolute left-5 top-1/2 -translate-y-1/2">
+          <svg class="w-5 h-5 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <input type="text" placeholder="Cerca una domanda..." class="w-full pl-14 pr-6 py-5 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-text)]/[0.08] text-[var(--color-text)] placeholder-[var(--color-text-muted)]/50 text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 focus:border-[var(--color-primary)]/40 transition-all shadow-sm">
+        <div class="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg bg-[var(--color-text)]/[0.04] text-xs text-[var(--color-text-muted)] font-mono hidden md:block">ESC</div>
+      </div>
+    </div>
+
+    <!-- FAQ Items - all visible -->
+    <div class="space-y-4" data-animate="stagger">
+      <!-- REPEAT:FAQ_ITEMS -->
+      <div class="stagger-item" data-animate="fade-up">
+        <div class="faq-search-card group rounded-2xl bg-[var(--color-bg)] border border-[var(--color-text)]/[0.05] p-6 md:p-8 transition-all duration-300 hover:border-[var(--color-primary)]/20 hover:shadow-lg hover:-translate-y-0.5 cursor-default">
+          <!-- Question -->
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-primary)]/10 flex items-center justify-center mt-0.5">
+              <svg class="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01"/>
+              </svg>
+            </div>
+            <h3 class="text-base md:text-lg font-semibold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-200">{{FAQ_QUESTION}}</h3>
+          </div>
+          <!-- Answer -->
+          <div class="pl-12">
+            <p class="text-[var(--color-text-muted)] leading-relaxed text-sm">{{FAQ_ANSWER}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:FAQ_ITEMS -->
+    </div>
+
+    <!-- Bottom section -->
+    <div class="text-center mt-16" data-animate="fade-up">
+      <div class="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-text)]/[0.05]">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+          </svg>
+        </div>
+        <div class="text-left">
+          <p class="text-sm font-semibold text-[var(--color-text)]">Serve ancora aiuto?</p>
+          <a href="#contact" class="text-sm text-[var(--color-primary)] font-medium hover:underline underline-offset-4">Parla con il nostro team</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

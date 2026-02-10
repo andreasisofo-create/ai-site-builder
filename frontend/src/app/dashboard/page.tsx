@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState, Fragment } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Menu, Transition } from "@headlessui/react";
 import { useAuth, useRequireAuth } from "@/lib/auth-context";
 import {
@@ -36,7 +36,7 @@ import {
   StarIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import { fetchSites, deleteSite, Site } from "@/lib/api";
+import { fetchSites, deleteSite, Site, createCheckoutSession } from "@/lib/api";
 import GenerationCounter from "@/components/GenerationCounter";
 
 const SIDEBAR_ITEMS = [
@@ -94,12 +94,27 @@ export default function Dashboard() {
   const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   useRequireAuth("/auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(false); // Default to false to show UI immediately
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState<string | null>(null);
+
+  // Mostra notifica dopo pagamento riuscito
+  useEffect(() => {
+    const paymentStatus = searchParams.get("payment");
+    const planName = searchParams.get("plan");
+    if (paymentStatus === "success") {
+      toast.success(`Piano ${planName === "premium" ? "Premium" : "Creazione Sito"} attivato con successo!`);
+      router.replace("/dashboard");
+    } else if (paymentStatus === "cancelled") {
+      toast.error("Pagamento annullato");
+      router.replace("/dashboard");
+    }
+  }, [searchParams, router]);
 
   // Carica siti dal backend
   useEffect(() => {
@@ -136,6 +151,17 @@ export default function Dashboard() {
       toast.error(error.message || "Errore nell'eliminazione");
     } finally {
       setIsDeleting(null);
+    }
+  };
+
+  const handleUpgrade = async (plan: "base" | "premium") => {
+    try {
+      setIsCheckingOut(plan);
+      const { checkout_url } = await createCheckoutSession(plan);
+      window.location.href = checkout_url;
+    } catch (error: any) {
+      toast.error(error.message || "Errore durante il checkout");
+      setIsCheckingOut(null);
     }
   };
 
@@ -328,14 +354,18 @@ export default function Dashboard() {
                   <div className="px-4 py-3 border-b border-white/10">
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-slate-400">Piano</span>
-                      {(user as any)?.is_premium ? (
+                      {(user as any)?.plan === "premium" || (user as any)?.is_premium ? (
                         <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 text-xs font-medium flex items-center gap-1">
                           <StarIcon className="w-3 h-3" />
                           Premium
                         </span>
+                      ) : (user as any)?.plan === "base" ? (
+                        <span className="px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-medium">
+                          Creazione Sito
+                        </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-medium">
-                          Free
+                          Starter
                         </span>
                       )}
                     </div>
@@ -410,6 +440,47 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
+
+          {/* Upgrade Banner - mostra solo per piano free */}
+          {(!user || (user as any)?.plan === "free" || !(user as any)?.plan) && (
+            <section className="relative rounded-2xl overflow-hidden border border-violet-500/20 bg-gradient-to-r from-violet-900/20 via-blue-900/20 to-purple-900/20">
+              <div className="relative p-8">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <StarIcon className="w-5 h-5 text-amber-400" />
+                      <h3 className="text-lg font-semibold">Sblocca tutto il potenziale</h3>
+                    </div>
+                    <p className="text-slate-400 text-sm max-w-lg">
+                      Passa a un piano a pagamento per pubblicare il tuo sito, ottenere piu generazioni AI e modifiche illimitate.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => handleUpgrade("base")}
+                      disabled={isCheckingOut !== null}
+                      className="px-5 py-2.5 bg-white/10 border border-white/20 rounded-full text-sm font-medium hover:bg-white/20 transition-all disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {isCheckingOut === "base" ? (
+                        <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      ) : null}
+                      Creazione Sito - 200
+                    </button>
+                    <button
+                      onClick={() => handleUpgrade("premium")}
+                      disabled={isCheckingOut !== null}
+                      className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-blue-600 rounded-full text-sm font-semibold hover:from-violet-500 hover:to-blue-500 transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-violet-900/30"
+                    >
+                      {isCheckingOut === "premium" ? (
+                        <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      ) : null}
+                      Premium - 500
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Templates Section */}
           <section>
