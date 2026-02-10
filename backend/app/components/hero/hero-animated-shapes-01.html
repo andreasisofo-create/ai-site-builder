@@ -67,7 +67,10 @@
   <!-- Navigation -->
   <nav class="relative z-50 px-6 py-5">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <a href="#" class="text-xl font-bold font-heading text-[var(--color-text)]" data-animate="fade-down">{{BUSINESS_NAME}}</a>
+      <a href="#" class="flex items-center gap-2 text-xl font-bold font-heading text-[var(--color-text)]" data-animate="fade-down">
+        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+        {{BUSINESS_NAME}}
+      </a>
       <button class="flex flex-col gap-1.5 p-2 group" aria-label="Menu">
         <span class="w-7 h-0.5 bg-[var(--color-text)] transition-all group-hover:bg-[var(--color-primary)]"></span>
         <span class="w-5 h-0.5 bg-[var(--color-text)] transition-all group-hover:bg-[var(--color-primary)] group-hover:w-7 delay-75"></span>
@@ -89,6 +92,7 @@
             <div class="w-2 h-2 rounded-full" style="background: var(--color-secondary); opacity: 0.6;"></div>
             <div class="w-2 h-2 rounded-full" style="background: var(--color-accent); opacity: 0.3;"></div>
           </div>
+          <img src="{{LOGO_URL}}" alt="" class="h-10 w-auto object-contain" onerror="this.style.display='none'">
           <span class="text-sm font-semibold tracking-[0.2em] uppercase text-[var(--color-primary)] font-body">{{BUSINESS_NAME}}</span>
         </div>
 

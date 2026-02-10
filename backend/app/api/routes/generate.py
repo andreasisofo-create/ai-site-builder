@@ -47,6 +47,7 @@ class GenerateRequest(BaseModel):
     logo_url: Optional[str] = None
     contact_info: Optional[Dict[str, str]] = None
     site_id: Optional[int] = None  # Se fornito, salva direttamente sul sito
+    photo_urls: Optional[List[str]] = None  # List of base64 data URLs from user uploads
 
 
 class RefineRequest(BaseModel):
@@ -173,6 +174,7 @@ async def _run_generation_background(
             logo_url=request.logo_url,
             contact_info=request.contact_info,
             on_progress=on_progress,
+            photo_urls=request.photo_urls,
         )
 
         if not result.get("success"):

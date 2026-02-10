@@ -3,7 +3,10 @@
   <!-- Navigation -->
   <nav class="absolute top-0 left-0 right-0 z-50 px-6 py-5">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <a href="#" class="text-xl font-bold font-heading text-white" data-animate="fade-down">{{BUSINESS_NAME}}</a>
+      <a href="#" class="flex items-center gap-2 text-xl font-bold font-heading text-white" data-animate="fade-down">
+        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+        {{BUSINESS_NAME}}
+      </a>
       <button class="flex flex-col gap-1.5 p-2 group" aria-label="Menu">
         <span class="w-7 h-0.5 bg-white transition-transform group-hover:translate-x-1"></span>
         <span class="w-5 h-0.5 bg-white transition-transform group-hover:translate-x-1 delay-75"></span>
@@ -40,9 +43,10 @@
   <!-- Content -->
   <div class="relative z-30 min-h-screen flex flex-col items-center justify-center px-6 py-32">
     <div class="max-w-5xl mx-auto text-center">
-      <p class="text-sm md:text-base font-semibold tracking-[0.3em] uppercase text-[var(--color-accent)] mb-6 stagger-item" data-animate="fade-up">
-        {{BUSINESS_NAME}}
-      </p>
+      <div class="mb-6 flex items-center justify-center gap-3 stagger-item" data-animate="fade-up">
+        <img src="{{LOGO_URL}}" alt="" class="h-10 w-auto object-contain" onerror="this.style.display='none'">
+        <p class="text-sm md:text-base font-semibold tracking-[0.3em] uppercase text-[var(--color-accent)]">{{BUSINESS_NAME}}</p>
+      </div>
       <h1 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-heading text-white leading-[1.05] mb-8" data-animate="text-split" data-split="words">
         {{HERO_TITLE}}
       </h1>

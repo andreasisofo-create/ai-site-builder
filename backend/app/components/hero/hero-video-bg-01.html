@@ -30,7 +30,10 @@
   <!-- Navigation -->
   <nav class="relative z-50 px-6 py-5">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <a href="#" class="text-xl font-bold font-heading text-white" data-animate="fade-down">{{BUSINESS_NAME}}</a>
+      <a href="#" class="flex items-center gap-2 text-xl font-bold font-heading text-white" data-animate="fade-down">
+        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+        {{BUSINESS_NAME}}
+      </a>
       <div class="flex items-center gap-6">
         <!-- Sound/mute icon (decorative, cinematic touch) -->
         <button class="hidden md:flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-xs uppercase tracking-widest font-body" aria-label="Audio">
@@ -53,6 +56,7 @@
       <!-- Business name pill -->
       <div class="inline-flex items-center gap-2 px-5 py-2 border border-white/10 rounded-full mb-8 backdrop-blur-sm bg-white/5 stagger-item" data-animate="fade-down">
         <div class="w-2 h-2 rounded-full bg-red-500" style="animation: pulse 2s infinite;"></div>
+        <img src="{{LOGO_URL}}" alt="" class="h-6 w-auto object-contain" onerror="this.style.display='none'">
         <span class="text-xs font-bold tracking-[0.2em] uppercase text-white/70 font-body">{{BUSINESS_NAME}}</span>
       </div>
 

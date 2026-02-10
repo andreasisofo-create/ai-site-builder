@@ -160,6 +160,7 @@ export interface GenerateRequest {
   };
   reference_analysis?: string;
   reference_image_url?: string;
+  photo_urls?: string[];
   logo_url?: string;
   contact_info?: Record<string, string>;
   site_id?: number;

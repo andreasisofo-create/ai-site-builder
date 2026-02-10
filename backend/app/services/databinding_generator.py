@@ -373,6 +373,7 @@ Return ONLY the JSON object."""
         logo_url: Optional[str] = None,
         contact_info: Optional[Dict[str, str]] = None,
         on_progress: ProgressCallback = None,
+        photo_urls: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Generate a website using the data-binding pipeline.
@@ -392,6 +393,7 @@ Return ONLY the JSON object."""
                     logo_url=logo_url,
                     contact_info=contact_info,
                     on_progress=on_progress,
+                    photo_urls=photo_urls,
                 ),
                 timeout=180.0,
             )
@@ -409,6 +411,7 @@ Return ONLY the JSON object."""
         logo_url: Optional[str],
         contact_info: Optional[Dict[str, str]],
         on_progress: ProgressCallback,
+        photo_urls: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens_in = 0
@@ -509,6 +512,10 @@ Return ONLY the JSON object."""
             sections=sections,
         )
 
+        # Inject user-uploaded photos (replace placehold.co URLs)
+        if photo_urls:
+            site_data = self._inject_user_photos(site_data, photo_urls)
+
         try:
             html_content = self.assembler.assemble(site_data)
             html_content = sanitize_output(html_content)
@@ -590,6 +597,56 @@ Return ONLY the JSON object."""
                 "CURRENT_YEAR": "2026",
             },
         }
+
+    def _inject_user_photos(self, site_data: Dict[str, Any], photo_urls: List[str]) -> Dict[str, Any]:
+        """Replace placehold.co URLs with user-uploaded photos in site_data."""
+        if not photo_urls:
+            return site_data
+
+        photo_index = 0
+
+        def get_next_photo():
+            nonlocal photo_index
+            if not photo_urls:
+                return None
+            photo = photo_urls[photo_index % len(photo_urls)]
+            photo_index += 1
+            return photo
+
+        for component in site_data.get("components", []):
+            data = component.get("data", {})
+
+            # Replace hero image
+            if "HERO_IMAGE_URL" in data:
+                photo = get_next_photo()
+                if photo:
+                    data["HERO_IMAGE_URL"] = photo
+
+            # Replace gallery images
+            gallery_items = data.get("GALLERY_ITEMS", [])
+            if isinstance(gallery_items, list):
+                for item in gallery_items:
+                    if isinstance(item, dict) and "GALLERY_IMAGE_URL" in item:
+                        photo = get_next_photo()
+                        if photo:
+                            item["GALLERY_IMAGE_URL"] = photo
+
+            # Replace about image if present
+            if "ABOUT_IMAGE_URL" in data:
+                photo = get_next_photo()
+                if photo:
+                    data["ABOUT_IMAGE_URL"] = photo
+
+            # Replace team member images
+            team_members = data.get("TEAM_MEMBERS", [])
+            if isinstance(team_members, list):
+                for member in team_members:
+                    if isinstance(member, dict) and "MEMBER_IMAGE_URL" in member:
+                        photo = get_next_photo()
+                        if photo:
+                            member["MEMBER_IMAGE_URL"] = photo
+
+        return site_data
 
     def _extract_json(self, content: str) -> dict:
         """Extracts JSON from Kimi response (handles markdown code blocks)."""

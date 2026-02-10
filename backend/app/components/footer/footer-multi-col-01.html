@@ -4,7 +4,10 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
       <!-- Brand -->
       <div>
-        <h3 class="text-xl font-bold font-heading mb-4">{{BUSINESS_NAME}}</h3>
+        <div class="flex items-center gap-3 mb-4">
+          <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain brightness-0 invert" onerror="this.style.display='none'">
+          <h3 class="text-xl font-bold font-heading">{{BUSINESS_NAME}}</h3>
+        </div>
         <p class="text-white/60 leading-relaxed text-sm">{{FOOTER_DESCRIPTION}}</p>
       </div>
       <!-- Links -->

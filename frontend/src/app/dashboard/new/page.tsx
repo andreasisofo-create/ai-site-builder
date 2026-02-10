@@ -205,6 +205,25 @@ export const TEMPLATE_CATEGORIES: TemplateCategory[] = [
       },
     ],
   },
+  {
+    id: "custom",
+    label: "Personalizzato",
+    description: "Genera da zero senza template, scegli i colori e le sezioni",
+    icon: "🎨",
+    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&h=400&fit=crop",
+    styles: [
+      {
+        id: "custom-free",
+        label: "Design Libero",
+        description: "L'AI crea un design unico basato sulla tua descrizione",
+        image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&h=400&fit=crop",
+        mood: "modern, creative",
+        primaryColor: "#6366f1",
+        secondaryColor: "#8b5cf6",
+        sections: ["hero", "about", "services", "features", "testimonials", "cta", "contact", "footer"],
+      },
+    ],
+  },
 ];
 
 // ============ SECTION LABELS ============
@@ -475,10 +494,15 @@ function NewProjectContent() {
   };
 
   // Select category → go to styles (auto-select first style for preview)
+  // For "custom" category, skip style selection and go directly to brand info
   const selectCategory = (category: TemplateCategory) => {
     setSelectedCategory(category);
     setSelectedStyle(category.styles[0] || null);
-    setCurrentStep(1);
+    if (category.id === "custom") {
+      setCurrentStep(2); // Skip style selection for custom
+    } else {
+      setCurrentStep(1);
+    }
   };
 
   // Select style → just update preview (user clicks "Avanti" to proceed)
@@ -572,6 +596,7 @@ function NewProjectContent() {
         },
         logo_url: formData.logo || undefined,
         reference_image_url: photoUrls.length > 0 ? photoUrls[0] : undefined,
+        photo_urls: photoUrls.length > 0 ? photoUrls : undefined,
         contact_info: (formData.contactInfo.address || formData.contactInfo.phone || formData.contactInfo.email)
           ? formData.contactInfo : undefined,
         site_id: site.id,
@@ -823,8 +848,68 @@ function NewProjectContent() {
                     rows={4}
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all resize-none"
                   />
-                  <p className="text-xs text-slate-500 mt-2">Suggerimento: Pi&ugrave; dettagli fornisci, migliore sar&agrave; il risultato</p>
+                  <p className="text-xs text-slate-500 mt-2">
+                    {selectedCategory?.id === "custom"
+                      ? "Importante: Senza template, la descrizione guida l'AI. Pi\u00f9 dettagli = risultato migliore!"
+                      : "Suggerimento: Pi\u00f9 dettagli fornisci, migliore sar\u00e0 il risultato"}
+                  </p>
                 </div>
+
+                {/* Color Pickers for Custom category */}
+                {selectedCategory?.id === "custom" && selectedStyle && (
+                  <div className="pt-4 border-t border-white/10">
+                    <label className="block text-sm font-medium mb-4">Scegli i colori del sito</label>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-2">Colore Primario</label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="color"
+                            value={selectedStyle.primaryColor}
+                            onChange={e => {
+                              const newColor = e.target.value;
+                              setSelectedStyle(prev => prev ? { ...prev, primaryColor: newColor } : prev);
+                            }}
+                            className="w-10 h-10 rounded-lg border border-white/10 bg-transparent cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={selectedStyle.primaryColor}
+                            onChange={e => {
+                              const newColor = e.target.value;
+                              setSelectedStyle(prev => prev ? { ...prev, primaryColor: newColor } : prev);
+                            }}
+                            className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-2">Colore Secondario</label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="color"
+                            value={selectedStyle.secondaryColor}
+                            onChange={e => {
+                              const newColor = e.target.value;
+                              setSelectedStyle(prev => prev ? { ...prev, secondaryColor: newColor } : prev);
+                            }}
+                            className="w-10 h-10 rounded-lg border border-white/10 bg-transparent cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={selectedStyle.secondaryColor}
+                            onChange={e => {
+                              const newColor = e.target.value;
+                              setSelectedStyle(prev => prev ? { ...prev, secondaryColor: newColor } : prev);
+                            }}
+                            className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-3">Scegli i colori principali. L&apos;AI costruir&agrave; il design attorno a questi.</p>
+                  </div>
+                )}
 
                 {/* Logo Upload */}
                 <div>
@@ -1060,7 +1145,13 @@ function NewProjectContent() {
       <footer className="fixed bottom-0 left-0 right-0 h-20 bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/5">
         <div className="h-full max-w-7xl mx-auto px-6 flex items-center justify-between">
           <button
-            onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+            onClick={() => {
+              if (currentStep === 2 && selectedCategory?.id === "custom") {
+                setCurrentStep(0); // Skip back over style step for custom
+              } else {
+                setCurrentStep(prev => Math.max(0, prev - 1));
+              }
+            }}
             disabled={currentStep === 0 || isGenerating}
             className="flex items-center gap-2 px-6 py-2.5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
