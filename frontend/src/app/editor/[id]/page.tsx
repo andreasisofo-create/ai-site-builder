@@ -15,9 +15,14 @@ import {
   SparklesIcon,
   ChatBubbleLeftRightIcon,
   XMarkIcon,
+  PhotoIcon,
+  VideoCameraIcon,
+  CodeBracketIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { getSite, updateSite, refineWebsite, deploySite, Site } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
+import EquipePromo from "@/components/EquipePromo";
 
 interface ChatMessage {
   id: string;
@@ -38,6 +43,7 @@ const QUICK_ACTIONS = [
 export default function Editor() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const siteId = params.id as string;
 
   const [site, setSite] = useState<Site | null>(null);
@@ -53,6 +59,14 @@ export default function Editor() {
   const [isRefining, setIsRefining] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Attachment popover state
+  const [activePopover, setActivePopover] = useState<"photo" | "video" | "embed" | null>(null);
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [embedCode, setEmbedCode] = useState("");
+  const [videoError, setVideoError] = useState("");
 
   // Live HTML for preview (updated by chat refine)
   const [liveHtml, setLiveHtml] = useState<string>("");
@@ -156,6 +170,58 @@ export default function Editor() {
     } finally {
       setIsRefining(false);
     }
+  };
+
+  const validateVideoUrl = (url: string): boolean => {
+    return /(?:youtube\.com\/watch\?v=|youtu\.be\/|vimeo\.com\/\d+)/.test(url);
+  };
+
+  const appendToChat = (text: string) => {
+    setChatInput((prev) => (prev ? prev + "\n" + text : text));
+    textareaRef.current?.focus();
+  };
+
+  const handlePhotoUrlSubmit = () => {
+    if (!photoUrl.trim()) return;
+    appendToChat(`[Inserisci questa immagine: ${photoUrl.trim()}]`);
+    setPhotoUrl("");
+    setActivePopover(null);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Immagine troppo grande (max 5MB)");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      appendToChat(`[Inserisci questa immagine: ${dataUrl}]`);
+      setActivePopover(null);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleVideoSubmit = () => {
+    if (!videoUrl.trim()) return;
+    if (!validateVideoUrl(videoUrl.trim())) {
+      setVideoError("URL non valido. Usa un link YouTube o Vimeo.");
+      return;
+    }
+    appendToChat(`[Inserisci video: ${videoUrl.trim()}]`);
+    setVideoUrl("");
+    setVideoError("");
+    setActivePopover(null);
+  };
+
+  const handleEmbedSubmit = () => {
+    if (!embedCode.trim()) return;
+    appendToChat(`[Inserisci embed: ${embedCode.trim()}]`);
+    setEmbedCode("");
+    setActivePopover(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -335,10 +401,10 @@ export default function Editor() {
       {/* Main Content - Preview + Chat */}
       <main className="flex-1 flex overflow-hidden">
         {/* Preview Area */}
-        <div className="flex-1 bg-[#0a0a0a] relative overflow-hidden flex items-center justify-center p-4 md:p-8">
+        <div className="flex-1 bg-[#0a0a0a] relative overflow-hidden flex flex-col p-4 md:p-8">
           {/* Grid Background */}
           <div
-            className="absolute inset-0 opacity-20"
+            className="absolute inset-0 opacity-20 pointer-events-none"
             style={{
               backgroundImage: `
                 linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
@@ -349,36 +415,49 @@ export default function Editor() {
           />
 
           {/* Iframe Container */}
-          <div
-            className={`relative bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${
-              previewMode === "mobile"
-                ? "w-[375px] h-[812px]"
-                : "w-full max-w-6xl h-full max-h-[calc(100vh-120px)]"
-            }`}
-          >
-            {liveHtml ? (
-              <iframe
-                srcDoc={liveHtml}
-                className="w-full h-full border-0"
-                sandbox="allow-scripts"
-                title={`Preview - ${site.name}`}
-              />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-slate-900">
-                <SparklesIcon className="w-12 h-12 mb-4 opacity-50" />
-                <p className="text-lg font-medium">Nessun contenuto generato</p>
-                <p className="text-sm opacity-70 mt-1">
-                  Il sito non &egrave; stato ancora generato dall&apos;AI
-                </p>
-                <Link
-                  href="/dashboard/new"
-                  className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-sm transition-colors"
-                >
-                  Crea nuovo sito
-                </Link>
-              </div>
-            )}
+          <div className="flex-1 flex items-center justify-center min-h-0">
+            <div
+              className={`relative bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${
+                previewMode === "mobile"
+                  ? "w-[375px] h-[812px]"
+                  : "w-full max-w-6xl h-full max-h-[calc(100vh-120px)]"
+              }`}
+            >
+              {liveHtml ? (
+                <iframe
+                  srcDoc={liveHtml}
+                  className="w-full h-full border-0"
+                  sandbox="allow-scripts"
+                  title={`Preview - ${site.name}`}
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-slate-900">
+                  <SparklesIcon className="w-12 h-12 mb-4 opacity-50" />
+                  <p className="text-lg font-medium">Nessun contenuto generato</p>
+                  <p className="text-sm opacity-70 mt-1">
+                    Il sito non &egrave; stato ancora generato dall&apos;AI
+                  </p>
+                  <Link
+                    href="/dashboard/new"
+                    className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-sm transition-colors"
+                  >
+                    Crea nuovo sito
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* e-quipe Studio upsell - shown when site is ready/published */}
+          {(site.status === "ready" || site.status === "published") && (
+            <div className="relative z-10 mt-4 max-w-3xl mx-auto w-full">
+              <EquipePromo
+                userEmail={user?.email}
+                siteName={site.name}
+                variant="bar"
+              />
+            </div>
+          )}
         </div>
 
         {/* Chat Panel (Right Sidebar) */}
@@ -455,6 +534,161 @@ export default function Editor() {
 
             {/* Input Area */}
             <div className="p-4 border-t border-white/5">
+              {/* Attachment Bar */}
+              <div className="relative mb-2">
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setActivePopover(activePopover === "photo" ? null : "photo")}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      activePopover === "photo"
+                        ? "bg-white/10 text-white"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
+                    title="Inserisci immagine"
+                  >
+                    <PhotoIcon className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => { setActivePopover(activePopover === "video" ? null : "video"); setVideoError(""); }}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      activePopover === "video"
+                        ? "bg-white/10 text-white"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
+                    title="Inserisci video"
+                  >
+                    <VideoCameraIcon className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setActivePopover(activePopover === "embed" ? null : "embed")}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      activePopover === "embed"
+                        ? "bg-white/10 text-white"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
+                    title="Inserisci embed"
+                  >
+                    <CodeBracketIcon className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Photo Popover */}
+                {activePopover === "photo" && (
+                  <div className="absolute bottom-full left-0 mb-2 w-72 bg-[#1a1a1a] border border-white/10 rounded-xl p-3 shadow-xl z-10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-slate-300">Inserisci immagine</span>
+                      <button onClick={() => setActivePopover(null)} className="text-slate-500 hover:text-white">
+                        <XMarkIcon className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      <div>
+                        <label className="text-xs text-slate-400 mb-1 block">Incolla URL immagine</label>
+                        <div className="flex gap-1.5">
+                          <input
+                            type="text"
+                            value={photoUrl}
+                            onChange={(e) => setPhotoUrl(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") handlePhotoUrlSubmit(); }}
+                            placeholder="https://..."
+                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                          />
+                          <button
+                            onClick={handlePhotoUrlSubmit}
+                            disabled={!photoUrl.trim()}
+                            className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-lg text-xs font-medium transition-colors"
+                          >
+                            OK
+                          </button>
+                        </div>
+                      </div>
+                      <div className="border-t border-white/5 pt-2">
+                        <label className="text-xs text-slate-400 mb-1 block">Carica dal dispositivo</label>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                        />
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-full py-1.5 bg-white/5 border border-white/10 border-dashed rounded-lg text-xs text-slate-400 hover:text-white hover:border-white/20 transition-colors"
+                        >
+                          Scegli file...
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Video Popover */}
+                {activePopover === "video" && (
+                  <div className="absolute bottom-full left-0 mb-2 w-72 bg-[#1a1a1a] border border-white/10 rounded-xl p-3 shadow-xl z-10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-slate-300">Inserisci video</span>
+                      <button onClick={() => setActivePopover(null)} className="text-slate-500 hover:text-white">
+                        <XMarkIcon className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Incolla link YouTube o Vimeo</label>
+                      <div className="flex gap-1.5">
+                        <input
+                          type="text"
+                          value={videoUrl}
+                          onChange={(e) => { setVideoUrl(e.target.value); setVideoError(""); }}
+                          onKeyDown={(e) => { if (e.key === "Enter") handleVideoSubmit(); }}
+                          placeholder="https://youtube.com/watch?v=..."
+                          className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                        />
+                        <button
+                          onClick={handleVideoSubmit}
+                          disabled={!videoUrl.trim()}
+                          className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-lg text-xs font-medium transition-colors"
+                        >
+                          OK
+                        </button>
+                      </div>
+                      {videoError && (
+                        <p className="text-xs text-red-400 mt-1">{videoError}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Embed Popover */}
+                {activePopover === "embed" && (
+                  <div className="absolute bottom-full left-0 mb-2 w-80 bg-[#1a1a1a] border border-white/10 rounded-xl p-3 shadow-xl z-10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-slate-300">Inserisci embed</span>
+                      <button onClick={() => setActivePopover(null)} className="text-slate-500 hover:text-white">
+                        <XMarkIcon className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">
+                        Incolla il codice embed (iframe, script, etc.)
+                      </label>
+                      <textarea
+                        value={embedCode}
+                        onChange={(e) => setEmbedCode(e.target.value)}
+                        placeholder={'<iframe src="..."></iframe>'}
+                        rows={4}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 resize-none focus:outline-none focus:border-blue-500 font-mono"
+                      />
+                      <button
+                        onClick={handleEmbedSubmit}
+                        disabled={!embedCode.trim()}
+                        className="mt-1.5 w-full py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-lg text-xs font-medium transition-colors"
+                      >
+                        Inserisci
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-2">
                 <textarea
                   ref={textareaRef}
