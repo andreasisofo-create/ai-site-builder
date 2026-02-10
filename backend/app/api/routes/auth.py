@@ -130,6 +130,7 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
             "is_active": user.is_active,
             "is_superuser": user.is_superuser,
             "is_premium": user.is_premium,
+            "plan": user.plan or "free",
             "email_verified": user.email_verified or False,
         }
     }
@@ -204,6 +205,8 @@ async def oauth_login(data: OAuthLoginRequest, db: Session = Depends(get_db)):
                 "email": user.email,
                 "full_name": user.full_name,
                 "avatar_url": user.avatar_url,
+                "is_premium": user.is_premium,
+                "plan": user.plan or "free",
             }
         }
     
