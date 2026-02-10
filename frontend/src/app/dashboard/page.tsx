@@ -240,6 +240,15 @@ function Dashboard() {
           {SIDEBAR_ITEMS.map((item) => (
             <button
               key={item.label}
+              onClick={() => {
+                if (item.label === "Progetti") {
+                  document.getElementById("section-progetti")?.scrollIntoView({ behavior: "smooth" });
+                } else if (item.label === "Templates") {
+                  document.getElementById("section-templates")?.scrollIntoView({ behavior: "smooth" });
+                } else {
+                  toast(`${item.label}: Prossimamente`, { icon: "🚧" });
+                }
+              }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${item.active
                 ? "bg-white/10 text-white"
                 : "text-slate-400 hover:text-white hover:bg-white/5"
@@ -491,7 +500,7 @@ function Dashboard() {
           )}
 
           {/* Templates Section */}
-          <section>
+          <section id="section-templates">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold">Inizia da un Template AI</h3>
             </div>
@@ -524,7 +533,7 @@ function Dashboard() {
           </section>
 
           {/* My Sites Section */}
-          <section>
+          <section id="section-progetti">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold">I Tuoi Progetti</h3>
               <div className="flex gap-2">
