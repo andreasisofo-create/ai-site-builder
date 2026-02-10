@@ -37,6 +37,7 @@ import {
 import toast from "react-hot-toast";
 import { fetchSites, deleteSite, Site, createCheckoutSession } from "@/lib/api";
 import GenerationCounter from "@/components/GenerationCounter";
+import { TEMPLATE_CATEGORIES, generateStylePreviewHtml } from "@/lib/templates";
 
 const SIDEBAR_ITEMS = [
   { icon: FolderIcon, label: "Progetti", active: true },
@@ -44,47 +45,9 @@ const SIDEBAR_ITEMS = [
   { icon: ShoppingCartIcon, label: "Carrello", active: false },
 ];
 
-const TEMPLATE_CATEGORIES = [
-  {
-    id: "restaurant",
-    label: "Ristorante & Food",
-    description: "Ristoranti, bar, pizzerie, pasticcerie",
-    icon: "🍽️",
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop",
-    styles: 3,
-  },
-  {
-    id: "agency",
-    label: "Agenzia & Startup",
-    description: "Agenzie digitali, startup tech, consulenza",
-    icon: "🚀",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
-    styles: 3,
-  },
-  {
-    id: "portfolio",
-    label: "Portfolio & Creativo",
-    description: "Fotografi, designer, artisti, freelancer",
-    icon: "🎨",
-    image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=600&h=400&fit=crop",
-    styles: 3,
-  },
-  {
-    id: "business",
-    label: "Business & Professionale",
-    description: "Studi legali, medici, consulenti, PMI",
-    icon: "💼",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop",
-    styles: 3,
-  },
-  {
-    id: "custom",
-    label: "Personalizzato",
-    description: "Genera da zero senza template, scegli colori e sezioni",
-    icon: "🎨",
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&h=400&fit=crop",
-    styles: 1,
-  },
+const FILTER_TABS = [
+  { id: "all", label: "Tutti" },
+  ...TEMPLATE_CATEGORIES.filter(c => c.id !== "custom").map(c => ({ id: c.id, label: c.label.split(" & ")[0] })),
 ];
 
 export default function DashboardPage() {
@@ -107,6 +70,7 @@ function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState("all");
 
   // Mostra notifica dopo pagamento riuscito
   useEffect(() => {
@@ -170,9 +134,9 @@ function Dashboard() {
     }
   };
 
-  const createSite = (style?: string) => {
-    if (style) {
-      router.push("/dashboard/new");
+  const createSite = (styleId?: string) => {
+    if (styleId) {
+      router.push(`/dashboard/new?style=${styleId}`);
     } else {
       router.push("/dashboard/new");
     }
@@ -498,147 +462,101 @@ function Dashboard() {
             </section>
           )}
 
-          {/* Creation Paths Section */}
+          {/* Template Gallery Section */}
           <section id="section-templates">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold">Crea il tuo sito</h3>
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold mb-2">Scegli un Template per Iniziare</h3>
+              <p className="text-slate-400 text-sm">Clicca su un template per personalizzarlo con i tuoi contenuti</p>
             </div>
 
-            {/* Two Creation Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-              {/* Card A - Crea da Template */}
-              <div
-                onClick={() => {
-                  const userPlan = (user as any)?.plan || "free";
-                  if (userPlan === "free" || !userPlan) {
-                    toast("Disponibile con piano Base o Premium", { icon: "🔒" });
-                    return;
-                  }
-                  router.push("/dashboard/new");
-                }}
-                className="group relative rounded-2xl border border-white/10 overflow-hidden cursor-pointer transition-all hover:border-violet-500/40 hover:shadow-2xl hover:shadow-violet-900/20"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-600/20 via-blue-600/10 to-transparent" />
-                <div className="relative p-8 min-h-[220px] flex flex-col justify-between">
-                  <div>
-                    <div className="w-12 h-12 rounded-xl bg-violet-500/15 border border-violet-500/20 flex items-center justify-center mb-4">
-                      <Squares2X2Icon className="w-6 h-6 text-violet-400" />
-                    </div>
-                    <h4 className="text-xl font-bold text-white mb-2">Crea da Template</h4>
-                    <p className="text-slate-400 text-sm leading-relaxed">
-                      Parti da un template professionale pre-costruito
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between mt-6">
-                    <span className="text-xs text-slate-500">4 categorie, 12+ stili</span>
-                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-violet-500/20 transition-colors">
-                      <ArrowRightIcon className="w-4 h-4 text-slate-400 group-hover:text-violet-400 transition-colors" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Lock overlay for free users */}
-                {((user as any)?.plan === "free" || !(user as any)?.plan) && (
-                  <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-10">
-                    <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
-                      <LockClosedIcon className="w-7 h-7 text-slate-400" />
-                    </div>
-                    <p className="text-sm text-slate-300 mb-3 text-center px-6">
-                      Disponibile con piano Base o Premium
-                    </p>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleUpgrade("base");
-                      }}
-                      className="px-5 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-full text-sm font-medium transition-colors"
-                    >
-                      Sblocca Templates
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Card B - Crea Personalizzato */}
-              <div
-                onClick={() => router.push("/dashboard/new?template=custom")}
-                className="group relative rounded-2xl border border-white/10 overflow-hidden cursor-pointer transition-all hover:border-emerald-500/40 hover:shadow-2xl hover:shadow-emerald-900/20"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-teal-600/10 to-transparent" />
-                <div className="relative p-8 min-h-[220px] flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
-                        <SparklesIcon className="w-6 h-6 text-emerald-400" />
-                      </div>
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
-                        Gratuito
-                      </span>
-                    </div>
-                    <h4 className="text-xl font-bold text-white mb-2">Crea Personalizzato</h4>
-                    <p className="text-slate-400 text-sm leading-relaxed">
-                      L&apos;AI crea il sito su misura per te
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between mt-6">
-                    <span className="text-xs text-slate-500">Design unico generato dall&apos;AI</span>
-                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
-                      <ArrowRightIcon className="w-4 h-4 text-slate-400 group-hover:text-emerald-400 transition-colors" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Filter Tabs */}
+            <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+              {FILTER_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveFilter(tab.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                    activeFilter === tab.id
+                      ? "bg-white text-black"
+                      : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            {/* Template Categories Grid (below the two cards) */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold text-slate-300">Categorie Template</h4>
-              <div className="relative">
-                {/* Blur overlay for free users */}
-                {((user as any)?.plan === "free" || !(user as any)?.plan) && (
-                  <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center">
-                    <LockClosedIcon className="w-8 h-8 text-slate-400 mb-3" />
-                    <p className="text-slate-300 text-sm font-medium mb-1">Template riservati ai piani a pagamento</p>
-                    <p className="text-slate-500 text-xs mb-4">Passa a Base o Premium per sbloccare</p>
-                    <button
-                      onClick={() => handleUpgrade("base")}
-                      className="px-5 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-full text-sm font-medium transition-colors"
-                    >
-                      Vedi i piani
-                    </button>
+            {/* Template Grid with lock overlay for free users */}
+            <div className="relative">
+              {((user as any)?.plan === "free" || !(user as any)?.plan) && (
+                <div className="absolute inset-0 z-20 bg-black/50 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+                    <LockClosedIcon className="w-8 h-8 text-slate-400" />
                   </div>
-                )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                  {TEMPLATE_CATEGORIES.filter(c => c.id !== "custom").map((category) => (
+                  <p className="text-lg text-white font-semibold mb-1">Template Premium</p>
+                  <p className="text-slate-400 text-sm mb-5 text-center max-w-sm">Sblocca tutti i template professionali con un piano Base o Premium</p>
+                  <button
+                    onClick={() => handleUpgrade("base")}
+                    className="px-6 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-full text-sm font-semibold transition-colors"
+                  >
+                    Sblocca Templates
+                  </button>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {TEMPLATE_CATEGORIES
+                  .filter(cat => activeFilter === "all" || cat.id === activeFilter)
+                  .flatMap(cat =>
+                    cat.styles.map(style => ({ style, categoryLabel: cat.label, categoryId: cat.id }))
+                  )
+                  .map(({ style, categoryLabel, categoryId }) => (
                     <div
-                      key={category.id}
+                      key={style.id}
                       onClick={() => {
                         const userPlan = (user as any)?.plan || "free";
-                        if (userPlan !== "free" && userPlan) {
-                          router.push(`/dashboard/new?template=${category.id}`);
+                        if (userPlan === "free" || !userPlan) {
+                          toast("Disponibile con piano Base o Premium", { icon: "🔒" });
+                          return;
                         }
+                        router.push(`/dashboard/new?style=${style.id}`);
                       }}
-                      className="group relative aspect-[4/3] rounded-xl border border-white/10 bg-[#111] overflow-hidden cursor-pointer hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-900/10 transition-all"
+                      className="group relative rounded-xl border border-white/10 bg-[#111] overflow-hidden cursor-pointer transition-all hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-900/10 hover:scale-[1.02]"
                     >
-                      <Image
-                        src={category.image}
-                        alt={category.label}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent p-4 flex flex-col justify-end">
-                        <div className="text-2xl mb-1">{category.icon}</div>
-                        <h4 className="font-semibold text-white">{category.label}</h4>
-                        <p className="text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0 delay-75">
-                          {category.description} &middot; {category.styles} stili
-                        </p>
+                      {/* Iframe Preview */}
+                      <div className="relative aspect-[16/9] overflow-hidden bg-[#0a0a0a]">
+                        <iframe
+                          srcDoc={generateStylePreviewHtml(style, categoryLabel)}
+                          className="w-[1200px] h-[800px] border-0 pointer-events-none"
+                          style={{ transform: "scale(0.35)", transformOrigin: "top left" }}
+                          title={style.label}
+                          loading="lazy"
+                          sandbox="allow-same-origin"
+                        />
+                        {/* Gradient overlay bottom */}
+                        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#111] to-transparent" />
                       </div>
-                      <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ArrowRightIcon className="w-4 h-4 text-white" />
+
+                      {/* Info Bar */}
+                      <div className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-white text-sm">{style.label}</h4>
+                          <span className="text-xs text-slate-500 bg-white/5 px-2 py-0.5 rounded-full">{categoryLabel.split(" & ")[0]}</span>
+                        </div>
+                        <p className="text-xs text-slate-500 mb-3">{style.description}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex gap-1.5">
+                            <div className="w-4 h-4 rounded-full border border-white/10" style={{ background: style.primaryColor }} />
+                            <div className="w-4 h-4 rounded-full border border-white/10" style={{ background: style.secondaryColor }} />
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-slate-500 group-hover:text-blue-400 transition-colors">
+                            <span>Usa template</span>
+                            <ArrowRightIcon className="w-3 h-3" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
-                </div>
               </div>
             </div>
           </section>
