@@ -193,6 +193,14 @@ except Exception as e:
     logger.error(traceback.format_exc())
 
 try:
+    from app.api.routes import admin
+    app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
+    logger.info("Route admin registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route admin: {e}")
+    logger.error(traceback.format_exc())
+
+try:
     from app.api.routes import test_ai
     app.include_router(test_ai.router, prefix="/api", tags=["test"])
     logger.info("Test routes registrate")

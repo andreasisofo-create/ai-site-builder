@@ -235,8 +235,8 @@ async def generate_website(
     Il frontend fa polling su GET /api/generate/status/{site_id}.
     Rate limit: 3 generazioni per ora per IP.
     """
-    # Controlla email verificata (obbligatorio per generare)
-    if not getattr(current_user, 'email_verified', False) and not current_user.is_superuser:
+    # Controlla email verificata (obbligatorio per generare, skip per premium/superuser)
+    if not getattr(current_user, 'email_verified', False) and not current_user.is_superuser and not current_user.is_premium:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
