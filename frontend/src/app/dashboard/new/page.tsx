@@ -245,322 +245,508 @@ const SECTION_LABELS: Record<string, string> = {
 function generateStylePreviewHtml(style: TemplateStyle, categoryLabel: string): string {
   const p = style.primaryColor;
   const s = style.secondaryColor;
-  const sid = style.id;
-  const isDark = style.mood === "bold" || style.mood === "elegant" || style.mood === "corporate" || style.mood === "classic";
-  const bg = isDark ? "#0f0f0f" : "#ffffff";
-  const text = isDark ? "#ffffff" : "#1a1a1a";
-  const muted = isDark ? "#999999" : "#666666";
-  const cardBg = isDark ? "#1a1a1a" : "#f5f5f5";
-  const border = isDark ? "#ffffff10" : "#00000008";
 
-  // --- HERO VARIANTS: visually distinct per style ---
-  const heroVariants: Record<string, string> = {
-    // Split layout (image left, text right)
-    "split": `
-      <section style="min-height:60vh;display:grid;grid-template-columns:1fr 1fr;background:${bg};overflow:hidden">
-        <div style="background:linear-gradient(135deg,${p}40,${s}30);display:flex;align-items:center;justify-content:center">
-          <div style="width:200px;height:200px;border-radius:50%;border:4px solid ${p}60;display:flex;align-items:center;justify-content:center;font-size:48px;color:${p}">&#9733;</div>
+  const wrap = (body: string, bg: string, text: string, fontFamily: string) =>
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:${fontFamily};background:${bg};color:${text};overflow-x:hidden}a{text-decoration:none;color:inherit}</style></head><body>${body}</body></html>`;
+
+  const generators: Record<string, () => string> = {
+
+    /* ──────────────────────────────────────────────────────────────
+       1. RESTAURANT-ELEGANT
+       Gold/dark, ornamental flourishes, serif italic, thin borders,
+       corner L-frames, decorative SVG lines
+    ────────────────────────────────────────────────────────────── */
+    "restaurant-elegant": () => {
+      const bg = "#0c0a08", tx = "#f5f0e8", mt = "#a09880";
+      const body = `
+      <section style="min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 32px;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;top:20px;left:20px;width:50px;height:50px;border-top:1px solid ${p};border-left:1px solid ${p}"></div>
+        <div style="position:absolute;top:20px;right:20px;width:50px;height:50px;border-top:1px solid ${p};border-right:1px solid ${p}"></div>
+        <div style="position:absolute;bottom:20px;left:20px;width:50px;height:50px;border-bottom:1px solid ${p};border-left:1px solid ${p}"></div>
+        <div style="position:absolute;bottom:20px;right:20px;width:50px;height:50px;border-bottom:1px solid ${p};border-right:1px solid ${p}"></div>
+        <div style="position:absolute;top:40px;left:40px;right:40px;bottom:40px;border:1px solid ${p}25;pointer-events:none"></div>
+        <div style="position:relative;z-index:1;max-width:540px">
+          <svg width="80" height="20" viewBox="0 0 80 20" style="margin:0 auto 18px;display:block"><path d="M0 10 C20 0, 30 20, 40 10 C50 0, 60 20, 80 10" stroke="${p}" fill="none" stroke-width="1"/></svg>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:6px;color:${p};margin-bottom:14px">${categoryLabel}</div>
+          <h1 style="font-size:44px;font-weight:300;color:${tx};line-height:1.15;margin:0 0 8px;font-style:italic">La Bella</h1>
+          <h1 style="font-size:52px;font-weight:700;color:${p};line-height:1;margin:0 0 16px;font-style:normal;letter-spacing:2px">Cucina</h1>
+          <div style="width:60px;height:1px;background:${p};margin:0 auto 16px"></div>
+          <p style="color:${mt};font-size:15px;margin:0 0 28px;font-style:italic;line-height:1.6">${style.description}</p>
+          <a style="padding:13px 44px;border:1px solid ${p};color:${p};font-size:12px;text-transform:uppercase;letter-spacing:4px;display:inline-block">Prenota</a>
+          <svg width="80" height="20" viewBox="0 0 80 20" style="margin:24px auto 0;display:block"><path d="M0 10 C20 20, 30 0, 40 10 C50 20, 60 0, 80 10" stroke="${p}" fill="none" stroke-width="1"/></svg>
         </div>
-        <div style="padding:60px 40px;display:flex;flex-direction:column;justify-content:center">
-          <div style="display:inline-block;padding:4px 12px;border-radius:4px;background:${p}15;color:${p};font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;width:fit-content">${categoryLabel}</div>
-          <h1 style="font-size:42px;font-weight:800;margin:0 0 16px;color:${text};line-height:1.1">Il Tuo Sito<br>Professionale</h1>
-          <p style="color:${muted};font-size:16px;margin:0 0 28px">${style.label} - Design unico creato con AI</p>
-          <div style="display:flex;gap:12px">
-            <a style="padding:12px 28px;background:${p};color:white;border-radius:8px;font-weight:600;font-size:14px">Scopri di piu</a>
-            <a style="padding:12px 28px;border:2px solid ${p};color:${p};border-radius:8px;font-weight:600;font-size:14px">Contattaci</a>
+      </section>
+      <section style="padding:56px 32px;background:#100e0b">
+        <div style="max-width:700px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;text-align:center">
+          ${["Antipasti","Primi Piatti","Dolci"].map(name => `
+          <div style="padding:28px 16px;border:1px solid ${p}20;position:relative">
+            <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:30px;height:2px;background:${p}"></div>
+            <div style="font-size:20px;margin-bottom:8px;color:${p}">&#10022;</div>
+            <h3 style="font-size:15px;font-weight:400;color:${tx};margin:0 0 6px;font-style:italic">${name}</h3>
+            <p style="font-size:12px;color:${mt};margin:0">Selezione dello chef</p>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Georgia','Times New Roman',serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       2. RESTAURANT-COZY
+       Red/cream, soft blobs, warm rounded shapes, wavy SVG divider,
+       gradient pill button
+    ────────────────────────────────────────────────────────────── */
+    "restaurant-cozy": () => {
+      const bg = "#fdf6ee", tx = "#3d2c1e", mt = "#8b7355";
+      const body = `
+      <section style="min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 32px;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;top:-80px;right:-60px;width:320px;height:320px;border-radius:40% 60% 55% 45%/55% 40% 60% 45%;background:${p}12;filter:blur(2px)"></div>
+        <div style="position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:55% 45% 50% 50%/45% 55% 45% 55%;background:${s}30;filter:blur(2px)"></div>
+        <div style="position:absolute;top:30%;left:8%;width:100px;height:100px;border-radius:50%;background:${p}08"></div>
+        <div style="position:relative;z-index:1;max-width:520px">
+          <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,${p}20,${p}08);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:32px">&#127869;</div>
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:10px;font-weight:600">${categoryLabel}</div>
+          <h1 style="font-size:46px;font-weight:800;color:${tx};line-height:1.1;margin:0 0 14px">Sapori di<br><span style="color:${p}">Casa</span></h1>
+          <p style="color:${mt};font-size:16px;margin:0 0 28px;line-height:1.6">${style.description}</p>
+          <a style="padding:14px 40px;background:linear-gradient(135deg,${p},${p}cc);color:white;border-radius:50px;font-weight:700;font-size:15px;display:inline-block;box-shadow:0 4px 20px ${p}30">Il Nostro Menu</a>
+        </div>
+      </section>
+      <svg viewBox="0 0 1200 60" style="display:block;width:100%;background:${bg}"><path d="M0 30 Q150 0 300 30 T600 30 T900 30 T1200 30 V60 H0Z" fill="#fffaf3"/></svg>
+      <section style="padding:48px 32px 56px;background:#fffaf3">
+        <div style="max-width:700px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;text-align:center">
+          ${["Tradizione","Ingredienti Freschi","Famiglia"].map((t,i) => `
+          <div style="padding:24px 16px;background:${bg};border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,0.04)">
+            <div style="width:48px;height:48px;border-radius:50%;background:${p}12;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:22px">${["&#10084;","&#127807;","&#127850;"][i]}</div>
+            <h3 style="font-size:15px;font-weight:700;color:${tx};margin:0 0 4px">${t}</h3>
+            <p style="font-size:12px;color:${mt};margin:0">Dal cuore alla tavola</p>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Nunito',system-ui,sans-serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       3. RESTAURANT-MODERN
+       Dark/green, ultra-minimal, extreme whitespace, thin line,
+       vertical divider, zen aesthetic
+    ────────────────────────────────────────────────────────────── */
+    "restaurant-modern": () => {
+      const bg = "#fafaf8", tx = "#1a1a1a", mt = "#999";
+      const body = `
+      <section style="min-height:70vh;display:grid;grid-template-columns:1fr 1px 1fr;background:${bg};overflow:hidden">
+        <div style="padding:80px 40px 60px;display:flex;flex-direction:column;justify-content:flex-end">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:6px;color:${mt};margin-bottom:24px">${categoryLabel}</div>
+          <h1 style="font-size:56px;font-weight:200;color:${tx};line-height:1.05;margin:0 0 20px;letter-spacing:-1px">Puro.</h1>
+          <div style="width:30px;height:1px;background:${s};margin-bottom:20px"></div>
+          <p style="color:${mt};font-size:14px;margin:0 0 32px;line-height:1.9;max-width:280px">${style.description}</p>
+          <a style="padding:10px 28px;background:${tx};color:${bg};font-size:11px;text-transform:uppercase;letter-spacing:3px;display:inline-block;width:fit-content">Menu</a>
+        </div>
+        <div style="background:${s}40;width:1px"></div>
+        <div style="display:flex;align-items:center;justify-content:center;padding:40px">
+          <div style="width:85%;aspect-ratio:3/4;background:linear-gradient(180deg,${s}15,${s}08);border-radius:2px;position:relative">
+            <div style="position:absolute;bottom:24px;left:24px;font-size:10px;text-transform:uppercase;letter-spacing:4px;color:${mt};opacity:0.6">Est. 2024</div>
           </div>
         </div>
-      </section>`,
-    // Centered elegant with decorative borders
-    "elegant": `
-      <section style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 40px;background:${bg};position:relative">
-        <div style="position:absolute;top:30px;left:30px;right:30px;bottom:30px;border:1px solid ${p}30;pointer-events:none"></div>
-        <div style="max-width:600px;position:relative">
-          <div style="width:60px;height:1px;background:${p};margin:0 auto 20px"></div>
-          <div style="font-size:12px;text-transform:uppercase;letter-spacing:6px;color:${p};margin-bottom:20px;font-weight:400">${categoryLabel}</div>
-          <h1 style="font-size:48px;font-weight:300;margin:0 0 16px;color:${text};line-height:1.2;font-style:italic">Il Tuo Sito<br><span style="font-weight:700;font-style:normal;color:${p}">Professionale</span></h1>
-          <p style="color:${muted};font-size:16px;margin:0 0 32px;font-style:italic">${style.label}</p>
-          <a style="padding:14px 40px;background:transparent;color:${p};border:1px solid ${p};font-weight:500;font-size:13px;text-transform:uppercase;letter-spacing:3px">Scopri di piu</a>
+      </section>
+      <section style="padding:48px 40px;background:${bg};border-top:1px solid #eee">
+        <div style="max-width:700px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start">
+          ${["Degustazione","Stagionale","Chef's Table"].map(t => `
+          <div style="flex:1;text-align:center;padding:0 16px">
+            <div style="font-size:28px;font-weight:200;color:${s};margin-bottom:6px;letter-spacing:-1px">&mdash;</div>
+            <h3 style="font-size:13px;font-weight:500;color:${tx};margin:0 0 4px;letter-spacing:1px">${t}</h3>
+            <p style="font-size:11px;color:${mt};margin:0">Esperienza unica</p>
+          </div>`).join("")}
         </div>
-      </section>`,
-    // Bold neon-style with big typography
-    "neon": `
-      <section style="min-height:60vh;display:flex;align-items:center;padding:60px 40px;background:#0a0a0a;position:relative;overflow:hidden">
-        <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:${p}10;filter:blur(60px)"></div>
-        <div style="position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:${s}10;filter:blur(60px)"></div>
-        <div style="max-width:800px;position:relative;z-index:1">
-          <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:${p}20;color:${p};font-size:12px;margin-bottom:24px;border:1px solid ${p}40">${categoryLabel}</div>
-          <h1 style="font-size:clamp(40px,6vw,72px);font-weight:900;margin:0 0 20px;color:white;line-height:1;letter-spacing:-2px">IL TUO SITO<br><span style="background:linear-gradient(135deg,${p},${s});-webkit-background-clip:text;-webkit-text-fill-color:transparent">PROFESSIONALE</span></h1>
-          <p style="color:#888;font-size:18px;margin:0 0 36px;max-width:500px">${style.label}</p>
-          <div style="display:flex;gap:16px">
-            <a style="padding:16px 36px;background:linear-gradient(135deg,${p},${s});color:white;border-radius:50px;font-weight:700;font-size:15px">Inizia Ora</a>
-            <a style="padding:16px 36px;color:white;border-radius:50px;font-weight:500;font-size:15px;border:1px solid #333">Scopri</a>
+      </section>`;
+      return wrap(body, bg, tx, "'Helvetica Neue',Helvetica,Arial,sans-serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       4. AGENCY-BOLD
+       Purple/blue, neon glow, blurred orbs, gradient text,
+       scanline overlay, grid pattern bg
+    ────────────────────────────────────────────────────────────── */
+    "agency-bold": () => {
+      const bg = "#08070e", tx = "#ffffff";
+      const body = `
+      <section style="min-height:70vh;display:flex;align-items:center;padding:60px 40px;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,${p}04 2px,${p}04 4px);pointer-events:none;z-index:2"></div>
+        <div style="position:absolute;inset:0;background-image:radial-gradient(${p}08 1px,transparent 1px);background-size:30px 30px;pointer-events:none"></div>
+        <div style="position:absolute;top:-120px;right:10%;width:350px;height:350px;border-radius:50%;background:${p};filter:blur(120px);opacity:0.25"></div>
+        <div style="position:absolute;bottom:-80px;left:15%;width:280px;height:280px;border-radius:50%;background:${s};filter:blur(100px);opacity:0.2"></div>
+        <div style="position:relative;z-index:3;max-width:680px">
+          <div style="display:inline-block;padding:5px 14px;border:1px solid ${p}60;border-radius:4px;color:${p};font-size:11px;margin-bottom:20px;text-transform:uppercase;letter-spacing:2px;box-shadow:0 0 12px ${p}30,inset 0 0 12px ${p}10">${categoryLabel}</div>
+          <h1 style="font-size:clamp(48px,7vw,80px);font-weight:900;line-height:0.95;margin:0 0 10px;color:${tx};letter-spacing:-3px">WE BUILD</h1>
+          <h1 style="font-size:clamp(48px,7vw,80px);font-weight:900;line-height:0.95;margin:0 0 20px;background:linear-gradient(90deg,${p},${s});-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-3px">THE FUTURE</h1>
+          <p style="color:#888;font-size:16px;margin:0 0 32px;max-width:440px;line-height:1.7">${style.description}</p>
+          <div style="display:flex;gap:14px">
+            <a style="padding:14px 36px;background:linear-gradient(135deg,${p},${s});color:white;border-radius:6px;font-weight:700;font-size:14px;box-shadow:0 0 30px ${p}40">Inizia Ora</a>
+            <a style="padding:14px 36px;border:1px solid #333;color:#ccc;border-radius:6px;font-weight:500;font-size:14px">Portfolio</a>
           </div>
         </div>
-      </section>`,
-    // Organic with rounded shapes
-    "organic": `
-      <section style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 40px;background:${bg};position:relative;overflow:hidden">
-        <div style="position:absolute;top:-30%;right:-10%;width:60%;height:80%;border-radius:40% 60% 70% 30% / 40% 50% 60% 50%;background:${p}08"></div>
-        <div style="position:absolute;bottom:-20%;left:-5%;width:40%;height:60%;border-radius:60% 40% 30% 70% / 60% 50% 40% 50%;background:${s}08"></div>
-        <div style="position:relative;z-index:1;max-width:650px">
-          <div style="width:80px;height:80px;border-radius:30% 70% 60% 40% / 50% 60% 40% 50%;background:${p}15;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:28px">&#10047;</div>
-          <h1 style="font-size:44px;font-weight:700;margin:0 0 16px;color:${text};line-height:1.15">Benvenuti nel<br>Nostro Mondo</h1>
-          <p style="color:${muted};font-size:17px;margin:0 0 32px">${style.label} - Creato con cura per te</p>
-          <a style="padding:16px 40px;background:${p};color:white;border-radius:50px;font-weight:600;font-size:15px;display:inline-block">Esplora</a>
+      </section>
+      <section style="padding:40px;background:${bg};border-top:1px solid #ffffff08">
+        <div style="max-width:700px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center">
+          ${[["200+","Progetti"],["50M","Utenti"],["99%","Uptime"],["24/7","Support"]].map(([n,l]) => `
+          <div style="padding:20px;border:1px solid ${p}15;border-radius:8px;background:${p}05">
+            <div style="font-size:24px;font-weight:800;background:linear-gradient(135deg,${p},${s});-webkit-background-clip:text;-webkit-text-fill-color:transparent">${n}</div>
+            <div style="font-size:11px;color:#666;margin-top:4px">${l}</div>
+          </div>`).join("")}
         </div>
-      </section>`,
-    // Minimal/zen with lots of whitespace
-    "zen": `
-      <section style="min-height:60vh;display:flex;align-items:flex-end;padding:0 40px 80px;background:${bg};position:relative">
-        <div style="position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,${p}06,transparent)"></div>
-        <div style="max-width:600px;position:relative;z-index:1">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:5px;color:${muted};margin-bottom:20px">${categoryLabel}</div>
-          <h1 style="font-size:52px;font-weight:200;margin:0 0 20px;color:${text};line-height:1.1">Il Tuo Sito<br><span style="font-weight:700;color:${p}">Professionale</span></h1>
-          <div style="width:40px;height:2px;background:${p};margin:0 0 20px"></div>
-          <p style="color:${muted};font-size:15px;margin:0 0 32px;line-height:1.8">${style.label}</p>
-          <a style="padding:12px 32px;background:${text};color:${bg};font-weight:500;font-size:13px;display:inline-block">Scopri &rarr;</a>
-        </div>
-      </section>`,
-    // Corporate with stats bar
-    "corporate": `
-      <section style="min-height:60vh;background:${bg};position:relative;overflow:hidden">
-        <div style="display:grid;grid-template-columns:1fr 1fr;min-height:50vh">
-          <div style="padding:60px 40px;display:flex;flex-direction:column;justify-content:center">
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:16px;font-weight:600">${categoryLabel}</div>
-            <h1 style="font-size:40px;font-weight:700;margin:0 0 16px;color:${text};line-height:1.15">Soluzioni<br>Professionali</h1>
-            <p style="color:${muted};font-size:15px;margin:0 0 28px;max-width:400px">${style.label} - Affidabilita e competenza al tuo servizio</p>
-            <a style="padding:14px 32px;background:${p};color:white;border-radius:6px;font-weight:600;font-size:14px;width:fit-content">Scopri di Piu</a>
-          </div>
-          <div style="background:linear-gradient(135deg,${p}20,${s}15);display:flex;align-items:center;justify-content:center">
-            <div style="width:180px;height:180px;border-radius:16px;background:${p}20;display:flex;align-items:center;justify-content:center;font-size:64px;color:${p}">&#9632;</div>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid ${border}">
-          ${["150+", "98%", "24/7", "10K"].map((num, i) => `
-            <div style="padding:24px;text-align:center;${i < 3 ? `border-right:1px solid ${border}` : ''}">
-              <div style="font-size:28px;font-weight:700;color:${p}">${num}</div>
-              <div style="font-size:12px;color:${muted};margin-top:4px">Risultato ${i+1}</div>
+      </section>`;
+      return wrap(body, bg, tx, "'Inter',system-ui,sans-serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       5. AGENCY-CLEAN
+       Blue/gray, clean corporate grid, icon boxes, stats bar,
+       blue accent line
+    ────────────────────────────────────────────────────────────── */
+    "agency-clean": () => {
+      const bg = "#ffffff", tx = "#1a1a2e", mt = "#6b7280";
+      const body = `
+      <section style="min-height:70vh;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,${p},${s})"></div>
+        <div style="max-width:900px;margin:0 auto;padding:72px 40px 48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
+              <div style="width:8px;height:8px;border-radius:50%;background:${p}"></div>
+              <span style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:${p};font-weight:600">${categoryLabel}</span>
             </div>
-          `).join("")}
-        </div>
-      </section>`,
-    // Centered default
-    "centered": `
-      <section style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 40px;background:linear-gradient(135deg,${p}22,${s}22);position:relative;overflow:hidden">
-        <div style="position:absolute;top:-50%;right:-20%;width:500px;height:500px;border-radius:50%;background:${p}15"></div>
-        <div style="position:relative;z-index:1;max-width:700px">
-          <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:${p}20;color:${p};font-size:13px;margin-bottom:20px">${categoryLabel}</div>
-          <h1 style="font-size:clamp(32px,5vw,56px);font-weight:800;margin:0 0 16px;color:${text};line-height:1.1">Il Tuo Sito<br><span style="color:${p}">Professionale</span></h1>
-          <p style="color:${muted};font-size:18px;margin:0 0 32px;max-width:500px;margin-left:auto;margin-right:auto">Creato con AI - Design ${style.label}</p>
-          <div style="display:flex;gap:12px;justify-content:center">
-            <a style="padding:14px 32px;background:${p};color:white;border-radius:12px;font-weight:600;font-size:15px">Scopri di piu</a>
-            <a style="padding:14px 32px;background:${isDark ? '#ffffff15' : '#00000008'};color:${text};border-radius:12px;font-weight:600;font-size:15px;border:1px solid ${isDark ? '#ffffff20' : '#00000015'}">Contattaci</a>
+            <h1 style="font-size:42px;font-weight:700;color:${tx};line-height:1.12;margin:0 0 16px">Cresciamo insieme al tuo business</h1>
+            <p style="color:${mt};font-size:15px;margin:0 0 28px;line-height:1.7">${style.description}</p>
+            <div style="display:flex;gap:10px">
+              <a style="padding:12px 28px;background:${p};color:white;border-radius:8px;font-weight:600;font-size:14px">Inizia Gratis</a>
+              <a style="padding:12px 28px;border:1px solid #e0e0e0;color:${tx};border-radius:8px;font-weight:500;font-size:14px">Demo &rarr;</a>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            ${[["&#9881;","Strategia"],["&#9883;","Design"],["&#9878;","Sviluppo"],["&#9889;","Marketing"]].map(([icon,label]) => `
+            <div style="padding:24px;background:#f8fafc;border-radius:12px;border:1px solid #f0f0f0">
+              <div style="font-size:24px;margin-bottom:8px">${icon}</div>
+              <h3 style="font-size:14px;font-weight:600;color:${tx};margin:0">${label}</h3>
+            </div>`).join("")}
           </div>
         </div>
-      </section>`,
-  };
+        <div style="background:#f8fafc;border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0">
+          <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);padding:0 40px">
+            ${[["500+","Clienti"],["99.9%","Uptime"],["4.9/5","Rating"],["15+","Paesi"]].map(([n,l],i) => `
+            <div style="padding:20px;text-align:center;${i<3?'border-right:1px solid #f0f0f0':''}">
+              <div style="font-size:22px;font-weight:700;color:${p}">${n}</div>
+              <div style="font-size:11px;color:${mt};margin-top:2px">${l}</div>
+            </div>`).join("")}
+          </div>
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Inter',system-ui,sans-serif");
+    },
 
-  // Map style IDs to hero variants
-  const heroMap: Record<string, string> = {
-    "restaurant-elegant": "elegant",
-    "restaurant-cozy": "organic",
-    "restaurant-modern": "zen",
-    "agency-bold": "neon",
-    "agency-clean": "centered",
-    "agency-dark": "neon",
-    "portfolio-gallery": "zen",
-    "portfolio-minimal": "zen",
-    "portfolio-creative": "neon",
-    "business-corporate": "corporate",
-    "business-trust": "split",
-    "business-fresh": "centered",
-    "custom-free": "centered",
-  };
+    /* ──────────────────────────────────────────────────────────────
+       6. AGENCY-DARK
+       Teal/gray, dark glassmorphism, backdrop-blur cards,
+       subtle borders, frosted glass aesthetic
+    ────────────────────────────────────────────────────────────── */
+    "agency-dark": () => {
+      const bg = "#0d1117", tx = "#e6edf3", mt = "#8b949e";
+      const body = `
+      <section style="min-height:70vh;display:flex;align-items:center;padding:60px 40px;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;top:20%;right:5%;width:300px;height:300px;border-radius:50%;background:${p}10;filter:blur(80px)"></div>
+        <div style="position:absolute;bottom:10%;left:10%;width:200px;height:200px;border-radius:50%;background:${s}10;filter:blur(60px)"></div>
+        <div style="position:relative;z-index:1;width:100%;max-width:800px">
+          <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:${p}10;border:1px solid ${p}25;border-radius:20px;margin-bottom:24px">
+            <div style="width:6px;height:6px;border-radius:50%;background:${p}"></div>
+            <span style="font-size:12px;color:${p}">${categoryLabel}</span>
+          </div>
+          <h1 style="font-size:52px;font-weight:700;color:${tx};line-height:1.05;margin:0 0 16px;letter-spacing:-1px">Digital experiences<br>that <span style="color:${p}">matter</span></h1>
+          <p style="color:${mt};font-size:16px;margin:0 0 36px;max-width:480px;line-height:1.7">${style.description}</p>
+          <a style="padding:13px 32px;background:${p};color:${bg};border-radius:8px;font-weight:600;font-size:14px;display:inline-block">Get Started</a>
+        </div>
+      </section>
+      <section style="padding:48px 40px;background:${bg}">
+        <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          ${["Progettazione","Sviluppo","Lancio"].map(t => `
+          <div style="padding:28px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(10px)">
+            <div style="width:36px;height:36px;border-radius:8px;background:${p}15;margin-bottom:14px;display:flex;align-items:center;justify-content:center">
+              <div style="width:14px;height:14px;border-radius:3px;background:${p}"></div>
+            </div>
+            <h3 style="font-size:15px;font-weight:600;color:${tx};margin:0 0 6px">${t}</h3>
+            <p style="font-size:12px;color:${mt};margin:0;line-height:1.6">Approccio professionale con risultati misurabili</p>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Inter',system-ui,sans-serif");
+    },
 
-  // Services section variants
-  const servicesVariants: Record<string, string> = {
-    // Grid cards (default)
-    "grid": `
-      <section style="padding:80px 40px;background:${cardBg}">
-        <div style="max-width:900px;margin:0 auto;text-align:center">
-          <div style="font-size:12px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:12px;font-weight:600">Servizi</div>
-          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Cosa offriamo</h2>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
-            ${[1,2,3].map(i => `
-              <div style="background:${bg};padding:32px 24px;border-radius:16px;text-align:center;border:1px solid ${border}">
-                <div style="width:56px;height:56px;border-radius:14px;background:${p}15;margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
-                  <div style="width:24px;height:24px;border-radius:6px;background:${p}"></div>
-                </div>
-                <h3 style="font-size:17px;font-weight:600;color:${text};margin:0 0 8px">Servizio ${i}</h3>
-                <p style="color:${muted};font-size:14px;line-height:1.6;margin:0">Descrizione del servizio</p>
-              </div>
-            `).join("")}
+    /* ──────────────────────────────────────────────────────────────
+       7. PORTFOLIO-GALLERY
+       Dark/yellow, magazine asymmetric layout, editorial typography,
+       large image areas, vertical guide lines, offset frames
+    ────────────────────────────────────────────────────────────── */
+    "portfolio-gallery": () => {
+      const bg = "#111111", tx = "#f0f0f0", mt = "#888";
+      const body = `
+      <section style="min-height:70vh;display:grid;grid-template-columns:5fr 4fr;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;left:55.5%;top:0;bottom:0;width:1px;background:${s}15;z-index:1"></div>
+        <div style="padding:60px 40px 40px;display:flex;flex-direction:column;justify-content:flex-end;position:relative">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:5px;color:${s};margin-bottom:16px">${categoryLabel} &mdash; Portfolio</div>
+          <h1 style="font-size:60px;font-weight:300;color:${tx};line-height:1;margin:0 0 6px;font-style:italic;letter-spacing:-1px">Selected</h1>
+          <h1 style="font-size:60px;font-weight:800;color:${s};line-height:1;margin:0 0 20px;letter-spacing:-1px">Works</h1>
+          <p style="color:${mt};font-size:14px;margin:0 0 28px;max-width:360px;line-height:1.7">${style.description}</p>
+          <div style="display:flex;gap:24px;align-items:center">
+            <a style="padding:12px 28px;background:${s};color:${bg};font-weight:700;font-size:13px;display:inline-block">View All</a>
+            <a style="color:${s};font-size:13px;font-weight:500;border-bottom:1px solid ${s}50">About Me &rarr;</a>
           </div>
         </div>
-      </section>`,
-    // Alternating rows
-    "rows": `
-      <section style="padding:80px 40px;background:${cardBg}">
-        <div style="max-width:900px;margin:0 auto">
-          <div style="text-align:center;margin-bottom:48px">
-            <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 8px">I Nostri Servizi</h2>
-            <p style="color:${muted};font-size:15px">Eccellenza in ogni dettaglio</p>
+        <div style="padding:40px 32px;display:flex;align-items:center;justify-content:center;position:relative">
+          <div style="width:90%;aspect-ratio:3/4;background:linear-gradient(135deg,${s}20,${s}08);position:relative">
+            <div style="position:absolute;top:-8px;left:-8px;width:30px;height:30px;border-top:2px solid ${s};border-left:2px solid ${s}"></div>
+            <div style="position:absolute;bottom:-8px;right:-8px;width:30px;height:30px;border-bottom:2px solid ${s};border-right:2px solid ${s}"></div>
+            <div style="position:absolute;bottom:16px;left:16px;font-size:9px;text-transform:uppercase;letter-spacing:3px;color:${s}80">Featured Project</div>
           </div>
+        </div>
+      </section>
+      <section style="padding:48px 40px;background:#0a0a0a;border-top:1px solid #222">
+        <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
           ${[1,2,3].map(i => `
-            <div style="display:flex;align-items:center;gap:32px;padding:24px 0;${i < 3 ? `border-bottom:1px solid ${border}` : ''};flex-direction:${i % 2 === 0 ? 'row-reverse' : 'row'}">
-              <div style="width:80px;height:80px;border-radius:16px;background:${p}10;flex-shrink:0;display:flex;align-items:center;justify-content:center">
-                <div style="width:32px;height:32px;border-radius:8px;background:${p}"></div>
-              </div>
-              <div style="flex:1">
-                <h3 style="font-size:18px;font-weight:600;color:${text};margin:0 0 6px">Servizio ${i}</h3>
-                <p style="color:${muted};font-size:14px;line-height:1.6;margin:0">Descrizione dettagliata del servizio offerto ai clienti</p>
+          <div style="aspect-ratio:4/3;background:linear-gradient(${i*60}deg,${s}15,${s}05);position:relative;overflow:hidden">
+            <div style="position:absolute;bottom:12px;left:12px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:${s}90">Project 0${i}</div>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Playfair Display',Georgia,serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       8. PORTFOLIO-MINIMAL
+       Black/orange, ultra-minimal, thin lines, whitespace,
+       tiny labels, index numbers
+    ────────────────────────────────────────────────────────────── */
+    "portfolio-minimal": () => {
+      const bg = "#ffffff", tx = "#0c0c0c", mt = "#aaa";
+      const body = `
+      <section style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 48px 64px;background:${bg};position:relative">
+        <div style="position:absolute;top:40px;right:48px;font-size:10px;text-transform:uppercase;letter-spacing:4px;color:${mt}">${categoryLabel}</div>
+        <div style="position:absolute;top:40px;left:48px;font-size:10px;color:${mt}">&copy; 2026</div>
+        <div style="max-width:600px">
+          <h1 style="font-size:72px;font-weight:200;color:${tx};line-height:0.95;margin:0 0 24px;letter-spacing:-3px">Designer<br>&amp; <span style="color:${s};font-weight:600">Maker</span></h1>
+          <div style="width:32px;height:1px;background:${s};margin-bottom:20px"></div>
+          <p style="color:${mt};font-size:13px;margin:0;line-height:1.8;max-width:320px">${style.description}</p>
+        </div>
+      </section>
+      <section style="padding:0 48px 56px;background:${bg}">
+        <div style="border-top:1px solid #eee;padding-top:32px">
+          ${["Branding","Web Design","Photography","Illustration"].map((t,i) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 0;${i<3?'border-bottom:1px solid #f0f0f0':''}">
+            <div style="display:flex;align-items:baseline;gap:16px">
+              <span style="font-size:10px;color:${mt};font-family:monospace">0${i+1}</span>
+              <span style="font-size:16px;font-weight:400;color:${tx};letter-spacing:-0.5px">${t}</span>
+            </div>
+            <span style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:${s}">View &rarr;</span>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Helvetica Neue',Helvetica,Arial,sans-serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       9. PORTFOLIO-CREATIVE
+       Pink/blue, brutalist heavy borders, oversized uppercase type,
+       visible grid lines, grayscale image, accent block offset
+    ────────────────────────────────────────────────────────────── */
+    "portfolio-creative": () => {
+      const bg = "#f5f5f0", tx = "#0a0a0a", mt = "#666";
+      const body = `
+      <section style="min-height:70vh;padding:0;background:${bg};position:relative;overflow:hidden;border-bottom:3px solid ${tx}">
+        <div style="position:absolute;inset:0;background-image:linear-gradient(${tx}08 1px,transparent 1px),linear-gradient(90deg,${tx}08 1px,transparent 1px);background-size:60px 60px;pointer-events:none"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;min-height:70vh;position:relative;z-index:1">
+          <div style="padding:48px 32px;display:flex;flex-direction:column;justify-content:center;border-right:2px solid ${tx}">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:4px;color:${p};margin-bottom:16px;font-weight:700;border-bottom:2px solid ${p};display:inline-block;width:fit-content;padding-bottom:4px">${categoryLabel}</div>
+            <h1 style="font-size:clamp(48px,6vw,72px);font-weight:900;color:${tx};line-height:0.9;margin:0 0 6px;text-transform:uppercase;letter-spacing:-2px">CREA&shy;</h1>
+            <h1 style="font-size:clamp(48px,6vw,72px);font-weight:900;color:${tx};line-height:0.9;margin:0 0 20px;text-transform:uppercase;letter-spacing:-2px">TIVO<span style="color:${p}">.</span></h1>
+            <p style="color:${mt};font-size:13px;margin:0 0 24px;max-width:300px;line-height:1.7">${style.description}</p>
+            <a style="padding:12px 28px;background:${tx};color:${bg};font-size:12px;text-transform:uppercase;letter-spacing:3px;font-weight:700;display:inline-block;width:fit-content;border:2px solid ${tx}">Esplora &darr;</a>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;padding:32px;position:relative">
+            <div style="width:80%;aspect-ratio:1;background:${tx}10;filter:grayscale(1);position:relative">
+              <div style="position:absolute;top:-10px;left:-10px;width:100%;height:100%;background:${p}20;border:2px solid ${p};z-index:-1"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section style="padding:0;background:${bg}">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr)">
+          ${["Design","Code","Art"].map((t,i) => `
+          <div style="padding:28px 20px;border-right:${i<2?`2px solid ${tx}`:'none'};border-bottom:2px solid ${tx}">
+            <span style="font-size:48px;font-weight:900;color:${tx}10;display:block;line-height:1;margin-bottom:4px">0${i+1}</span>
+            <h3 style="font-size:16px;font-weight:800;color:${tx};margin:0;text-transform:uppercase;letter-spacing:1px">${t}<span style="color:${p}">.</span></h3>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Space Grotesk',system-ui,sans-serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       10. BUSINESS-CORPORATE
+       Navy/blue, split hero with stats bar, professional cards,
+       clean lines, trustworthy
+    ────────────────────────────────────────────────────────────── */
+    "business-corporate": () => {
+      const bg = "#ffffff", tx = "#1a1a2e", mt = "#6b7280";
+      const body = `
+      <section style="min-height:70vh;background:${bg};position:relative;overflow:hidden">
+        <div style="display:grid;grid-template-columns:1fr 1fr;min-height:60vh">
+          <div style="padding:64px 40px;display:flex;flex-direction:column;justify-content:center;background:${p};position:relative">
+            <div style="position:absolute;top:0;right:0;width:120px;height:100%;background:linear-gradient(90deg,transparent,${s}15)"></div>
+            <div style="position:relative;z-index:1">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:3px;color:rgba(255,255,255,0.6);margin-bottom:16px">${categoryLabel}</div>
+              <h1 style="font-size:40px;font-weight:700;color:white;line-height:1.12;margin:0 0 16px">Soluzioni per il tuo successo</h1>
+              <p style="color:rgba(255,255,255,0.7);font-size:15px;margin:0 0 28px;line-height:1.7;max-width:380px">${style.description}</p>
+              <div style="display:flex;gap:12px">
+                <a style="padding:12px 28px;background:white;color:${p};border-radius:6px;font-weight:600;font-size:14px">Scopri di Piu</a>
+                <a style="padding:12px 28px;border:1px solid rgba(255,255,255,0.3);color:white;border-radius:6px;font-weight:500;font-size:14px">Contattaci</a>
               </div>
             </div>
-          `).join("")}
-        </div>
-      </section>`,
-    // Minimal list
-    "list": `
-      <section style="padding:80px 40px;background:${cardBg}">
-        <div style="max-width:700px;margin:0 auto">
-          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Servizi</h2>
-          ${[1,2,3,4].map(i => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid ${border}">
-              <div style="display:flex;align-items:center;gap:16px">
-                <span style="font-size:14px;color:${p};font-weight:600">0${i}</span>
-                <span style="font-size:17px;font-weight:500;color:${text}">Servizio ${i}</span>
-              </div>
-              <span style="color:${p};font-size:20px">&rarr;</span>
+          </div>
+          <div style="background:linear-gradient(135deg,${p}08,${s}12);display:flex;align-items:center;justify-content:center;padding:40px">
+            <div style="width:220px;height:220px;border-radius:20px;background:white;box-shadow:0 8px 40px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center">
+              <div style="width:80px;height:80px;border-radius:16px;background:${s}20;display:flex;align-items:center;justify-content:center;font-size:36px;color:${p}">&#9632;</div>
             </div>
-          `).join("")}
+          </div>
         </div>
-      </section>`,
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #f0f0f0;background:#fafbfc">
+          ${[["150+","Clienti"],["98%","Soddisfazione"],["24/7","Supporto"],["10+","Anni"]].map(([n,l],i) => `
+          <div style="padding:24px;text-align:center;${i<3?'border-right:1px solid #f0f0f0':''}">
+            <div style="font-size:26px;font-weight:700;color:${p}">${n}</div>
+            <div style="font-size:11px;color:${mt};margin-top:2px">${l}</div>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "system-ui,-apple-system,sans-serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       11. BUSINESS-TRUST
+       Navy/gold, serif headings, timeline elements, authority
+       feeling, awards/certifications bar
+    ────────────────────────────────────────────────────────────── */
+    "business-trust": () => {
+      const bg = "#fafaf8", tx = "#1a1a2e", mt = "#6b7280";
+      const body = `
+      <section style="min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:72px 40px;background:linear-gradient(180deg,${p} 55%,${bg} 55%);position:relative;overflow:hidden">
+        <div style="position:relative;z-index:1;max-width:600px">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px">
+            <div style="width:40px;height:1px;background:${s}"></div>
+            <span style="font-size:12px;text-transform:uppercase;letter-spacing:4px;color:${s}">${categoryLabel}</span>
+            <div style="width:40px;height:1px;background:${s}"></div>
+          </div>
+          <h1 style="font-size:48px;font-weight:400;color:white;line-height:1.1;margin:0 0 16px;font-family:'Georgia',serif">Eccellenza e <span style="color:${s};font-weight:700;font-style:italic">Fiducia</span></h1>
+          <p style="color:rgba(255,255,255,0.65);font-size:15px;margin:0 0 32px;line-height:1.7">${style.description}</p>
+          <a style="padding:14px 40px;background:${s};color:${p};font-weight:600;font-size:14px;display:inline-block;letter-spacing:1px">Consulenza Gratuita</a>
+          <div style="margin-top:48px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.1);padding:28px 32px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center">
+            ${[["30+","Anni di Esperienza"],["500+","Casi di Successo"],["100%","Riservatezza"]].map(([n,l],i) => `
+            <div ${i<2?`style="border-right:1px solid #f0f0f0"`:'style=""'}>
+              <div style="font-size:22px;font-weight:700;color:${p};font-family:Georgia,serif">${n}</div>
+              <div style="font-size:11px;color:${mt};margin-top:2px">${l}</div>
+            </div>`).join("")}
+          </div>
+        </div>
+      </section>
+      <section style="padding:48px 40px;background:${bg}">
+        <div style="max-width:600px;margin:0 auto;position:relative;padding-left:32px;border-left:2px solid ${s}30">
+          ${["Fondazione dello studio","Espansione nazionale","Riconoscimento internazionale"].map((t,i) => `
+          <div style="margin-bottom:${i<2?'28px':'0'};position:relative">
+            <div style="position:absolute;left:-39px;top:2px;width:14px;height:14px;border-radius:50%;background:${s};border:3px solid ${bg}"></div>
+            <div style="font-size:11px;color:${s};font-weight:600;margin-bottom:4px">${2000+i*8}</div>
+            <h3 style="font-size:15px;font-weight:600;color:${tx};margin:0 0 4px;font-family:Georgia,serif">${t}</h3>
+            <p style="font-size:12px;color:${mt};margin:0">Un traguardo importante per la nostra crescita</p>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "system-ui,-apple-system,sans-serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       12. BUSINESS-FRESH
+       Green/blue, gradient accents, bento-style grid cards,
+       modern rounded corners, colorful
+    ────────────────────────────────────────────────────────────── */
+    "business-fresh": () => {
+      const bg = "#ffffff", tx = "#1a1a2e", mt = "#6b7280";
+      const body = `
+      <section style="min-height:70vh;display:flex;align-items:center;padding:60px 40px;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;top:-100px;right:-60px;width:400px;height:400px;border-radius:50%;background:linear-gradient(135deg,${p}10,${s}10);filter:blur(40px)"></div>
+        <div style="position:relative;z-index:1;width:100%;max-width:900px;margin:0 auto">
+          <div style="display:inline-block;padding:6px 16px;background:linear-gradient(135deg,${p}15,${s}15);border-radius:20px;margin-bottom:20px">
+            <span style="font-size:12px;font-weight:600;background:linear-gradient(135deg,${p},${s});-webkit-background-clip:text;-webkit-text-fill-color:transparent">${categoryLabel}</span>
+          </div>
+          <h1 style="font-size:48px;font-weight:800;color:${tx};line-height:1.08;margin:0 0 16px;letter-spacing:-1px">Innovazione che<br><span style="background:linear-gradient(135deg,${p},${s});-webkit-background-clip:text;-webkit-text-fill-color:transparent">fa la differenza</span></h1>
+          <p style="color:${mt};font-size:16px;margin:0 0 32px;max-width:460px;line-height:1.7">${style.description}</p>
+          <div style="display:flex;gap:12px">
+            <a style="padding:13px 32px;background:linear-gradient(135deg,${p},${s});color:white;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 4px 20px ${p}25">Inizia Ora</a>
+            <a style="padding:13px 32px;background:#f5f5f5;color:${tx};border-radius:12px;font-weight:600;font-size:14px">Scopri &rarr;</a>
+          </div>
+        </div>
+      </section>
+      <section style="padding:0 40px 56px;background:${bg}">
+        <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:auto auto;gap:14px">
+          <div style="padding:28px;background:linear-gradient(135deg,${p}08,${s}08);border-radius:16px;grid-row:span 2;display:flex;flex-direction:column;justify-content:flex-end">
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,${p},${s});margin-bottom:14px;display:flex;align-items:center;justify-content:center;color:white;font-size:20px">&#9733;</div>
+            <h3 style="font-size:18px;font-weight:700;color:${tx};margin:0 0 6px">Consulenza Strategica</h3>
+            <p style="font-size:13px;color:${mt};margin:0">Soluzioni su misura per la tua azienda</p>
+          </div>
+          ${["Marketing Digitale","Analisi Dati"].map(t => `
+          <div style="padding:22px;background:#f8f9fa;border-radius:14px;border:1px solid #f0f0f0">
+            <div style="width:32px;height:32px;border-radius:8px;background:${p}12;margin-bottom:10px;display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;border-radius:3px;background:${p}"></div></div>
+            <h3 style="font-size:14px;font-weight:600;color:${tx};margin:0 0 4px">${t}</h3>
+            <p style="font-size:11px;color:${mt};margin:0">Risultati misurabili</p>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Inter',system-ui,sans-serif");
+    },
+
+    /* ──────────────────────────────────────────────────────────────
+       CUSTOM-FREE fallback
+    ────────────────────────────────────────────────────────────── */
+    "custom-free": () => {
+      const bg = "#0f0f1a", tx = "#ffffff", mt = "#888";
+      const body = `
+      <section style="min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 40px;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;top:-80px;left:20%;width:300px;height:300px;border-radius:50%;background:${p}12;filter:blur(80px)"></div>
+        <div style="position:absolute;bottom:-60px;right:25%;width:250px;height:250px;border-radius:50%;background:${s}12;filter:blur(80px)"></div>
+        <div style="position:relative;z-index:1;max-width:600px">
+          <div style="display:inline-block;padding:6px 16px;border-radius:20px;border:1px solid ${p}40;color:${p};font-size:12px;margin-bottom:24px">${categoryLabel}</div>
+          <h1 style="font-size:48px;font-weight:800;color:${tx};line-height:1.1;margin:0 0 16px">Il Tuo Design<br><span style="background:linear-gradient(135deg,${p},${s});-webkit-background-clip:text;-webkit-text-fill-color:transparent">Personalizzato</span></h1>
+          <p style="color:${mt};font-size:16px;margin:0 0 32px;line-height:1.7">${style.description}</p>
+          <a style="padding:14px 36px;background:linear-gradient(135deg,${p},${s});color:white;border-radius:10px;font-weight:700;font-size:15px;display:inline-block">Crea il Tuo Sito</a>
+        </div>
+      </section>
+      <section style="padding:48px 40px;background:#0a0a14">
+        <div style="max-width:700px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center">
+          ${["Design AI","Personalizzazione","Lancio Rapido"].map(t => `
+          <div style="padding:24px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px">
+            <h3 style="font-size:14px;font-weight:600;color:${tx};margin:0 0 4px">${t}</h3>
+            <p style="font-size:11px;color:${mt};margin:0">Fatto su misura</p>
+          </div>`).join("")}
+        </div>
+      </section>`;
+      return wrap(body, bg, tx, "'Inter',system-ui,sans-serif");
+    },
   };
 
-  const servicesMap: Record<string, string> = {
-    "restaurant-elegant": "rows",
-    "restaurant-cozy": "grid",
-    "restaurant-modern": "list",
-    "agency-bold": "grid",
-    "agency-clean": "grid",
-    "agency-dark": "grid",
-    "portfolio-gallery": "list",
-    "portfolio-minimal": "list",
-    "portfolio-creative": "grid",
-    "business-corporate": "grid",
-    "business-trust": "rows",
-    "business-fresh": "grid",
-    "custom-free": "grid",
-  };
+  const generator = generators[style.id];
+  if (generator) return generator();
 
-  const heroKey = heroMap[sid] || "centered";
-  const servicesKey = servicesMap[sid] || "grid";
-
-  const sectionHtml: Record<string, string> = {
-    hero: heroVariants[heroKey] || heroVariants["centered"],
-    about: `
-      <section style="padding:80px 40px;background:${bg}">
-        <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
-          <div>
-            <div style="font-size:12px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:12px;font-weight:600">Chi Siamo</div>
-            <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 16px">La nostra storia</h2>
-            <p style="color:${muted};line-height:1.8;font-size:15px">Offriamo servizi di qualita con passione e dedizione. La nostra esperienza ci permette di garantire risultati eccellenti per ogni cliente.</p>
-          </div>
-          <div style="aspect-ratio:4/3;background:linear-gradient(135deg,${p}30,${s}30);border-radius:16px"></div>
-        </div>
-      </section>`,
-    services: servicesVariants[servicesKey] || servicesVariants["grid"],
-    gallery: `
-      <section style="padding:80px 40px;background:${bg}">
-        <div style="max-width:900px;margin:0 auto;text-align:center">
-          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Galleria</h2>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-            ${[1,2,3,4,5,6].map(i => `
-              <div style="aspect-ratio:1;border-radius:12px;background:linear-gradient(${i*45}deg,${p}${20+i*5},${s}${20+i*5})"></div>
-            `).join("")}
-          </div>
-        </div>
-      </section>`,
-    testimonials: `
-      <section style="padding:80px 40px;background:${cardBg}">
-        <div style="max-width:900px;margin:0 auto;text-align:center">
-          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Testimonianze</h2>
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px">
-            ${[1,2].map(() => `
-              <div style="background:${bg};padding:32px;border-radius:16px;text-align:left;border:1px solid ${border}">
-                <div style="color:${p};font-size:32px;margin-bottom:12px">&ldquo;</div>
-                <p style="color:${muted};font-size:15px;line-height:1.7;margin:0 0 20px">Servizio eccellente, professionalita e risultati oltre le aspettative.</p>
-                <div style="display:flex;align-items:center;gap:12px">
-                  <div style="width:40px;height:40px;border-radius:50%;background:${p}20"></div>
-                  <div><div style="font-weight:600;color:${text};font-size:14px">Cliente Soddisfatto</div><div style="color:${muted};font-size:12px">Azienda</div></div>
-                </div>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      </section>`,
-    features: `
-      <section style="padding:80px 40px;background:${bg}">
-        <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
-          <div>
-            <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 24px">Perche sceglierci</h2>
-            ${[1,2,3].map(i => `
-              <div style="display:flex;gap:16px;margin-bottom:20px">
-                <div style="width:40px;height:40px;border-radius:10px;background:${p}15;flex-shrink:0;display:flex;align-items:center;justify-content:center">
-                  <div style="width:16px;height:16px;border-radius:4px;background:${p}"></div>
-                </div>
-                <div><h4 style="font-size:15px;font-weight:600;color:${text};margin:0 0 4px">Vantaggio ${i}</h4><p style="color:${muted};font-size:14px;margin:0">Breve descrizione del vantaggio offerto</p></div>
-              </div>
-            `).join("")}
-          </div>
-          <div style="aspect-ratio:1;background:linear-gradient(135deg,${p}20,${s}20);border-radius:16px"></div>
-        </div>
-      </section>`,
-    team: `
-      <section style="padding:80px 40px;background:${bg}">
-        <div style="max-width:900px;margin:0 auto;text-align:center">
-          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Il Nostro Team</h2>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
-            ${[1,2,3].map(i => `
-              <div style="text-align:center">
-                <div style="width:100px;height:100px;border-radius:50%;background:${p}15;margin:0 auto 16px"></div>
-                <h4 style="font-size:16px;font-weight:600;color:${text};margin:0 0 4px">Membro ${i}</h4>
-                <p style="color:${muted};font-size:13px;margin:0">Ruolo professionale</p>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      </section>`,
-    cta: `
-      <section style="padding:80px 40px;background:linear-gradient(135deg,${p},${s});text-align:center;border-radius:0">
-        <div style="max-width:600px;margin:0 auto">
-          <h2 style="font-size:36px;font-weight:700;color:white;margin:0 0 16px">Pronto per iniziare?</h2>
-          <p style="color:rgba(255,255,255,0.8);font-size:18px;margin:0 0 32px">Contattaci oggi per una consulenza gratuita</p>
-          <a style="display:inline-block;padding:16px 40px;background:white;color:${p};border-radius:12px;font-weight:700;text-decoration:none;font-size:16px">Contattaci Ora</a>
-        </div>
-      </section>`,
-    contact: `
-      <section style="padding:80px 40px;background:${cardBg}">
-        <div style="max-width:600px;margin:0 auto;text-align:center">
-          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Contattaci</h2>
-          <div style="display:flex;flex-direction:column;gap:16px">
-            <div style="padding:16px;background:${bg};border-radius:12px;border:1px solid ${isDark ? '#ffffff15' : '#00000010'};color:${muted};text-align:left;font-size:14px">Nome e cognome</div>
-            <div style="padding:16px;background:${bg};border-radius:12px;border:1px solid ${isDark ? '#ffffff15' : '#00000010'};color:${muted};text-align:left;font-size:14px">Email</div>
-            <div style="padding:16px 16px 60px;background:${bg};border-radius:12px;border:1px solid ${isDark ? '#ffffff15' : '#00000010'};color:${muted};text-align:left;font-size:14px">Messaggio</div>
-            <button style="padding:16px;background:${p};color:white;border:none;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer">Invia Messaggio</button>
-          </div>
-        </div>
-      </section>`,
-    footer: `
-      <footer style="padding:40px;background:${isDark ? '#080808' : '#1a1a1a'};text-align:center">
-        <p style="color:#666;font-size:13px;margin:0">&copy; 2026 La Tua Azienda. Tutti i diritti riservati.</p>
-      </footer>`,
-  };
-
-  const body = style.sections.map(sec => sectionHtml[sec] || "").join("");
-
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${bg};color:${text};overflow-x:hidden}img{max-width:100%}a{text-decoration:none}</style></head><body>${body}</body></html>`;
+  // Ultimate fallback for unknown IDs
+  const bg = "#ffffff", tx = "#1a1a1a", mt = "#666";
+  const fallback = `
+    <section style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 32px;background:${bg}">
+      <div style="max-width:500px">
+        <h1 style="font-size:40px;font-weight:700;color:${tx};margin:0 0 12px">${style.label}</h1>
+        <p style="color:${mt};font-size:15px;margin:0 0 24px">${style.description}</p>
+        <a style="padding:12px 32px;background:${p};color:white;border-radius:8px;font-weight:600;font-size:14px;display:inline-block">Scopri</a>
+      </div>
+    </section>`;
+  return wrap(fallback, bg, tx, "system-ui,sans-serif");
 }
 
 // ============ COMPONENT ============
