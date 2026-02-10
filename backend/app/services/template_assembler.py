@@ -146,7 +146,11 @@ class TemplateAssembler:
 
         meta = site_data.get("meta", {})
         for key, value in meta.items():
-            head_data[key.upper()] = value
+            upper_key = key.upper()
+            # title/description need META_ prefix to match {{META_TITLE}}, {{META_DESCRIPTION}}
+            if upper_key in ("TITLE", "DESCRIPTION"):
+                upper_key = f"META_{upper_key}"
+            head_data[upper_key] = value
 
         global_data = site_data.get("global", {})
         for key, value in global_data.items():

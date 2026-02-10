@@ -54,5 +54,7 @@
     body { font-family: var(--font-body), sans-serif; }
     h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading), sans-serif; }
     [data-animate] { opacity: 0; }
+    img[src=""] { display: none !important; }
+    img:not([src]) { display: none !important; }
   </style>
 </head>
