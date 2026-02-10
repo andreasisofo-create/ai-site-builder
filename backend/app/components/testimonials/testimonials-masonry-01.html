@@ -1,0 +1,53 @@
+<!-- Testimonials Masonry: glassmorphism cards with varying heights and floating decorative shapes -->
+<section id="testimonials" class="py-20 bg-[var(--color-bg)] relative overflow-hidden">
+  <!-- Decorative floating shapes -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div data-animate="float" class="absolute top-[10%] left-[5%] w-40 h-40 rounded-full blur-3xl" style="background: var(--color-primary); opacity: 0.06;"></div>
+    <div data-animate="float" class="absolute top-[50%] right-[8%] w-56 h-56 rounded-full blur-3xl" style="background: var(--color-secondary); opacity: 0.06;"></div>
+    <div data-animate="float" class="absolute bottom-[10%] left-[30%] w-48 h-48 rounded-full blur-3xl" style="background: var(--color-accent); opacity: 0.05;"></div>
+    <!-- Small decorative dots -->
+    <div data-animate="float" class="absolute top-[20%] right-[20%] w-3 h-3 rounded-full bg-[var(--color-primary)]/20"></div>
+    <div data-animate="float" class="absolute top-[65%] left-[15%] w-2 h-2 rounded-full bg-[var(--color-accent)]/30"></div>
+    <div data-animate="float" class="absolute bottom-[25%] right-[35%] w-4 h-4 rounded-full bg-[var(--color-secondary)]/15"></div>
+    <!-- Decorative rings -->
+    <div data-animate="float" class="absolute top-[35%] left-[50%] w-20 h-20 rounded-full border border-[var(--color-primary)]/10"></div>
+    <div data-animate="float" class="absolute bottom-[40%] right-[15%] w-14 h-14 rounded-full border border-[var(--color-accent)]/10"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Testimonianze</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)]">{{TESTIMONIALS_TITLE}}</h2>
+    </div>
+
+    <!-- Masonry Grid -->
+    <div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6" data-animate="stagger">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="stagger-item break-inside-avoid" data-animate="scale-in">
+        <div class="rounded-2xl p-6 md:p-8 border border-white/10 shadow-xl transition-transform hover:scale-[1.02]" style="background: rgba(var(--color-bg-rgb, 255,255,255), 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+          <!-- Quote icon -->
+          <div class="mb-4">
+            <svg class="w-8 h-8 text-[var(--color-primary)] opacity-40" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609L9.978 5.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H0z"/>
+            </svg>
+          </div>
+
+          <!-- Testimonial text -->
+          <p class="text-[var(--color-text)] leading-relaxed mb-6 font-body">{{TESTIMONIAL_TEXT}}</p>
+
+          <!-- Author -->
+          <div class="flex items-center gap-3 pt-4 border-t border-[var(--color-text)]/5">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+              {{TESTIMONIAL_INITIAL}}
+            </div>
+            <div>
+              <p class="font-semibold text-[var(--color-text)] text-sm">{{TESTIMONIAL_AUTHOR}}</p>
+              <p class="text-xs text-[var(--color-text-muted)]">{{TESTIMONIAL_ROLE}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+</section>

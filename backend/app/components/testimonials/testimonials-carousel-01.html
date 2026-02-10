@@ -1,0 +1,61 @@
+<!-- Testimonials Carousel: single spotlight with CSS-only horizontal scroll/snap -->
+<section id="testimonials" class="py-20 bg-[var(--color-bg-alt)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Testimonianze</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)]">{{TESTIMONIALS_TITLE}}</h2>
+    </div>
+
+    <!-- Carousel Container -->
+    <div class="relative max-w-4xl mx-auto">
+      <!-- Large decorative quote SVG -->
+      <div class="absolute -top-8 left-1/2 -translate-x-1/2 z-0 pointer-events-none" data-animate="scale-in">
+        <svg class="w-32 h-32 text-[var(--color-primary)] opacity-10" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609L9.978 5.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H0z"/>
+        </svg>
+      </div>
+
+      <!-- Scroll/Snap Carousel -->
+      <div class="flex overflow-x-auto snap-x snap-mandatory gap-8 pb-8 scrollbar-hide" style="scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none;" data-animate="stagger">
+        <!-- REPEAT:TESTIMONIALS -->
+        <div class="stagger-item snap-center flex-shrink-0 w-full max-w-3xl mx-auto">
+          <div class="bg-[var(--color-bg)] rounded-3xl p-8 md:p-12 shadow-lg relative overflow-hidden">
+            <!-- Decorative accent line -->
+            <div class="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+
+            <!-- Quote text -->
+            <div data-animate="blur-in">
+              <p class="text-xl md:text-2xl lg:text-3xl text-[var(--color-text)] leading-relaxed font-body text-center mb-10 italic">
+                &ldquo;{{TESTIMONIAL_TEXT}}&rdquo;
+              </p>
+            </div>
+
+            <!-- Author info -->
+            <div class="flex flex-col items-center gap-4" data-animate="fade-up">
+              <div class="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-lg" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+                {{TESTIMONIAL_INITIAL}}
+              </div>
+              <div class="text-center">
+                <p class="font-semibold text-[var(--color-text)] text-lg">{{TESTIMONIAL_AUTHOR}}</p>
+                <p class="text-sm text-[var(--color-text-muted)]">{{TESTIMONIAL_ROLE}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /REPEAT:TESTIMONIALS -->
+      </div>
+
+      <!-- Dots indicator -->
+      <div class="flex justify-center gap-2 mt-6" data-animate="fade-up">
+        <!-- REPEAT:TESTIMONIALS -->
+        <span class="stagger-item w-3 h-3 rounded-full bg-[var(--color-primary)]/30 transition-colors hover:bg-[var(--color-primary)]"></span>
+        <!-- /REPEAT:TESTIMONIALS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline style to hide scrollbar on webkit browsers -->
+  <style>
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+  </style>
+</section>

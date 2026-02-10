@@ -1,0 +1,38 @@
+<!-- Stats Counters: numeri grandi con animazione counter e gradient-flow -->
+<section id="stats" class="py-20 bg-[var(--color-bg)] overflow-hidden relative">
+  <!-- Gradient flow background -->
+  <div class="absolute inset-0 pointer-events-none" data-animate="gradient-flow">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-[var(--color-primary)]/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-[var(--color-secondary)]/5 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--color-accent)]/5 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">I Numeri</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">{{STATS_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{STATS_SUBTITLE}}</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12" data-animate="stagger">
+      <!-- REPEAT:STATS_ITEMS -->
+      <div class="stagger-item text-center group">
+        <!-- Icon -->
+        <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-[var(--color-primary)]/10 flex items-center justify-center group-hover:bg-[var(--color-primary)]/20 transition-colors duration-300 group-hover:scale-110 transform transition-transform">
+          <span class="text-2xl">{{STAT_ICON}}</span>
+        </div>
+        <!-- Number -->
+        <div class="mb-3" data-animate="text-split">
+          <span class="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300" data-counter="{{STAT_NUMBER}}" data-counter-suffix="{{STAT_SUFFIX}}">0</span>
+        </div>
+        <!-- Label -->
+        <p class="text-sm md:text-base text-[var(--color-text-muted)] font-medium">{{STAT_LABEL}}</p>
+        <!-- Decorative underline -->
+        <div class="w-8 h-1 bg-[var(--color-primary)]/30 mx-auto mt-4 rounded-full group-hover:w-16 group-hover:bg-[var(--color-primary)] transition-all duration-500"></div>
+      </div>
+      <!-- /REPEAT:STATS_ITEMS -->
+    </div>
+  </div>
+</section>

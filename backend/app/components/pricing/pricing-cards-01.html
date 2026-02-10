@@ -1,0 +1,81 @@
+<!-- Pricing Cards: 3 colonne con card in evidenza e badge Consigliato -->
+<section id="pricing" class="py-20 bg-[var(--color-bg-alt)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Prezzi</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">{{PRICING_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{PRICING_SUBTITLE}}</p>
+    </div>
+
+    <!-- Pricing Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start" data-animate="stagger">
+      <!-- REPEAT:PRICING_PLANS -->
+      <div class="stagger-item" data-animate="flip-up">
+        <div class="relative group bg-[var(--color-bg)] rounded-2xl p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border-2 border-[var(--color-text)]/5 hover:border-[var(--color-primary)]/20"
+             data-featured="{{PLAN_FEATURED}}"
+             style="transform: var(--featured-scale, scale(1));">
+          <!-- Consigliato Badge (visible when featured) -->
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-bold rounded-full uppercase tracking-wider shadow-lg hidden" data-featured-badge>
+            Consigliato
+          </div>
+
+          <!-- Plan Name -->
+          <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-2">{{PLAN_NAME}}</h3>
+          <p class="text-sm text-[var(--color-text-muted)] mb-6">{{PLAN_DESCRIPTION}}</p>
+
+          <!-- Price -->
+          <div class="mb-8">
+            <div class="flex items-baseline gap-1">
+              <span class="text-lg text-[var(--color-text-muted)]">&euro;</span>
+              <span class="text-5xl font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300" data-counter="{{PLAN_PRICE}}">0</span>
+            </div>
+            <p class="text-sm text-[var(--color-text-muted)] mt-1">{{PLAN_PERIOD}}</p>
+          </div>
+
+          <!-- Divider -->
+          <div class="w-full h-px bg-[var(--color-text)]/10 mb-8"></div>
+
+          <!-- Features -->
+          <ul class="space-y-4 mb-10">
+            <!-- REPEAT:PLAN_FEATURES -->
+            <li class="flex items-start gap-3">
+              <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span class="text-sm text-[var(--color-text-muted)]">{{FEATURE_TEXT}}</span>
+            </li>
+            <!-- /REPEAT:PLAN_FEATURES -->
+          </ul>
+
+          <!-- CTA Button -->
+          <a href="{{PLAN_CTA_URL}}" class="block w-full py-4 text-center font-bold rounded-xl transition-all duration-300 border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white" data-animate="magnetic">
+            {{PLAN_CTA_TEXT}}
+          </a>
+        </div>
+      </div>
+      <!-- /REPEAT:PRICING_PLANS -->
+    </div>
+  </div>
+
+  <!-- Inline script for featured card styling -->
+  <style>
+    [data-featured="true"] {
+      border-color: var(--color-primary) !important;
+      transform: scale(1.05);
+      box-shadow: 0 25px 60px -12px rgba(0,0,0,0.15);
+    }
+    [data-featured="true"] [data-featured-badge] {
+      display: block !important;
+    }
+    [data-featured="true"] a {
+      background-color: var(--color-primary);
+      color: white;
+    }
+    @media (max-width: 1023px) {
+      [data-featured="true"] {
+        transform: scale(1);
+      }
+    }
+  </style>
+</section>

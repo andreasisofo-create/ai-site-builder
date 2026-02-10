@@ -1,0 +1,87 @@
+<!-- About Timeline: layout verticale con highlights alternati sx/dx -->
+<section id="about" class="py-20 bg-[var(--color-bg-alt)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Chi Siamo</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">
+        {{ABOUT_TITLE}}
+      </h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">
+        {{ABOUT_SUBTITLE}}
+      </p>
+    </div>
+
+    <!-- About Text -->
+    <div class="max-w-3xl mx-auto text-center mb-20" data-animate="blur-in">
+      <p class="text-lg text-[var(--color-text-muted)] leading-relaxed">
+        {{ABOUT_TEXT}}
+      </p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="relative max-w-4xl mx-auto" data-animate="stagger">
+      <!-- Vertical Line -->
+      <div class="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[var(--color-primary)] to-transparent hidden md:block"></div>
+      <div class="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[var(--color-primary)] to-transparent md:hidden"></div>
+
+      <!-- Highlight 1 - Left -->
+      <div class="stagger-item relative flex flex-col md:flex-row items-center mb-16 md:mb-20">
+        <!-- Content Left -->
+        <div class="w-full md:w-1/2 md:pr-12 md:text-right pl-16 md:pl-0">
+          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg border border-[var(--color-text)]/5 hover:shadow-xl transition-shadow duration-300">
+            <div class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-primary)] mb-3" data-counter="{{ABOUT_HIGHLIGHT_NUM_1}}">0</div>
+            <p class="text-[var(--color-text)] font-semibold font-heading text-lg">{{ABOUT_HIGHLIGHT_1}}</p>
+          </div>
+        </div>
+        <!-- Dot -->
+        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-5 h-5 rounded-full bg-[var(--color-primary)] border-4 border-[var(--color-bg-alt)] shadow-lg z-10">
+          <div class="absolute inset-0 rounded-full bg-[var(--color-primary)] animate-ping opacity-20"></div>
+        </div>
+        <!-- Spacer Right -->
+        <div class="hidden md:block w-1/2"></div>
+      </div>
+
+      <!-- Highlight 2 - Right -->
+      <div class="stagger-item relative flex flex-col md:flex-row items-center mb-16 md:mb-20">
+        <!-- Spacer Left -->
+        <div class="hidden md:block w-1/2"></div>
+        <!-- Dot -->
+        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-5 h-5 rounded-full bg-[var(--color-secondary)] border-4 border-[var(--color-bg-alt)] shadow-lg z-10">
+          <div class="absolute inset-0 rounded-full bg-[var(--color-secondary)] animate-ping opacity-20"></div>
+        </div>
+        <!-- Content Right -->
+        <div class="w-full md:w-1/2 md:pl-12 pl-16 md:text-left">
+          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg border border-[var(--color-text)]/5 hover:shadow-xl transition-shadow duration-300">
+            <div class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-secondary)] mb-3" data-counter="{{ABOUT_HIGHLIGHT_NUM_2}}">0</div>
+            <p class="text-[var(--color-text)] font-semibold font-heading text-lg">{{ABOUT_HIGHLIGHT_2}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Highlight 3 - Left -->
+      <div class="stagger-item relative flex flex-col md:flex-row items-center">
+        <!-- Content Left -->
+        <div class="w-full md:w-1/2 md:pr-12 md:text-right pl-16 md:pl-0">
+          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg border border-[var(--color-text)]/5 hover:shadow-xl transition-shadow duration-300">
+            <div class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-accent)] mb-3" data-counter="{{ABOUT_HIGHLIGHT_NUM_3}}">0</div>
+            <p class="text-[var(--color-text)] font-semibold font-heading text-lg">{{ABOUT_HIGHLIGHT_3}}</p>
+          </div>
+        </div>
+        <!-- Dot -->
+        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-5 h-5 rounded-full bg-[var(--color-accent)] border-4 border-[var(--color-bg-alt)] shadow-lg z-10">
+          <div class="absolute inset-0 rounded-full bg-[var(--color-accent)] animate-ping opacity-20"></div>
+        </div>
+        <!-- Spacer Right -->
+        <div class="hidden md:block w-1/2"></div>
+      </div>
+
+      <!-- Decorative end dot -->
+      <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 -bottom-4 w-3 h-3 rounded-full bg-[var(--color-primary)]/40"></div>
+    </div>
+  </div>
+
+  <!-- Decorative shapes -->
+  <div class="absolute top-20 left-0 w-64 h-64 bg-[var(--color-primary)]/5 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-20 right-0 w-48 h-48 bg-[var(--color-secondary)]/5 rounded-full blur-3xl pointer-events-none"></div>
+</section>

@@ -1,0 +1,61 @@
+<!-- Services Process Steps: layout a passi numerati con linee di connessione -->
+<section id="services" class="py-20 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Come Lavoriamo</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Steps -->
+    <div class="relative max-w-5xl mx-auto" data-animate="stagger">
+      <!-- Connecting line (horizontal on desktop, vertical on mobile) -->
+      <div class="absolute top-12 left-8 right-8 h-0.5 bg-gradient-to-r from-[var(--color-primary)]/20 via-[var(--color-secondary)]/20 to-[var(--color-accent)]/20 hidden lg:block"></div>
+      <div class="absolute top-0 bottom-0 left-8 w-0.5 bg-gradient-to-b from-[var(--color-primary)]/20 via-[var(--color-secondary)]/20 to-[var(--color-accent)]/20 lg:hidden"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
+        <!-- REPEAT:SERVICES -->
+        <div class="stagger-item relative pl-20 lg:pl-0">
+          <!-- Step Number -->
+          <div class="absolute left-0 lg:relative lg:flex lg:justify-center lg:mb-8">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/20 z-10" data-animate="flip-up">
+              <span class="text-2xl font-bold font-heading text-white">{{SERVICE_ICON}}</span>
+            </div>
+          </div>
+
+          <!-- Progress dots between steps (desktop) -->
+          <div class="hidden lg:flex justify-center mb-6 gap-1.5">
+            <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]/30"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]/20"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]/10"></div>
+          </div>
+
+          <!-- Card -->
+          <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 border border-[var(--color-text)]/5 hover:shadow-xl hover:border-[var(--color-primary)]/20 transition-all duration-500 group lg:text-center">
+            <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors">
+              {{SERVICE_TITLE}}
+            </h3>
+            <p class="text-[var(--color-text-muted)] leading-relaxed">
+              {{SERVICE_DESCRIPTION}}
+            </p>
+            <!-- Decorative bottom accent -->
+            <div class="mt-6 w-12 h-1 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full mx-auto lg:mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+
+          <!-- Mobile progress dots -->
+          <div class="flex lg:hidden gap-1 mt-4 ml-6">
+            <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]/30"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]/20"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]/10"></div>
+          </div>
+        </div>
+        <!-- /REPEAT:SERVICES -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative blobs -->
+  <div class="absolute top-10 right-10 w-32 h-32 bg-[var(--color-primary)]/5 rounded-full blur-2xl pointer-events-none"></div>
+  <div class="absolute bottom-10 left-10 w-40 h-40 bg-[var(--color-secondary)]/5 rounded-full blur-2xl pointer-events-none"></div>
+</section>

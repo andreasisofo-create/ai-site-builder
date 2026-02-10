@@ -201,6 +201,84 @@ Return this JSON (include only the sections listed above):
     "CONTACT_PHONE": "telefono o vuoto",
     "CONTACT_EMAIL": "email o vuoto"
   }},
+  "gallery": {{
+    "GALLERY_TITLE": "Titolo galleria",
+    "GALLERY_SUBTITLE": "Sottotitolo",
+    "GALLERY_ITEMS": [
+      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+1", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
+      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+2", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
+      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+3", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
+      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+4", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
+      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+5", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
+      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+6", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}}
+    ]
+  }},
+  "team": {{
+    "TEAM_TITLE": "Titolo sezione team",
+    "TEAM_SUBTITLE": "Sottotitolo",
+    "TEAM_MEMBERS": [
+      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "Breve bio (1-2 frasi)"}},
+      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "Breve bio"}},
+      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "Breve bio"}}
+    ]
+  }},
+  "pricing": {{
+    "PRICING_TITLE": "Titolo sezione prezzi",
+    "PRICING_SUBTITLE": "Sottotitolo",
+    "PRICING_PLANS": [
+      {{"PLAN_NAME": "Base", "PLAN_PRICE": "29", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Ideale per iniziare", "PLAN_FEATURES": "Feature 1, Feature 2, Feature 3", "PLAN_CTA_TEXT": "Inizia Ora", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "false"}},
+      {{"PLAN_NAME": "Pro", "PLAN_PRICE": "59", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Il più popolare", "PLAN_FEATURES": "Tutto Base + Feature 4, Feature 5, Feature 6", "PLAN_CTA_TEXT": "Scegli Pro", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "true"}},
+      {{"PLAN_NAME": "Enterprise", "PLAN_PRICE": "99", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Per grandi aziende", "PLAN_FEATURES": "Tutto Pro + Feature 7, Feature 8, Supporto dedicato", "PLAN_CTA_TEXT": "Contattaci", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "false"}}
+    ]
+  }},
+  "faq": {{
+    "FAQ_TITLE": "Domande Frequenti",
+    "FAQ_SUBTITLE": "Sottotitolo",
+    "FAQ_ITEMS": [
+      {{"FAQ_QUESTION": "Domanda 1?", "FAQ_ANSWER": "Risposta dettagliata (2-3 frasi)"}},
+      {{"FAQ_QUESTION": "Domanda 2?", "FAQ_ANSWER": "Risposta dettagliata"}},
+      {{"FAQ_QUESTION": "Domanda 3?", "FAQ_ANSWER": "Risposta dettagliata"}},
+      {{"FAQ_QUESTION": "Domanda 4?", "FAQ_ANSWER": "Risposta dettagliata"}},
+      {{"FAQ_QUESTION": "Domanda 5?", "FAQ_ANSWER": "Risposta dettagliata"}}
+    ]
+  }},
+  "stats": {{
+    "STATS_TITLE": "I Nostri Numeri",
+    "STATS_SUBTITLE": "Sottotitolo",
+    "STATS_ITEMS": [
+      {{"STAT_NUMBER": "150", "STAT_SUFFIX": "+", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
+      {{"STAT_NUMBER": "98", "STAT_SUFFIX": "%", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
+      {{"STAT_NUMBER": "10", "STAT_SUFFIX": "K", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
+      {{"STAT_NUMBER": "24", "STAT_SUFFIX": "/7", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}}
+    ]
+  }},
+  "logos": {{
+    "LOGOS_TITLE": "I Nostri Partner",
+    "LOGOS_ITEMS": [
+      {{"LOGO_IMAGE_URL": "https://placehold.co/160x60/eee/999?text=Partner+1", "LOGO_ALT": "Partner 1", "LOGO_NAME": "Partner 1"}},
+      {{"LOGO_IMAGE_URL": "https://placehold.co/160x60/eee/999?text=Partner+2", "LOGO_ALT": "Partner 2", "LOGO_NAME": "Partner 2"}},
+      {{"LOGO_IMAGE_URL": "https://placehold.co/160x60/eee/999?text=Partner+3", "LOGO_ALT": "Partner 3", "LOGO_NAME": "Partner 3"}},
+      {{"LOGO_IMAGE_URL": "https://placehold.co/160x60/eee/999?text=Partner+4", "LOGO_ALT": "Partner 4", "LOGO_NAME": "Partner 4"}}
+    ]
+  }},
+  "process": {{
+    "PROCESS_TITLE": "Come Funziona",
+    "PROCESS_SUBTITLE": "Sottotitolo",
+    "PROCESS_STEPS": [
+      {{"STEP_NUMBER": "1", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}},
+      {{"STEP_NUMBER": "2", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}},
+      {{"STEP_NUMBER": "3", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}}
+    ]
+  }},
+  "timeline": {{
+    "TIMELINE_TITLE": "La Nostra Storia",
+    "TIMELINE_SUBTITLE": "Sottotitolo",
+    "TIMELINE_ITEMS": [
+      {{"TIMELINE_YEAR": "2020", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}},
+      {{"TIMELINE_YEAR": "2022", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}},
+      {{"TIMELINE_YEAR": "2024", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}}
+    ]
+  }},
   "footer": {{
     "FOOTER_DESCRIPTION": "Breve descrizione per footer (1 frase)"
   }}
@@ -212,11 +290,12 @@ IMPORTANT:
 - Hero title: max 8 words, impactful
 - Use relevant emojis for service/feature icons
 - TESTIMONIAL_INITIAL = first letter of author name
+- Generate ONLY the sections listed in SECTIONS NEEDED
 - Return ONLY the JSON object"""
 
         result = await self.kimi.call(
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=2500, thinking=False, timeout=90.0,
+            max_tokens=4000, thinking=False, timeout=120.0,
         )
 
         if result.get("success"):
@@ -265,7 +344,7 @@ Return ONLY the JSON object."""
 
         result = await self.kimi.call(
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=300, thinking=False, timeout=30.0,
+            max_tokens=600, thinking=False, timeout=45.0,
         )
 
         if result.get("success"):

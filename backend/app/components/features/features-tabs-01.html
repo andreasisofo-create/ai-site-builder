@@ -1,0 +1,62 @@
+<!-- Features Tabs: layout tab-style con tutte le features visibili -->
+<section id="features" class="py-20 bg-[var(--color-bg-alt)] overflow-hidden relative">
+  <!-- Decorative gradient shapes -->
+  <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-[var(--color-primary)]/5 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-[var(--color-secondary)]/5 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Perch&eacute; Sceglierci</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">{{FEATURES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{FEATURES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Tab-style Feature Grid -->
+    <div class="max-w-6xl mx-auto">
+      <!-- Tab Headers (feature titles as tabs) -->
+      <div class="flex flex-wrap justify-center gap-2 mb-12" data-animate="stagger">
+        <!-- REPEAT:FEATURES -->
+        <div class="stagger-item">
+          <div class="px-6 py-3 bg-[var(--color-bg)] rounded-xl border border-[var(--color-text)]/10 hover:border-[var(--color-primary)]/50 hover:bg-[var(--color-primary)]/5 transition-all duration-300 cursor-default group">
+            <div class="flex items-center gap-3">
+              <span class="text-xl group-hover:scale-110 transition-transform">{{FEATURE_ICON}}</span>
+              <span class="text-sm font-semibold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors whitespace-nowrap">{{FEATURE_TITLE}}</span>
+            </div>
+          </div>
+        </div>
+        <!-- /REPEAT:FEATURES -->
+      </div>
+
+      <!-- Feature Detail Cards (all visible) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-animate="stagger" data-stagger-effect="scale-in">
+        <!-- REPEAT:FEATURES -->
+        <div class="stagger-item" data-animate="blur-in">
+          <div class="bg-[var(--color-bg)] rounded-2xl p-8 h-full border border-[var(--color-text)]/5 hover:border-[var(--color-primary)]/30 hover:shadow-xl transition-all duration-500 group relative">
+            <!-- Top accent line -->
+            <div class="absolute top-0 left-8 right-8 h-0.5 bg-gradient-to-r from-transparent via-[var(--color-primary)]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <!-- Icon -->
+            <div class="w-14 h-14 flex items-center justify-center rounded-2xl bg-[var(--color-primary)]/10 text-3xl mb-6 group-hover:bg-[var(--color-primary)]/15 group-hover:scale-110 transition-all duration-300">
+              {{FEATURE_ICON}}
+            </div>
+            <!-- Title -->
+            <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors">
+              {{FEATURE_TITLE}}
+            </h3>
+            <!-- Description -->
+            <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">
+              {{FEATURE_DESCRIPTION}}
+            </p>
+            <!-- Bottom decorative dots -->
+            <div class="flex gap-1 mt-6 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div class="w-1 h-1 rounded-full bg-[var(--color-primary)]"></div>
+              <div class="w-1 h-1 rounded-full bg-[var(--color-primary)]/60"></div>
+              <div class="w-1 h-1 rounded-full bg-[var(--color-primary)]/30"></div>
+            </div>
+          </div>
+        </div>
+        <!-- /REPEAT:FEATURES -->
+      </div>
+    </div>
+  </div>
+</section>

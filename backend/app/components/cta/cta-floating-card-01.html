@@ -1,0 +1,47 @@
+<!-- CTA Floating Card: glassmorphism card with tilt, parallax background, and decorative circles -->
+<section id="cta" class="py-24 md:py-32 bg-[var(--color-bg-alt)] relative overflow-hidden">
+  <!-- Parallax background pattern -->
+  <div class="absolute inset-0 pointer-events-none" data-animate="parallax">
+    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(var(--color-primary) 1px, transparent 1px); background-size: 32px 32px;"></div>
+  </div>
+
+  <!-- Decorative blurred circles behind the card -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div data-animate="float" class="absolute top-[15%] left-[20%] w-72 h-72 rounded-full blur-3xl" style="background: var(--color-primary); opacity: 0.08;"></div>
+    <div data-animate="float" class="absolute bottom-[10%] right-[15%] w-80 h-80 rounded-full blur-3xl" style="background: var(--color-secondary); opacity: 0.08;"></div>
+    <div data-animate="float" class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl" style="background: var(--color-accent); opacity: 0.05;"></div>
+    <!-- Small floating decorations -->
+    <div data-animate="float" class="absolute top-[20%] right-[25%] w-4 h-4 rounded-full bg-[var(--color-primary)]/15"></div>
+    <div data-animate="float" class="absolute bottom-[25%] left-[30%] w-3 h-3 rounded-full bg-[var(--color-secondary)]/15"></div>
+    <div data-animate="float" class="absolute top-[65%] right-[40%] w-2 h-2 rounded-full bg-[var(--color-accent)]/20"></div>
+    <!-- Decorative rings -->
+    <div data-animate="float" class="absolute top-[10%] right-[10%] w-24 h-24 rounded-full border border-[var(--color-primary)]/10"></div>
+    <div data-animate="float" class="absolute bottom-[15%] left-[8%] w-16 h-16 rounded-full border border-[var(--color-secondary)]/10"></div>
+  </div>
+
+  <!-- Floating Card -->
+  <div class="relative z-10 max-w-3xl mx-auto px-6">
+    <div data-animate="tilt" class="rounded-3xl p-10 md:p-16 text-center border border-white/20 shadow-2xl" style="background: rgba(var(--color-bg-rgb, 255,255,255), 0.5); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+      <!-- Decorative top accent -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 rounded-b-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+
+      <!-- Title -->
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)] leading-tight mb-6" data-animate="fade-up">
+        {{CTA_TITLE}}
+      </h2>
+
+      <!-- Subtitle -->
+      <p class="text-lg text-[var(--color-text-muted)] mb-10 max-w-xl mx-auto font-body leading-relaxed" data-animate="blur-in">
+        {{CTA_SUBTITLE}}
+      </p>
+
+      <!-- CTA Button -->
+      <div data-animate="bounce-in">
+        <a href="{{CTA_BUTTON_URL}}" class="inline-flex items-center gap-3 px-10 py-4 font-bold text-lg text-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+          {{CTA_BUTTON_TEXT}}
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,54 @@
+<!-- Services Hover Expand: glassmorphism cards con espansione hover -->
+<section id="services" class="py-20 bg-[var(--color-bg)] overflow-hidden relative">
+  <!-- Gradient background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-[var(--color-primary)]/8 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-[var(--color-secondary)]/8 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--color-accent)]/5 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">I Nostri Servizi</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Service Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-animate="stagger" data-stagger-effect="scale-in">
+      <!-- REPEAT:SERVICES -->
+      <div class="stagger-item group relative" data-animate="tilt">
+        <!-- Glow effect on hover -->
+        <div class="absolute -inset-0.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
+        <!-- Card with glassmorphism -->
+        <div class="relative bg-[var(--color-bg-alt)]/80 backdrop-blur-xl rounded-2xl p-8 border border-[var(--color-text)]/10 group-hover:border-transparent transition-all duration-500 h-full">
+          <!-- Icon -->
+          <div class="w-14 h-14 flex items-center justify-center rounded-xl bg-[var(--color-primary)]/10 text-3xl mb-5 group-hover:bg-[var(--color-primary)]/20 group-hover:scale-110 transition-all duration-300">
+            {{SERVICE_ICON}}
+          </div>
+          <!-- Title -->
+          <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+            {{SERVICE_TITLE}}
+          </h3>
+          <!-- Description - expands on hover -->
+          <div class="overflow-hidden transition-all duration-500 max-h-16 group-hover:max-h-48">
+            <p class="text-[var(--color-text-muted)] leading-relaxed">{{SERVICE_DESCRIPTION}}</p>
+          </div>
+          <!-- Expand indicator -->
+          <div class="mt-4 flex items-center gap-2 text-[var(--color-primary)] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <span class="text-sm font-semibold">Scopri di pi&ugrave;</span>
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </div>
+          <!-- Decorative corner accent -->
+          <div class="absolute top-0 right-0 w-20 h-20 overflow-hidden rounded-tr-2xl pointer-events-none">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[var(--color-primary)]/10 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

@@ -1,0 +1,43 @@
+<!-- Services Icon List: layout orizzontale alternato con icone grandi -->
+<section id="services" class="py-20 bg-[var(--color-bg-alt)] overflow-hidden relative">
+  <!-- Subtle parallax background shape -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none" data-animate="parallax">
+    <div class="w-full h-full rounded-full border border-[var(--color-primary)]/5"></div>
+    <div class="absolute inset-16 rounded-full border border-[var(--color-secondary)]/5"></div>
+    <div class="absolute inset-32 rounded-full border border-[var(--color-accent)]/5"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">I Nostri Servizi</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Service Items - Alternating layout -->
+    <div class="space-y-16 max-w-5xl mx-auto">
+      <!-- REPEAT:SERVICES -->
+      <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 md:odd:flex-row md:even:flex-row-reverse group" data-animate="reveal-left">
+        <!-- Large Icon -->
+        <div class="flex-shrink-0">
+          <div class="w-28 h-28 md:w-36 md:h-36 flex items-center justify-center rounded-3xl bg-[var(--color-bg)] shadow-lg border border-[var(--color-text)]/5 group-hover:shadow-xl group-hover:scale-105 transition-all duration-500">
+            <span class="text-5xl md:text-6xl">{{SERVICE_ICON}}</span>
+          </div>
+        </div>
+        <!-- Content -->
+        <div class="flex-1 text-center md:text-left">
+          <h3 class="text-2xl font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+            {{SERVICE_TITLE}}
+          </h3>
+          <p class="text-[var(--color-text-muted)] leading-relaxed max-w-lg">
+            {{SERVICE_DESCRIPTION}}
+          </p>
+          <!-- Decorative underline -->
+          <div class="mt-4 w-16 h-0.5 bg-gradient-to-r from-[var(--color-primary)] to-transparent mx-auto md:mx-0 group-hover:w-24 transition-all duration-500"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

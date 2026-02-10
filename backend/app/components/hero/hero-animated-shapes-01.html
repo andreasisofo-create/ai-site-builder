@@ -1,0 +1,146 @@
+<!-- Hero Animated Shapes: creative floating shapes with weightless aesthetic -->
+<section id="hero" class="min-h-screen relative overflow-hidden bg-[var(--color-bg)]">
+  <!-- Subtle background gradient -->
+  <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at 30% 50%, var(--color-primary), transparent 70%); opacity: 0.04;"></div>
+  <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at 70% 80%, var(--color-accent), transparent 60%); opacity: 0.03;"></div>
+
+  <!-- === FLOATING SHAPES LAYER === -->
+  <div class="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
+
+    <!-- Large circles -->
+    <div data-animate="float" class="absolute top-[8%] left-[5%] w-40 h-40 rounded-full border-2 border-[var(--color-primary)]/10" data-animate-speed="slow"></div>
+    <div data-animate="float" class="absolute top-[60%] right-[8%] w-56 h-56 rounded-full border border-[var(--color-accent)]/10"></div>
+    <div data-animate="morph-bg" class="absolute top-[30%] right-[20%] w-32 h-32 rounded-full" style="background: var(--color-primary); opacity: 0.05;"></div>
+
+    <!-- Filled small circles -->
+    <div data-animate="float" class="absolute top-[15%] right-[30%] w-6 h-6 rounded-full" style="background: var(--color-primary); opacity: 0.15;"></div>
+    <div data-animate="float" class="absolute top-[45%] left-[8%] w-4 h-4 rounded-full" style="background: var(--color-accent); opacity: 0.2;"></div>
+    <div data-animate="float" class="absolute bottom-[20%] right-[35%] w-5 h-5 rounded-full" style="background: var(--color-secondary); opacity: 0.15;"></div>
+    <div data-animate="float" class="absolute top-[70%] left-[25%] w-3 h-3 rounded-full" style="background: var(--color-primary); opacity: 0.25;"></div>
+    <div data-animate="float" class="absolute top-[25%] left-[45%] w-8 h-8 rounded-full" style="background: var(--color-accent); opacity: 0.08;"></div>
+
+    <!-- Squares (rotated) -->
+    <div data-animate="float" class="absolute top-[20%] right-[12%] w-16 h-16 border-2 border-[var(--color-secondary)]/10 rotate-45"></div>
+    <div data-animate="float" class="absolute bottom-[25%] left-[12%] w-12 h-12 border border-[var(--color-primary)]/15 rotate-12"></div>
+    <div data-animate="morph-bg" class="absolute top-[55%] left-[35%] w-20 h-20 rotate-45" style="background: var(--color-secondary); opacity: 0.04;"></div>
+    <div data-animate="float" class="absolute top-[10%] left-[55%] w-8 h-8 rotate-45" style="background: var(--color-primary); opacity: 0.08;"></div>
+
+    <!-- Triangles (SVG) -->
+    <svg data-animate="float" class="absolute top-[35%] right-[5%] w-20 h-20 opacity-10" viewBox="0 0 100 100" fill="none">
+      <polygon points="50,10 90,85 10,85" stroke="var(--color-primary)" stroke-width="2"/>
+    </svg>
+    <svg data-animate="float" class="absolute bottom-[15%] left-[40%] w-14 h-14 opacity-10" viewBox="0 0 100 100" fill="none">
+      <polygon points="50,10 90,85 10,85" stroke="var(--color-accent)" stroke-width="2"/>
+    </svg>
+    <svg data-animate="morph-bg" class="absolute top-[65%] right-[40%] w-10 h-10 opacity-[0.06]" viewBox="0 0 100 100">
+      <polygon points="50,10 90,85 10,85" fill="var(--color-secondary)"/>
+    </svg>
+    <svg data-animate="float" class="absolute top-[12%] left-[30%] w-6 h-6 opacity-15" viewBox="0 0 100 100">
+      <polygon points="50,10 90,85 10,85" fill="var(--color-primary)"/>
+    </svg>
+
+    <!-- Cross / Plus shapes -->
+    <div data-animate="float" class="absolute top-[40%] right-[25%] w-8 h-8 opacity-10">
+      <div class="absolute top-1/2 left-0 w-full h-0.5 -translate-y-1/2" style="background: var(--color-primary);"></div>
+      <div class="absolute left-1/2 top-0 w-0.5 h-full -translate-x-1/2" style="background: var(--color-primary);"></div>
+    </div>
+    <div data-animate="float" class="absolute bottom-[35%] left-[20%] w-6 h-6 opacity-10">
+      <div class="absolute top-1/2 left-0 w-full h-0.5 -translate-y-1/2" style="background: var(--color-accent);"></div>
+      <div class="absolute left-1/2 top-0 w-0.5 h-full -translate-x-1/2" style="background: var(--color-accent);"></div>
+    </div>
+
+    <!-- Lines / Dashes -->
+    <div data-animate="float" class="absolute top-[50%] left-[65%] w-24 h-px" style="background: linear-gradient(90deg, transparent, var(--color-primary), transparent); opacity: 0.1;"></div>
+    <div data-animate="float" class="absolute top-[75%] right-[15%] w-16 h-px rotate-45" style="background: linear-gradient(90deg, transparent, var(--color-accent), transparent); opacity: 0.08;"></div>
+    <div data-animate="float" class="absolute top-[28%] left-[70%] w-20 h-px -rotate-12" style="background: linear-gradient(90deg, transparent, var(--color-secondary), transparent); opacity: 0.08;"></div>
+
+    <!-- Rings -->
+    <svg data-animate="float" class="absolute bottom-[10%] right-[10%] w-24 h-24 opacity-[0.06]" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="45" stroke="var(--color-primary)" stroke-width="1"/>
+      <circle cx="50" cy="50" r="30" stroke="var(--color-primary)" stroke-width="1"/>
+    </svg>
+    <svg data-animate="morph-bg" class="absolute top-[5%] right-[45%] w-16 h-16 opacity-[0.05]" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="45" stroke="var(--color-accent)" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="relative z-50 px-6 py-5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="#" class="text-xl font-bold font-heading text-[var(--color-text)]" data-animate="fade-down">{{BUSINESS_NAME}}</a>
+      <button class="flex flex-col gap-1.5 p-2 group" aria-label="Menu">
+        <span class="w-7 h-0.5 bg-[var(--color-text)] transition-all group-hover:bg-[var(--color-primary)]"></span>
+        <span class="w-5 h-0.5 bg-[var(--color-text)] transition-all group-hover:bg-[var(--color-primary)] group-hover:w-7 delay-75"></span>
+        <span class="w-7 h-0.5 bg-[var(--color-text)] transition-all group-hover:bg-[var(--color-primary)] delay-150"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="relative z-10 flex items-center px-6" style="min-height: calc(100vh - 80px);">
+    <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Left: Text Content -->
+      <div>
+        <!-- Animated label -->
+        <div class="flex items-center gap-3 mb-6" data-animate="reveal-left">
+          <div class="flex items-center gap-1">
+            <div class="w-2 h-2 rounded-full" style="background: var(--color-primary);"></div>
+            <div class="w-2 h-2 rounded-full" style="background: var(--color-secondary); opacity: 0.6;"></div>
+            <div class="w-2 h-2 rounded-full" style="background: var(--color-accent); opacity: 0.3;"></div>
+          </div>
+          <span class="text-sm font-semibold tracking-[0.2em] uppercase text-[var(--color-primary)] font-body">{{BUSINESS_NAME}}</span>
+        </div>
+
+        <!-- Title with reveal -->
+        <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold font-heading text-[var(--color-text)] leading-[1.08] mb-8" data-animate="reveal-left">
+          {{HERO_TITLE}}
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-lg md:text-xl text-[var(--color-text-muted)] leading-relaxed mb-10 max-w-lg font-body" data-animate="reveal-left">
+          {{HERO_SUBTITLE}}
+        </p>
+
+        <!-- CTA buttons -->
+        <div class="flex flex-wrap items-center gap-5" data-animate="fade-up">
+          <a href="{{HERO_CTA_URL}}" class="group inline-flex items-center gap-3 px-9 py-4 bg-[var(--color-primary)] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+            {{HERO_CTA_TEXT}}
+            <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+          </a>
+          <a href="#about" class="inline-flex items-center gap-2 px-8 py-4 border-2 border-[var(--color-text)]/10 text-[var(--color-text)] font-semibold rounded-xl hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all">
+            Scopri di pi&ugrave;
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Image with floating shape accents -->
+      <div class="relative flex items-center justify-center">
+        <!-- Background shapes around image -->
+        <div data-animate="float" class="absolute -top-8 -left-8 w-28 h-28 rounded-full border-2 border-[var(--color-primary)]/10"></div>
+        <div data-animate="float" class="absolute -bottom-6 -right-6 w-20 h-20 rotate-45 border-2 border-[var(--color-accent)]/10"></div>
+        <svg data-animate="float" class="absolute top-[10%] -right-10 w-12 h-12 opacity-10" viewBox="0 0 100 100" fill="none">
+          <polygon points="50,10 90,85 10,85" stroke="var(--color-secondary)" stroke-width="2"/>
+        </svg>
+
+        <!-- Image card -->
+        <div class="relative w-full max-w-lg" data-animate="scale-in">
+          <!-- Shadow glow -->
+          <div class="absolute -inset-4 rounded-3xl blur-2xl" style="background: var(--color-primary); opacity: 0.06;"></div>
+
+          <div class="relative bg-[var(--color-bg-alt)] rounded-2xl p-3 shadow-2xl shadow-black/5">
+            <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full rounded-xl object-cover aspect-[4/3]" loading="eager">
+          </div>
+
+          <!-- Floating badge -->
+          <div data-animate="float" class="absolute -bottom-4 -left-4 px-5 py-3 bg-[var(--color-bg)] rounded-xl shadow-lg border border-[var(--color-text)]/5">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" style="background: var(--color-primary);"></div>
+              <span class="text-sm font-bold text-[var(--color-text)] font-heading">{{BUSINESS_NAME}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

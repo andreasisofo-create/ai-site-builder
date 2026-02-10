@@ -1,0 +1,93 @@
+<!-- Hero Glassmorphism: frosted glass card on vibrant gradient with morphing blobs -->
+<section id="hero" class="min-h-screen relative overflow-hidden" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-accent));">
+  <!-- Morphing blob shapes -->
+  <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+    <div data-animate="morph-bg" class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full blur-3xl" style="background: var(--color-accent); opacity: 0.4;"></div>
+    <div data-animate="morph-bg" class="absolute bottom-[-15%] left-[-10%] w-[600px] h-[600px] rounded-full blur-3xl" style="background: var(--color-secondary); opacity: 0.3;"></div>
+    <div data-animate="morph-bg" class="absolute top-[40%] left-[30%] w-[400px] h-[400px] rounded-full blur-3xl" style="background: var(--color-primary); opacity: 0.25;"></div>
+    <!-- Small floating blobs -->
+    <div data-animate="float" class="absolute top-[20%] left-[60%] w-[150px] h-[150px] rounded-full blur-2xl" style="background: white; opacity: 0.08;"></div>
+    <div data-animate="float" class="absolute bottom-[30%] right-[20%] w-[200px] h-[200px] rounded-full blur-2xl" style="background: var(--color-accent); opacity: 0.1;"></div>
+  </div>
+
+  <!-- Subtle grid pattern overlay -->
+  <div class="absolute inset-0 z-[1] opacity-[0.04]" style="background-image: linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px); background-size: 60px 60px;"></div>
+
+  <!-- Navigation (glass) -->
+  <nav class="relative z-50 px-6 py-5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="#" class="text-xl font-bold font-heading text-white drop-shadow-sm" data-animate="fade-down">{{BUSINESS_NAME}}</a>
+      <button class="p-2.5 rounded-xl backdrop-blur-md bg-white/10 border border-white/20 group hover:bg-white/20 transition-colors" aria-label="Menu">
+        <div class="flex flex-col gap-1.5">
+          <span class="w-6 h-0.5 bg-white transition-transform group-hover:translate-x-0.5"></span>
+          <span class="w-4 h-0.5 bg-white transition-transform group-hover:translate-x-0.5 delay-75"></span>
+          <span class="w-6 h-0.5 bg-white transition-transform group-hover:translate-x-0.5 delay-150"></span>
+        </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="relative z-10 flex items-center justify-center px-6 py-12" style="min-height: calc(100vh - 80px);">
+    <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
+      <!-- Glass Card - Left side content -->
+      <div data-animate="float" class="relative">
+        <!-- Glow behind card -->
+        <div class="absolute -inset-4 bg-white/5 rounded-[2rem] blur-xl"></div>
+
+        <!-- Main glass card -->
+        <div class="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl">
+          <!-- Decorative corner accents -->
+          <div class="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-white/30 rounded-tl-lg"></div>
+          <div class="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-white/30 rounded-br-lg"></div>
+
+          <div data-animate="blur-in">
+            <p class="text-sm font-semibold tracking-[0.25em] uppercase text-white/60 mb-5 font-body stagger-item">
+              {{BUSINESS_NAME}}
+            </p>
+          </div>
+
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-white leading-tight mb-6" data-animate="blur-in">
+            {{HERO_TITLE}}
+          </h1>
+
+          <p class="text-base md:text-lg text-white/70 leading-relaxed mb-10 font-body" data-animate="blur-in">
+            {{HERO_SUBTITLE}}
+          </p>
+
+          <div class="flex flex-wrap gap-4" data-animate="blur-in">
+            <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-[var(--color-primary)] font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+              {{HERO_CTA_TEXT}}
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+            </a>
+            <a href="#about" class="inline-flex items-center gap-2 px-8 py-4 backdrop-blur-md bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all">
+              Scopri di pi&ugrave;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side - Floating glass image card -->
+      <div class="relative flex items-center justify-center" data-animate="blur-in">
+        <!-- Decorative floating glass panels behind image -->
+        <div data-animate="float" class="absolute -top-6 -right-6 w-40 h-40 backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl -rotate-12"></div>
+        <div data-animate="float" class="absolute -bottom-8 -left-8 w-32 h-32 backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl rotate-12"></div>
+
+        <!-- Main image in glass frame -->
+        <div class="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-3 shadow-2xl">
+          <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full rounded-2xl object-cover aspect-[4/5] max-w-md" loading="eager">
+          <!-- Glass label overlay on image -->
+          <div class="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-white/15 border border-white/20 rounded-xl px-5 py-3">
+            <p class="text-white text-sm font-semibold font-heading">{{BUSINESS_NAME}}</p>
+            <p class="text-white/60 text-xs font-body">{{HERO_SUBTITLE}}</p>
+          </div>
+        </div>
+
+        <!-- Small floating accent dots -->
+        <div data-animate="float" class="absolute top-[20%] -left-4 w-4 h-4 rounded-full bg-white/20 backdrop-blur-sm"></div>
+        <div data-animate="float" class="absolute bottom-[25%] -right-3 w-3 h-3 rounded-full bg-[var(--color-accent)]/40"></div>
+      </div>
+    </div>
+  </div>
+</section>

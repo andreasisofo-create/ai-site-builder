@@ -1,0 +1,91 @@
+<!-- Features Comparison: layout "Senza di noi" vs "Con noi" -->
+<section id="features" class="py-20 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Perch&eacute; Sceglierci</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4" data-animate="text-split">{{FEATURES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{FEATURES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="max-w-5xl mx-auto">
+      <!-- Column Headers -->
+      <div class="grid grid-cols-12 gap-4 mb-6" data-animate="fade-up">
+        <!-- Feature name column -->
+        <div class="col-span-12 md:col-span-4"></div>
+        <!-- Without us -->
+        <div class="col-span-6 md:col-span-4 text-center">
+          <div class="bg-red-500/10 rounded-t-2xl px-6 py-4 border border-red-500/20 border-b-0">
+            <div class="text-2xl mb-1">&#x1f6ab;</div>
+            <h3 class="text-lg font-bold font-heading text-red-500">Senza di noi</h3>
+          </div>
+        </div>
+        <!-- With us -->
+        <div class="col-span-6 md:col-span-4 text-center">
+          <div class="bg-[var(--color-primary)]/10 rounded-t-2xl px-6 py-4 border border-[var(--color-primary)]/20 border-b-0 relative">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[var(--color-primary)] text-white text-xs font-bold rounded-full">MIGLIORE</div>
+            <div class="text-2xl mb-1">&#x2728;</div>
+            <h3 class="text-lg font-bold font-heading text-[var(--color-primary)]">Con noi</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Rows -->
+      <div class="space-y-0" data-animate="stagger">
+        <!-- REPEAT:FEATURES -->
+        <div class="stagger-item grid grid-cols-12 gap-4 group">
+          <!-- Feature name -->
+          <div class="col-span-12 md:col-span-4 flex items-center gap-3 py-5 px-4">
+            <span class="text-2xl flex-shrink-0">{{FEATURE_ICON}}</span>
+            <div>
+              <h4 class="font-semibold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">{{FEATURE_TITLE}}</h4>
+              <p class="text-xs text-[var(--color-text-muted)] mt-0.5 hidden md:block">{{FEATURE_DESCRIPTION}}</p>
+            </div>
+          </div>
+          <!-- Without us - X -->
+          <div class="col-span-6 md:col-span-4 flex items-center justify-center py-5 bg-red-500/5 border-x border-red-500/10 group-hover:bg-red-500/8 transition-colors">
+            <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+              <svg class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </div>
+          </div>
+          <!-- With us - Checkmark -->
+          <div class="col-span-6 md:col-span-4 flex items-center justify-center py-5 bg-[var(--color-primary)]/5 border-x border-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/8 transition-colors">
+            <div class="w-10 h-10 rounded-full bg-[var(--color-primary)]/15 flex items-center justify-center">
+              <svg class="w-6 h-6 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+          </div>
+          <!-- Row divider -->
+          <div class="col-span-12 h-px bg-[var(--color-text)]/5"></div>
+        </div>
+        <!-- /REPEAT:FEATURES -->
+      </div>
+
+      <!-- Bottom row: rounded corners -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-4"></div>
+        <div class="col-span-6 md:col-span-4">
+          <div class="h-4 bg-red-500/5 rounded-b-2xl border-x border-b border-red-500/10"></div>
+        </div>
+        <div class="col-span-6 md:col-span-4">
+          <div class="h-4 bg-[var(--color-primary)]/5 rounded-b-2xl border-x border-b border-[var(--color-primary)]/10"></div>
+        </div>
+      </div>
+
+      <!-- CTA below comparison -->
+      <div class="text-center mt-12" data-animate="bounce-in">
+        <p class="text-lg font-semibold font-heading text-[var(--color-text)] mb-2">La scelta &egrave; chiara</p>
+        <p class="text-[var(--color-text-muted)]">Scopri cosa possiamo fare per te</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative elements -->
+  <div class="absolute top-20 left-10 w-2 h-2 rounded-full bg-[var(--color-primary)]/20"></div>
+  <div class="absolute top-40 right-20 w-3 h-3 rounded-full bg-[var(--color-secondary)]/20"></div>
+  <div class="absolute bottom-32 left-1/4 w-2 h-2 rounded-full bg-[var(--color-accent)]/20"></div>
+</section>

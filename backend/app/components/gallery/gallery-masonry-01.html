@@ -1,0 +1,42 @@
+<!-- Gallery Masonry: griglia masonry con effetto reveal immagini -->
+<section id="gallery" class="py-20 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Galleria</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4">{{GALLERY_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{GALLERY_SUBTITLE}}</p>
+    </div>
+
+    <!-- Masonry Grid -->
+    <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6" data-animate="stagger">
+      <!-- REPEAT:GALLERY_ITEMS -->
+      <div class="stagger-item break-inside-avoid group relative rounded-2xl overflow-hidden cursor-pointer">
+        <!-- Image Reveal Wrapper -->
+        <div class="img-reveal-wrap relative overflow-hidden rounded-2xl">
+          <div class="img-reveal-overlay absolute inset-0 bg-[var(--color-primary)] z-10"></div>
+          <img
+            src="{{GALLERY_IMAGE_URL}}"
+            alt="{{GALLERY_IMAGE_ALT}}"
+            class="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            loading="lazy"
+          >
+        </div>
+        <!-- Caption Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end rounded-2xl z-20">
+          <div class="p-6 w-full">
+            <p class="text-white font-semibold font-heading text-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{{GALLERY_CAPTION}}</p>
+          </div>
+        </div>
+        <!-- Decorative corner accent -->
+        <div class="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-white/0 group-hover:border-white/60 transition-all duration-500 rounded-tr-lg z-20"></div>
+        <div class="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-white/0 group-hover:border-white/60 transition-all duration-500 rounded-bl-lg z-20"></div>
+      </div>
+      <!-- /REPEAT:GALLERY_ITEMS -->
+    </div>
+  </div>
+
+  <!-- Decorative background shapes -->
+  <div class="absolute top-40 -left-20 w-72 h-72 bg-[var(--color-primary)]/5 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-20 -right-20 w-60 h-60 bg-[var(--color-secondary)]/5 rounded-full blur-3xl pointer-events-none"></div>
+</section>
