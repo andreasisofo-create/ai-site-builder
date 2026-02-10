@@ -1,7 +1,7 @@
 "use client";
 
 export const dynamic = "force-dynamic";
-import { useEffect, useState, Fragment } from "react";
+import { Suspense, useEffect, useState, Fragment } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -90,7 +90,15 @@ const TEMPLATE_CATEGORIES = [
   },
 ];
 
-export default function Dashboard() {
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center"><div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>}>
+      <Dashboard />
+    </Suspense>
+  );
+}
+
+function Dashboard() {
   const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   useRequireAuth("/auth");
   const router = useRouter();
