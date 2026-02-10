@@ -4,8 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ai-site-builder-jz2g.onrender.com";
+import { API_BASE } from "@/lib/api";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();

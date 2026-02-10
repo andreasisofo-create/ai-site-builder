@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, Fragment } from "react";
+import { API_BASE } from "@/lib/api";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -63,9 +64,7 @@ interface PaginatedSites {
 // API helper
 // ---------------------------------------------------------------------------
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://ai-site-builder-jz2g.onrender.com";
+const API_URL = API_BASE;
 
 async function adminFetch(path: string, options: RequestInit = {}) {
   const token = sessionStorage.getItem("admin_token");
