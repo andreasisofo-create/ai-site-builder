@@ -24,6 +24,6 @@ httpx==0.27.2
 slowapi==0.1.9
 
 # Email (Resend)
-resend==2.5.0
+resend>=2.5.0
 
 # Payments (Revolut - uses httpx, no SDK needed)
