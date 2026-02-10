@@ -34,6 +34,126 @@ logger = logging.getLogger(__name__)
 
 ProgressCallback = Optional[Callable[[int, str, Optional[Dict[str, Any]]], None]]
 
+# =========================================================
+# Deterministic style → component variant mapping.
+# Each frontend template style maps to curated component variants
+# ensuring visually distinct sites for every template choice.
+# =========================================================
+STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
+    # --- Restaurant ---
+    "restaurant-elegant": {
+        "hero": "hero-classic-01",
+        "about": "about-magazine-01",
+        "services": "services-alternating-rows-01",
+        "gallery": "gallery-spotlight-01",
+        "testimonials": "testimonials-spotlight-01",
+        "contact": "contact-minimal-01",
+        "footer": "footer-centered-01",
+    },
+    "restaurant-cozy": {
+        "hero": "hero-organic-01",
+        "about": "about-split-scroll-01",
+        "services": "services-icon-list-01",
+        "gallery": "gallery-masonry-01",
+        "testimonials": "testimonials-card-stack-01",
+        "contact": "contact-card-01",
+        "footer": "footer-multi-col-01",
+    },
+    "restaurant-modern": {
+        "hero": "hero-zen-01",
+        "about": "about-bento-01",
+        "services": "services-tabs-01",
+        "gallery": "gallery-filmstrip-01",
+        "testimonials": "testimonials-marquee-01",
+        "contact": "contact-modern-form-01",
+        "footer": "footer-minimal-02",
+    },
+    # --- Agency ---
+    "agency-bold": {
+        "hero": "hero-neon-01",
+        "about": "about-timeline-02",
+        "services": "services-hover-reveal-01",
+        "features": "features-bento-grid-01",
+        "testimonials": "testimonials-marquee-01",
+        "cta": "cta-gradient-animated-01",
+        "contact": "contact-modern-form-01",
+        "footer": "footer-gradient-01",
+    },
+    "agency-clean": {
+        "hero": "hero-centered-02",
+        "about": "about-alternating-01",
+        "services": "services-cards-grid-01",
+        "features": "features-icons-grid-01",
+        "testimonials": "testimonials-grid-01",
+        "cta": "cta-banner-01",
+        "contact": "contact-form-01",
+        "footer": "footer-sitemap-01",
+    },
+    "agency-dark": {
+        "hero": "hero-dark-bold-01",
+        "about": "about-split-cards-01",
+        "services": "services-bento-02",
+        "features": "features-hover-cards-01",
+        "testimonials": "testimonials-masonry-01",
+        "contact": "contact-minimal-02",
+        "footer": "footer-mega-01",
+    },
+    # --- Portfolio ---
+    "portfolio-gallery": {
+        "hero": "hero-editorial-01",
+        "about": "about-image-showcase-01",
+        "gallery": "gallery-masonry-01",
+        "services": "services-minimal-list-01",
+        "testimonials": "testimonials-grid-01",
+        "contact": "contact-minimal-01",
+        "footer": "footer-minimal-02",
+    },
+    "portfolio-minimal": {
+        "hero": "hero-zen-01",
+        "about": "about-alternating-01",
+        "gallery": "gallery-lightbox-01",
+        "contact": "contact-minimal-02",
+        "footer": "footer-centered-01",
+    },
+    "portfolio-creative": {
+        "hero": "hero-brutalist-01",
+        "about": "about-bento-01",
+        "gallery": "gallery-spotlight-01",
+        "services": "services-hover-expand-01",
+        "contact": "contact-card-01",
+        "footer": "footer-gradient-01",
+    },
+    # --- Business ---
+    "business-corporate": {
+        "hero": "hero-split-01",
+        "about": "about-alternating-01",
+        "services": "services-cards-grid-01",
+        "features": "features-comparison-01",
+        "testimonials": "testimonials-carousel-01",
+        "contact": "contact-form-01",
+        "footer": "footer-mega-01",
+    },
+    "business-trust": {
+        "hero": "hero-classic-01",
+        "about": "about-timeline-01",
+        "services": "services-process-steps-01",
+        "team": "team-grid-01",
+        "testimonials": "testimonials-spotlight-01",
+        "contact": "contact-split-map-01",
+        "footer": "footer-sitemap-01",
+    },
+    "business-fresh": {
+        "hero": "hero-gradient-03",
+        "about": "about-split-cards-01",
+        "services": "services-hover-expand-01",
+        "features": "features-alternating-01",
+        "testimonials": "testimonials-carousel-01",
+        "cta": "cta-split-image-01",
+        "contact": "contact-modern-form-01",
+        "footer": "footer-multi-col-01",
+    },
+}
+
 
 class DataBindingGenerator:
     def __init__(self):
@@ -312,13 +432,45 @@ IMPORTANT:
     # =========================================================
     # Step 3: Select Components
     # =========================================================
+    def _select_components_deterministic(
+        self,
+        template_style_id: str,
+        sections: List[str],
+    ) -> Dict[str, str]:
+        """Use curated STYLE_VARIANT_MAP for deterministic component selection."""
+        variant_map = STYLE_VARIANT_MAP.get(template_style_id, {})
+        available = self.assembler.get_variant_ids()
+        selections = {}
+
+        for section in sections:
+            # Use curated variant if available for this style
+            if section in variant_map:
+                selections[section] = variant_map[section]
+            else:
+                # Fallback: pick first available variant for sections not in the map
+                variants = available.get(section, [])
+                if variants:
+                    selections[section] = variants[0]
+
+        logger.info(f"[DataBinding] Deterministic selection for '{template_style_id}': {selections}")
+        return selections
+
     async def _select_components(
         self,
         business_description: str,
         sections: List[str],
         style_mood: str,
+        template_style_id: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Kimi selects the best component variant for each section."""
+        """Select component variants. Uses deterministic map if template_style_id is provided,
+        otherwise falls back to Kimi AI selection."""
+
+        # If we have a template_style_id with a mapping, use deterministic selection
+        if template_style_id and template_style_id in STYLE_VARIANT_MAP:
+            selections = self._select_components_deterministic(template_style_id, sections)
+            return {"success": True, "parsed": selections}
+
+        # Fallback: AI-based selection (for custom-free or unknown styles)
         available = self.assembler.get_variant_ids()
         relevant = {k: v for k, v in available.items() if k in sections}
 
@@ -374,6 +526,7 @@ Return ONLY the JSON object."""
         contact_info: Optional[Dict[str, str]] = None,
         on_progress: ProgressCallback = None,
         photo_urls: Optional[List[str]] = None,
+        template_style_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Generate a website using the data-binding pipeline.
@@ -394,6 +547,7 @@ Return ONLY the JSON object."""
                     contact_info=contact_info,
                     on_progress=on_progress,
                     photo_urls=photo_urls,
+                    template_style_id=template_style_id,
                 ),
                 timeout=180.0,
             )
@@ -412,6 +566,7 @@ Return ONLY the JSON object."""
         contact_info: Optional[Dict[str, str]],
         on_progress: ProgressCallback,
         photo_urls: Optional[List[str]] = None,
+        template_style_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens_in = 0
@@ -478,6 +633,7 @@ Return ONLY the JSON object."""
 
         selection_result = await self._select_components(
             business_description, sections, mood,
+            template_style_id=template_style_id,
         )
         selections = selection_result.get("parsed", self._default_selections(
             sections, self.assembler.get_variant_ids()

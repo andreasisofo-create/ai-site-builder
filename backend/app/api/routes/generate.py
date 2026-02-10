@@ -48,6 +48,7 @@ class GenerateRequest(BaseModel):
     contact_info: Optional[Dict[str, str]] = None
     site_id: Optional[int] = None  # Se fornito, salva direttamente sul sito
     photo_urls: Optional[List[str]] = None  # List of base64 data URLs from user uploads
+    template_style_id: Optional[str] = None  # Frontend template style ID for deterministic variant selection
 
 
 class RefineRequest(BaseModel):
@@ -164,7 +165,8 @@ async def _run_generation_background(
         else:
             generator = swarm  # fallback legacy
 
-        result = await generator.generate(
+        # Pass template_style_id for deterministic component selection
+        gen_kwargs = dict(
             business_name=request.business_name,
             business_description=request.business_description,
             sections=request.sections,
@@ -176,6 +178,11 @@ async def _run_generation_background(
             on_progress=on_progress,
             photo_urls=request.photo_urls,
         )
+        # Only databinding_generator supports template_style_id
+        if hasattr(generator, 'generate') and request.template_style_id:
+            gen_kwargs["template_style_id"] = request.template_style_id
+
+        result = await generator.generate(**gen_kwargs)
 
         if not result.get("success"):
             logger.error(f"[BG] Generazione fallita: {result.get('error')}")

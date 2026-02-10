@@ -166,6 +166,7 @@ export interface GenerateRequest {
   logo_url?: string;
   contact_info?: Record<string, string>;
   site_id?: number;
+  template_style_id?: string;
 }
 
 export interface GenerateResponse {

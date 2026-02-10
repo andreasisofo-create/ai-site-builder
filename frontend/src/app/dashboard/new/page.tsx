@@ -245,14 +245,108 @@ const SECTION_LABELS: Record<string, string> = {
 function generateStylePreviewHtml(style: TemplateStyle, categoryLabel: string): string {
   const p = style.primaryColor;
   const s = style.secondaryColor;
+  const sid = style.id;
   const isDark = style.mood === "bold" || style.mood === "elegant" || style.mood === "corporate" || style.mood === "classic";
   const bg = isDark ? "#0f0f0f" : "#ffffff";
   const text = isDark ? "#ffffff" : "#1a1a1a";
   const muted = isDark ? "#999999" : "#666666";
   const cardBg = isDark ? "#1a1a1a" : "#f5f5f5";
+  const border = isDark ? "#ffffff10" : "#00000008";
 
-  const sectionHtml: Record<string, string> = {
-    hero: `
+  // --- HERO VARIANTS: visually distinct per style ---
+  const heroVariants: Record<string, string> = {
+    // Split layout (image left, text right)
+    "split": `
+      <section style="min-height:60vh;display:grid;grid-template-columns:1fr 1fr;background:${bg};overflow:hidden">
+        <div style="background:linear-gradient(135deg,${p}40,${s}30);display:flex;align-items:center;justify-content:center">
+          <div style="width:200px;height:200px;border-radius:50%;border:4px solid ${p}60;display:flex;align-items:center;justify-content:center;font-size:48px;color:${p}">&#9733;</div>
+        </div>
+        <div style="padding:60px 40px;display:flex;flex-direction:column;justify-content:center">
+          <div style="display:inline-block;padding:4px 12px;border-radius:4px;background:${p}15;color:${p};font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;width:fit-content">${categoryLabel}</div>
+          <h1 style="font-size:42px;font-weight:800;margin:0 0 16px;color:${text};line-height:1.1">Il Tuo Sito<br>Professionale</h1>
+          <p style="color:${muted};font-size:16px;margin:0 0 28px">${style.label} - Design unico creato con AI</p>
+          <div style="display:flex;gap:12px">
+            <a style="padding:12px 28px;background:${p};color:white;border-radius:8px;font-weight:600;font-size:14px">Scopri di piu</a>
+            <a style="padding:12px 28px;border:2px solid ${p};color:${p};border-radius:8px;font-weight:600;font-size:14px">Contattaci</a>
+          </div>
+        </div>
+      </section>`,
+    // Centered elegant with decorative borders
+    "elegant": `
+      <section style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 40px;background:${bg};position:relative">
+        <div style="position:absolute;top:30px;left:30px;right:30px;bottom:30px;border:1px solid ${p}30;pointer-events:none"></div>
+        <div style="max-width:600px;position:relative">
+          <div style="width:60px;height:1px;background:${p};margin:0 auto 20px"></div>
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:6px;color:${p};margin-bottom:20px;font-weight:400">${categoryLabel}</div>
+          <h1 style="font-size:48px;font-weight:300;margin:0 0 16px;color:${text};line-height:1.2;font-style:italic">Il Tuo Sito<br><span style="font-weight:700;font-style:normal;color:${p}">Professionale</span></h1>
+          <p style="color:${muted};font-size:16px;margin:0 0 32px;font-style:italic">${style.label}</p>
+          <a style="padding:14px 40px;background:transparent;color:${p};border:1px solid ${p};font-weight:500;font-size:13px;text-transform:uppercase;letter-spacing:3px">Scopri di piu</a>
+        </div>
+      </section>`,
+    // Bold neon-style with big typography
+    "neon": `
+      <section style="min-height:60vh;display:flex;align-items:center;padding:60px 40px;background:#0a0a0a;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:${p}10;filter:blur(60px)"></div>
+        <div style="position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:${s}10;filter:blur(60px)"></div>
+        <div style="max-width:800px;position:relative;z-index:1">
+          <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:${p}20;color:${p};font-size:12px;margin-bottom:24px;border:1px solid ${p}40">${categoryLabel}</div>
+          <h1 style="font-size:clamp(40px,6vw,72px);font-weight:900;margin:0 0 20px;color:white;line-height:1;letter-spacing:-2px">IL TUO SITO<br><span style="background:linear-gradient(135deg,${p},${s});-webkit-background-clip:text;-webkit-text-fill-color:transparent">PROFESSIONALE</span></h1>
+          <p style="color:#888;font-size:18px;margin:0 0 36px;max-width:500px">${style.label}</p>
+          <div style="display:flex;gap:16px">
+            <a style="padding:16px 36px;background:linear-gradient(135deg,${p},${s});color:white;border-radius:50px;font-weight:700;font-size:15px">Inizia Ora</a>
+            <a style="padding:16px 36px;color:white;border-radius:50px;font-weight:500;font-size:15px;border:1px solid #333">Scopri</a>
+          </div>
+        </div>
+      </section>`,
+    // Organic with rounded shapes
+    "organic": `
+      <section style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 40px;background:${bg};position:relative;overflow:hidden">
+        <div style="position:absolute;top:-30%;right:-10%;width:60%;height:80%;border-radius:40% 60% 70% 30% / 40% 50% 60% 50%;background:${p}08"></div>
+        <div style="position:absolute;bottom:-20%;left:-5%;width:40%;height:60%;border-radius:60% 40% 30% 70% / 60% 50% 40% 50%;background:${s}08"></div>
+        <div style="position:relative;z-index:1;max-width:650px">
+          <div style="width:80px;height:80px;border-radius:30% 70% 60% 40% / 50% 60% 40% 50%;background:${p}15;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:28px">&#10047;</div>
+          <h1 style="font-size:44px;font-weight:700;margin:0 0 16px;color:${text};line-height:1.15">Benvenuti nel<br>Nostro Mondo</h1>
+          <p style="color:${muted};font-size:17px;margin:0 0 32px">${style.label} - Creato con cura per te</p>
+          <a style="padding:16px 40px;background:${p};color:white;border-radius:50px;font-weight:600;font-size:15px;display:inline-block">Esplora</a>
+        </div>
+      </section>`,
+    // Minimal/zen with lots of whitespace
+    "zen": `
+      <section style="min-height:60vh;display:flex;align-items:flex-end;padding:0 40px 80px;background:${bg};position:relative">
+        <div style="position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,${p}06,transparent)"></div>
+        <div style="max-width:600px;position:relative;z-index:1">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:5px;color:${muted};margin-bottom:20px">${categoryLabel}</div>
+          <h1 style="font-size:52px;font-weight:200;margin:0 0 20px;color:${text};line-height:1.1">Il Tuo Sito<br><span style="font-weight:700;color:${p}">Professionale</span></h1>
+          <div style="width:40px;height:2px;background:${p};margin:0 0 20px"></div>
+          <p style="color:${muted};font-size:15px;margin:0 0 32px;line-height:1.8">${style.label}</p>
+          <a style="padding:12px 32px;background:${text};color:${bg};font-weight:500;font-size:13px;display:inline-block">Scopri &rarr;</a>
+        </div>
+      </section>`,
+    // Corporate with stats bar
+    "corporate": `
+      <section style="min-height:60vh;background:${bg};position:relative;overflow:hidden">
+        <div style="display:grid;grid-template-columns:1fr 1fr;min-height:50vh">
+          <div style="padding:60px 40px;display:flex;flex-direction:column;justify-content:center">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:16px;font-weight:600">${categoryLabel}</div>
+            <h1 style="font-size:40px;font-weight:700;margin:0 0 16px;color:${text};line-height:1.15">Soluzioni<br>Professionali</h1>
+            <p style="color:${muted};font-size:15px;margin:0 0 28px;max-width:400px">${style.label} - Affidabilita e competenza al tuo servizio</p>
+            <a style="padding:14px 32px;background:${p};color:white;border-radius:6px;font-weight:600;font-size:14px;width:fit-content">Scopri di Piu</a>
+          </div>
+          <div style="background:linear-gradient(135deg,${p}20,${s}15);display:flex;align-items:center;justify-content:center">
+            <div style="width:180px;height:180px;border-radius:16px;background:${p}20;display:flex;align-items:center;justify-content:center;font-size:64px;color:${p}">&#9632;</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid ${border}">
+          ${["150+", "98%", "24/7", "10K"].map((num, i) => `
+            <div style="padding:24px;text-align:center;${i < 3 ? `border-right:1px solid ${border}` : ''}">
+              <div style="font-size:28px;font-weight:700;color:${p}">${num}</div>
+              <div style="font-size:12px;color:${muted};margin-top:4px">Risultato ${i+1}</div>
+            </div>
+          `).join("")}
+        </div>
+      </section>`,
+    // Centered default
+    "centered": `
       <section style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 40px;background:linear-gradient(135deg,${p}22,${s}22);position:relative;overflow:hidden">
         <div style="position:absolute;top:-50%;right:-20%;width:500px;height:500px;border-radius:50%;background:${p}15"></div>
         <div style="position:relative;z-index:1;max-width:700px">
@@ -260,11 +354,111 @@ function generateStylePreviewHtml(style: TemplateStyle, categoryLabel: string): 
           <h1 style="font-size:clamp(32px,5vw,56px);font-weight:800;margin:0 0 16px;color:${text};line-height:1.1">Il Tuo Sito<br><span style="color:${p}">Professionale</span></h1>
           <p style="color:${muted};font-size:18px;margin:0 0 32px;max-width:500px;margin-left:auto;margin-right:auto">Creato con AI - Design ${style.label}</p>
           <div style="display:flex;gap:12px;justify-content:center">
-            <a style="padding:14px 32px;background:${p};color:white;border-radius:12px;font-weight:600;text-decoration:none;font-size:15px">Scopri di piu</a>
-            <a style="padding:14px 32px;background:${isDark ? '#ffffff15' : '#00000008'};color:${text};border-radius:12px;font-weight:600;text-decoration:none;font-size:15px;border:1px solid ${isDark ? '#ffffff20' : '#00000015'}">Contattaci</a>
+            <a style="padding:14px 32px;background:${p};color:white;border-radius:12px;font-weight:600;font-size:15px">Scopri di piu</a>
+            <a style="padding:14px 32px;background:${isDark ? '#ffffff15' : '#00000008'};color:${text};border-radius:12px;font-weight:600;font-size:15px;border:1px solid ${isDark ? '#ffffff20' : '#00000015'}">Contattaci</a>
           </div>
         </div>
       </section>`,
+  };
+
+  // Map style IDs to hero variants
+  const heroMap: Record<string, string> = {
+    "restaurant-elegant": "elegant",
+    "restaurant-cozy": "organic",
+    "restaurant-modern": "zen",
+    "agency-bold": "neon",
+    "agency-clean": "centered",
+    "agency-dark": "neon",
+    "portfolio-gallery": "zen",
+    "portfolio-minimal": "zen",
+    "portfolio-creative": "neon",
+    "business-corporate": "corporate",
+    "business-trust": "split",
+    "business-fresh": "centered",
+    "custom-free": "centered",
+  };
+
+  // Services section variants
+  const servicesVariants: Record<string, string> = {
+    // Grid cards (default)
+    "grid": `
+      <section style="padding:80px 40px;background:${cardBg}">
+        <div style="max-width:900px;margin:0 auto;text-align:center">
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:12px;font-weight:600">Servizi</div>
+          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Cosa offriamo</h2>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+            ${[1,2,3].map(i => `
+              <div style="background:${bg};padding:32px 24px;border-radius:16px;text-align:center;border:1px solid ${border}">
+                <div style="width:56px;height:56px;border-radius:14px;background:${p}15;margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
+                  <div style="width:24px;height:24px;border-radius:6px;background:${p}"></div>
+                </div>
+                <h3 style="font-size:17px;font-weight:600;color:${text};margin:0 0 8px">Servizio ${i}</h3>
+                <p style="color:${muted};font-size:14px;line-height:1.6;margin:0">Descrizione del servizio</p>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </section>`,
+    // Alternating rows
+    "rows": `
+      <section style="padding:80px 40px;background:${cardBg}">
+        <div style="max-width:900px;margin:0 auto">
+          <div style="text-align:center;margin-bottom:48px">
+            <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 8px">I Nostri Servizi</h2>
+            <p style="color:${muted};font-size:15px">Eccellenza in ogni dettaglio</p>
+          </div>
+          ${[1,2,3].map(i => `
+            <div style="display:flex;align-items:center;gap:32px;padding:24px 0;${i < 3 ? `border-bottom:1px solid ${border}` : ''};flex-direction:${i % 2 === 0 ? 'row-reverse' : 'row'}">
+              <div style="width:80px;height:80px;border-radius:16px;background:${p}10;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+                <div style="width:32px;height:32px;border-radius:8px;background:${p}"></div>
+              </div>
+              <div style="flex:1">
+                <h3 style="font-size:18px;font-weight:600;color:${text};margin:0 0 6px">Servizio ${i}</h3>
+                <p style="color:${muted};font-size:14px;line-height:1.6;margin:0">Descrizione dettagliata del servizio offerto ai clienti</p>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </section>`,
+    // Minimal list
+    "list": `
+      <section style="padding:80px 40px;background:${cardBg}">
+        <div style="max-width:700px;margin:0 auto">
+          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Servizi</h2>
+          ${[1,2,3,4].map(i => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid ${border}">
+              <div style="display:flex;align-items:center;gap:16px">
+                <span style="font-size:14px;color:${p};font-weight:600">0${i}</span>
+                <span style="font-size:17px;font-weight:500;color:${text}">Servizio ${i}</span>
+              </div>
+              <span style="color:${p};font-size:20px">&rarr;</span>
+            </div>
+          `).join("")}
+        </div>
+      </section>`,
+  };
+
+  const servicesMap: Record<string, string> = {
+    "restaurant-elegant": "rows",
+    "restaurant-cozy": "grid",
+    "restaurant-modern": "list",
+    "agency-bold": "grid",
+    "agency-clean": "grid",
+    "agency-dark": "grid",
+    "portfolio-gallery": "list",
+    "portfolio-minimal": "list",
+    "portfolio-creative": "grid",
+    "business-corporate": "grid",
+    "business-trust": "rows",
+    "business-fresh": "grid",
+    "custom-free": "grid",
+  };
+
+  const heroKey = heroMap[sid] || "centered";
+  const servicesKey = servicesMap[sid] || "grid";
+
+  const sectionHtml: Record<string, string> = {
+    hero: heroVariants[heroKey] || heroVariants["centered"],
     about: `
       <section style="padding:80px 40px;background:${bg}">
         <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
@@ -276,24 +470,7 @@ function generateStylePreviewHtml(style: TemplateStyle, categoryLabel: string): 
           <div style="aspect-ratio:4/3;background:linear-gradient(135deg,${p}30,${s}30);border-radius:16px"></div>
         </div>
       </section>`,
-    services: `
-      <section style="padding:80px 40px;background:${cardBg}">
-        <div style="max-width:900px;margin:0 auto;text-align:center">
-          <div style="font-size:12px;text-transform:uppercase;letter-spacing:3px;color:${p};margin-bottom:12px;font-weight:600">Servizi</div>
-          <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Cosa offriamo</h2>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
-            ${[1,2,3].map(i => `
-              <div style="background:${bg};padding:32px 24px;border-radius:16px;text-align:center;border:1px solid ${isDark ? '#ffffff10' : '#00000008'}">
-                <div style="width:56px;height:56px;border-radius:14px;background:${p}15;margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
-                  <div style="width:24px;height:24px;border-radius:6px;background:${p}"></div>
-                </div>
-                <h3 style="font-size:17px;font-weight:600;color:${text};margin:0 0 8px">Servizio ${i}</h3>
-                <p style="color:${muted};font-size:14px;line-height:1.6;margin:0">Descrizione del servizio offerto ai nostri clienti</p>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      </section>`,
+    services: servicesVariants[servicesKey] || servicesVariants["grid"],
     gallery: `
       <section style="padding:80px 40px;background:${bg}">
         <div style="max-width:900px;margin:0 auto;text-align:center">
@@ -311,7 +488,7 @@ function generateStylePreviewHtml(style: TemplateStyle, categoryLabel: string): 
           <h2 style="font-size:32px;font-weight:700;color:${text};margin:0 0 48px">Testimonianze</h2>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px">
             ${[1,2].map(() => `
-              <div style="background:${bg};padding:32px;border-radius:16px;text-align:left;border:1px solid ${isDark ? '#ffffff10' : '#00000008'}">
+              <div style="background:${bg};padding:32px;border-radius:16px;text-align:left;border:1px solid ${border}">
                 <div style="color:${p};font-size:32px;margin-bottom:12px">&ldquo;</div>
                 <p style="color:${muted};font-size:15px;line-height:1.7;margin:0 0 20px">Servizio eccellente, professionalita e risultati oltre le aspettative.</p>
                 <div style="display:flex;align-items:center;gap:12px">
@@ -377,7 +554,7 @@ function generateStylePreviewHtml(style: TemplateStyle, categoryLabel: string): 
       </section>`,
     footer: `
       <footer style="padding:40px;background:${isDark ? '#080808' : '#1a1a1a'};text-align:center">
-        <p style="color:#666;font-size:13px;margin:0">&copy; 2025 La Tua Azienda. Tutti i diritti riservati.</p>
+        <p style="color:#666;font-size:13px;margin:0">&copy; 2026 La Tua Azienda. Tutti i diritti riservati.</p>
       </footer>`,
   };
 
@@ -600,6 +777,7 @@ function NewProjectContent() {
         contact_info: (formData.contactInfo.address || formData.contactInfo.phone || formData.contactInfo.email)
           ? formData.contactInfo : undefined,
         site_id: site.id,
+        template_style_id: selectedStyle.id,
       });
 
       if (!generateResult.success) throw new Error(generateResult.error || "Errore nell'avvio della generazione");
