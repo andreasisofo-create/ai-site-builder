@@ -30,6 +30,13 @@ from app.services.kimi_client import kimi
 from app.services.template_assembler import assembler as template_assembler
 from app.services.sanitizer import sanitize_input, sanitize_output
 
+# Design knowledge (ChromaDB) - graceful fallback if not available
+try:
+    from app.services.design_knowledge import get_creative_context, get_collection_stats
+    _has_design_knowledge = True
+except Exception:
+    _has_design_knowledge = False
+
 logger = logging.getLogger(__name__)
 
 ProgressCallback = Optional[Callable[[int, str, Optional[Dict[str, Any]]], None]]
@@ -68,9 +75,9 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "contact": "contact-modern-form-01",
         "footer": "footer-minimal-02",
     },
-    # --- Agency ---
-    "agency-bold": {
-        "hero": "hero-neon-01",
+    # --- SaaS / Landing Page ---
+    "saas-gradient": {
+        "hero": "hero-gradient-03",
         "about": "about-timeline-02",
         "services": "services-hover-reveal-01",
         "features": "features-bento-grid-01",
@@ -79,7 +86,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "contact": "contact-modern-form-01",
         "footer": "footer-gradient-01",
     },
-    "agency-clean": {
+    "saas-clean": {
         "hero": "hero-centered-02",
         "about": "about-alternating-01",
         "services": "services-cards-grid-01",
@@ -89,7 +96,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "contact": "contact-form-01",
         "footer": "footer-sitemap-01",
     },
-    "agency-dark": {
+    "saas-dark": {
         "hero": "hero-dark-bold-01",
         "about": "about-split-cards-01",
         "services": "services-bento-02",
@@ -123,6 +130,25 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "contact": "contact-card-01",
         "footer": "footer-gradient-01",
     },
+    # --- E-commerce / Shop ---
+    "ecommerce-modern": {
+        "hero": "hero-split-01",
+        "about": "about-image-showcase-01",
+        "services": "services-cards-grid-01",
+        "gallery": "gallery-masonry-01",
+        "testimonials": "testimonials-carousel-01",
+        "contact": "contact-modern-form-01",
+        "footer": "footer-multi-col-01",
+    },
+    "ecommerce-luxury": {
+        "hero": "hero-classic-01",
+        "about": "about-magazine-01",
+        "services": "services-alternating-rows-01",
+        "gallery": "gallery-spotlight-01",
+        "testimonials": "testimonials-spotlight-01",
+        "contact": "contact-minimal-01",
+        "footer": "footer-centered-01",
+    },
     # --- Business ---
     "business-corporate": {
         "hero": "hero-split-01",
@@ -152,6 +178,41 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "contact": "contact-modern-form-01",
         "footer": "footer-multi-col-01",
     },
+    # --- Blog / Magazine ---
+    "blog-editorial": {
+        "hero": "hero-editorial-01",
+        "about": "about-alternating-01",
+        "services": "services-minimal-list-01",
+        "gallery": "gallery-lightbox-01",
+        "contact": "contact-card-01",
+        "footer": "footer-sitemap-01",
+    },
+    "blog-dark": {
+        "hero": "hero-neon-01",
+        "about": "about-split-cards-01",
+        "services": "services-hover-reveal-01",
+        "gallery": "gallery-filmstrip-01",
+        "contact": "contact-minimal-02",
+        "footer": "footer-gradient-01",
+    },
+    # --- Evento / Community ---
+    "event-vibrant": {
+        "hero": "hero-animated-shapes-01",
+        "about": "about-bento-01",
+        "services": "services-tabs-01",
+        "team": "team-carousel-01",
+        "cta": "cta-gradient-animated-01",
+        "contact": "contact-modern-form-01",
+        "footer": "footer-gradient-01",
+    },
+    "event-minimal": {
+        "hero": "hero-centered-02",
+        "about": "about-timeline-01",
+        "services": "services-process-steps-01",
+        "team": "team-grid-01",
+        "contact": "contact-form-01",
+        "footer": "footer-minimal-02",
+    },
 }
 
 
@@ -178,7 +239,8 @@ class DataBindingGenerator:
             if style_preferences.get("mood"):
                 style_hint += f"Mood/style: {style_preferences['mood']}. "
 
-        prompt = f"""Generate a color palette and typography for a website. Return ONLY valid JSON, no markdown, no explanation.
+        prompt = f"""You are an award-winning UI designer. Generate a STUNNING color palette and typography for a website.
+Return ONLY valid JSON, no markdown, no explanation.
 
 BUSINESS: {business_name} - {business_description[:500]}
 {style_hint}
@@ -198,11 +260,16 @@ Return this exact JSON structure:
   "font_body_url": "FontName:wght@400;500;600"
 }}
 
-Rules:
-- Professional, accessible colors (WCAG AA contrast between text and bg)
-- bg_color = main page background (light or dark)
-- bg_alt_color = alternating section background
-- Google Fonts that match the business type
+DESIGN RULES:
+- Create a BOLD, MEMORABLE palette - never boring defaults like plain blue/gray
+- Use modern color trends: deep purples, warm ambers, rich teals, vibrant corals
+- Primary should be saturated and striking, accent should create visual pop
+- WCAG AA contrast between text and bg colors (minimum 4.5:1 ratio)
+- bg_color: prefer rich tones (deep navy, warm cream, soft sage) over plain white/black
+- bg_alt_color: subtle shift from bg_color for section alternation
+- Font pairing: heading font should have CHARACTER (Playfair Display, Sora, Space Grotesk, Clash Display, Cabinet Grotesk, Outfit, DM Serif Display, Fraunces, Epilogue)
+- Body font: clean and readable (Inter, DM Sans, Plus Jakarta Sans, Nunito Sans, Source Sans 3)
+- NEVER use default Inter for headings - pick something with personality
 - Return ONLY the JSON object"""
 
         if reference_image_url:
@@ -237,6 +304,7 @@ Rules:
         business_description: str,
         sections: List[str],
         contact_info: Optional[Dict[str, str]] = None,
+        creative_context: str = "",
     ) -> Dict[str, Any]:
         """Kimi returns JSON with all text content for every section."""
         contact_str = ""
@@ -245,12 +313,30 @@ Rules:
 
         sections_str = ", ".join(sections)
 
-        prompt = f"""Generate Italian text content for a one-page website. Return ONLY valid JSON, no markdown.
+        # Inject creative context from design knowledge base
+        knowledge_hint = ""
+        if creative_context:
+            knowledge_hint = f"\n\nDESIGN KNOWLEDGE (use these insights for better copy):\n{creative_context[:1500]}\n"
+
+        prompt = f"""You are a world-class Italian copywriter creating text for a stunning, award-winning website.{knowledge_hint}
+Your text must be BOLD, EVOCATIVE, and EMOTIONALLY COMPELLING - never generic or corporate.
+Return ONLY valid JSON, no markdown.
 
 BUSINESS: {business_name}
 DESCRIPTION: {business_description[:800]}
 SECTIONS NEEDED: {sections_str}
 {contact_str}
+
+CREATIVE WRITING RULES:
+- Hero headline: MAX 6 words, powerful and memorable. Use strong verbs, evoke emotion.
+  GOOD: "Dove il Gusto Incontra l'Arte" / "Il Futuro Inizia Qui"
+  BAD: "Benvenuti nel Nostro Sito" / "La Nostra Azienda"
+- Subtitles: Poetic but clear, 1-2 sentences max. Create intrigue.
+- Service descriptions: Benefit-focused, not feature-focused. What does the customer FEEL?
+- Testimonials: Sound REAL and specific, not generic praise.
+- Use power words: esclusivo, rivoluzionario, straordinario, autentico, artigianale
+- Vary sentence rhythm: mix short punchy lines with longer flowing ones.
+- Every text should make the reader FEEL something.
 
 Return this JSON (include only the sections listed above):
 {{
@@ -406,11 +492,15 @@ Return this JSON (include only the sections listed above):
 
 IMPORTANT:
 - ALL text MUST be in Italian
-- Be creative and specific to this business (no generic text)
-- Hero title: max 8 words, impactful
-- Use relevant emojis for service/feature icons
+- Be WILDLY creative and hyper-specific to this business (ZERO generic text)
+- Hero title: MAX 6 words, powerful and memorable (think Nike, Apple-level copy)
+- Subtitles: evocative, create curiosity and desire
+- Service/feature descriptions: benefit-focused, emotional, specific
+- Use relevant emojis for service/feature icons (modern, not cliche)
 - TESTIMONIAL_INITIAL = first letter of author name
+- Testimonials must sound like REAL people with specific details
 - Generate ONLY the sections listed in SECTIONS NEEDED
+- Avoid these BANNED generic phrases: "benvenuti", "siamo un'azienda", "offriamo servizi", "il nostro team", "qualita e professionalita"
 - Return ONLY the JSON object"""
 
         result = await self.kimi.call(
@@ -577,6 +667,23 @@ Return ONLY the JSON object."""
             business_name, business_description, sections
         )
 
+        # === QUERY DESIGN KNOWLEDGE (local, instant) ===
+        creative_context = ""
+        if _has_design_knowledge:
+            try:
+                stats = get_collection_stats()
+                if stats.get("total_patterns", 0) > 0:
+                    category_label = template_style_id.split("-")[0] if template_style_id else "modern"
+                    creative_context = get_creative_context(
+                        style_id=template_style_id or "custom-free",
+                        category_label=category_label,
+                        sections=sections,
+                    )
+                    if creative_context:
+                        logger.info(f"[DataBinding] Creative context: {len(creative_context)} chars from ChromaDB")
+            except Exception as e:
+                logger.warning(f"[DataBinding] Design knowledge query failed: {e}")
+
         # === STEP 1+2 PARALLEL: Theme + Texts ===
         if on_progress:
             on_progress(1, "Analisi stile e generazione testi...", {
@@ -590,6 +697,7 @@ Return ONLY the JSON object."""
         texts_task = self._generate_texts(
             business_name, business_description,
             sections, contact_info,
+            creative_context=creative_context,
         )
         theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
 

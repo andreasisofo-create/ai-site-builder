@@ -100,6 +100,21 @@ async def lifespan(app: FastAPI):
     else:
         logger.warning("Database non disponibile - skip inizializzazione tabelle")
 
+    # Seed design knowledge (ChromaDB) if empty
+    try:
+        from app.services.design_knowledge import get_collection_stats
+        stats = get_collection_stats()
+        if stats.get("total_patterns", 0) == 0:
+            logger.info("ChromaDB vuoto - seeding design knowledge...")
+            from app.services.seed_design_knowledge import seed_all
+            seed_all()
+            stats = get_collection_stats()
+            logger.info(f"Design knowledge seeded: {stats['total_patterns']} patterns")
+        else:
+            logger.info(f"Design knowledge ready: {stats['total_patterns']} patterns")
+    except Exception as e:
+        logger.warning(f"Design knowledge non disponibile: {e}")
+
     yield
 
     logger.info("Server spento")

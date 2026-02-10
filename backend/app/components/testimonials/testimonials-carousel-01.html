@@ -3,7 +3,7 @@
   <div class="max-w-7xl mx-auto px-6">
     <div class="text-center mb-16" data-animate="fade-up">
       <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Testimonianze</p>
-      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)]">{{TESTIMONIALS_TITLE}}</h2>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{TESTIMONIALS_TITLE}}</h2>
     </div>
 
     <!-- Carousel Container -->
@@ -24,7 +24,7 @@
             <div class="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
 
             <!-- Quote text -->
-            <div data-animate="blur-in">
+            <div data-animate="blur-slide" data-delay="0.2">
               <p class="text-xl md:text-2xl lg:text-3xl text-[var(--color-text)] leading-relaxed font-body text-center mb-10 italic">
                 &ldquo;{{TESTIMONIAL_TEXT}}&rdquo;
               </p>

@@ -4,14 +4,14 @@
     <!-- Header -->
     <div class="text-center max-w-3xl mx-auto mb-16" data-animate="fade-up">
       <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Features</p>
-      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{FEATURES_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body">{{FEATURES_SUBTITLE}}</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{FEATURES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body" data-animate="fade-up" data-delay="0.2">{{FEATURES_SUBTITLE}}</p>
     </div>
 
     <!-- Bento Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[minmax(220px,auto)]" data-animate="stagger">
       <!-- REPEAT:FEATURES -->
-      <div class="stagger-item first:md:col-span-2 first:lg:col-span-2 first:lg:row-span-2 relative group rounded-3xl bg-[var(--color-bg-alt)] border border-[var(--color-text)]/5 p-8 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-1" data-animate="scale-in">
+      <div class="stagger-item first:md:col-span-2 first:lg:col-span-2 first:lg:row-span-2 relative group rounded-3xl bg-[var(--color-bg-alt)] border border-[var(--color-text)]/5 p-8 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-1" data-animate="tilt">
         <!-- Background icon decoration -->
         <div class="absolute -top-6 -right-6 text-[8rem] leading-none opacity-[0.04] pointer-events-none select-none transition-transform duration-700 group-hover:scale-110 group-hover:opacity-[0.08]">
           {{FEATURE_ICON}}

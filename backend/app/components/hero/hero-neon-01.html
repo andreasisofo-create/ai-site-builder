@@ -4,13 +4,13 @@
   <div class="absolute inset-0 z-[1] pointer-events-none opacity-[0.03]" style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);"></div>
 
   <!-- Grid pattern overlay -->
-  <div class="absolute inset-0 z-0 pointer-events-none" style="background-image: linear-gradient(var(--color-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-primary) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.03;"></div>
+  <div class="absolute inset-0 z-0 pointer-events-none" data-animate="gradient-flow" style="background-image: linear-gradient(var(--color-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-primary) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.03;"></div>
 
   <!-- Neon glow spots -->
   <div class="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
     <div class="absolute top-[10%] left-[15%] w-[400px] h-[400px] rounded-full blur-[150px]" style="background: var(--color-primary); opacity: 0.12;" data-animate="gradient-flow"></div>
     <div class="absolute bottom-[10%] right-[10%] w-[350px] h-[350px] rounded-full blur-[130px]" style="background: var(--color-accent); opacity: 0.08;" data-animate="gradient-flow"></div>
-    <div class="absolute top-[50%] left-[60%] w-[200px] h-[200px] rounded-full blur-[80px]" style="background: var(--color-secondary); opacity: 0.06;"></div>
+    <div class="absolute top-[50%] left-[60%] w-[200px] h-[200px] rounded-full blur-[80px]" data-animate="gradient-flow" style="background: var(--color-secondary); opacity: 0.06;"></div>
   </div>
 
   <!-- Decorative dots -->
@@ -58,7 +58,7 @@
           <div class="flex-1 h-px" style="background: linear-gradient(90deg, var(--color-primary), transparent); opacity: 0.3;"></div>
         </div>
 
-        <h1 class="font-heading font-black text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white leading-[1.05] mb-6" data-animate="text-split" style="text-shadow: 0 0 40px rgba(255,255,255,0.1);">
+        <h1 class="font-heading font-black text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white leading-[1.05] mb-6" data-animate="text-split" data-split-type="chars" style="text-shadow: 0 0 40px rgba(255,255,255,0.1);">
           {{HERO_TITLE}}
         </h1>
 
@@ -68,13 +68,13 @@
           <div class="h-1 w-1 rounded-full" style="background: var(--color-accent); box-shadow: 0 0 8px var(--color-accent);"></div>
         </div>
 
-        <p class="font-body text-base md:text-lg text-white/40 leading-relaxed mb-10 max-w-lg" data-animate="fade-up">
+        <p class="font-body text-base md:text-lg text-white/40 leading-relaxed mb-10 max-w-lg" data-animate="blur-in" data-delay="0.3" data-duration="1.2">
           {{HERO_SUBTITLE}}
         </p>
 
         <!-- Neon CTA button -->
-        <div class="flex flex-wrap items-center gap-6" data-animate="fade-up">
-          <a href="{{HERO_CTA_URL}}" class="relative inline-flex items-center gap-3 px-8 py-4 font-heading font-bold text-sm tracking-wider uppercase transition-all duration-300 rounded-md group" style="color: var(--color-primary); border: 1px solid var(--color-primary); box-shadow: 0 0 15px var(--color-primary), inset 0 0 15px rgba(0,0,0,0.3);">
+        <div class="flex flex-wrap items-center gap-6" data-animate="fade-up" data-delay="0.5">
+          <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="relative inline-flex items-center gap-3 px-8 py-4 font-heading font-bold text-sm tracking-wider uppercase transition-all duration-300 rounded-md group" style="color: var(--color-primary); border: 1px solid var(--color-primary); box-shadow: 0 0 15px var(--color-primary), inset 0 0 15px rgba(0,0,0,0.3);">
             <span class="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: var(--color-primary); box-shadow: 0 0 30px var(--color-primary);"></span>
             <span class="relative z-10 group-hover:text-white transition-colors">{{HERO_CTA_TEXT}}</span>
             <svg class="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -83,7 +83,7 @@
       </div>
 
       <!-- Right: Image with neon border -->
-      <div class="relative" data-animate="scale-in">
+      <div class="relative" data-animate="scale-in" data-delay="0.2">
         <div class="absolute -inset-px rounded-xl z-10 pointer-events-none" style="border: 1px solid var(--color-primary); box-shadow: 0 0 20px var(--color-primary), inset 0 0 20px rgba(0,0,0,0.5); opacity: 0.5;"></div>
         <div class="absolute -inset-4 rounded-2xl blur-xl" style="background: var(--color-primary); opacity: 0.06;"></div>
         <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="relative w-full aspect-[4/3] object-cover rounded-xl brightness-75" loading="eager">

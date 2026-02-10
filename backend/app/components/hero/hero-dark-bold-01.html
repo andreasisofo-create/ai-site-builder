@@ -47,7 +47,7 @@
         </div>
 
         <!-- Massive heading with word split -->
-        <h1 class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-heading text-white leading-[1.05] mb-8" data-animate="text-split" data-split="words">
+        <h1 class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-heading text-white leading-[1.05] mb-8" data-animate="text-split" data-split-type="chars">
           {{HERO_TITLE}}
         </h1>
 
@@ -58,13 +58,13 @@
         </div>
 
         <!-- Subtitle -->
-        <p class="text-lg md:text-xl text-white/50 leading-relaxed mb-12 max-w-xl font-body" data-animate="fade-up">
+        <p class="text-lg md:text-xl text-white/50 leading-relaxed mb-12 max-w-xl font-body" data-animate="blur-slide" data-delay="0.3" data-duration="1.2">
           {{HERO_SUBTITLE}}
         </p>
 
         <!-- CTA buttons -->
-        <div class="flex flex-wrap items-center gap-6" data-animate="fade-up">
-          <a href="{{HERO_CTA_URL}}" class="group inline-flex items-center gap-3 px-10 py-5 font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 text-white" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); box-shadow: 0 0 40px var(--color-primary), 0 0 80px rgba(0,0,0,0.3); --tw-shadow-color: var(--color-primary);">
+        <div class="flex flex-wrap items-center gap-6" data-animate="fade-up" data-delay="0.5">
+          <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="group inline-flex items-center gap-3 px-10 py-5 font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 text-white" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); box-shadow: 0 0 40px var(--color-primary), 0 0 80px rgba(0,0,0,0.3); --tw-shadow-color: var(--color-primary);">
             {{HERO_CTA_TEXT}}
             <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
           </a>
@@ -76,7 +76,7 @@
       </div>
 
       <!-- Right: Image with scale-in -->
-      <div class="lg:col-span-5 relative" data-animate="scale-in">
+      <div class="lg:col-span-5 relative" data-animate="scale-in" data-delay="0.2">
         <!-- Decorative frame borders -->
         <div class="absolute -inset-3 border border-white/5 rounded-3xl"></div>
         <div class="absolute -inset-6 border border-white/[0.02] rounded-[2rem]"></div>

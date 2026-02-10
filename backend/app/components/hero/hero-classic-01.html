@@ -42,7 +42,7 @@
     <div class="w-16 h-px mb-8" style="background: var(--color-primary); opacity: 0.4;" data-animate="fade-up"></div>
 
     <!-- Elegant heading -->
-    <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal text-[var(--color-text)] leading-tight tracking-wide mb-8" data-animate="fade-up" style="font-style: italic;">
+    <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal text-[var(--color-text)] leading-tight tracking-wide mb-8" data-animate="text-split" data-split-type="words" data-duration="1.2" data-ease="power3.out" style="font-style: italic;">
       {{HERO_TITLE}}
     </h1>
 
@@ -68,8 +68,8 @@
     </div>
 
     <!-- CTA -->
-    <div data-animate="fade-up">
-      <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-4 px-10 py-4 border border-[var(--color-primary)]/30 rounded-full font-body text-sm tracking-[0.2em] uppercase text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)] transition-all duration-500 group">
+    <div data-animate="fade-up" data-delay="0.4">
+      <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-flex items-center gap-4 px-10 py-4 border border-[var(--color-primary)]/30 rounded-full font-body text-sm tracking-[0.2em] uppercase text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)] transition-all duration-500 group">
         {{HERO_CTA_TEXT}}
         <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>

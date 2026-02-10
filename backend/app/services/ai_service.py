@@ -256,25 +256,40 @@ class AIService:
         Step 3: Revisiona l'HTML generato e correggi errori.
         Controlla responsive, accessibilità, struttura, performance.
         """
-        prompt = f"""Review and fix this HTML website for "{business_name}".
+        prompt = f"""Review and ENHANCE this HTML website for "{business_name}".
 
 CURRENT HTML:
 {html}
 
 CHECK AND FIX:
-1. Responsive design: ensure all sections work on mobile (375px) and desktop (1440px)
-2. Navigation: hamburger menu must work with vanilla JS toggle
-3. All images must have alt text
-4. Color contrast: ensure text is readable on its background
-5. All links must have href attributes (use # for placeholder links)
-6. Contact form must have proper input names, labels, and a submit button
-7. Footer must include copyright text
-8. Smooth scroll must work for navigation links
-9. Remove any broken or incomplete HTML tags
-10. Ensure the Tailwind CDN script tag is present in <head>
+1. Responsive design: all sections work on mobile (375px) and desktop (1440px)
+2. Navigation: hamburger menu works with vanilla JS toggle
+3. All images have alt text, loading="lazy"
+4. Color contrast: text readable on background (WCAG AA)
+5. All links have href attributes (# for placeholders)
+6. Contact form: proper labels, names, submit button
+7. Footer: copyright text present
+8. Smooth scroll for navigation links
+9. No broken/incomplete HTML tags
+10. Tailwind CDN in <head>, GSAP + ScrollTrigger CDN before </body>
+
+ANIMATION CHECK (CRITICAL - DO NOT REMOVE):
+11. PRESERVE all data-animate attributes - they power GSAP animations
+12. If headings lack data-animate="text-split", ADD it
+13. If card grids lack data-animate="stagger" on parent + class="stagger-item" on children, ADD them
+14. If CTA buttons lack data-animate="magnetic", ADD it
+15. If images lack data-animate="image-zoom" wrapper, ADD it
+16. Ensure data-delay values create cascade effects
+
+DESIGN QUALITY CHECK:
+17. Sections should have generous padding (py-20 minimum)
+18. Typography should use Google Fonts with character (not system defaults)
+19. Color palette should be bold and cohesive (not plain blue/white)
+20. Hover states on all interactive elements
 
 IMPORTANT:
 - Return the COMPLETE fixed HTML file
+- NEVER remove data-animate, data-delay, data-duration, data-split-type attributes
 - If no issues found, return the HTML as-is
 - Return ONLY the HTML code between ```html and ``` tags
 - Do NOT add explanations"""
@@ -437,31 +452,71 @@ Instructions:
     # =========================================================
 
     def _build_system_prompt(self) -> str:
-        """Prompt di sistema migliorato per generazione HTML."""
-        return """You are an expert frontend developer and web designer specializing in Tailwind CSS.
-Your task is to generate complete, production-ready HTML5 websites.
+        """Prompt di sistema migliorato per generazione HTML con design creativo."""
+        return """You are an AWARD-WINNING frontend developer and creative web designer.
+You create visually STUNNING, Awwwards-level websites using Tailwind CSS.
+Your sites are known for bold design, smooth animations, and unforgettable visual impact.
 
-RULES:
-1. Generate semantic HTML5 with Tailwind CSS utility classes
-2. Use Tailwind CDN: <script src="https://cdn.tailwindcss.com"></script>
-3. Mobile-first responsive design (test at 375px, 768px, 1440px breakpoints)
-4. Include ALL sections requested by the user
-5. Use placeholder images from https://placehold.co with descriptive alt text
-6. Include a working contact form with proper labels, names, and submit button
-7. Add smooth scroll navigation with working mobile hamburger menu (vanilla JS)
-8. Include meta tags: charset UTF-8, viewport, description, og:title, og:description
-9. Add favicon placeholder link
-10. NO external CSS files - all styles via Tailwind utility classes
-11. NO JavaScript frameworks - vanilla JS only for menu toggle and smooth scroll
-12. Professional, modern design with consistent spacing
-13. Use Italian language for all content text
-14. Ensure proper color contrast for accessibility (WCAG AA)
-15. Use Google Fonts via CDN link if a specific font is requested
-16. All interactive elements must have hover/focus states
-17. Images should use lazy loading (loading="lazy")
+TECHNICAL RULES:
+1. Semantic HTML5 with Tailwind CSS utility classes
+2. Tailwind CDN: <script src="https://cdn.tailwindcss.com"></script>
+3. GSAP + ScrollTrigger CDN (add BEFORE closing </body>):
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+4. Mobile-first responsive (375px, 768px, 1440px)
+5. Placeholder images: https://placehold.co
+6. Working contact form with labels, names, submit button
+7. Smooth scroll nav + mobile hamburger menu (vanilla JS)
+8. Meta tags: charset, viewport, description, og:title, og:description
+9. Google Fonts CDN for distinctive typography
+10. WCAG AA color contrast
+11. Images: loading="lazy"
+12. ALL content in Italian
 
-OUTPUT FORMAT:
-Return ONLY the complete HTML code between ```html and ``` tags. No explanations."""
+CREATIVE DESIGN RULES (CRITICAL):
+13. BOLD color palette: deep, rich, saturated colors - NEVER plain blue/gray/white
+14. Hero section: full viewport height, dramatic typography, strong visual hierarchy
+15. Typography: use Google Fonts with CHARACTER (Playfair Display, Space Grotesk, DM Serif Display, Sora, Clash Display, Fraunces) - NEVER default system fonts
+16. Spacing: generous padding (py-20 to py-32 for sections), lots of breathing room
+17. Visual depth: subtle shadows (shadow-2xl), glassmorphism, gradient overlays
+18. Section backgrounds: alternate between rich colors, subtle gradients, and patterns
+19. Micro-interactions: hover:scale, hover:-translate-y, transition-all on cards
+20. Gradient text: use bg-gradient-to-r + bg-clip-text + text-transparent for impact
+21. Decorative elements: subtle SVG flourishes, dividers, ornamental lines
+
+GSAP ANIMATION ATTRIBUTES (add to HTML elements):
+- data-animate="fade-up" — elements entering from below (most common)
+- data-animate="fade-left" / "fade-right" — horizontal entrance
+- data-animate="scale-in" — zoom in entrance
+- data-animate="blur-in" — dreamy blur entrance
+- data-animate="text-split" data-split-type="words" — animated word-by-word reveal (USE ON MAIN HEADINGS)
+- data-animate="text-split" data-split-type="chars" — character-by-character (USE ON HERO TITLE)
+- data-animate="stagger" — parent container: children animate sequentially (USE ON CARD GRIDS)
+  - Children need class="stagger-item"
+- data-animate="tilt" — 3D tilt on hover (USE ON CARDS)
+- data-animate="magnetic" — magnetic hover effect (USE ON CTA BUTTONS)
+- data-animate="parallax" data-speed="0.3" — parallax scroll effect (USE ON HERO IMAGES)
+- data-animate="float" — continuous floating (USE ON DECORATIVE ELEMENTS)
+- data-animate="clip-reveal" — circular clip-path reveal
+- data-animate="rotate-3d" — 3D rotation entrance
+- data-animate="image-zoom" — Ken Burns zoom on scroll (USE ON IMAGE CONTAINERS)
+- data-animate="card-hover-3d" — 3D perspective tilt with light reflection
+- data-counter="NUMBER" — animated counter (USE ON STATISTICS)
+- data-delay="0.2" — delay animation start (cascade elements)
+- data-duration="1.2" — custom animation duration
+
+ANIMATION PLACEMENT GUIDE:
+- Hero heading: data-animate="text-split" data-split-type="chars"
+- Hero subtitle: data-animate="fade-up" data-delay="0.3"
+- Hero CTA button: data-animate="magnetic"
+- Hero image: wrap in div with data-animate="image-zoom"
+- Section headings: data-animate="text-split" data-split-type="words"
+- Card grids: parent gets data-animate="stagger", each card gets class="stagger-item" + data-animate="tilt"
+- Statistics numbers: data-counter="VALUE" data-counter-suffix="+"
+- Testimonials: data-animate="fade-up" with increasing data-delay
+- Footer: data-animate="fade-up"
+
+OUTPUT: Return ONLY complete HTML between ```html and ``` tags. No explanations."""
 
     def _build_user_prompt(
         self,
@@ -511,13 +566,23 @@ SECTIONS TO INCLUDE:
         prompt += """
 REQUIREMENTS:
 - One-page website with smooth scroll navigation between sections
-- Hero section with compelling headline, subtitle, and CTA button
-- Professional color scheme matching the business type
-- Contact section with a proper HTML form (name, email, message fields)
-- Fully responsive: mobile hamburger menu, stacked layout on small screens
-- Footer with business name, copyright, and social links placeholders
-- All content in Italian
-- Minimum 5 sections for a complete, professional feel
+- Hero section: FULL VIEWPORT height, dramatic headline (max 6 words), impactful subtitle, CTA with data-animate="magnetic"
+- Hero heading: use data-animate="text-split" data-split-type="chars" for stunning text reveal
+- BOLD color scheme: deep, rich colors that match the business personality (not generic blue/white)
+- Card grids: parent with data-animate="stagger", children with class="stagger-item"
+- Section headings: use data-animate="text-split" data-split-type="words"
+- Statistics/numbers: use data-counter="VALUE" for animated counters
+- Images: wrap in containers with data-animate="image-zoom" for Ken Burns effect
+- Contact section: stylish form with name, email, message fields and gradient/bold submit button
+- Responsive: hamburger menu, stacked layout on mobile
+- Footer: business name, copyright, social links
+- ALL text in Italian - CREATIVE, EVOCATIVE copy (not generic corporate text)
+- Typography: use a Google Font pair with personality (heading: Playfair Display/Space Grotesk/Sora, body: Inter/DM Sans)
+- Include GSAP CDN scripts before </body>:
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+- Add data-animate attributes to EVERY section element for scroll animations
+- Minimum 5 sections with generous spacing (py-20 to py-32)
 
 Generate the complete HTML file now."""
 

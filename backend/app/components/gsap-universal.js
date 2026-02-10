@@ -1,11 +1,21 @@
 /* ============================================================
-   GSAP Universal Animation Engine v2.0
+   GSAP Universal Animation Engine v3.0
    Auto-injected in every generated site
    Effects: parallax, text-split, typewriter, magnetic, 3D tilt,
    floating, gradient-flow, blur-in, curtain, morphing, glass,
-   marquee, counter, stagger, scroll-progress
+   marquee, counter, stagger, scroll-progress, text-reveal,
+   stagger-scale, clip-reveal, blur-slide, rotate-3d, image-zoom,
+   card-hover-3d, draw-svg, split-screen
+   Supports: data-delay, data-duration, data-ease on all animations
+   Respects prefers-reduced-motion
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
+  // Respect prefers-reduced-motion
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('reduced-motion');
+    return; // Skip all animations
+  }
+
   gsap.registerPlugin(ScrollTrigger);
 
   /* ----------------------------------------------------------
@@ -32,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('[data-animate]').forEach(function (el) {
     var type = el.getAttribute('data-animate');
-    if (['stagger', 'parallax', 'text-split', 'typewriter', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'count-up'].indexOf(type) !== -1) return;
+    if (['stagger', 'parallax', 'text-split', 'typewriter', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'count-up', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen'].indexOf(type) !== -1) return;
     var config = animations[type];
     if (!config) { el.style.opacity = 1; return; }
 
@@ -56,6 +66,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var items = container.querySelectorAll('.stagger-item');
     if (!items.length) return;
     var effect = container.getAttribute('data-stagger-effect') || 'fade-up';
+    var delay = parseFloat(container.getAttribute('data-delay') || 0);
+    var dur = parseFloat(container.getAttribute('data-duration') || 0.7);
+    var easing = container.getAttribute('data-ease') || 'power3.out';
     var from = { opacity: 0 };
     if (effect === 'fade-up')    Object.assign(from, { y: 50 });
     if (effect === 'scale-in')   Object.assign(from, { scale: 0.7 });
@@ -64,8 +77,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     gsap.fromTo(items, from, {
       y: 0, x: 0, scale: 1, opacity: 1, filter: 'blur(0px)',
-      duration: 0.7, stagger: { each: 0.12, from: 'start' },
-      ease: 'power3.out',
+      duration: dur, delay: delay, stagger: { each: 0.12, from: 'start' },
+      ease: easing,
       scrollTrigger: { trigger: container, start: 'top 85%', toggleActions: 'play none none none' }
     });
   });
@@ -91,26 +104,52 @@ document.addEventListener('DOMContentLoaded', function () {
      Splits text into chars/words and animates them
      ---------------------------------------------------------- */
   document.querySelectorAll('[data-animate="text-split"]').forEach(function (el) {
-    var splitBy = el.getAttribute('data-split') || 'chars';
+    var splitBy = el.getAttribute('data-split-type') || el.getAttribute('data-split') || 'chars';
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = el.getAttribute('data-duration');
+    var easing = el.getAttribute('data-ease') || 'power3.out';
     var text = el.textContent;
     el.innerHTML = '';
     el.style.opacity = 1;
-    var pieces = splitBy === 'words' ? text.split(/\s+/) : text.split('');
 
-    pieces.forEach(function (piece, i) {
-      var span = document.createElement('span');
-      span.textContent = piece === ' ' || (splitBy === 'words' && i < pieces.length - 1) ? piece + ' ' : piece;
-      span.style.display = 'inline-block';
-      span.style.opacity = '0';
-      if (piece === ' ') span.style.width = '0.3em';
-      el.appendChild(span);
-    });
+    if (splitBy === 'lines') {
+      // Wrap each line - use a temp container to measure
+      var temp = document.createElement('div');
+      temp.style.cssText = 'position:absolute;visibility:hidden;white-space:normal;width:' + el.offsetWidth + 'px;font:' + getComputedStyle(el).font;
+      temp.textContent = text;
+      document.body.appendChild(temp);
+      document.body.removeChild(temp);
+      // For lines, split by newlines or treat whole text as single line
+      var lines = text.split('\n').filter(function (l) { return l.trim(); });
+      if (lines.length <= 1) lines = [text];
+      lines.forEach(function (line) {
+        var span = document.createElement('span');
+        span.textContent = line;
+        span.style.display = 'block';
+        span.style.opacity = '0';
+        el.appendChild(span);
+      });
+    } else {
+      var pieces = splitBy === 'words' ? text.split(/\s+/) : text.split('');
+      pieces.forEach(function (piece, i) {
+        var span = document.createElement('span');
+        span.textContent = piece === ' ' || (splitBy === 'words' && i < pieces.length - 1) ? piece + ' ' : piece;
+        span.style.display = 'inline-block';
+        span.style.opacity = '0';
+        if (piece === ' ') span.style.width = '0.3em';
+        el.appendChild(span);
+      });
+    }
 
-    gsap.fromTo(el.children, { y: splitBy === 'words' ? 30 : 15, opacity: 0, rotationX: splitBy === 'chars' ? -40 : 0 }, {
+    var defaultDur = splitBy === 'chars' ? 0.5 : (splitBy === 'lines' ? 0.7 : 0.6);
+    var defaultStagger = splitBy === 'chars' ? 0.03 : (splitBy === 'lines' ? 0.1 : 0.08);
+
+    gsap.fromTo(el.children, { y: splitBy === 'words' ? 30 : (splitBy === 'lines' ? 40 : 15), opacity: 0, rotationX: splitBy === 'chars' ? -40 : 0 }, {
       y: 0, opacity: 1, rotationX: 0,
-      duration: splitBy === 'chars' ? 0.5 : 0.6,
-      stagger: splitBy === 'chars' ? 0.03 : 0.08,
-      ease: 'power3.out',
+      duration: dur ? parseFloat(dur) : defaultDur,
+      delay: delay,
+      stagger: defaultStagger,
+      ease: easing,
       scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
     });
   });
@@ -121,13 +160,16 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('[data-animate="typewriter"]').forEach(function (el) {
     var text = el.textContent;
     var speed = parseFloat(el.getAttribute('data-type-speed') || 0.04);
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = el.getAttribute('data-duration') ? parseFloat(el.getAttribute('data-duration')) : text.length * speed;
+    var easing = el.getAttribute('data-ease') || 'none';
     el.textContent = '';
     el.style.opacity = 1;
     el.style.borderRight = '2px solid var(--color-primary, #3b82f6)';
 
     var obj = { length: 0 };
     gsap.to(obj, {
-      length: text.length, duration: text.length * speed, ease: 'none', roundProps: 'length',
+      length: text.length, duration: dur, delay: delay, ease: easing, roundProps: 'length',
       scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
       onUpdate: function () { el.textContent = text.substring(0, obj.length); },
       onComplete: function () {
@@ -143,14 +185,16 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('[data-animate="float"]').forEach(function (el) {
     el.style.opacity = 1;
     var range = parseFloat(el.getAttribute('data-float-range') || 15);
-    var dur = parseFloat(el.getAttribute('data-float-speed') || 3);
+    var dur = parseFloat(el.getAttribute('data-duration') || el.getAttribute('data-float-speed') || 3);
+    var baseDelay = parseFloat(el.getAttribute('data-delay') || 0);
+    var easing = el.getAttribute('data-ease') || 'sine.inOut';
     gsap.to(el, {
-      y: -range, duration: dur, ease: 'sine.inOut', repeat: -1, yoyo: true,
-      delay: Math.random() * 2
+      y: -range, duration: dur, ease: easing, repeat: -1, yoyo: true,
+      delay: baseDelay + Math.random() * 2
     });
     gsap.to(el, {
-      x: range * 0.4, duration: dur * 1.3, ease: 'sine.inOut', repeat: -1, yoyo: true,
-      delay: Math.random() * 2
+      x: range * 0.4, duration: dur * 1.3, ease: easing, repeat: -1, yoyo: true,
+      delay: baseDelay + Math.random() * 2
     });
   });
 
@@ -266,7 +310,217 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ----------------------------------------------------------
-     13. SCROLL PROGRESS BAR (auto-created if data-scroll-progress exists)
+     13. TEXT REVEAL (data-animate="text-reveal")
+     Lines slide up from below a clip-path mask
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="text-reveal"]').forEach(function (el) {
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = parseFloat(el.getAttribute('data-duration') || 0.8);
+    var easing = el.getAttribute('data-ease') || 'power3.out';
+    var text = el.textContent;
+    var lines = text.split('\n').filter(function (l) { return l.trim(); });
+    if (lines.length <= 1) lines = [text];
+    el.innerHTML = '';
+    el.style.opacity = 1;
+
+    lines.forEach(function (line) {
+      var wrapper = document.createElement('div');
+      wrapper.style.overflow = 'hidden';
+      wrapper.style.display = 'block';
+      var inner = document.createElement('div');
+      inner.textContent = line;
+      inner.style.transform = 'translateY(100%)';
+      wrapper.appendChild(inner);
+      el.appendChild(wrapper);
+    });
+
+    var innerDivs = el.querySelectorAll('div > div');
+    gsap.fromTo(innerDivs, { y: '100%' }, {
+      y: '0%', duration: dur, delay: delay, ease: easing,
+      stagger: 0.12,
+      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+    });
+  });
+
+  /* ----------------------------------------------------------
+     14. STAGGER SCALE (data-animate="stagger-scale")
+     Children scale from 0 to 1 with stagger
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="stagger-scale"]').forEach(function (el) {
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = parseFloat(el.getAttribute('data-duration') || 0.6);
+    var easing = el.getAttribute('data-ease') || 'back.out(1.7)';
+    el.style.opacity = 1;
+
+    gsap.from(el.children, {
+      scale: 0, duration: dur, delay: delay, ease: easing,
+      stagger: 0.1,
+      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+    });
+  });
+
+  /* ----------------------------------------------------------
+     15. CLIP REVEAL (data-animate="clip-reveal")
+     Section reveals via expanding clip-path from center
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="clip-reveal"]').forEach(function (el) {
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = parseFloat(el.getAttribute('data-duration') || 1.2);
+    var easing = el.getAttribute('data-ease') || 'power3.inOut';
+
+    gsap.fromTo(el,
+      { clipPath: 'circle(0% at 50% 50%)' },
+      {
+        clipPath: 'circle(100% at 50% 50%)', duration: dur, delay: delay, ease: easing,
+        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+      }
+    );
+  });
+
+  /* ----------------------------------------------------------
+     16. BLUR SLIDE (data-animate="blur-slide")
+     Dreamy entrance: blur + translateY
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="blur-slide"]').forEach(function (el) {
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = parseFloat(el.getAttribute('data-duration') || 1);
+    var easing = el.getAttribute('data-ease') || 'power3.out';
+
+    gsap.fromTo(el,
+      { filter: 'blur(20px)', y: 40, opacity: 0 },
+      {
+        filter: 'blur(0px)', y: 0, opacity: 1,
+        duration: dur, delay: delay, ease: easing,
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+      }
+    );
+  });
+
+  /* ----------------------------------------------------------
+     17. ROTATE 3D (data-animate="rotate-3d")
+     Card flipping toward viewer on X axis
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="rotate-3d"]').forEach(function (el) {
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = parseFloat(el.getAttribute('data-duration') || 0.9);
+    var easing = el.getAttribute('data-ease') || 'power3.out';
+
+    gsap.fromTo(el,
+      { rotationX: -15, opacity: 0, transformPerspective: 800 },
+      {
+        rotationX: 0, opacity: 1, transformPerspective: 800,
+        duration: dur, delay: delay, ease: easing,
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+      }
+    );
+  });
+
+  /* ----------------------------------------------------------
+     18. IMAGE ZOOM (data-animate="image-zoom")
+     Image scales on scroll inside overflow:hidden container
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="image-zoom"]').forEach(function (el) {
+    el.style.overflow = 'hidden';
+    var img = el.querySelector('img');
+    if (!img) return;
+
+    gsap.fromTo(img,
+      { scale: 1 },
+      {
+        scale: 1.15, ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1 }
+      }
+    );
+  });
+
+  /* ----------------------------------------------------------
+     19. CARD HOVER 3D (data-animate="card-hover-3d")
+     3D perspective tilt on mousemove with light reflection
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="card-hover-3d"]').forEach(function (el) {
+    el.style.opacity = 1;
+    el.style.transformStyle = 'preserve-3d';
+    el.style.perspective = '800px';
+    el.style.position = el.style.position || 'relative';
+    el.style.overflow = 'hidden';
+
+    // Create light reflection div
+    var reflection = document.createElement('div');
+    reflection.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.15),transparent 60%);opacity:0;transition:opacity 0.3s;z-index:10;';
+    el.appendChild(reflection);
+
+    el.addEventListener('mousemove', function (e) {
+      var rect = el.getBoundingClientRect();
+      var xPct = (e.clientX - rect.left) / rect.width;
+      var yPct = (e.clientY - rect.top) / rect.height;
+      var rotateY = (xPct - 0.5) * 20;
+      var rotateX = (0.5 - yPct) * 20;
+
+      gsap.to(el, {
+        rotationY: rotateY, rotationX: rotateX,
+        transformPerspective: 800, duration: 0.4, ease: 'power2.out'
+      });
+
+      reflection.style.opacity = '1';
+      reflection.style.background = 'radial-gradient(circle at ' + (xPct * 100) + '% ' + (yPct * 100) + '%, rgba(255,255,255,0.2), transparent 60%)';
+    });
+
+    el.addEventListener('mouseleave', function () {
+      gsap.to(el, { rotationY: 0, rotationX: 0, duration: 0.6, ease: 'power2.out' });
+      reflection.style.opacity = '0';
+    });
+  });
+
+  /* ----------------------------------------------------------
+     20. DRAW SVG (data-animate="draw-svg")
+     SVG stroke animation on scroll
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="draw-svg"]').forEach(function (el) {
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = parseFloat(el.getAttribute('data-duration') || 2);
+    var easing = el.getAttribute('data-ease') || 'power2.inOut';
+    var paths = el.querySelectorAll('path, line, polyline, polygon, circle, ellipse, rect');
+
+    paths.forEach(function (path) {
+      var length = path.getTotalLength ? path.getTotalLength() : 0;
+      if (!length) return;
+      path.style.strokeDasharray = length;
+      path.style.strokeDashoffset = length;
+
+      gsap.to(path, {
+        strokeDashoffset: 0, duration: dur, delay: delay, ease: easing,
+        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+      });
+    });
+  });
+
+  /* ----------------------------------------------------------
+     21. SPLIT SCREEN (data-animate="split-screen")
+     Two child divs animate apart on scroll
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="split-screen"]').forEach(function (el) {
+    var left = el.querySelector('.left');
+    var right = el.querySelector('.right');
+    if (!left || !right) return;
+
+    gsap.fromTo(left,
+      { x: '0%' },
+      {
+        x: '-50%', ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1 }
+      }
+    );
+    gsap.fromTo(right,
+      { x: '0%' },
+      {
+        x: '50%', ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1 }
+      }
+    );
+  });
+
+  /* ----------------------------------------------------------
+     22. SCROLL PROGRESS BAR (auto-created if data-scroll-progress exists)
      ---------------------------------------------------------- */
   var progressBar = document.querySelector('[data-scroll-progress]');
   if (progressBar) {
@@ -279,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ----------------------------------------------------------
-     14. IMAGE REVEAL ON SCROLL (data-animate="img-reveal")
+     23. IMAGE REVEAL ON SCROLL (data-animate="img-reveal")
      ---------------------------------------------------------- */
   document.querySelectorAll('.img-reveal-wrap').forEach(function (wrap) {
     var overlay = wrap.querySelector('.img-reveal-overlay');
@@ -295,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ----------------------------------------------------------
-     15. HORIZONTAL SCROLL SECTION (data-horizontal-scroll)
+     24. HORIZONTAL SCROLL SECTION (data-horizontal-scroll)
      ---------------------------------------------------------- */
   document.querySelectorAll('[data-horizontal-scroll]').forEach(function (section) {
     var inner = section.querySelector('.hs-inner');
@@ -312,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ----------------------------------------------------------
-     16. CURSOR GLOW EFFECT (auto if body has data-cursor-glow)
+     25. CURSOR GLOW EFFECT (auto if body has data-cursor-glow)
      ---------------------------------------------------------- */
   if (document.body.hasAttribute('data-cursor-glow')) {
     var glow = document.createElement('div');
@@ -326,7 +580,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ----------------------------------------------------------
-     17. NAVBAR SCROLL BEHAVIOR
+     26. NAVBAR SCROLL BEHAVIOR
      ---------------------------------------------------------- */
   var nav = document.querySelector('[data-nav-scroll]');
   if (nav) {
@@ -344,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ----------------------------------------------------------
-     18. HAMBURGER MENU
+     27. HAMBURGER MENU
      ---------------------------------------------------------- */
   var menuBtn = document.getElementById('menu-toggle');
   var mobileMenu = document.getElementById('mobile-menu');
@@ -360,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ----------------------------------------------------------
-     19. SMOOTH SCROLL
+     28. SMOOTH SCROLL
      ---------------------------------------------------------- */
   document.querySelectorAll('a[href^="#"]').forEach(function (link) {
     link.addEventListener('click', function (e) {
@@ -376,7 +630,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ----------------------------------------------------------
-     20. LOADING REVEAL - fade out preloader
+     29. LOADING REVEAL - fade out preloader
      ---------------------------------------------------------- */
   var preloader = document.getElementById('preloader');
   if (preloader) {

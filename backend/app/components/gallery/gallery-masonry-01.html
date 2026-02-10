@@ -8,15 +8,15 @@
     <!-- Header -->
     <div class="text-center mb-20" data-animate="fade-up">
       <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Gallery</p>
-      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5">{{GALLERY_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body">{{GALLERY_SUBTITLE}}</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{GALLERY_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="fade-up" data-delay="0.2">{{GALLERY_SUBTITLE}}</p>
     </div>
 
     <!-- Masonry Grid -->
     <div class="columns-1 sm:columns-2 md:columns-3 gap-5 [column-fill:_balance]" data-animate="stagger">
       <!-- REPEAT:GALLERY_ITEMS -->
       <div class="stagger-item break-inside-avoid mb-5" data-animate="scale-in">
-        <div class="group relative rounded-xl overflow-hidden cursor-pointer bg-[var(--color-bg)]">
+        <div class="group relative rounded-xl overflow-hidden cursor-pointer bg-[var(--color-bg)]" data-animate="image-zoom">
           <!-- Image -->
           <img
             src="{{GALLERY_IMAGE_URL}}"

@@ -4,9 +4,9 @@
   <div class="absolute top-0 right-0 w-1/2 h-full opacity-[0.03] pointer-events-none" style="background: linear-gradient(135deg, var(--color-primary), transparent);"></div>
   <div class="max-w-7xl mx-auto px-6">
     <div class="text-center mb-16" data-animate="fade-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4 font-body">Contattaci</p>
-      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-3">{{CONTACT_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-xl mx-auto font-body">{{CONTACT_SUBTITLE}}</p>
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4 font-body" data-animate="fade-up">Contattaci</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-3" data-animate="text-split" data-split-type="words">{{CONTACT_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-xl mx-auto font-body" data-animate="fade-up" data-delay="0.2">{{CONTACT_SUBTITLE}}</p>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
       <!-- Left: Contact Info (2 cols) -->
@@ -60,8 +60,8 @@
         </div>
       </div>
       <!-- Right: Form (3 cols) -->
-      <div class="lg:col-span-3" data-animate="fade-left">
-        <form class="bg-[var(--color-bg-alt)] rounded-2xl p-8 md:p-10 space-y-6" onsubmit="event.preventDefault(); alert('Messaggio inviato!');">
+      <div class="lg:col-span-3" data-animate="blur-slide" data-delay="0.2" data-duration="1.2">
+        <form class="bg-[var(--color-bg-alt)] rounded-2xl p-8 md:p-10 space-y-6 shadow-xl" onsubmit="event.preventDefault(); alert('Messaggio inviato!');">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div class="relative">
               <input type="text" required placeholder=" " id="cf-name" class="peer w-full px-4 pt-6 pb-2 rounded-xl border border-[var(--color-text)]/10 bg-transparent text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] transition-colors font-body"/>
@@ -76,7 +76,7 @@
             <textarea rows="5" required placeholder=" " id="cf-msg" class="peer w-full px-4 pt-6 pb-2 rounded-xl border border-[var(--color-text)]/10 bg-transparent text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none font-body"></textarea>
             <label for="cf-msg" class="absolute left-4 top-2 text-xs text-[var(--color-text-muted)] font-semibold uppercase tracking-wider font-body pointer-events-none peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:normal-case peer-focus:top-2 peer-focus:text-xs peer-focus:font-semibold peer-focus:uppercase transition-all">Messaggio</label>
           </div>
-          <button type="submit" class="w-full py-4 font-bold font-heading text-white rounded-xl hover:opacity-90 hover:shadow-lg transition-all text-lg" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+          <button type="submit" data-animate="magnetic" class="w-full py-4 font-bold font-heading text-white rounded-xl hover:opacity-90 hover:shadow-lg transition-all text-lg" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
             Invia Messaggio
           </button>
         </form>
