@@ -10,6 +10,7 @@ from pydantic import BaseModel, field_serializer
 from app.core.database import get_db
 from app.core.security import get_current_active_user
 from app.models.site import Site, SiteStatus
+from app.models.site_version import SiteVersion
 from app.models.user import User
 
 router = APIRouter()
@@ -164,7 +165,8 @@ async def delete_site(
     
     if not site:
         raise HTTPException(status_code=404, detail="Sito non trovato")
-    
+
+    db.query(SiteVersion).filter(SiteVersion.site_id == site_id).delete()
     db.delete(site)
     db.commit()
     return {"message": "Sito eliminato"}

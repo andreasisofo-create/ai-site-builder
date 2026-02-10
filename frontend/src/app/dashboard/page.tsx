@@ -504,6 +504,13 @@ export default function Dashboard() {
                         >
                           Modifica
                         </Link>
+                        <button
+                          onClick={(e) => handleDeleteSite(site.id, e)}
+                          disabled={isDeleting === site.id}
+                          className="px-4 py-2 bg-red-500/80 text-white rounded-full text-sm font-medium hover:bg-red-500 hover:scale-105 transition-all disabled:opacity-50"
+                        >
+                          {isDeleting === site.id ? "..." : "Elimina"}
+                        </button>
                         {site.is_published && (
                           <Link
                             href={`https://${site.slug}.e-quipe.app`}

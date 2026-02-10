@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.models.user import User, PLAN_CONFIG
 from app.models.site import Site
+from app.models.site_version import SiteVersion
 
 router = APIRouter()
 
@@ -287,7 +288,10 @@ async def admin_delete_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Delete user's sites first
+    # Delete versions, then sites, then user
+    user_site_ids = [s.id for s in db.query(Site.id).filter(Site.owner_id == user_id).all()]
+    if user_site_ids:
+        db.query(SiteVersion).filter(SiteVersion.site_id.in_(user_site_ids)).delete(synchronize_session=False)
     db.query(Site).filter(Site.owner_id == user_id).delete()
     db.delete(user)
     db.commit()
@@ -380,11 +384,13 @@ async def admin_delete_site(
     admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Delete a site."""
+    """Delete a site and its versions."""
     site = db.query(Site).filter(Site.id == site_id).first()
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")
 
+    # Delete versions first (no cascade on FK)
+    db.query(SiteVersion).filter(SiteVersion.site_id == site_id).delete()
     db.delete(site)
     db.commit()
 
