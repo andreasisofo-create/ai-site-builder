@@ -720,6 +720,7 @@ async def migrate_db(db: Session = Depends(get_db)):
             ("refines_limit", "INTEGER DEFAULT 3"),
             ("pages_used", "INTEGER DEFAULT 0"),
             ("pages_limit", "INTEGER DEFAULT 1"),
+            ("revolut_customer_id", "VARCHAR"),
         ]
 
         # Migrazioni per tabella sites
