@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, useInView, AnimatePresence } from "framer-motion";
@@ -577,13 +578,8 @@ export default function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 via-violet-500 to-purple-600 flex items-center justify-center">
-                <SparklesIcon className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-semibold tracking-tight">
-                E-quipe
-              </span>
+            <Link href="/" className="flex items-center">
+              <Image src="/e-quipe-logo.png" alt="E-quipe" width={140} height={40} className="h-9 w-auto" />
             </Link>
 
             <div className="hidden lg:flex items-center gap-8">
@@ -1735,11 +1731,8 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-5 gap-8 mb-12">
             {/* Brand */}
             <div className="md:col-span-2">
-              <Link href="/" className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center">
-                  <SparklesIcon className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-lg font-semibold">E-quipe</span>
+              <Link href="/" className="flex items-center mb-4">
+                <Image src="/e-quipe-logo.png" alt="E-quipe" width={120} height={36} className="h-8 w-auto" />
               </Link>
               <p className="text-slate-400 text-sm max-w-sm mb-4">
                 E-quipe S.r.l.s — La piattaforma AI che crea il tuo sito web e
