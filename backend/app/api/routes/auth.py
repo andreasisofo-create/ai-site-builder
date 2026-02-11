@@ -365,7 +365,7 @@ async def google_oauth_callback(
                 _, encoded_redirect = state.split(":", 1)
                 if encoded_redirect:
                     final_redirect = base64.urlsafe_b64decode(encoded_redirect.encode()).decode()
-            except:
+            except Exception:
                 pass
 
         return RedirectResponse(url=f"{final_redirect}?token={jwt_token}")
@@ -494,7 +494,7 @@ async def microsoft_oauth_callback(
                 _, encoded_redirect = state.split(":", 1)
                 if encoded_redirect:
                     final_redirect = base64.urlsafe_b64decode(encoded_redirect.encode()).decode()
-            except:
+            except Exception:
                 pass
 
         return RedirectResponse(url=f"{final_redirect}?token={jwt_token}")

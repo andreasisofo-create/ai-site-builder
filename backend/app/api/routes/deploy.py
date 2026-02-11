@@ -1,7 +1,9 @@
-"""Routes per deploy su Vercel"""
+"""Routes per deploy siti (VPS / Vercel)"""
 
 import hashlib
 import logging
+import re
+import time
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -20,6 +22,87 @@ router = APIRouter()
 
 VERCEL_API = "https://api.vercel.com"
 
+RESERVED_SLUGS = {
+    "www", "api", "admin", "mail", "ftp", "ns1", "ns2", "smtp", "pop",
+    "imap", "cpanel", "webmail", "dashboard", "app", "static", "assets",
+    "cdn", "n8n", "staging", "dev",
+}
+
+_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$")
+
+
+def _validate_slug(slug: str) -> None:
+    """Validate a site slug for use as a subdomain."""
+    if ".." in slug or "/" in slug or "\\" in slug:
+        raise HTTPException(status_code=400, detail="Slug contiene caratteri non validi.")
+    if not _SLUG_RE.match(slug):
+        raise HTTPException(
+            status_code=400,
+            detail="Slug non valido: deve essere 3-63 caratteri, solo lettere minuscole, numeri e trattini.",
+        )
+    if slug in RESERVED_SLUGS:
+        raise HTTPException(status_code=400, detail=f"Il nome '{slug}' e' riservato. Scegli un altro slug.")
+
+
+# ---------------------------------------------------------------------------
+# VPS deploy helpers
+# ---------------------------------------------------------------------------
+
+async def _deploy_to_vps(site: Site) -> dict:
+    """Deploy HTML to VPS receiver service."""
+    if not settings.VPS_DEPLOY_URL:
+        raise HTTPException(
+            status_code=503,
+            detail="Servizio deploy VPS non configurato. Contatta l'amministratore.",
+        )
+
+    _validate_slug(site.slug)
+
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(
+                f"{settings.VPS_DEPLOY_URL}/deploy",
+                json={"slug": site.slug, "html": site.html_content},
+                headers={"X-Deploy-Secret": settings.VPS_DEPLOY_SECRET},
+            )
+            resp.raise_for_status()
+    except httpx.TimeoutException:
+        logger.error("VPS deploy timeout for slug %s", site.slug)
+        raise HTTPException(
+            status_code=504,
+            detail="Timeout nella comunicazione con il server VPS. Riprova tra qualche minuto.",
+        )
+    except httpx.HTTPError as e:
+        logger.error("VPS deploy error for slug %s: %s", site.slug, str(e))
+        raise HTTPException(
+            status_code=502,
+            detail="Errore di rete nella comunicazione con il server VPS.",
+        )
+
+    url = f"https://{site.slug}.{settings.SITE_BASE_DOMAIN}"
+    deployment_id = f"vps-{site.slug}-{int(time.time())}"
+    logger.info("Site %s deployed to VPS: %s (deployment_id=%s)", site.id, url, deployment_id)
+    return {"url": url, "deployment_id": deployment_id}
+
+
+async def _unpublish_from_vps(slug: str) -> None:
+    """Delete a site from VPS receiver service."""
+    if not settings.VPS_DEPLOY_URL:
+        return
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.delete(
+                f"{settings.VPS_DEPLOY_URL}/deploy/{slug}",
+                headers={"X-Deploy-Secret": settings.VPS_DEPLOY_SECRET},
+            )
+            resp.raise_for_status()
+    except Exception as e:
+        logger.warning("VPS unpublish failed for slug %s: %s", slug, str(e))
+
+
+# ---------------------------------------------------------------------------
+# Vercel helpers (unchanged)
+# ---------------------------------------------------------------------------
 
 def _vercel_headers() -> dict:
     """Headers di autenticazione per Vercel API."""
@@ -39,58 +122,14 @@ def _team_params() -> dict:
     return {}
 
 
-@router.post("/{site_id}")
-async def deploy_site(
-    site_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
-):
-    """Deploy del sito su Vercel.
-
-    Crea un deployment Vercel con l'HTML generato dal site builder.
-    Richiede piano base o premium (il piano free non puo pubblicare).
-    """
-    # --- Validazione token Vercel ---
+async def _deploy_to_vercel(site: Site) -> dict:
+    """Deploy HTML to Vercel (existing logic extracted into helper)."""
     if not settings.VERCEL_TOKEN:
         raise HTTPException(
             status_code=503,
             detail="Servizio deploy non configurato. Contatta l'amministratore.",
         )
 
-    # --- Recupera il sito ---
-    site = (
-        db.query(Site)
-        .filter(Site.id == site_id, Site.owner_id == current_user.id)
-        .first()
-    )
-    if not site:
-        raise HTTPException(status_code=404, detail="Sito non trovato")
-
-    # --- Controlla piano utente ---
-    if not current_user.can_publish:
-        raise HTTPException(
-            status_code=403,
-            detail={
-                "message": "Il tuo piano non permette la pubblicazione. Passa al piano Base o Premium.",
-                "upgrade_required": True,
-                "current_plan": current_user.plan,
-            },
-        )
-
-    # --- Controlla che ci sia HTML da deployare ---
-    if not site.html_content:
-        raise HTTPException(
-            status_code=400,
-            detail="Il sito non ha contenuto HTML. Genera il sito prima di pubblicarlo.",
-        )
-
-    if site.status not in (SiteStatus.READY.value, SiteStatus.PUBLISHED.value):
-        raise HTTPException(
-            status_code=400,
-            detail="Il sito deve essere nello stato 'pronto' per essere pubblicato.",
-        )
-
-    # --- Prepara i file per Vercel ---
     html_bytes = site.html_content.encode("utf-8")
     html_sha1 = hashlib.sha1(html_bytes).hexdigest()
     html_size = len(html_bytes)
@@ -167,13 +206,13 @@ async def deploy_site(
             deploy_data = deploy_resp.json()
 
     except httpx.TimeoutException:
-        logger.error("Vercel API timeout for site %s", site_id)
+        logger.error("Vercel API timeout for site %s", site.id)
         raise HTTPException(
             status_code=504,
             detail="Timeout nella comunicazione con Vercel. Riprova tra qualche minuto.",
         )
     except httpx.HTTPError as e:
-        logger.error("Vercel HTTP error for site %s: %s", site_id, str(e))
+        logger.error("Vercel HTTP error for site %s: %s", site.id, str(e))
         raise HTTPException(
             status_code=502,
             detail="Errore di rete nella comunicazione con Vercel.",
@@ -181,30 +220,92 @@ async def deploy_site(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Unexpected deploy error for site %s: %s", site_id, str(e))
+        logger.error("Unexpected deploy error for site %s: %s", site.id, str(e))
         raise HTTPException(
             status_code=500,
             detail="Errore interno durante il deploy.",
         )
 
-    # --- Aggiorna il record del sito ---
     deployed_url = f"https://{deploy_data.get('url', '')}"
-    vercel_project_id = deploy_data.get("projectId", "")
-    deployment_id = deploy_data.get("id", "")
+    return {
+        "url": deployed_url,
+        "deployment_id": deploy_data.get("id", ""),
+        "project_id": deploy_data.get("projectId", ""),
+    }
 
+
+# ---------------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------------
+
+@router.post("/{site_id}")
+async def deploy_site(
+    site_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """Deploy del sito (VPS o Vercel in base a DEPLOY_TARGET)."""
+
+    # --- Recupera il sito ---
+    site = (
+        db.query(Site)
+        .filter(Site.id == site_id, Site.owner_id == current_user.id)
+        .first()
+    )
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    # --- Controlla piano utente ---
+    if not current_user.can_publish:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Il tuo piano non permette la pubblicazione. Passa al piano Base o Premium.",
+                "upgrade_required": True,
+                "current_plan": current_user.plan,
+            },
+        )
+
+    # --- Controlla che ci sia HTML da deployare ---
+    if not site.html_content:
+        raise HTTPException(
+            status_code=400,
+            detail="Il sito non ha contenuto HTML. Genera il sito prima di pubblicarlo.",
+        )
+
+    if site.status not in (SiteStatus.READY.value, SiteStatus.PUBLISHED.value):
+        raise HTTPException(
+            status_code=400,
+            detail="Il sito deve essere nello stato 'pronto' per essere pubblicato.",
+        )
+
+    # --- Dispatch in base al target ---
+    if settings.DEPLOY_TARGET == "vps":
+        result = await _deploy_to_vps(site)
+        site.domain = result["url"]
+        site.vercel_project_id = None
+        deployment_id = result["deployment_id"]
+        project_id = None
+    else:
+        result = await _deploy_to_vercel(site)
+        site.domain = result["url"]
+        site.vercel_project_id = result.get("project_id", "")
+        deployment_id = result["deployment_id"]
+        project_id = result.get("project_id", "")
+
+    # --- Aggiorna il record del sito ---
     site.status = SiteStatus.PUBLISHED.value
     site.is_published = True
     site.published_at = datetime.now(timezone.utc)
-    site.vercel_project_id = vercel_project_id
-    site.domain = deployed_url
 
     db.commit()
     db.refresh(site)
 
     logger.info(
-        "Site %s deployed to Vercel: %s (deployment_id=%s)",
+        "Site %s deployed (%s): %s (deployment_id=%s)",
         site_id,
-        deployed_url,
+        settings.DEPLOY_TARGET,
+        site.domain,
         deployment_id,
     )
 
@@ -212,10 +313,40 @@ async def deploy_site(
         "success": True,
         "site_id": site.id,
         "deployment_id": deployment_id,
-        "url": deployed_url,
-        "project_id": vercel_project_id,
+        "url": site.domain,
+        "project_id": project_id,
         "status": "deployed",
     }
+
+
+@router.delete("/{site_id}")
+async def unpublish_site(
+    site_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """Rimuovi la pubblicazione di un sito."""
+    site = (
+        db.query(Site)
+        .filter(Site.id == site_id, Site.owner_id == current_user.id)
+        .first()
+    )
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    if settings.DEPLOY_TARGET == "vps" and site.slug:
+        await _unpublish_from_vps(site.slug)
+
+    site.is_published = False
+    site.status = SiteStatus.READY.value
+    site.domain = None
+    site.published_at = None
+
+    db.commit()
+
+    logger.info("Site %s unpublished by user %s", site_id, current_user.id)
+
+    return {"success": True, "site_id": site_id, "status": "unpublished"}
 
 
 @router.get("/{site_id}/status")
@@ -242,7 +373,11 @@ async def deploy_status(
         "published_at": site.published_at.isoformat() if site.published_at else None,
     }
 
-    # Se c'e un project ID, controlla lo stato del deployment su Vercel
+    # VPS: nessun polling necessario, ritorna subito
+    if settings.DEPLOY_TARGET == "vps":
+        return result
+
+    # Vercel: controlla lo stato del deployment se c'e un project ID
     if site.vercel_project_id and settings.VERCEL_TOKEN:
         try:
             async with httpx.AsyncClient(timeout=15.0) as client:

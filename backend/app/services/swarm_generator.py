@@ -542,7 +542,7 @@ IMPORTANT:
     ) -> Dict[str, Any]:
         """
         Modifica un sito esistente via chat.
-        Usa Instant mode per risposta rapida (~3-8s).
+        Usa streaming per evitare timeout con HTML grandi.
         """
         modification_request = sanitize_refine_input(modification_request)
 
@@ -560,7 +560,8 @@ Instructions:
 2. Keep all other sections exactly as they are
 3. Return the COMPLETE HTML file with the modification
 4. Use the same styling approach (Tailwind CSS)
-5. Return ONLY HTML between ```html and ``` tags"""
+5. Return ONLY HTML between ```html and ``` tags
+6. Do NOT truncate the output - include the FULL HTML"""
         else:
             prompt = f"""Modify this HTML website according to the request.
 
@@ -574,12 +575,14 @@ Instructions:
 1. Apply the requested changes
 2. Keep the overall structure and style consistent
 3. Return the COMPLETE modified HTML file
-4. Return ONLY HTML between ```html and ``` tags"""
+4. Return ONLY HTML between ```html and ``` tags
+5. Do NOT truncate the output - include the FULL HTML"""
 
         start_time = time.time()
-        result = await self.kimi.call(
+        # Use streaming with higher max_tokens to handle large HTML sites
+        result = await self.kimi.call_stream(
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=8000,
+            max_tokens=16000,
             thinking=False,
             timeout=300.0,
         )
@@ -589,6 +592,15 @@ Instructions:
 
         html_content = self.kimi.extract_html(result["content"])
         html_content = sanitize_output(html_content)
+
+        # Validate HTML completeness - check for closing tags
+        if html_content and "</html>" not in html_content.lower():
+            logger.warning("[Swarm] Refine returned truncated HTML (missing </html>)")
+            return {
+                "success": False,
+                "error": "La modifica ha prodotto HTML incompleto. Riprova con una richiesta più specifica.",
+            }
+
         generation_time = int((time.time() - start_time) * 1000)
         cost = self.kimi.calculate_cost(
             result.get("tokens_input", 0),

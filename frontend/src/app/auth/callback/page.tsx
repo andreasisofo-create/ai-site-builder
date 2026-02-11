@@ -2,6 +2,24 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { API_BASE } from "@/lib/api";
+
+/** Decodifica JWT in modo sicuro, restituisce user minimo o null */
+function decodeJwtUser(token: string): { id: number; email: string; full_name: string } | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    return {
+      id: parseInt(payload.sub),
+      email: payload.email || "",
+      full_name: "",
+    };
+  } catch {
+    console.error("JWT decode failed");
+    return null;
+  }
+}
 
 function AuthCallbackContent() {
   const searchParams = useSearchParams();
@@ -23,10 +41,9 @@ function AuthCallbackContent() {
     if (token) {
       localStorage.setItem("token", token);
       // Fetch user data e salva in localStorage, poi redirect
-      const BACKEND_URL = "https://ai-site-builder-jz2g.onrender.com";
       (async () => {
         try {
-          const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
+          const res = await fetch(`${API_BASE}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) {
@@ -35,34 +52,20 @@ function AuthCallbackContent() {
           } else {
             console.warn("Fetch /api/auth/me failed:", res.status);
             // Salva user minimo dal token JWT (base64)
-            try {
-              const payload = JSON.parse(atob(token.split(".")[1]));
-              const minimalUser = {
-                id: parseInt(payload.sub),
-                email: payload.email || "",
-                full_name: "",
-              };
+            const minimalUser = decodeJwtUser(token);
+            if (minimalUser) {
               localStorage.setItem("user", JSON.stringify(minimalUser));
-            } catch (decodeErr) {
-              console.error("JWT decode failed:", decodeErr);
             }
           }
         } catch (e) {
           console.error("Errore fetch user dopo OAuth:", e);
           // Fallback: salva user minimo dal token
-          try {
-            const payload = JSON.parse(atob(token.split(".")[1]));
-            localStorage.setItem("user", JSON.stringify({
-              id: parseInt(payload.sub),
-              email: payload.email || "",
-              full_name: "",
-            }));
-          } catch {}
+          const minimalUser = decodeJwtUser(token);
+          if (minimalUser) {
+            localStorage.setItem("user", JSON.stringify(minimalUser));
+          }
         }
         // Force full page load so AuthProvider re-mounts and reads the updated localStorage.
-        // The callback page is already a full page load (from OAuth redirect), so this is fine.
-        // Using router.push would NOT work because the AuthProvider's mount useEffect
-        // already ran before the token was set in localStorage.
         window.location.href = "/dashboard";
       })();
     } else {

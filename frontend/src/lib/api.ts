@@ -30,8 +30,13 @@ async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const error = await res.json().catch(() => ({ detail: "Errore sconosciuto" }));
 
-    // Se 401 Unauthorized, lancia errore (il context auth gestirà il redirect)
+    // Se 401 Unauthorized, pulisci auth e redirect al login
     if (res.status === 401) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/auth";
+      }
       const authError = new Error(error.detail || "Non autorizzato");
       (authError as any).status = 401;
       throw authError;
@@ -379,6 +384,41 @@ export async function getPaymentStatus(): Promise<PaymentStatus> {
   const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/payments/status`, { headers });
   return handleResponse<PaymentStatus>(res);
+}
+
+// ============ VERSIONS ============
+
+export interface SiteVersionInfo {
+  id: number;
+  version_number: number;
+  change_description: string;
+  created_at: string;
+}
+
+export async function getSiteVersions(siteId: number): Promise<SiteVersionInfo[]> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${siteId}/versions`, { headers });
+  return handleResponse<SiteVersionInfo[]>(res);
+}
+
+export async function rollbackSiteVersion(siteId: number, versionId: number): Promise<{ html_content: string }> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${siteId}/versions/${versionId}/rollback`, {
+    method: "POST",
+    headers,
+  });
+  return handleResponse<{ html_content: string }>(res);
+}
+
+// ============ UNPUBLISH ============
+
+export async function unpublishSite(siteId: number): Promise<{ success: boolean; message: string }> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/deploy/${siteId}`, {
+    method: "DELETE",
+    headers,
+  });
+  return handleResponse(res);
 }
 
 // ============ UTILS ============

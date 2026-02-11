@@ -252,14 +252,22 @@ class KimiClient:
 
     @staticmethod
     def extract_html(content: str) -> str:
-        """Estrae HTML dal markdown se il modello wrappa in code blocks."""
+        """Estrae HTML dal markdown se il modello wrappa in code blocks.
+        Gestisce anche output troncato (senza closing ```)."""
+        # Caso 1: code block completo ```html ... ```
         html_match = re.search(r'```html\n(.*?)\n```', content, re.DOTALL)
         if html_match:
             return html_match.group(1).strip()
 
+        # Caso 2: code block generico completo ``` ... ```
         code_match = re.search(r'```\n(.*?)\n```', content, re.DOTALL)
         if code_match:
             return code_match.group(1).strip()
+
+        # Caso 3: output troncato - code block aperto ma mai chiuso
+        truncated_match = re.search(r'```html?\n(.*)', content, re.DOTALL)
+        if truncated_match:
+            return truncated_match.group(1).strip()
 
         return content.strip()
 

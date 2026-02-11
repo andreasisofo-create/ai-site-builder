@@ -220,6 +220,93 @@ async def preview_site(
     }
 
 
+@router.get("/{site_id}/versions")
+async def list_versions(
+    site_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Lista versioni di un sito (solo proprietario)."""
+    site = db.query(Site).filter(
+        Site.id == site_id,
+        Site.owner_id == current_user.id,
+    ).first()
+
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    versions = (
+        db.query(SiteVersion)
+        .filter(SiteVersion.site_id == site_id)
+        .order_by(SiteVersion.version_number.desc())
+        .all()
+    )
+
+    return [
+        {
+            "id": v.id,
+            "version_number": v.version_number,
+            "change_description": v.change_description,
+            "created_at": v.created_at.isoformat() if v.created_at else None,
+        }
+        for v in versions
+    ]
+
+
+@router.post("/{site_id}/versions/{version_id}/rollback")
+async def rollback_version(
+    site_id: int,
+    version_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Ripristina il sito a una versione precedente."""
+    site = db.query(Site).filter(
+        Site.id == site_id,
+        Site.owner_id == current_user.id,
+    ).first()
+
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    version = db.query(SiteVersion).filter(
+        SiteVersion.id == version_id,
+        SiteVersion.site_id == site_id,
+    ).first()
+
+    if not version:
+        raise HTTPException(status_code=404, detail="Versione non trovata")
+
+    # Ripristina HTML
+    site.html_content = version.html_content
+    site.status = "ready"
+
+    # Salva nuova versione di rollback
+    latest = (
+        db.query(SiteVersion)
+        .filter(SiteVersion.site_id == site.id)
+        .order_by(SiteVersion.version_number.desc())
+        .first()
+    )
+    next_version = (latest.version_number + 1) if latest else 1
+
+    rollback_entry = SiteVersion(
+        site_id=site.id,
+        html_content=version.html_content,
+        version_number=next_version,
+        change_description=f"Rollback alla versione {version.version_number}",
+    )
+    db.add(rollback_entry)
+    db.commit()
+
+    return {
+        "success": True,
+        "html_content": version.html_content,
+        "restored_version": version.version_number,
+        "new_version": next_version,
+    }
+
+
 @router.get("/{site_id}/export")
 async def export_site(
     site_id: int,

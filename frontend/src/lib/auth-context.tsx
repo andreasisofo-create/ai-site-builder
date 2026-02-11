@@ -2,10 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-
-// Chiama il backend Render direttamente (con CORS).
-// Il proxy Vercel rewrite perde l'header Authorization su redirect cross-origin.
-const API_BASE = "https://ai-site-builder-jz2g.onrender.com";
+import { API_BASE } from "./api";
 
 export interface User {
   id: number;
@@ -69,6 +66,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.removeItem("user");
             setState((prev) => ({ ...prev, isLoading: false }));
           }
+        }).catch(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setState((prev) => ({ ...prev, isLoading: false }));
         });
       }
     } else if (token) {
@@ -81,6 +82,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.removeItem("token");
           setState((prev) => ({ ...prev, isLoading: false }));
         }
+      }).catch(() => {
+        localStorage.removeItem("token");
+        setState((prev) => ({ ...prev, isLoading: false }));
       });
     } else {
       setState((prev) => ({ ...prev, isLoading: false }));
@@ -173,13 +177,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const googleLogin = () => {
-    const backendUrl = "https://ai-site-builder-jz2g.onrender.com";
-    window.location.href = `${backendUrl}/api/auth/oauth/google?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
+    window.location.href = `${API_BASE}/api/auth/oauth/google?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
   };
 
   const microsoftLogin = () => {
-    const backendUrl = "https://ai-site-builder-jz2g.onrender.com";
-    window.location.href = `${backendUrl}/api/auth/oauth/microsoft?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
+    window.location.href = `${API_BASE}/api/auth/oauth/microsoft?redirect_to=${encodeURIComponent(window.location.origin + "/auth/callback")}`;
   };
 
   const refreshUser = async () => {

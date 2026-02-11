@@ -204,7 +204,7 @@ async def _run_generation_background(
             site.generation_step = 0
             site.generation_message = ""
             if result.get("site_data"):
-                site.config = json.dumps(result["site_data"]) if isinstance(result["site_data"], dict) else result["site_data"]
+                site.config = result["site_data"]
             _save_version(db, site, result["html_content"], "Generazione iniziale AI")
 
         db.commit()
@@ -637,7 +637,7 @@ async def n8n_generation_callback(
     site.generation_message = ""
 
     if data.site_data:
-        site.config = json.dumps(data.site_data) if isinstance(data.site_data, dict) else data.site_data
+        site.config = data.site_data
 
     _save_version(db, site, html_content, "Generazione via n8n")
 

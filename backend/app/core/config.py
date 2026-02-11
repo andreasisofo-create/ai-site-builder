@@ -92,6 +92,12 @@ class Settings(BaseSettings):
     N8N_WEBHOOK_URL: str = ""  # n8n webhook URL for external generation
     N8N_CALLBACK_SECRET: str = ""  # Shared secret for n8n callback auth
 
+    # VPS Deploy (Hostinger)
+    VPS_DEPLOY_URL: str = ""            # e.g., "http://72.62.42.113:8090"
+    VPS_DEPLOY_SECRET: str = ""         # Shared secret for VPS receiver auth
+    DEPLOY_TARGET: str = "vps"          # "vps" or "vercel"
+    SITE_BASE_DOMAIN: str = "e-quipe.app"
+
     # Render
     RENDER_EXTERNAL_URL: str = ""  # Populated automatically by Render
     

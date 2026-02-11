@@ -18,6 +18,7 @@ import {
   PhotoIcon,
   VideoCameraIcon,
   CodeBracketIcon,
+  ArrowUturnLeftIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { getSite, updateSite, refineWebsite, deploySite, Site } from "@/lib/api";
@@ -71,6 +72,10 @@ export default function Editor() {
   // Live HTML for preview (updated by chat refine)
   const [liveHtml, setLiveHtml] = useState<string>("");
 
+  // Undo history
+  const [htmlHistory, setHtmlHistory] = useState<string[]>([]);
+  const [isUndoing, setIsUndoing] = useState(false);
+
   useEffect(() => {
     if (siteId) {
       loadSite();
@@ -111,7 +116,7 @@ export default function Editor() {
       const result = await deploySite(site.id);
       if (result.success && result.url) {
         setPublishedUrl(result.url);
-        toast.success("Sito pubblicato su Vercel!");
+        toast.success("Sito pubblicato!");
       }
       loadSite();
     } catch (error: any) {
@@ -147,6 +152,9 @@ export default function Editor() {
       });
 
       if (result.success && result.html_content) {
+        if (liveHtml) {
+          setHtmlHistory((prev) => [...prev, liveHtml]);
+        }
         setLiveHtml(result.html_content);
         setSite((prev) => prev ? { ...prev, html_content: result.html_content! } : prev);
 
@@ -157,6 +165,15 @@ export default function Editor() {
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiMsg]);
+      } else {
+        // API returned 200 but success=false or no html_content
+        const errorMsg: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: result.error || "La modifica non ha prodotto risultati. Riprova con una richiesta diversa.",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, errorMsg]);
       }
     } catch (error: any) {
       const errorMsg: ChatMessage = {
@@ -170,6 +187,36 @@ export default function Editor() {
     } finally {
       setIsRefining(false);
     }
+  };
+
+  const handleUndo = () => {
+    if (htmlHistory.length === 0 || isUndoing) return;
+    setIsUndoing(true);
+    const previousHtml = htmlHistory[htmlHistory.length - 1];
+    setHtmlHistory((prev) => prev.slice(0, -1));
+    setLiveHtml(previousHtml);
+    setSite((prev) => prev ? { ...prev, html_content: previousHtml } : prev);
+    // Also save to backend
+    if (site) {
+      updateSite(site.id, { html_content: previousHtml } as any)
+        .then(() => {
+          toast.success("Modifica annullata");
+        })
+        .catch(() => {
+          toast.error("Errore durante l'annullamento");
+        })
+        .finally(() => setIsUndoing(false));
+    } else {
+      setIsUndoing(false);
+    }
+
+    const undoMsg: ChatMessage = {
+      id: Date.now().toString(),
+      role: "assistant",
+      content: "Modifica annullata. Ripristinata la versione precedente.",
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, undoMsg]);
   };
 
   const validateVideoUrl = (url: string): boolean => {
@@ -354,7 +401,7 @@ export default function Editor() {
             {site.is_published || publishedUrl ? (
               <div className="flex items-center gap-2">
                 <a
-                  href={publishedUrl || site.domain || `https://${site.slug}.vercel.app`}
+                  href={publishedUrl || site.domain || `https://${site.slug}.e-quipe.app`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
@@ -469,12 +516,25 @@ export default function Editor() {
                 <SparklesIcon className="w-5 h-5 text-blue-400" />
                 <h3 className="font-semibold">Modifica con AI</h3>
               </div>
-              <button
-                onClick={() => setChatOpen(false)}
-                className="p-1 hover:bg-white/5 rounded-lg transition-colors"
-              >
-                <XMarkIcon className="w-5 h-5 text-slate-400" />
-              </button>
+              <div className="flex items-center gap-1">
+                {htmlHistory.length > 0 && (
+                  <button
+                    onClick={handleUndo}
+                    disabled={isUndoing || isRefining}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-colors disabled:opacity-50"
+                    title="Annulla ultima modifica"
+                  >
+                    <ArrowUturnLeftIcon className="w-3.5 h-3.5" />
+                    Annulla
+                  </button>
+                )}
+                <button
+                  onClick={() => setChatOpen(false)}
+                  className="p-1 hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  <XMarkIcon className="w-5 h-5 text-slate-400" />
+                </button>
+              </div>
             </div>
 
             {/* Messages */}
