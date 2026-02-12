@@ -37,82 +37,40 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 function RenderedVideo({
   src,
   accentColor = "#8b5cf6",
-  label,
   className = "",
 }: {
   src: string;
   accentColor?: string;
-  label?: string;
   className?: string;
 }) {
   return (
     <div className={`relative group ${className}`}>
-      {/* Visible glow behind the box */}
+      {/* Subtle glow behind */}
       <div
-        className="absolute -inset-4 rounded-3xl blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-700 pointer-events-none"
-        style={{ background: `radial-gradient(ellipse at center, ${accentColor}55 0%, ${accentColor}20 40%, transparent 70%)` }}
+        className="absolute -inset-3 rounded-3xl blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none"
+        style={{ background: `radial-gradient(ellipse at center, ${accentColor}40 0%, transparent 70%)` }}
       />
 
-      {/* Label badge */}
-      {label && (
-        <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-20">
-          <span
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white border backdrop-blur-sm"
-            style={{
-              background: `linear-gradient(135deg, ${accentColor}cc, ${accentColor}88)`,
-              borderColor: `${accentColor}66`,
-              boxShadow: `0 0 20px ${accentColor}44`,
-            }}
-          >
-            <VideoCameraIcon className="w-3.5 h-3.5" />
-            {label}
-          </span>
-        </div>
-      )}
-
-      {/* Solid visible gradient border */}
+      {/* Video container with gradient border */}
       <div
-        className="relative rounded-2xl p-[2px] transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+        className="relative rounded-2xl p-[1px] transition-transform duration-500 ease-out group-hover:scale-[1.01]"
         style={{
-          background: `linear-gradient(135deg, ${accentColor}, #3b82f6, #06b6d4, ${accentColor})`,
-          backgroundSize: '300% 300%',
-          animation: 'gradient-shift 4s ease infinite',
+          background: `linear-gradient(135deg, ${accentColor}66, ${accentColor}22, ${accentColor}44)`,
         }}
       >
-        {/* Browser chrome frame */}
         <div className="relative rounded-2xl overflow-hidden bg-[#0c1222]">
-          {/* Top bar */}
-          <div className="flex items-center gap-3 px-4 py-2.5 bg-[#0f1729] border-b border-white/10">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-            </div>
-            <div className="flex-1 mx-2">
-              <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#080e1a]/70 border border-white/10">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: accentColor, boxShadow: `0 0 6px ${accentColor}` }} />
-                <span className="text-[10px] text-slate-400 font-mono truncate">e-quipe.app</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Video content */}
           <video
             src={src}
             autoPlay
             loop
             muted
             playsInline
-            className="w-full h-auto"
+            className="w-full h-auto object-cover"
           />
+          {/* Bottom gradient overlay */}
+          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-[#0c1222]/80 to-transparent pointer-events-none" />
         </div>
       </div>
-
-      {/* Bottom neon glow reflection */}
-      <div
-        className="absolute -bottom-6 left-[5%] right-[5%] h-12 blur-2xl opacity-60 rounded-full pointer-events-none"
-        style={{ background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)` }}
-      />
     </div>
   );
 }
@@ -622,9 +580,7 @@ export default function LandingPage() {
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
               className="relative"
             >
-              <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-500">
-                <RenderedVideo src="/videos/hero.mp4" accentColor="#8b5cf6" label="Live Preview" />
-              </div>
+              <RenderedVideo src="/videos/hero.mp4" accentColor="#8b5cf6" />
 
               {/* Floating accent cards */}
               <div className="absolute -bottom-4 -left-4 p-3 rounded-xl bg-[#0f1729]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
@@ -648,55 +604,38 @@ export default function LandingPage() {
             </motion.div>
           </div>
 
-          {/* ===== 3 SMALL VIDEO DEMOS IN A ROW ===== */}
+          {/* ===== 3 VIDEO DEMOS IN A ROW ===== */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
-            className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"
+            className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
           >
             {[
-              { src: "/videos/process.mp4", label: "AI Builder", accent: "#7c3aed", offset: "" },
-              { src: "/videos/features.mp4", label: "Templates", accent: "#3b82f6", offset: "md:-translate-y-4" },
-              { src: "/videos/ads.mp4", label: "Ads Manager", accent: "#06b6d4", offset: "" },
+              { src: "/videos/process.mp4", accent: "#7c3aed" },
+              { src: "/videos/features.mp4", accent: "#3b82f6" },
+              { src: "/videos/ads.mp4", accent: "#06b6d4" },
             ].map((video, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.0 + idx * 0.15 }}
-                className={`${video.offset}`}
               >
-                <div className={`transform ${idx % 2 === 0 ? 'rotate-2' : '-rotate-2'} hover:rotate-0 transition-transform duration-500`}>
-                  <RenderedVideo src={video.src} accentColor={video.accent} label={video.label} />
-                </div>
+                <RenderedVideo src={video.src} accentColor={video.accent} />
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ===== LOGO MARQUEE — SOCIAL PROOF ===== */}
-      <section className="py-12 border-y border-white/5 relative overflow-hidden bg-[#080e1a]">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0c1222] via-transparent to-[#0c1222] z-10 pointer-events-none" />
-        <p className="text-center text-xs font-medium text-slate-400 tracking-[0.2em] uppercase mb-8">
-          {language === "en" ? "Trusted by businesses worldwide" : "Scelto da aziende in tutto il mondo"}
-        </p>
-        <div className="flex items-center gap-16 animate-marquee whitespace-nowrap">
-          {[...Array(2)].map((_, setIdx) => (
-            <div key={setIdx} className="flex items-center gap-16 shrink-0">
-              {["Meta", "Google", "Shopify", "Stripe", "Vercel", "Next.js", "TailwindCSS", "Framer"].map((brand, i) => (
-                <span key={i} className="text-xl font-bold text-white/20 hover:text-white/50 transition-colors duration-300 cursor-default select-none">
-                  {brand}
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ===== QUICK STATS STRIP ===== */}
-      <section className="py-20 relative overflow-hidden bg-blue-600">
+      <section className="py-16 relative overflow-hidden bg-[#080e1a]">
+        {/* Top gradient line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+        {/* Bottom gradient line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+
         <div className="max-w-5xl mx-auto px-6 relative">
           <motion.div
             initial={{ opacity: 0, x: -60 }}
@@ -706,27 +645,23 @@ export default function LandingPage() {
           >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { value: t("quickStats.creationTime"), label: t("quickStats.creationTimeLabel") },
-              { value: t("quickStats.templates"), label: t("quickStats.templatesLabel") },
-              { value: t("quickStats.animations"), label: t("quickStats.animationsLabel") },
-              { value: t("quickStats.monitoring"), label: t("quickStats.monitoringLabel") },
+              { value: t("quickStats.creationTime"), label: t("quickStats.creationTimeLabel"), icon: BoltIcon },
+              { value: t("quickStats.templates"), label: t("quickStats.templatesLabel"), icon: SwatchIcon },
+              { value: t("quickStats.animations"), label: t("quickStats.animationsLabel"), icon: SparklesIcon },
+              { value: t("quickStats.monitoring"), label: t("quickStats.monitoringLabel"), icon: ShieldCheckIcon },
             ].map((stat, idx) => (
-              <div key={idx} className="relative group">
-                <div className="relative p-6 rounded-2xl bg-white/20 border border-blue-700/30 hover:bg-white/25 transition-all duration-300 hover:scale-105">
-                  <p className="text-3xl md:text-4xl font-black text-white">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm text-white/70 mt-2 font-medium">{stat.label}</p>
-                </div>
+              <div key={idx} className="relative flex flex-col items-center">
+                {/* Vertical divider (visible on md+ between items) */}
+                {idx > 0 && (
+                  <div className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 h-12 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+                )}
+                <stat.icon className="w-5 h-5 text-blue-400/70 mb-3" />
+                <p className="text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+                  {stat.value}
+                </p>
+                <p className="text-sm text-white/50 mt-2 font-medium">{stat.label}</p>
               </div>
             ))}
-          </div>
-
-          {/* Stats Video */}
-          <div className="mt-12 max-w-sm mx-auto">
-            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
-              <RenderedVideo src="/videos/stats.mp4" accentColor="#1e40af" label="Stats" />
-            </div>
           </div>
           </motion.div>
         </div>
@@ -796,11 +731,9 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={stepsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 max-w-sm mx-auto"
+            className="mt-16 max-w-2xl mx-auto"
           >
-            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
-              <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" label={language === "en" ? "How It Works" : "Come Funziona"} />
-            </div>
+              <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" />
           </motion.div>
           </motion.div>
         </div>
@@ -870,11 +803,9 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-16 max-w-sm mx-auto"
+            className="mt-16 max-w-2xl mx-auto"
           >
-            <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-500">
-              <RenderedVideo src="/videos/features.mp4" accentColor="#1e40af" label="Features Demo" />
-            </div>
+              <RenderedVideo src="/videos/features.mp4" accentColor="#1e40af" />
           </motion.div>
           </motion.div>
         </div>
@@ -1007,10 +938,8 @@ export default function LandingPage() {
             </div>
 
             {/* Ads Video — compact */}
-            <div className="mt-12 max-w-sm mx-auto">
-              <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                <RenderedVideo src="/videos/ads.mp4" accentColor="#10b981" label="Ads Manager" />
-              </div>
+            <div className="mt-12 max-w-2xl mx-auto">
+                <RenderedVideo src="/videos/ads.mp4" accentColor="#10b981" />
             </div>
           </motion.div>
           </motion.div>
@@ -1074,10 +1003,8 @@ export default function LandingPage() {
           </div>
 
           {/* Timeline Video */}
-          <div className="mt-12 max-w-sm mx-auto">
-            <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-500">
-              <RenderedVideo src="/videos/timeline.mp4" accentColor="#1e40af" label="Timeline" />
-            </div>
+          <div className="mt-12 max-w-2xl mx-auto">
+              <RenderedVideo src="/videos/timeline.mp4" accentColor="#1e40af" />
           </div>
           </motion.div>
         </div>
@@ -1359,10 +1286,8 @@ export default function LandingPage() {
           </div>
 
           {/* Stats Video */}
-          <div className="mt-12 max-w-sm mx-auto">
-            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
-              <RenderedVideo src="/videos/stats.mp4" accentColor="#8b5cf6" label="Stats" />
-            </div>
+          <div className="mt-12 max-w-2xl mx-auto">
+              <RenderedVideo src="/videos/stats.mp4" accentColor="#8b5cf6" />
           </div>
           </motion.div>
         </div>
@@ -1495,70 +1420,8 @@ export default function LandingPage() {
           </div>
 
           {/* Pricing Video */}
-          <div className="mt-12 max-w-sm mx-auto">
-            <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-500">
-              <RenderedVideo src="/videos/pricing.mp4" accentColor="#8b5cf6" label="Pricing" />
-            </div>
-          </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ===== TESTIMONIALS ===== */}
-      <section className="py-24 lg:py-32 relative bg-blue-600">
-        <div className="max-w-7xl mx-auto px-6 relative">
-          <motion.div
-            initial={{ opacity: 0, x: -60 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-white">
-              {t("testimonials.title")}
-            </h2>
-            <p className="text-lg text-white/70">
-              {t("testimonials.subtitle")}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, idx) => (
-              <TiltCard
-                key={idx}
-                className="p-6 lg:p-8 rounded-2xl bg-white/20 border border-white/20 hover:bg-white/25 transition-all duration-300"
-              >
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <StarIcon
-                      key={i}
-                      className="w-5 h-5 text-amber-400 fill-amber-400"
-                    />
-                  ))}
-                </div>
-                <p className="text-white mb-6 leading-relaxed">
-                  &ldquo;{testimonial.quote}&rdquo;
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center font-semibold text-sm text-white">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <p className="font-medium text-white">{testimonial.author}</p>
-                    <p className="text-sm text-white/60">
-                      {testimonial.role}
-                    </p>
-                  </div>
-                </div>
-              </TiltCard>
-            ))}
-          </div>
-
-          {/* Testimonials Video */}
-          <div className="mt-12 max-w-sm mx-auto">
-            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
-              <RenderedVideo src="/videos/testimonials.mp4" accentColor="#1e40af" label="Testimonials" />
-            </div>
+          <div className="mt-12 max-w-2xl mx-auto">
+              <RenderedVideo src="/videos/pricing.mp4" accentColor="#8b5cf6" />
           </div>
           </motion.div>
         </div>

@@ -6,14 +6,6 @@ import {
   spring,
   Easing,
 } from "remotion";
-import {
-  TransitionSeries,
-  linearTiming,
-} from "@remotion/transitions";
-import { fade } from "@remotion/transitions/fade";
-import { slide } from "@remotion/transitions/slide";
-import { wipe } from "@remotion/transitions/wipe";
-import { evolvePath } from "@remotion/paths";
 import { loadFont } from "@remotion/google-fonts/Inter";
 
 // Load Inter font
@@ -25,46 +17,6 @@ const { fontFamily } = loadFont();
 
 const FONT = `${fontFamily}, -apple-system, BlinkMacSystemFont, sans-serif`;
 
-const GradientOrb = ({
-  color,
-  size,
-  x,
-  y,
-  phaseOffset,
-}: {
-  color: string;
-  size: number;
-  x: string;
-  y: string;
-  phaseOffset: number;
-}) => {
-  const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
-  const breathe = interpolate(
-    frame,
-    [0, durationInFrames / 2, durationInFrames],
-    [1, 1.3, 1],
-    { extrapolateRight: "clamp" }
-  );
-  const drift = Math.sin((frame + phaseOffset) * 0.02) * 15;
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        width: size,
-        height: size,
-        borderRadius: "50%",
-        background: color,
-        filter: `blur(${size * 0.4}px)`,
-        left: x,
-        top: y,
-        transform: `scale(${breathe}) translate(${drift}px, ${drift * 0.6}px)`,
-      }}
-    />
-  );
-};
-
 /** Seeded pseudo-random for deterministic rendering */
 function seededRandom(seed: number): number {
   const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
@@ -72,267 +24,75 @@ function seededRandom(seed: number): number {
 }
 
 /* ------------------------------------------------------------------ */
-/*  HERO VIDEO COMPOSITION — 12 seconds, 360 frames                   */
+/*  DARK CINEMATIC BACKGROUND (shared across Hero scenes)              */
 /* ------------------------------------------------------------------ */
 
-/** Scene 1: "Descrivi il tuo business" — typewriter + form fields */
-const HeroScene1 = () => {
+const DarkBackground = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
-  // Typewriter for "Ristorante Da Mario"
-  const typeText = "Ristorante Da Mario";
-  const typeProgress = interpolate(frame, [15, 15 + typeText.length * 2], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const visibleChars = Math.floor(typeProgress * typeText.length);
-
-  // Cursor blink
-  const cursorOpacity =
-    visibleChars < typeText.length ? (Math.sin(frame * 0.3) > 0 ? 1 : 0) : 0;
-
-  // Form fields appear with spring stagger
-  const fields = [
-    { label: "NOME ATTIVITA", delay: 5 },
-    { label: "TIPO", delay: 20 },
-    { label: "STILE", delay: 35 },
-  ];
-
-  return (
-    <AbsoluteFill
-      style={{
-        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
-        fontFamily: FONT,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {/* Animated gradient orbs */}
-      <GradientOrb color="rgba(139,92,246,0.08)" size={500} x="10%" y="15%" phaseOffset={0} />
-      <GradientOrb color="rgba(59,130,246,0.06)" size={400} x="60%" y="55%" phaseOffset={60} />
-      <GradientOrb color="rgba(168,85,247,0.05)" size={350} x="75%" y="10%" phaseOffset={120} />
-
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 48,
-        }}
-      >
-        {/* Title */}
-        <div
-          style={{
-            opacity: interpolate(
-              spring({ frame, fps, config: { damping: 15, stiffness: 80 } }),
-              [0, 1],
-              [0, 1]
-            ),
-            transform: `translateY(${interpolate(
-              spring({ frame, fps, config: { damping: 15 } }),
-              [0, 1],
-              [40, 0]
-            )}px)`,
-          }}
-        >
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "8px 20px",
-              borderRadius: 24,
-              background: "rgba(99,102,241,0.08)",
-              border: "1px solid rgba(99,102,241,0.2)",
-              marginBottom: 20,
-            }}
-          >
-            <div
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "#22c55e",
-                boxShadow: "0 0 8px rgba(34,197,94,0.5)",
-              }}
-            />
-            <span style={{ fontSize: 14, color: "#6366f1", letterSpacing: 1.5, fontWeight: 600 }}>
-              STEP 1
-            </span>
-          </div>
-          <h1
-            style={{
-              fontSize: 56,
-              fontWeight: 800,
-              color: "#0c1222",
-              textAlign: "center",
-              lineHeight: 1.15,
-            }}
-          >
-            Descrivi il tuo{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, #3b82f6, #7c3aed)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              business
-            </span>
-          </h1>
-        </div>
-
-        {/* Form fields */}
-        <div style={{ width: 650, display: "flex", flexDirection: "column", gap: 20 }}>
-          {fields.map((field, i) => {
-            const fieldEnter = spring({
-              frame: frame - field.delay,
-              fps,
-              config: { damping: 14, stiffness: 100 },
-            });
-            const fieldOpacity = interpolate(fieldEnter, [0, 1], [0, 1]);
-            const fieldY = interpolate(fieldEnter, [0, 1], [30, 0]);
-
-            return (
-              <div
-                key={field.label}
-                style={{
-                  opacity: fieldOpacity,
-                  transform: `translateY(${fieldY}px)`,
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "#64748b",
-                    marginBottom: 8,
-                    fontWeight: 600,
-                    letterSpacing: 1,
-                  }}
-                >
-                  {field.label}
-                </div>
-                <div
-                  style={{
-                    padding: "14px 18px",
-                    borderRadius: 12,
-                    background: "#ffffff",
-                    border:
-                      i === 0
-                        ? "1px solid rgba(99,102,241,0.4)"
-                        : "1px solid #e2e8f0",
-                    fontSize: 18,
-                    color: "#0c1222",
-                    minHeight: 50,
-                    display: "flex",
-                    alignItems: "center",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-                  }}
-                >
-                  {i === 0 && (
-                    <span>
-                      {typeText.slice(0, visibleChars)}
-                      <span
-                        style={{
-                          opacity: cursorOpacity,
-                          borderRight: "2px solid #6366f1",
-                          marginLeft: 1,
-                          display: "inline-block",
-                          height: 20,
-                        }}
-                      />
-                    </span>
-                  )}
-                  {i === 1 && frame > 50 && (
-                    <span style={{ color: "#64748b" }}>Ristorante</span>
-                  )}
-                  {i === 2 && frame > 65 && (
-                    <span style={{ color: "#64748b" }}>Elegante</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/** Scene 2: "L'AI genera il tuo sito" — progress ring + particles */
-const HeroScene2 = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  // Progress ring: 0% to 100% over the scene
-  const progress = interpolate(frame, [10, 85], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-  });
-
-  const percentage = Math.round(progress * 100);
-
-  // Ring SVG
-  const ringSize = 200;
-  const strokeWidth = 6;
-  const r = (ringSize - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * r;
-  const dashOffset = circumference * (1 - progress);
-
-  // Flash when reaching 100%
-  const flashOpacity =
-    percentage >= 100
-      ? interpolate(frame, [85, 95], [0.3, 0], {
-          extrapolateLeft: "clamp",
-          extrapolateRight: "clamp",
-        })
-      : 0;
-
-  // Pulsing text opacity
-  const pulseOpacity = interpolate(
-    Math.sin(frame * 0.12),
-    [-1, 1],
-    [0.5, 1]
-  );
-
-  // Floating particles (deterministic positions)
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    x: seededRandom(i * 3 + 1) * 1920,
-    y: seededRandom(i * 3 + 2) * 1080,
-    size: 3 + seededRandom(i * 3 + 3) * 5,
-    speed: 0.5 + seededRandom(i * 7) * 1.5,
-    phase: seededRandom(i * 11) * Math.PI * 2,
+  // Particle dots
+  const particles = Array.from({ length: 40 }, (_, i) => ({
+    x: seededRandom(i * 4 + 1) * 1920,
+    y: seededRandom(i * 4 + 2) * 1080,
+    size: 2 + seededRandom(i * 4 + 3) * 3,
+    phase: seededRandom(i * 4 + 4) * Math.PI * 2,
+    speed: 0.3 + seededRandom(i * 4 + 5) * 0.8,
   }));
 
-  // Title entrance
-  const titleEnter = spring({ frame, fps, config: { damping: 15 } });
-
   return (
-    <AbsoluteFill
-      style={{
-        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
-        fontFamily: FONT,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <GradientOrb color="rgba(99,102,241,0.08)" size={600} x="20%" y="20%" phaseOffset={0} />
-      <GradientOrb color="rgba(168,85,247,0.06)" size={500} x="60%" y="50%" phaseOffset={40} />
+    <>
+      {/* Base dark background */}
+      <AbsoluteFill style={{ background: "#0a0a0f" }} />
 
-      {/* Floating particles */}
+      {/* Animated gradient mesh — purple/blue nebula */}
+      <div
+        style={{
+          position: "absolute",
+          width: 900,
+          height: 900,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(88,28,135,0.35) 0%, transparent 70%)",
+          filter: "blur(120px)",
+          left: "10%",
+          top: "-20%",
+          transform: `translate(${Math.sin(frame * 0.015) * 30}px, ${Math.cos(frame * 0.012) * 20}px)`,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          width: 700,
+          height: 700,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(30,64,175,0.3) 0%, transparent 70%)",
+          filter: "blur(100px)",
+          right: "-5%",
+          bottom: "-10%",
+          transform: `translate(${Math.cos(frame * 0.018) * 25}px, ${Math.sin(frame * 0.014) * 18}px)`,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          width: 500,
+          height: 500,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%)",
+          filter: "blur(80px)",
+          left: "50%",
+          top: "40%",
+          transform: `translate(-50%, -50%) translate(${Math.sin(frame * 0.02 + 1) * 20}px, ${Math.cos(frame * 0.016 + 1) * 15}px)`,
+        }}
+      />
+
+      {/* Floating particle dots */}
       {particles.map((p, i) => {
-        const px = p.x + Math.sin(frame * 0.03 * p.speed + p.phase) * 40;
-        const py = p.y + Math.cos(frame * 0.025 * p.speed + p.phase) * 30;
+        const px = p.x + Math.sin(frame * 0.02 * p.speed + p.phase) * 30;
+        const py = p.y + Math.cos(frame * 0.018 * p.speed + p.phase) * 25;
         const pOpacity = interpolate(
-          Math.sin(frame * 0.05 + p.phase),
+          Math.sin(frame * 0.04 + p.phase),
           [-1, 1],
-          [0.1, 0.4]
+          [0.05, 0.25]
         );
         return (
           <div
@@ -344,18 +104,46 @@ const HeroScene2 = () => {
               width: p.size,
               height: p.size,
               borderRadius: "50%",
-              background:
-                i % 3 === 0
-                  ? "rgba(99,102,241,0.6)"
-                  : i % 3 === 1
-                    ? "rgba(168,85,247,0.6)"
-                    : "rgba(59,130,246,0.6)",
+              background: "rgba(255,255,255,0.8)",
               opacity: pOpacity,
-              filter: `blur(${p.size * 0.3}px)`,
             }}
           />
         );
       })}
+    </>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/*  HERO VIDEO COMPOSITION — 12 seconds, 360 frames (Dark Cinematic)  */
+/* ------------------------------------------------------------------ */
+
+/** Scene 1: "E-QUIPE" brand intro — huge text with glow */
+const HeroScene1 = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const titleEnter = spring({
+    frame: frame - 10,
+    fps,
+    config: { damping: 12, stiffness: 80 },
+  });
+  const subtitleEnter = spring({
+    frame: frame - 30,
+    fps,
+    config: { damping: 14, stiffness: 90 },
+  });
+
+  // Glow pulse
+  const glowSize = interpolate(
+    Math.sin(frame * 0.08),
+    [-1, 1],
+    [40, 80]
+  );
+
+  return (
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <DarkBackground />
 
       <div
         style={{
@@ -364,6 +152,272 @@ const HeroScene2 = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        {/* Brand name */}
+        <div
+          style={{
+            opacity: interpolate(titleEnter, [0, 1], [0, 1]),
+            transform: `scale(${interpolate(titleEnter, [0, 1], [0.7, 1])})`,
+          }}
+        >
+          <h1
+            style={{
+              fontSize: 140,
+              fontWeight: 900,
+              color: "#ffffff",
+              textAlign: "center",
+              letterSpacing: 12,
+              lineHeight: 1,
+              textShadow: `0 0 ${glowSize}px rgba(139,92,246,0.6), 0 0 ${glowSize * 2}px rgba(59,130,246,0.3)`,
+            }}
+          >
+            E-QUIPE
+          </h1>
+        </div>
+
+        {/* Subtitle */}
+        <div
+          style={{
+            opacity: interpolate(subtitleEnter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(subtitleEnter, [0, 1], [30, 0])}px)`,
+            marginTop: 32,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 52,
+              fontWeight: 600,
+              background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              textAlign: "center",
+              letterSpacing: 4,
+            }}
+          >
+            Site Builder AI
+          </div>
+        </div>
+
+        {/* Decorative line */}
+        <div
+          style={{
+            marginTop: 40,
+            width: interpolate(titleEnter, [0, 1], [0, 200]),
+            height: 2,
+            background: "linear-gradient(90deg, transparent, rgba(139,92,246,0.8), transparent)",
+          }}
+        />
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/** Scene 2: "L'AI GENERA IL TUO SITO" — spinning orb + progress */
+const HeroScene2 = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const titleEnter = spring({
+    frame: frame - 5,
+    fps,
+    config: { damping: 14, stiffness: 90 },
+  });
+
+  // Progress counter
+  const progress = interpolate(frame, [15, 80], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+  });
+  const percentage = Math.round(progress * 100);
+
+  // Orb animation
+  const orbScale = interpolate(
+    Math.sin(frame * 0.08),
+    [-1, 1],
+    [0.9, 1.1]
+  );
+  const orbRotation = frame * 2;
+  const orbGlow = interpolate(
+    Math.sin(frame * 0.06),
+    [-1, 1],
+    [30, 70]
+  );
+
+  return (
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <DarkBackground />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100%",
+          gap: 40,
+        }}
+      >
+        {/* Title */}
+        <div
+          style={{
+            opacity: interpolate(titleEnter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(titleEnter, [0, 1], [40, 0])}px)`,
+          }}
+        >
+          <h1
+            style={{
+              fontSize: 72,
+              fontWeight: 800,
+              color: "#ffffff",
+              textAlign: "center",
+              lineHeight: 1.15,
+              textShadow: "0 0 30px rgba(139,92,246,0.4)",
+            }}
+          >
+            {"L'AI GENERA"}
+            <br />
+            <span
+              style={{
+                background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              IL TUO SITO
+            </span>
+          </h1>
+        </div>
+
+        {/* Spinning orb */}
+        <div
+          style={{
+            position: "relative",
+            width: 200,
+            height: 200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {/* Outer ring */}
+          <div
+            style={{
+              position: "absolute",
+              width: 200,
+              height: 200,
+              borderRadius: "50%",
+              border: "2px solid rgba(139,92,246,0.3)",
+              transform: `rotate(${orbRotation}deg)`,
+              borderTopColor: "#818cf8",
+              borderRightColor: "rgba(56,189,248,0.6)",
+            }}
+          />
+          {/* Inner orb */}
+          <div
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: "50%",
+              background: "radial-gradient(circle at 35% 35%, #818cf8, #4f46e5, #1e1b4b)",
+              transform: `scale(${orbScale})`,
+              boxShadow: `0 0 ${orbGlow}px rgba(129,140,248,0.5), 0 0 ${orbGlow * 2}px rgba(59,130,246,0.2)`,
+            }}
+          />
+          {/* Percentage overlay */}
+          <div
+            style={{
+              position: "absolute",
+              fontSize: 48,
+              fontWeight: 800,
+              color: "#ffffff",
+              fontVariantNumeric: "tabular-nums",
+              textShadow: "0 0 20px rgba(139,92,246,0.8)",
+            }}
+          >
+            {percentage}%
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div
+          style={{
+            width: 400,
+            height: 6,
+            borderRadius: 3,
+            background: "rgba(255,255,255,0.1)",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: `${percentage}%`,
+              height: "100%",
+              borderRadius: 3,
+              background: "linear-gradient(90deg, #818cf8, #38bdf8)",
+              boxShadow: "0 0 20px rgba(129,140,248,0.5)",
+            }}
+          />
+        </div>
+
+        {/* Status text */}
+        <div
+          style={{
+            fontSize: 48,
+            fontWeight: 600,
+            color: percentage < 100 ? "rgba(255,255,255,0.6)" : "#38bdf8",
+            textShadow: percentage >= 100 ? "0 0 20px rgba(56,189,248,0.5)" : "none",
+          }}
+        >
+          {percentage < 100 ? "Generazione..." : "Completato!"}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/** Scene 3: "IL RISULTATO" — simplified website mockup */
+const HeroScene3 = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const titleEnter = spring({
+    frame,
+    fps,
+    config: { damping: 14, stiffness: 90 },
+  });
+  const mockupEnter = spring({
+    frame: frame - 15,
+    fps,
+    config: { damping: 12, stiffness: 70 },
+  });
+
+  // Staggered blocks
+  const block1 = spring({ frame: frame - 25, fps, config: { damping: 14 } });
+  const block2 = spring({ frame: frame - 35, fps, config: { damping: 14 } });
+  const block3 = spring({ frame: frame - 45, fps, config: { damping: 14 } });
+
+  return (
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <DarkBackground />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100%",
           gap: 40,
         }}
       >
@@ -374,158 +428,192 @@ const HeroScene2 = () => {
             transform: `translateY(${interpolate(titleEnter, [0, 1], [30, 0])}px)`,
           }}
         >
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "8px 20px",
-              borderRadius: 24,
-              background: "rgba(99,102,241,0.08)",
-              border: "1px solid rgba(99,102,241,0.2)",
-              marginBottom: 20,
-            }}
-          >
-            <span style={{ fontSize: 14, color: "#6366f1", letterSpacing: 1.5, fontWeight: 600 }}>
-              STEP 2
-            </span>
-          </div>
           <h1
             style={{
-              fontSize: 56,
+              fontSize: 80,
               fontWeight: 800,
-              color: "#0c1222",
+              color: "#ffffff",
               textAlign: "center",
-              lineHeight: 1.15,
+              textShadow: "0 0 30px rgba(139,92,246,0.4)",
             }}
           >
-            {"L'AI genera il tuo "}
-
-            <span
-              style={{
-                background: "linear-gradient(135deg, #3b82f6, #7c3aed)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              sito
-            </span>
+            IL RISULTATO
           </h1>
         </div>
 
-        {/* Progress ring */}
-        <div style={{ position: "relative" }}>
-          <svg
-            width={ringSize}
-            height={ringSize}
-            style={{ transform: "rotate(-90deg)" }}
-          >
-            <circle
-              cx={ringSize / 2}
-              cy={ringSize / 2}
-              r={r}
-              fill="none"
-              stroke="rgba(99,102,241,0.1)"
-              strokeWidth={strokeWidth}
-            />
-            <circle
-              cx={ringSize / 2}
-              cy={ringSize / 2}
-              r={r}
-              fill="none"
-              stroke="url(#progressGrad)"
-              strokeWidth={strokeWidth}
-              strokeDasharray={circumference}
-              strokeDashoffset={dashOffset}
-              strokeLinecap="round"
-            />
-            <defs>
-              <linearGradient id="progressGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#7c3aed" />
-              </linearGradient>
-            </defs>
-          </svg>
-          {/* Percentage text centered on ring */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: ringSize,
-              height: ringSize,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span
-              style={{
-                fontSize: 48,
-                fontWeight: 800,
-                color: "#0c1222",
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              {percentage}%
-            </span>
-          </div>
-        </div>
-
-        {/* Status text */}
+        {/* Simplified browser mockup */}
         <div
           style={{
-            fontSize: 22,
-            color: "#6366f1",
-            fontWeight: 500,
-            opacity: percentage < 100 ? pulseOpacity : 1,
+            opacity: interpolate(mockupEnter, [0, 1], [0, 1]),
+            transform: `scale(${interpolate(mockupEnter, [0, 1], [0.85, 1])})`,
+            width: 900,
+            borderRadius: 16,
+            overflow: "hidden",
+            border: "1px solid rgba(139,92,246,0.3)",
+            boxShadow: "0 0 60px rgba(139,92,246,0.15), 0 25px 80px rgba(0,0,0,0.4)",
           }}
         >
-          {percentage < 100 ? "Generazione in corso..." : "Completato!"}
+          {/* Browser bar */}
+          <div
+            style={{
+              height: 44,
+              background: "rgba(255,255,255,0.05)",
+              display: "flex",
+              alignItems: "center",
+              padding: "0 16px",
+              gap: 8,
+              borderBottom: "1px solid rgba(255,255,255,0.1)",
+            }}
+          >
+            <div style={{ display: "flex", gap: 6 }}>
+              <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f57" }} />
+              <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ffbd2e" }} />
+              <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#28c840" }} />
+            </div>
+            <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+              <div
+                style={{
+                  padding: "4px 24px",
+                  borderRadius: 8,
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  color: "rgba(255,255,255,0.5)",
+                  fontSize: 13,
+                  fontFamily: "monospace",
+                }}
+              >
+                il-tuo-sito.e-quipe.app
+              </div>
+            </div>
+          </div>
+
+          {/* Site content — colored blocks */}
+          <div style={{ background: "#0f0f18", padding: 24 }}>
+            {/* Nav bar block */}
+            <div
+              style={{
+                opacity: interpolate(block1, [0, 1], [0, 1]),
+                height: 40,
+                borderRadius: 8,
+                background: "rgba(255,255,255,0.06)",
+                marginBottom: 16,
+                display: "flex",
+                alignItems: "center",
+                padding: "0 16px",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ width: 80, height: 14, borderRadius: 4, background: "rgba(129,140,248,0.4)" }} />
+              <div style={{ display: "flex", gap: 12 }}>
+                {[60, 50, 70, 55].map((w, i) => (
+                  <div key={i} style={{ width: w, height: 10, borderRadius: 3, background: "rgba(255,255,255,0.15)" }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Hero block */}
+            <div
+              style={{
+                opacity: interpolate(block2, [0, 1], [0, 1]),
+                transform: `translateY(${interpolate(block2, [0, 1], [20, 0])}px)`,
+                height: 220,
+                borderRadius: 12,
+                background: "linear-gradient(135deg, rgba(88,28,135,0.4), rgba(30,64,175,0.3))",
+                marginBottom: 16,
+                padding: 32,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: 12,
+              }}
+            >
+              <div style={{ width: 350, height: 28, borderRadius: 6, background: "rgba(255,255,255,0.25)" }} />
+              <div style={{ width: 250, height: 16, borderRadius: 4, background: "rgba(255,255,255,0.12)" }} />
+              <div
+                style={{
+                  width: 140,
+                  height: 40,
+                  borderRadius: 8,
+                  background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+                  marginTop: 8,
+                  boxShadow: "0 0 20px rgba(129,140,248,0.3)",
+                }}
+              />
+            </div>
+
+            {/* Section blocks row */}
+            <div
+              style={{
+                opacity: interpolate(block3, [0, 1], [0, 1]),
+                transform: `translateY(${interpolate(block3, [0, 1], [20, 0])}px)`,
+                display: "flex",
+                gap: 12,
+              }}
+            >
+              {[1, 2, 3].map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    flex: 1,
+                    height: 100,
+                    borderRadius: 10,
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    padding: 16,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
+                >
+                  <div style={{ width: "60%", height: 12, borderRadius: 3, background: "rgba(129,140,248,0.3)" }} />
+                  <div style={{ width: "80%", height: 8, borderRadius: 2, background: "rgba(255,255,255,0.1)" }} />
+                  <div style={{ width: "50%", height: 8, borderRadius: 2, background: "rgba(255,255,255,0.07)" }} />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Flash overlay when done */}
-      <AbsoluteFill
-        style={{
-          background: "rgba(99,102,241,0.15)",
-          opacity: flashOpacity,
-        }}
-      />
     </AbsoluteFill>
   );
 };
 
-/** Scene 3: "Il risultato" — mock browser with generated site */
-const HeroScene3 = () => {
+/** Scene 4: "INIZIA ORA" — big CTA with glow pulse + Gratis badge */
+const HeroScene4 = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const browserEnter = spring({
+  const titleEnter = spring({
     frame: frame - 5,
     fps,
-    config: { damping: 16, stiffness: 80 },
+    config: { damping: 10, stiffness: 100 },
   });
-  const browserScale = interpolate(browserEnter, [0, 1], [0.88, 1]);
-  const browserOpacity = interpolate(browserEnter, [0, 1], [0, 1]);
+  const ctaEnter = spring({
+    frame: frame - 25,
+    fps,
+    config: { damping: 12, stiffness: 90 },
+  });
+  const badgeEnter = spring({
+    frame: frame - 40,
+    fps,
+    config: { damping: 14, stiffness: 100 },
+  });
+  const brandEnter = spring({
+    frame: frame - 55,
+    fps,
+    config: { damping: 14 },
+  });
 
-  // Sections appear with stagger
-  const navEnter = spring({ frame: frame - 15, fps, config: { damping: 14 } });
-  const heroEnter = spring({ frame: frame - 25, fps, config: { damping: 14 } });
-  const btnEnter = spring({ frame: frame - 40, fps, config: { damping: 12 } });
+  // CTA glow pulse
+  const ctaGlow = interpolate(
+    Math.sin(frame * 0.1),
+    [-1, 1],
+    [20, 50]
+  );
 
   return (
-    <AbsoluteFill
-      style={{
-        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
-        fontFamily: FONT,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <GradientOrb color="rgba(59,130,246,0.06)" size={600} x="5%" y="10%" phaseOffset={0} />
-      <GradientOrb color="rgba(139,92,246,0.05)" size={450} x="70%" y="60%" phaseOffset={50} />
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <DarkBackground />
 
       <div
         style={{
@@ -534,545 +622,120 @@ const HeroScene3 = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 32,
-          width: "100%",
-          maxWidth: 1100,
-        }}
-      >
-        {/* Title */}
-        <div
-          style={{
-            opacity: interpolate(
-              spring({ frame, fps, config: { damping: 15 } }),
-              [0, 1],
-              [0, 1]
-            ),
-            transform: `translateY(${interpolate(
-              spring({ frame, fps }),
-              [0, 1],
-              [20, 0]
-            )}px)`,
-          }}
-        >
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "8px 20px",
-              borderRadius: 24,
-              background: "rgba(34,197,94,0.08)",
-              border: "1px solid rgba(34,197,94,0.2)",
-              marginBottom: 16,
-            }}
-          >
-            <span style={{ fontSize: 14, color: "#16a34a", letterSpacing: 1.5, fontWeight: 600 }}>
-              STEP 3
-            </span>
-          </div>
-          <h1
-            style={{
-              fontSize: 48,
-              fontWeight: 800,
-              color: "#0c1222",
-              textAlign: "center",
-            }}
-          >
-            Il risultato
-          </h1>
-        </div>
-
-        {/* Mock browser */}
-        <div
-          style={{
-            transform: `scale(${browserScale})`,
-            opacity: browserOpacity,
-            borderRadius: 16,
-            overflow: "hidden",
-            border: "1px solid #e2e8f0",
-            boxShadow:
-              "0 25px 80px rgba(0,0,0,0.1), 0 0 60px rgba(99,102,241,0.08)",
-            width: "100%",
-          }}
-        >
-          {/* Chrome bar */}
-          <div
-            style={{
-              height: 44,
-              background: "#f8fafc",
-              display: "flex",
-              alignItems: "center",
-              padding: "0 16px",
-              gap: 8,
-              borderBottom: "1px solid #e2e8f0",
-            }}
-          >
-            <div style={{ display: "flex", gap: 6 }}>
-              <div
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: "50%",
-                  background: "#ff5f57",
-                }}
-              />
-              <div
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: "50%",
-                  background: "#ffbd2e",
-                }}
-              />
-              <div
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: "50%",
-                  background: "#28c840",
-                }}
-              />
-            </div>
-            <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-              <div
-                style={{
-                  padding: "4px 24px",
-                  borderRadius: 8,
-                  background: "#ffffff",
-                  border: "1px solid #e2e8f0",
-                  color: "#64748b",
-                  fontSize: 13,
-                  fontFamily: "monospace",
-                }}
-              >
-                ristorante-da-mario.e-quipe.app
-              </div>
-            </div>
-          </div>
-
-          {/* Site content */}
-          <div style={{ background: "#ffffff", position: "relative" }}>
-            {/* Nav */}
-            <div
-              style={{
-                opacity: interpolate(navEnter, [0, 1], [0, 1]),
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "16px 32px",
-                borderBottom: "1px solid #f1f5f9",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: "#0c1222",
-                }}
-              >
-                Da Mario
-              </span>
-              <div style={{ display: "flex", gap: 24, fontSize: 14, color: "#64748b" }}>
-                <span>Menu</span>
-                <span>Chi Siamo</span>
-                <span>Galleria</span>
-                <span>Contatti</span>
-              </div>
-            </div>
-
-            {/* Hero section */}
-            <div
-              style={{
-                opacity: interpolate(heroEnter, [0, 1], [0, 1]),
-                transform: `translateY(${interpolate(heroEnter, [0, 1], [15, 0])}px)`,
-                height: 340,
-                background: "linear-gradient(135deg, #fef2f2, #fff1f2, #fef9ef)",
-                padding: "48px 48px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              {/* Decorative overlay */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  width: "40%",
-                  height: "100%",
-                  background:
-                    "radial-gradient(circle at 70% 50%, rgba(220,38,38,0.06), transparent 60%)",
-                }}
-              />
-              <h2
-                style={{
-                  fontSize: 44,
-                  fontWeight: 800,
-                  color: "#0c1222",
-                  marginBottom: 12,
-                  lineHeight: 1.2,
-                }}
-              >
-                Il vero gusto
-                <br />
-                della tradizione
-              </h2>
-              <p
-                style={{
-                  fontSize: 18,
-                  color: "#64748b",
-                  marginBottom: 24,
-                  maxWidth: 400,
-                }}
-              >
-                Cucina romana autentica dal 1985
-              </p>
-              <div
-                style={{
-                  opacity: interpolate(btnEnter, [0, 1], [0, 1]),
-                  transform: `scale(${interpolate(btnEnter, [0, 1], [0.8, 1])})`,
-                  display: "inline-flex",
-                  padding: "14px 32px",
-                  borderRadius: 10,
-                  background: "#dc2626",
-                  color: "white",
-                  fontSize: 16,
-                  fontWeight: 700,
-                  width: "fit-content",
-                  boxShadow: "0 8px 30px rgba(220,38,38,0.3)",
-                }}
-              >
-                Prenota un Tavolo
-              </div>
-            </div>
-
-            {/* Section tabs */}
-            <div
-              style={{
-                display: "flex",
-                gap: 1,
-                background: "#f8fafc",
-              }}
-            >
-              {["Chi Siamo", "Il Menu", "Galleria", "Recensioni", "Contatti"].map(
-                (s, i) => {
-                  const secEnter = spring({
-                    frame: frame - (50 + i * 5),
-                    fps,
-                    config: { damping: 14 },
-                  });
-                  return (
-                    <div
-                      key={s}
-                      style={{
-                        flex: 1,
-                        padding: "14px 8px",
-                        textAlign: "center",
-                        fontSize: 13,
-                        color: "#64748b",
-                        borderRight: "1px solid #f1f5f9",
-                        opacity: interpolate(secEnter, [0, 1], [0, 1]),
-                      }}
-                    >
-                      {s}
-                    </div>
-                  );
-                }
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/** Scene 4: "Pubblica con 1 click" — checkmark, URL, confetti */
-const HeroScene4 = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  // Browser shrink to left
-  const browserScale = interpolate(frame, [0, 25], [1, 0.55], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-  });
-  const browserX = interpolate(frame, [0, 25], [0, -320], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-  });
-
-  // Right side elements
-  const checkEnter = spring({
-    frame: frame - 20,
-    fps,
-    config: { damping: 10, stiffness: 120 },
-  });
-  const textEnter = spring({
-    frame: frame - 30,
-    fps,
-    config: { damping: 14 },
-  });
-  const urlEnter = spring({
-    frame: frame - 40,
-    fps,
-    config: { damping: 14 },
-  });
-  const badgeEnter = spring({
-    frame: frame - 60,
-    fps,
-    config: { damping: 14 },
-  });
-
-  // Confetti particles
-  const confettiColors = [
-    "#3b82f6",
-    "#7c3aed",
-    "#22c55e",
-    "#f59e0b",
-    "#ec4899",
-    "#06b6d4",
-  ];
-  const confetti = Array.from({ length: 40 }, (_, i) => ({
-    x: seededRandom(i * 5 + 1) * 1920,
-    startY: -20 - seededRandom(i * 5 + 2) * 200,
-    speed: 2 + seededRandom(i * 5 + 3) * 4,
-    size: 4 + seededRandom(i * 5 + 4) * 8,
-    color: confettiColors[Math.floor(seededRandom(i * 5 + 5) * confettiColors.length)],
-    wobble: seededRandom(i * 5 + 6) * Math.PI * 2,
-    rotation: seededRandom(i * 5 + 7) * 360,
-  }));
-
-  const confettiProgress = interpolate(frame, [25, 90], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  return (
-    <AbsoluteFill
-      style={{
-        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
-        fontFamily: FONT,
-        overflow: "hidden",
-      }}
-    >
-      <GradientOrb color="rgba(34,197,94,0.08)" size={500} x="50%" y="30%" phaseOffset={0} />
-      <GradientOrb color="rgba(59,130,246,0.05)" size={400} x="20%" y="60%" phaseOffset={70} />
-
-      {/* Confetti */}
-      {confettiProgress > 0 &&
-        confetti.map((c, i) => {
-          const y =
-            c.startY + confettiProgress * (1080 + 400) * (c.speed / 6);
-          const wobbleX = Math.sin(confettiProgress * 10 + c.wobble) * 30;
-          const rot = c.rotation + confettiProgress * 720;
-          const opacity = interpolate(y, [800, 1100], [1, 0], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-          });
-
-          return (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                left: c.x + wobbleX,
-                top: y,
-                width: c.size,
-                height: c.size * 0.6,
-                borderRadius: 2,
-                background: c.color,
-                transform: `rotate(${rot}deg)`,
-                opacity: opacity * 0.8,
-              }}
-            />
-          );
-        })}
-
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          alignItems: "center",
           justifyContent: "center",
           width: "100%",
           height: "100%",
-          padding: 60,
-          gap: 60,
+          gap: 40,
         }}
       >
-        {/* Left: mini browser */}
+        {/* Main CTA text */}
         <div
           style={{
-            transform: `scale(${browserScale}) translateX(${browserX}px)`,
-            borderRadius: 14,
-            overflow: "hidden",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
-            width: 700,
-            flexShrink: 0,
+            opacity: interpolate(titleEnter, [0, 1], [0, 1]),
+            transform: `scale(${interpolate(titleEnter, [0, 1], [0.6, 1])})`,
+          }}
+        >
+          <h1
+            style={{
+              fontSize: 120,
+              fontWeight: 900,
+              color: "#ffffff",
+              textAlign: "center",
+              lineHeight: 1.1,
+              textShadow: `0 0 ${ctaGlow}px rgba(139,92,246,0.5), 0 0 ${ctaGlow * 2}px rgba(59,130,246,0.3)`,
+            }}
+          >
+            INIZIA ORA
+          </h1>
+        </div>
+
+        {/* CTA button */}
+        <div
+          style={{
+            opacity: interpolate(ctaEnter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(ctaEnter, [0, 1], [30, 0])}px)`,
           }}
         >
           <div
             style={{
-              height: 36,
-              background: "#f8fafc",
-              display: "flex",
-              alignItems: "center",
-              padding: "0 12px",
-              gap: 6,
-              borderBottom: "1px solid #e2e8f0",
+              padding: "24px 80px",
+              borderRadius: 16,
+              background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
+              fontSize: 52,
+              fontWeight: 800,
+              color: "#ffffff",
+              textAlign: "center",
+              boxShadow: `0 0 ${ctaGlow}px rgba(124,58,237,0.5), 0 15px 50px rgba(0,0,0,0.4)`,
+              letterSpacing: 2,
             }}
           >
-            <div style={{ display: "flex", gap: 5 }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f57" }} />
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ffbd2e" }} />
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#28c840" }} />
-            </div>
-            <div style={{ flex: 1, textAlign: "center", fontSize: 11, color: "#64748b", fontFamily: "monospace" }}>
-              ristorante-da-mario.e-quipe.app
-            </div>
-          </div>
-          <div
-            style={{
-              height: 320,
-              background: "linear-gradient(135deg, #fef2f2, #fff1f2)",
-              padding: 24,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            <h3 style={{ fontSize: 22, fontWeight: 800, color: "#0c1222", marginBottom: 8 }}>
-              Il vero gusto della tradizione
-            </h3>
-            <p style={{ fontSize: 12, color: "#64748b", marginBottom: 16 }}>
-              Cucina romana autentica dal 1985
-            </p>
-            <div
-              style={{
-                padding: "8px 18px",
-                borderRadius: 8,
-                background: "#dc2626",
-                color: "white",
-                fontSize: 12,
-                fontWeight: 600,
-                width: "fit-content",
-              }}
-            >
-              Prenota un Tavolo
-            </div>
+            CREA IL TUO SITO
           </div>
         </div>
 
-        {/* Right: publish confirmation */}
+        {/* Gratis badge */}
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 24,
+            opacity: interpolate(badgeEnter, [0, 1], [0, 1]),
+            transform: `scale(${interpolate(badgeEnter, [0, 1], [0.5, 1])})`,
           }}
         >
-          {/* Green checkmark */}
           <div
             style={{
-              opacity: interpolate(checkEnter, [0, 1], [0, 1]),
-              transform: `scale(${interpolate(checkEnter, [0, 1], [0.3, 1])})`,
+              padding: "14px 40px",
+              borderRadius: 30,
+              background: "rgba(34,197,94,0.15)",
+              border: "2px solid rgba(34,197,94,0.4)",
+              fontSize: 48,
+              fontWeight: 700,
+              color: "#4ade80",
+              textAlign: "center",
+              boxShadow: "0 0 30px rgba(34,197,94,0.2)",
+              letterSpacing: 4,
             }}
           >
-            <div
-              style={{
-                width: 120,
-                height: 120,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #22c55e, #16a34a)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 15px 50px rgba(34,197,94,0.3)",
-              }}
-            >
-              <svg width={60} height={60} viewBox="0 0 60 60">
-                <path
-                  d="M15 30 L25 42 L45 18"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth={5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeDasharray={60}
-                  strokeDashoffset={interpolate(checkEnter, [0, 1], [60, 0])}
-                />
-              </svg>
-            </div>
+            GRATIS
           </div>
+        </div>
 
-          {/* Published text */}
+        {/* Brand footer */}
+        <div
+          style={{
+            opacity: interpolate(brandEnter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(brandEnter, [0, 1], [15, 0])}px)`,
+            marginTop: 20,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
           <div
             style={{
-              opacity: interpolate(textEnter, [0, 1], [0, 1]),
-              transform: `translateY(${interpolate(textEnter, [0, 1], [20, 0])}px)`,
-            }}
-          >
-            <h2
-              style={{
-                fontSize: 44,
-                fontWeight: 800,
-                color: "#0c1222",
-                textAlign: "center",
-              }}
-            >
-              Sito Pubblicato!
-            </h2>
-          </div>
-
-          {/* URL */}
-          <div
-            style={{
-              opacity: interpolate(urlEnter, [0, 1], [0, 1]),
-              transform: `translateY(${interpolate(urlEnter, [0, 1], [15, 0])}px)`,
-              padding: "12px 28px",
-              borderRadius: 12,
-              background: "#f8fafc",
-              border: "1px solid #e2e8f0",
-            }}
-          >
-            <span
-              style={{
-                fontSize: 18,
-                color: "#64748b",
-                fontFamily: "monospace",
-              }}
-            >
-              https://ristorante-da-mario.e-quipe.app
-            </span>
-          </div>
-
-          {/* Powered by badge */}
-          <div
-            style={{
-              opacity: interpolate(badgeEnter, [0, 1], [0, 1]),
-              transform: `translateY(${interpolate(badgeEnter, [0, 1], [10, 0])}px)`,
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
               display: "flex",
               alignItems: "center",
-              gap: 8,
-              padding: "10px 20px",
-              borderRadius: 20,
-              background: "rgba(99,102,241,0.06)",
-              border: "1px solid rgba(99,102,241,0.15)",
+              justifyContent: "center",
+              fontSize: 20,
+              fontWeight: 900,
+              color: "white",
+              boxShadow: "0 0 20px rgba(124,58,237,0.4)",
             }}
           >
-            <span style={{ fontSize: 14, color: "#6366f1", fontWeight: 600 }}>
-              Powered by E-quipe AI
-            </span>
+            E
           </div>
+          <span
+            style={{
+              fontSize: 48,
+              fontWeight: 700,
+              color: "rgba(255,255,255,0.7)",
+              letterSpacing: 2,
+            }}
+          >
+            e-quipe.app
+          </span>
         </div>
       </div>
     </AbsoluteFill>
@@ -1080,43 +743,41 @@ const HeroScene4 = () => {
 };
 
 export const HeroVideoComposition = () => {
+  const frame = useCurrentFrame();
+
+  // Simple scene switching with fade transitions
+  const scene = frame < 90 ? 1 : frame < 180 ? 2 : frame < 270 ? 3 : 4;
+
+  const fadeOut1 = interpolate(frame, [80, 90], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const fadeIn2 = interpolate(frame, [90, 100], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const fadeOut2 = interpolate(frame, [170, 180], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const fadeIn3 = interpolate(frame, [180, 190], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const fadeOut3 = interpolate(frame, [260, 270], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const fadeIn4 = interpolate(frame, [270, 280], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+
   return (
-    <TransitionSeries>
-      {/* Scene 1: Describe your business (frames 0-90) */}
-      <TransitionSeries.Sequence durationInFrames={90}>
-        <HeroScene1 />
-      </TransitionSeries.Sequence>
-
-      <TransitionSeries.Transition
-        presentation={fade()}
-        timing={linearTiming({ durationInFrames: 15 })}
-      />
-
-      {/* Scene 2: AI generates (frames ~75-180) */}
-      <TransitionSeries.Sequence durationInFrames={105}>
-        <HeroScene2 />
-      </TransitionSeries.Sequence>
-
-      <TransitionSeries.Transition
-        presentation={slide({ direction: "from-right" })}
-        timing={linearTiming({ durationInFrames: 15 })}
-      />
-
-      {/* Scene 3: The result (frames ~165-270) */}
-      <TransitionSeries.Sequence durationInFrames={105}>
-        <HeroScene3 />
-      </TransitionSeries.Sequence>
-
-      <TransitionSeries.Transition
-        presentation={wipe({ direction: "from-left" })}
-        timing={linearTiming({ durationInFrames: 15 })}
-      />
-
-      {/* Scene 4: Publish (frames ~255-360) */}
-      <TransitionSeries.Sequence durationInFrames={105}>
-        <HeroScene4 />
-      </TransitionSeries.Sequence>
-    </TransitionSeries>
+    <AbsoluteFill style={{ background: "#0a0a0f" }}>
+      {scene === 1 && (
+        <AbsoluteFill style={{ opacity: fadeOut1 }}>
+          <HeroScene1 />
+        </AbsoluteFill>
+      )}
+      {scene === 2 && (
+        <AbsoluteFill style={{ opacity: Math.min(fadeIn2, fadeOut2) }}>
+          <HeroScene2 />
+        </AbsoluteFill>
+      )}
+      {scene === 3 && (
+        <AbsoluteFill style={{ opacity: Math.min(fadeIn3, fadeOut3) }}>
+          <HeroScene3 />
+        </AbsoluteFill>
+      )}
+      {scene === 4 && (
+        <AbsoluteFill style={{ opacity: fadeIn4 }}>
+          <HeroScene4 />
+        </AbsoluteFill>
+      )}
+    </AbsoluteFill>
   );
 };
 
@@ -1130,54 +791,67 @@ export const HERO_VIDEO_CONFIG = {
 
 /* ------------------------------------------------------------------ */
 /*  ADS VIDEO COMPOSITION — 10 seconds, 300 frames                    */
+/*  STYLE: Neon Data Dashboard                                         */
 /* ------------------------------------------------------------------ */
 
-/** Scene 1: Dashboard overview with animated bar chart */
+const NEON = {
+  bg: "#05050a",
+  pink: "#ff006e",
+  cyan: "#00f5d4",
+  yellow: "#fee440",
+  gridDot: "rgba(255,255,255,0.06)",
+};
+
+const neonGlow = (color: string, spread = 20) =>
+  `0 0 ${spread}px ${color}, 0 0 ${spread * 2}px ${color}`;
+
+/** Shared dark background with grid dots */
+const NeonBackground = () => (
+  <>
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: NEON.bg,
+      }}
+    />
+    {/* Grid dot pattern */}
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundImage: `radial-gradient(circle, ${NEON.gridDot} 1px, transparent 1px)`,
+        backgroundSize: "40px 40px",
+      }}
+    />
+  </>
+);
+
+/** Scene 1: "GESTIONE ADS" - Neon title + animated bar chart */
 const AdsScene1 = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   const titleEnter = spring({ frame, fps, config: { damping: 15 } });
 
-  // Bar chart data
   const barData = [
-    { label: "Lun", value: 65 },
-    { label: "Mar", value: 82 },
-    { label: "Mer", value: 55 },
-    { label: "Gio", value: 95 },
-    { label: "Ven", value: 120 },
+    { label: "Lun", value: 65, color: NEON.pink },
+    { label: "Mar", value: 90, color: NEON.cyan },
+    { label: "Mer", value: 55, color: NEON.yellow },
+    { label: "Gio", value: 105, color: NEON.pink },
+    { label: "Ven", value: 120, color: NEON.cyan },
   ];
   const maxValue = 130;
 
-  // Y-axis labels
-  const yLabels = [0, 30, 60, 90, 120];
-
   return (
-    <AbsoluteFill
-      style={{
-        background: "#ffffff",
-        fontFamily: FONT,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {/* Subtle grid pattern */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage:
-            "linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-        }}
-      />
-
-      <GradientOrb color="rgba(59,130,246,0.06)" size={500} x="10%" y="15%" phaseOffset={0} />
-      <GradientOrb color="rgba(139,92,246,0.05)" size={400} x="70%" y="55%" phaseOffset={50} />
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <NeonBackground />
 
       <div
         style={{
@@ -1186,583 +860,398 @@ const AdsScene1 = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 40,
+          justifyContent: "center",
           width: "100%",
-          maxWidth: 1000,
+          height: "100%",
+          gap: 48,
         }}
       >
-        {/* Title */}
+        {/* Neon Title */}
         <div
           style={{
             opacity: interpolate(titleEnter, [0, 1], [0, 1]),
-            transform: `translateY(${interpolate(titleEnter, [0, 1], [30, 0])}px)`,
+            transform: `translateY(${interpolate(titleEnter, [0, 1], [40, 0])}px)`,
             textAlign: "center",
           }}
         >
-          <div
+          <h1
             style={{
-              display: "inline-flex",
-              padding: "6px 16px",
-              borderRadius: 20,
-              background: "rgba(34,197,94,0.08)",
-              border: "1px solid rgba(34,197,94,0.15)",
-              color: "#16a34a",
-              fontSize: 13,
-              fontWeight: 600,
-              letterSpacing: 1.5,
-              marginBottom: 16,
+              fontSize: 72,
+              fontWeight: 900,
+              color: NEON.pink,
+              textShadow: neonGlow(NEON.pink, 15),
+              letterSpacing: 6,
+              lineHeight: 1.1,
             }}
           >
-            DASHBOARD
-          </div>
-          <h2
+            GESTIONE ADS
+          </h1>
+          <p
             style={{
-              fontSize: 48,
-              fontWeight: 800,
-              color: "#0c1222",
-              lineHeight: 1.2,
+              fontSize: 28,
+              color: "rgba(255,255,255,0.5)",
+              marginTop: 12,
+              fontWeight: 500,
+              letterSpacing: 3,
             }}
           >
-            Conversioni Mensili
-          </h2>
+            PERFORMANCE SETTIMANALE
+          </p>
         </div>
 
-        {/* Chart area */}
+        {/* Bar Chart */}
         <div
           style={{
-            width: "100%",
-            height: 380,
-            borderRadius: 16,
-            background: "#f8fafc",
-            border: "1px solid #e2e8f0",
-            padding: "32px 48px 48px",
             display: "flex",
-            position: "relative",
+            alignItems: "flex-end",
+            gap: 40,
+            height: 360,
+            padding: "0 80px",
           }}
         >
-          {/* Y-axis labels */}
-          <div
-            style={{
-              width: 40,
-              display: "flex",
-              flexDirection: "column-reverse",
-              justifyContent: "space-between",
-              paddingBottom: 32,
-              marginRight: 16,
-            }}
-          >
-            {yLabels.map((label) => (
-              <span
-                key={label}
-                style={{
-                  fontSize: 12,
-                  color: "#94a3b8",
-                  textAlign: "right",
-                }}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
-
-          {/* Bars */}
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "flex-end",
-              gap: 32,
-              paddingBottom: 32,
-              borderBottom: "1px solid #e2e8f0",
-            }}
-          >
-            {barData.map((bar, i) => {
-              const barEnter = spring({
-                frame: frame - (20 + i * 5),
-                fps,
-                config: { damping: 12, stiffness: 80 },
-              });
-              const barHeight = (bar.value / maxValue) * 260;
-
-              return (
-                <div
-                  key={bar.label}
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  {/* Value label above bar */}
-                  <span
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      color: "#0c1222",
-                      opacity: interpolate(barEnter, [0, 1], [0, 1]),
-                    }}
-                  >
-                    {bar.value}
-                  </span>
-                  {/* Bar */}
-                  <div
-                    style={{
-                      width: "100%",
-                      maxWidth: 80,
-                      height: barHeight * interpolate(barEnter, [0, 1], [0, 1]),
-                      borderRadius: "10px 10px 4px 4px",
-                      background: `linear-gradient(180deg, #3b82f6, #6366f1)`,
-                      boxShadow: "0 4px 20px rgba(59,130,246,0.2)",
-                    }}
-                  />
-                  {/* X label */}
-                  <span
-                    style={{
-                      fontSize: 14,
-                      color: "#64748b",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {bar.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/** Scene 2: Campaign metrics with counters and line chart */
-const AdsScene2 = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  // Metrics with counter animation
-  const metrics = [
-    { label: "Impressioni", target: 45230, color: "#3b82f6", delay: 10 },
-    { label: "Click", target: 2847, color: "#7c3aed", delay: 20 },
-    { label: "Conversioni", target: 312, color: "#22c55e", delay: 30 },
-  ];
-
-  // SVG line chart path
-  const chartPath =
-    "M 0 120 C 40 110, 80 95, 120 85 C 160 75, 200 60, 240 70 C 280 80, 320 45, 360 35 C 400 25, 440 40, 480 20 C 520 10, 560 15, 600 5";
-  const chartProgress = interpolate(frame, [50, 100], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-  });
-
-  // evolvePath returns { strokeDasharray, strokeDashoffset } for progressive reveal
-  const evolvedStyle = evolvePath(chartProgress, chartPath);
-
-  return (
-    <AbsoluteFill
-      style={{
-        background: "#ffffff",
-        fontFamily: FONT,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {/* Grid pattern */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage:
-            "linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-        }}
-      />
-
-      <GradientOrb color="rgba(139,92,246,0.06)" size={500} x="15%" y="20%" phaseOffset={0} />
-      <GradientOrb color="rgba(59,130,246,0.05)" size={400} x="65%" y="50%" phaseOffset={40} />
-
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          flexDirection: "column",
-          gap: 40,
-          width: "100%",
-          maxWidth: 1000,
-        }}
-      >
-        {/* Metric cards */}
-        <div style={{ display: "flex", gap: 24 }}>
-          {metrics.map((m, i) => {
-            const cardEnter = spring({
-              frame: frame - m.delay,
+          {barData.map((bar, i) => {
+            const barEnter = spring({
+              frame: frame - (20 + i * 8),
               fps,
-              config: { damping: 14, stiffness: 100 },
+              config: { damping: 12, stiffness: 80 },
             });
-            const counterProgress = interpolate(
-              frame,
-              [m.delay + 5, m.delay + 50],
-              [0, 1],
-              { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-            );
-            const currentValue = Math.round(counterProgress * m.target);
-
-            // Format number with dots for thousands
-            const formatted = currentValue.toLocaleString("it-IT");
+            const barHeight = (bar.value / maxValue) * 300;
 
             return (
               <div
-                key={m.label}
+                key={bar.label}
                 style={{
-                  flex: 1,
-                  padding: "28px 24px",
-                  borderRadius: 16,
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
-                  opacity: interpolate(cardEnter, [0, 1], [0, 1]),
-                  transform: `translateY(${interpolate(cardEnter, [0, 1], [30, 0])}px) scale(${interpolate(cardEnter, [0, 1], [0.95, 1])})`,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 16,
                 }}
               >
-                {/* Color indicator circle */}
-                <div
+                {/* Value */}
+                <span
                   style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 12,
-                    background: `${m.color}10`,
-                    border: `1px solid ${m.color}25`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 16,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: "50%",
-                      background: m.color,
-                      boxShadow: `0 0 10px ${m.color}40`,
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    fontSize: 14,
-                    color: "#64748b",
-                    marginBottom: 8,
-                    fontWeight: 500,
-                  }}
-                >
-                  {m.label}
-                </div>
-                <div
-                  style={{
-                    fontSize: 36,
+                    fontSize: 24,
                     fontWeight: 800,
-                    color: "#0c1222",
+                    color: bar.color,
+                    textShadow: neonGlow(bar.color, 8),
+                    opacity: interpolate(barEnter, [0, 1], [0, 1]),
                     fontVariantNumeric: "tabular-nums",
                   }}
                 >
-                  {formatted}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Line chart */}
-        <div
-          style={{
-            width: "100%",
-            height: 180,
-            borderRadius: 16,
-            background: "#f8fafc",
-            border: "1px solid #e2e8f0",
-            padding: "24px 32px",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 14,
-              color: "#64748b",
-              fontWeight: 600,
-              marginBottom: 12,
-            }}
-          >
-            Andamento Conversioni
-          </div>
-          <svg
-            viewBox="0 0 600 130"
-            style={{
-              width: "100%",
-              height: 110,
-            }}
-          >
-            {/* Grid lines */}
-            {[30, 60, 90, 120].map((y) => (
-              <line
-                key={y}
-                x1={0}
-                y1={y}
-                x2={600}
-                y2={y}
-                stroke="rgba(99,102,241,0.08)"
-                strokeWidth={1}
-              />
-            ))}
-            {/* Gradient fill under curve */}
-            <defs>
-              <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            {/* The animated line */}
-            <path
-              d={chartPath}
-              fill="none"
-              stroke="#7c3aed"
-              strokeWidth={3}
-              strokeLinecap="round"
-              strokeDasharray={evolvedStyle.strokeDasharray}
-              strokeDashoffset={evolvedStyle.strokeDashoffset}
-            />
-          </svg>
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/** Scene 3: ROI + CTA with badges */
-const AdsScene3 = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  // ROI number entrance
-  const roiEnter = spring({
-    frame: frame - 5,
-    fps,
-    config: { damping: 10, stiffness: 100 },
-  });
-
-  // Counter for ROI percentage
-  const roiProgress = interpolate(frame, [5, 50], [0, 340], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-  });
-  const roiValue = Math.round(roiProgress);
-
-  const subtitleEnter = spring({
-    frame: frame - 25,
-    fps,
-    config: { damping: 14 },
-  });
-
-  const badges = [
-    { label: "Meta Ads", color: "#1877f2" },
-    { label: "Google Ads", color: "#4285f4" },
-    { label: "Contenuti AI", color: "#7c3aed" },
-  ];
-
-  const brandEnter = spring({
-    frame: frame - 70,
-    fps,
-    config: { damping: 14 },
-  });
-
-  return (
-    <AbsoluteFill
-      style={{
-        background: "#ffffff",
-        fontFamily: FONT,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {/* Grid pattern */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage:
-            "linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-        }}
-      />
-
-      <GradientOrb color="rgba(34,197,94,0.06)" size={500} x="40%" y="20%" phaseOffset={0} />
-      <GradientOrb color="rgba(99,102,241,0.05)" size={400} x="20%" y="60%" phaseOffset={60} />
-
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 32,
-        }}
-      >
-        {/* Big ROI number */}
-        <div
-          style={{
-            opacity: interpolate(roiEnter, [0, 1], [0, 1]),
-            transform: `scale(${interpolate(roiEnter, [0, 1], [0.6, 1])})`,
-            textAlign: "center",
-          }}
-        >
-          <span
-            style={{
-              fontSize: 120,
-              fontWeight: 900,
-              background: "linear-gradient(135deg, #22c55e, #3b82f6, #7c3aed)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              lineHeight: 1,
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            +{roiValue}%
-          </span>
-          <div
-            style={{
-              fontSize: 32,
-              fontWeight: 700,
-              color: "#0c1222",
-              marginTop: 8,
-            }}
-          >
-            ROI
-          </div>
-        </div>
-
-        {/* Subtitle */}
-        <div
-          style={{
-            opacity: interpolate(subtitleEnter, [0, 1], [0, 1]),
-            transform: `translateY(${interpolate(subtitleEnter, [0, 1], [20, 0])}px)`,
-            fontSize: 24,
-            color: "#64748b",
-            textAlign: "center",
-            maxWidth: 600,
-            lineHeight: 1.5,
-          }}
-        >
-          Gestito dagli esperti di{" "}
-          <span style={{ color: "#0c1222", fontWeight: 700 }}>E-quipe</span>
-        </div>
-
-        {/* Badges */}
-        <div style={{ display: "flex", gap: 20, marginTop: 16 }}>
-          {badges.map((badge, i) => {
-            const badgeEnter = spring({
-              frame: frame - (40 + i * 10),
-              fps,
-              config: { damping: 14 },
-            });
-            return (
-              <div
-                key={badge.label}
-                style={{
-                  opacity: interpolate(badgeEnter, [0, 1], [0, 1]),
-                  transform: `translateY(${interpolate(badgeEnter, [0, 1], [20, 0])}px)`,
-                  padding: "12px 28px",
-                  borderRadius: 12,
-                  background: `${badge.color}08`,
-                  border: `1px solid ${badge.color}20`,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-              >
+                  {Math.round(bar.value * interpolate(barEnter, [0, 1], [0, 1]))}
+                </span>
+                {/* Bar */}
                 <div
                   style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    background: badge.color,
-                    boxShadow: `0 0 8px ${badge.color}40`,
+                    width: 70,
+                    height: barHeight * interpolate(barEnter, [0, 1], [0, 1]),
+                    borderRadius: "8px 8px 4px 4px",
+                    background: `linear-gradient(180deg, ${bar.color}, ${bar.color}88)`,
+                    boxShadow: neonGlow(bar.color, 12),
                   }}
                 />
+                {/* Label */}
                 <span
                   style={{
-                    fontSize: 16,
+                    fontSize: 18,
+                    color: "rgba(255,255,255,0.5)",
                     fontWeight: 600,
-                    color: "#1e293b",
+                    letterSpacing: 1,
                   }}
                 >
-                  {badge.label}
+                  {bar.label}
                 </span>
               </div>
             );
           })}
         </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
 
-        {/* Brand with glow */}
+/** Scene 2: "RISULTATI" - 3 large neon metric cards */
+const AdsScene2 = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const titleEnter = spring({ frame: frame - 5, fps, config: { damping: 15 } });
+
+  const metrics = [
+    { label: "ROI", value: "+340%", color: NEON.cyan, target: 340, suffix: "%", prefix: "+", delay: 15 },
+    { label: "Impressioni", value: "45K+", color: NEON.yellow, target: 45, suffix: "K+", prefix: "", delay: 25 },
+    { label: "Conversioni", value: "2.8K", color: NEON.pink, target: 2.8, suffix: "K", prefix: "", delay: 35 },
+  ];
+
+  return (
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <NeonBackground />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100%",
+          gap: 56,
+        }}
+      >
+        {/* Title */}
+        <h1
+          style={{
+            fontSize: 64,
+            fontWeight: 900,
+            color: "#ffffff",
+            textShadow: neonGlow("rgba(255,255,255,0.3)", 10),
+            letterSpacing: 8,
+            opacity: interpolate(titleEnter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(titleEnter, [0, 1], [30, 0])}px)`,
+          }}
+        >
+          RISULTATI
+        </h1>
+
+        {/* Metric Cards */}
+        <div style={{ display: "flex", gap: 40 }}>
+          {metrics.map((m) => {
+            const cardEnter = spring({
+              frame: frame - m.delay,
+              fps,
+              config: { damping: 12, stiffness: 90 },
+            });
+            const counterProgress = interpolate(
+              frame,
+              [m.delay + 5, m.delay + 55],
+              [0, 1],
+              { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+            );
+            const currentVal = m.target === 2.8
+              ? (counterProgress * m.target).toFixed(1)
+              : Math.round(counterProgress * m.target);
+
+            return (
+              <div
+                key={m.label}
+                style={{
+                  width: 340,
+                  padding: "48px 40px",
+                  borderRadius: 20,
+                  background: "rgba(255,255,255,0.03)",
+                  border: `1px solid ${m.color}55`,
+                  boxShadow: neonGlow(m.color, 15),
+                  textAlign: "center",
+                  opacity: interpolate(cardEnter, [0, 1], [0, 1]),
+                  transform: `translateY(${interpolate(cardEnter, [0, 1], [40, 0])}px) scale(${interpolate(cardEnter, [0, 1], [0.9, 1])})`,
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 88,
+                    fontWeight: 900,
+                    color: m.color,
+                    textShadow: neonGlow(m.color, 12),
+                    lineHeight: 1,
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {m.prefix}{currentVal}{m.suffix}
+                </div>
+                <div
+                  style={{
+                    fontSize: 22,
+                    color: "rgba(255,255,255,0.55)",
+                    marginTop: 16,
+                    fontWeight: 600,
+                    letterSpacing: 3,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {m.label}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/** Scene 3: "META + GOOGLE ADS" - Two badges, subtitle, CTA */
+const AdsScene3 = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const titleEnter = spring({ frame: frame - 5, fps, config: { damping: 14 } });
+  const metaEnter = spring({ frame: frame - 15, fps, config: { damping: 12, stiffness: 90 } });
+  const googleEnter = spring({ frame: frame - 25, fps, config: { damping: 12, stiffness: 90 } });
+  const subtitleEnter = spring({ frame: frame - 40, fps, config: { damping: 14 } });
+  const ctaEnter = spring({ frame: frame - 55, fps, config: { damping: 10, stiffness: 100 } });
+
+  // CTA glow pulse
+  const ctaPulse = interpolate(
+    Math.sin(frame * 0.1),
+    [-1, 1],
+    [15, 35]
+  );
+
+  return (
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <NeonBackground />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100%",
+          gap: 48,
+        }}
+      >
+        {/* Title */}
+        <h1
+          style={{
+            fontSize: 68,
+            fontWeight: 900,
+            color: "#ffffff",
+            letterSpacing: 4,
+            opacity: interpolate(titleEnter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(titleEnter, [0, 1], [30, 0])}px)`,
+          }}
+        >
+          <span style={{ color: NEON.pink, textShadow: neonGlow(NEON.pink, 12) }}>META</span>
+          <span style={{ color: "rgba(255,255,255,0.3)", margin: "0 20px" }}>+</span>
+          <span style={{ color: NEON.cyan, textShadow: neonGlow(NEON.cyan, 12) }}>GOOGLE ADS</span>
+        </h1>
+
+        {/* Two Badge Rectangles */}
+        <div style={{ display: "flex", gap: 48 }}>
+          {/* Meta Badge */}
+          <div
+            style={{
+              width: 420,
+              height: 200,
+              borderRadius: 24,
+              background: "rgba(255,255,255,0.03)",
+              border: `2px solid ${NEON.pink}88`,
+              boxShadow: neonGlow(NEON.pink, 20),
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              opacity: interpolate(metaEnter, [0, 1], [0, 1]),
+              transform: `translateX(${interpolate(metaEnter, [0, 1], [-60, 0])}px) scale(${interpolate(metaEnter, [0, 1], [0.85, 1])})`,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 52,
+                fontWeight: 900,
+                color: NEON.pink,
+                textShadow: neonGlow(NEON.pink, 10),
+                letterSpacing: 3,
+              }}
+            >
+              META
+            </span>
+            <span
+              style={{
+                fontSize: 20,
+                color: "rgba(255,255,255,0.45)",
+                fontWeight: 600,
+                letterSpacing: 2,
+              }}
+            >
+              FACEBOOK & INSTAGRAM
+            </span>
+          </div>
+
+          {/* Google Badge */}
+          <div
+            style={{
+              width: 420,
+              height: 200,
+              borderRadius: 24,
+              background: "rgba(255,255,255,0.03)",
+              border: `2px solid ${NEON.cyan}88`,
+              boxShadow: neonGlow(NEON.cyan, 20),
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              opacity: interpolate(googleEnter, [0, 1], [0, 1]),
+              transform: `translateX(${interpolate(googleEnter, [0, 1], [60, 0])}px) scale(${interpolate(googleEnter, [0, 1], [0.85, 1])})`,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 52,
+                fontWeight: 900,
+                color: NEON.cyan,
+                textShadow: neonGlow(NEON.cyan, 10),
+                letterSpacing: 3,
+              }}
+            >
+              GOOGLE
+            </span>
+            <span
+              style={{
+                fontSize: 20,
+                color: "rgba(255,255,255,0.45)",
+                fontWeight: 600,
+                letterSpacing: 2,
+              }}
+            >
+              SEARCH & DISPLAY
+            </span>
+          </div>
+        </div>
+
+        {/* Subtitle */}
+        <p
+          style={{
+            fontSize: 32,
+            color: "rgba(255,255,255,0.6)",
+            fontWeight: 600,
+            letterSpacing: 2,
+            opacity: interpolate(subtitleEnter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(subtitleEnter, [0, 1], [20, 0])}px)`,
+          }}
+        >
+          Esperti Dedicati
+        </p>
+
+        {/* CTA with glow pulse */}
         <div
           style={{
-            opacity: interpolate(brandEnter, [0, 1], [0, 1]),
-            transform: `translateY(${interpolate(brandEnter, [0, 1], [15, 0])}px)`,
-            marginTop: 32,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "14px 32px",
-            borderRadius: 20,
-            background: "rgba(99,102,241,0.06)",
-            border: "1px solid rgba(99,102,241,0.15)",
-            boxShadow: `0 0 ${interpolate(
-              Math.sin(frame * 0.08),
-              [-1, 1],
-              [10, 25]
-            )}px rgba(99,102,241,0.1)`,
+            opacity: interpolate(ctaEnter, [0, 1], [0, 1]),
+            transform: `scale(${interpolate(ctaEnter, [0, 1], [0.7, 1])})`,
           }}
         >
           <div
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              background: "linear-gradient(135deg, #3b82f6, #7c3aed)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 16,
-              fontWeight: 800,
-              color: "white",
+              padding: "22px 64px",
+              borderRadius: 16,
+              background: `linear-gradient(135deg, ${NEON.pink}, ${NEON.cyan})`,
+              boxShadow: `0 0 ${ctaPulse}px ${NEON.pink}, 0 0 ${ctaPulse}px ${NEON.cyan}`,
+              fontSize: 28,
+              fontWeight: 900,
+              color: "#05050a",
+              letterSpacing: 4,
             }}
           >
-            E
+            INIZIA ORA
           </div>
-          <span
-            style={{
-              fontSize: 20,
-              fontWeight: 700,
-              background: "linear-gradient(135deg, #3b82f6, #7c3aed)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            E-quipe
-          </span>
         </div>
       </div>
     </AbsoluteFill>
@@ -1770,33 +1259,48 @@ const AdsScene3 = () => {
 };
 
 export const AdsVideoComposition = () => {
+  const frame = useCurrentFrame();
+
+  // Simple scene switching based on frame ranges
+  // Scene 1: 0-99, Scene 2: 100-199, Scene 3: 200-299
+  const scene = frame < 100 ? 1 : frame < 200 ? 2 : 3;
+
+  // Fade transition between scenes
+  const fadeOut1 = interpolate(frame, [90, 100], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const fadeIn2 = interpolate(frame, [100, 110], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const fadeOut2 = interpolate(frame, [190, 200], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const fadeIn3 = interpolate(frame, [200, 210], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
   return (
-    <TransitionSeries>
-      {/* Scene 1: Dashboard overview with bar chart */}
-      <TransitionSeries.Sequence durationInFrames={100}>
-        <AdsScene1 />
-      </TransitionSeries.Sequence>
-
-      <TransitionSeries.Transition
-        presentation={fade()}
-        timing={linearTiming({ durationInFrames: 15 })}
-      />
-
-      {/* Scene 2: Campaign metrics with counters */}
-      <TransitionSeries.Sequence durationInFrames={115}>
-        <AdsScene2 />
-      </TransitionSeries.Sequence>
-
-      <TransitionSeries.Transition
-        presentation={slide({ direction: "from-bottom" })}
-        timing={linearTiming({ durationInFrames: 15 })}
-      />
-
-      {/* Scene 3: ROI + CTA */}
-      <TransitionSeries.Sequence durationInFrames={115}>
-        <AdsScene3 />
-      </TransitionSeries.Sequence>
-    </TransitionSeries>
+    <AbsoluteFill style={{ background: NEON.bg }}>
+      {scene === 1 && (
+        <AbsoluteFill style={{ opacity: fadeOut1 }}>
+          <AdsScene1 />
+        </AbsoluteFill>
+      )}
+      {scene === 2 && (
+        <AbsoluteFill style={{ opacity: Math.min(fadeIn2, fadeOut2) }}>
+          <AdsScene2 />
+        </AbsoluteFill>
+      )}
+      {scene === 3 && (
+        <AbsoluteFill style={{ opacity: fadeIn3 }}>
+          <AdsScene3 />
+        </AbsoluteFill>
+      )}
+    </AbsoluteFill>
   );
 };
 
