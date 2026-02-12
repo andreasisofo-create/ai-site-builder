@@ -417,7 +417,12 @@ export default function LandingPage() {
   // ==================== RENDER ====================
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#09090b] text-white overflow-x-hidden relative">
+      {/* ===== NOISE TEXTURE OVERLAY — Premium depth ===== */}
+      <div className="fixed inset-0 pointer-events-none z-[70] opacity-[0.035]"
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }}
+      />
+
       {/* ===== CURSOR GLOW ===== */}
       <div
         className="pointer-events-none fixed inset-0 z-[60] hidden lg:block"
@@ -541,7 +546,7 @@ export default function LandingPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.25, ease: "easeOut" }}
-                  className="inline-block bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent"
+                  className="inline-block bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-[length:200%_auto] bg-clip-text text-transparent animate-text-shimmer"
                 >
                   {t("hero.titleLine2")}
                 </motion.span>
@@ -1432,8 +1437,9 @@ export default function LandingPage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="py-24 lg:py-32 bg-white/[0.01]">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-24 lg:py-32 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6">
               {t("testimonials.title")}
@@ -1447,7 +1453,7 @@ export default function LandingPage() {
             {testimonials.map((testimonial, idx) => (
               <TiltCard
                 key={idx}
-                className="p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.03] transition-colors"
+                className="p-6 lg:p-8 rounded-2xl bg-[#111114] border border-white/10 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] transition-all duration-300"
               >
                 <div className="flex gap-1 mb-6">
                   {[...Array(5)].map((_, i) => (
@@ -1716,6 +1722,13 @@ export default function LandingPage() {
         }
         .animate-marquee:hover {
           animation-play-state: paused;
+        }
+        @keyframes text-shimmer {
+          0% { background-position: 0% center; }
+          100% { background-position: 200% center; }
+        }
+        .animate-text-shimmer {
+          animation: text-shimmer 6s linear infinite;
         }
         .hero-orb-1 {
           top: 10%;
