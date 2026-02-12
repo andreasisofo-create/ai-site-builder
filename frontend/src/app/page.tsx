@@ -80,16 +80,16 @@ function RenderedVideo({
         }}
       >
         {/* Browser chrome frame */}
-        <div className="relative rounded-2xl overflow-hidden bg-[#0a0a0a]">
+        <div className="relative rounded-2xl overflow-hidden bg-[#0c1222]">
           {/* Top bar */}
-          <div className="flex items-center gap-3 px-4 py-2.5 bg-[#111] border-b border-white/10">
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-[#0f1729] border-b border-white/10">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
               <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
               <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
             </div>
             <div className="flex-1 mx-2">
-              <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-black/50 border border-white/10">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#080e1a]/70 border border-white/10">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: accentColor, boxShadow: `0 0 6px ${accentColor}` }} />
                 <span className="text-[10px] text-slate-400 font-mono truncate">e-quipe.app</span>
               </div>
@@ -417,7 +417,7 @@ export default function LandingPage() {
   // ==================== RENDER ====================
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#0c1222] text-white overflow-x-hidden relative">
       {/* ===== NOISE TEXTURE OVERLAY — Premium depth ===== */}
       <div className="fixed inset-0 pointer-events-none z-[70] opacity-[0.035]"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }}
@@ -435,7 +435,7 @@ export default function LandingPage() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20"
+            ? "bg-[#0c1222]/80 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20"
             : "bg-transparent"
         }`}
       >
@@ -478,7 +478,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/5 overflow-hidden"
+              className="lg:hidden bg-[#0c1222]/95 backdrop-blur-xl border-b border-white/5 overflow-hidden"
             >
               <div className="px-6 py-4 space-y-4">
                 <a href="#features" className="block text-slate-300 hover:text-white py-2" onClick={() => setMobileMenuOpen(false)}>{t("nav.features")}</a>
@@ -514,7 +514,7 @@ export default function LandingPage() {
           }}
         />
         {/* Radial fade to hide grid edges */}
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,#0a0a0a_80%)]" />
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,#0c1222_80%)]" />
         <FloatingShapes />
 
         <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32">
@@ -625,7 +625,7 @@ export default function LandingPage() {
               <RenderedVideo src="/videos/hero.mp4" accentColor="#8b5cf6" label="Live Preview" />
 
               {/* Floating accent cards */}
-              <div className="absolute -bottom-4 -left-4 p-3 rounded-xl bg-[#111]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
+              <div className="absolute -bottom-4 -left-4 p-3 rounded-xl bg-[#0f1729]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
                     <CheckIcon className="w-5 h-5 text-emerald-400" />
@@ -637,7 +637,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="absolute -top-4 -right-4 p-3 rounded-xl bg-[#111]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
+              <div className="absolute -top-4 -right-4 p-3 rounded-xl bg-[#0f1729]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
                 <div className="flex items-center gap-2">
                   <SparklesIcon className="w-5 h-5 text-violet-400" />
                   <span className="text-sm font-medium">{t("hero.floatingAI")}</span>
@@ -673,9 +673,9 @@ export default function LandingPage() {
       </section>
 
       {/* ===== LOGO MARQUEE — SOCIAL PROOF ===== */}
-      <section className="py-12 border-y border-white/5 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-[#0a0a0a] z-10 pointer-events-none" />
-        <p className="text-center text-xs font-medium text-slate-500 tracking-[0.2em] uppercase mb-8">
+      <section className="py-12 border-y border-white/5 relative overflow-hidden bg-[#080e1a]">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0c1222] via-transparent to-[#0c1222] z-10 pointer-events-none" />
+        <p className="text-center text-xs font-medium text-slate-400 tracking-[0.2em] uppercase mb-8">
           {language === "en" ? "Trusted by businesses worldwide" : "Scelto da aziende in tutto il mondo"}
         </p>
         <div className="flex items-center gap-16 animate-marquee whitespace-nowrap">
@@ -695,7 +695,7 @@ export default function LandingPage() {
       <div className="h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
 
       {/* ===== QUICK STATS STRIP ===== */}
-      <section className="py-16 relative overflow-hidden">
+      <section className="py-16 relative overflow-hidden bg-[#0a1628]">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/[0.08] via-violet-500/[0.06] to-purple-500/[0.08]" />
         <div className="max-w-5xl mx-auto px-6 relative">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -706,7 +706,7 @@ export default function LandingPage() {
               { value: t("quickStats.monitoring"), label: t("quickStats.monitoringLabel"), gradient: "from-pink-400 to-rose-400", borderColor: "border-pink-500/30" },
             ].map((stat, idx) => (
               <div key={idx} className="relative group">
-                <div className={`relative p-6 rounded-2xl bg-white/[0.03] border ${stat.borderColor} hover:bg-white/[0.06] transition-all duration-300 hover:scale-105`}>
+                <div className={`relative p-6 rounded-2xl bg-white/[0.06] border ${stat.borderColor} hover:bg-white/[0.06] transition-all duration-300 hover:scale-105`}>
                   <p className={`text-3xl md:text-4xl font-extrabold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
                     {stat.value}
                   </p>
@@ -792,7 +792,7 @@ export default function LandingPage() {
 
       <section
         id="features"
-        className="py-24 lg:py-32 relative"
+        className="py-24 lg:py-32 relative bg-[#111827]"
         ref={featuresRef}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-blue-950/15 via-transparent to-violet-950/15 pointer-events-none" />
@@ -831,7 +831,7 @@ export default function LandingPage() {
                 className={feature.large ? "lg:col-span-2" : ""}
               >
                 <TiltCard
-                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] hover:border-violet-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)]"
+                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/[0.06] border border-white/10 hover:bg-white/[0.06] hover:border-violet-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)]"
                 >
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-white/5 flex items-center justify-center mb-5">
                     <feature.icon className="w-6 h-6 text-blue-400" />
@@ -906,14 +906,14 @@ export default function LandingPage() {
                 animate={adsInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.2 + idx * 0.15 }}
               >
-                <TiltCard className="h-full p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+                <TiltCard className="h-full p-6 lg:p-8 rounded-2xl bg-white/[0.05] border border-white/5 hover:border-white/10 transition-colors">
                   <div
                     className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${col.gradient} border border-white/5 flex items-center justify-center mb-6`}
                   >
                     <col.icon className={`w-7 h-7 ${col.iconColor}`} />
                   </div>
                   <h3 className="text-xl font-semibold mb-1">{col.title}</h3>
-                  <p className="text-sm text-slate-500 mb-5">{col.subtitle}</p>
+                  <p className="text-sm text-slate-400 mb-5">{col.subtitle}</p>
                   <ul className="space-y-3">
                     {col.items.map((item, i) => (
                       <li
@@ -988,7 +988,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== BEFORE/AFTER TIMELINE ===== */}
-      <section className="py-24 lg:py-32 bg-white/[0.01] relative" ref={timelineRef}>
+      <section className="py-24 lg:py-32 bg-[#111827] relative" ref={timelineRef}>
         <DotGrid />
         <FloatingShapes />
         <div className="max-w-7xl mx-auto px-6 relative">
@@ -1029,11 +1029,11 @@ export default function LandingPage() {
                 <div
                   className={`relative z-10 w-32 h-32 rounded-2xl bg-gradient-to-br ${milestone.color} p-[1px] mx-auto mb-6`}
                 >
-                  <div className="w-full h-full rounded-2xl bg-[#0a0a0a] flex items-center justify-center">
+                  <div className="w-full h-full rounded-2xl bg-[#0c1222] flex items-center justify-center">
                     <milestone.icon className="w-12 h-12 text-white/80" />
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">
+                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">
                   {milestone.time}
                 </p>
                 <h3 className="text-lg font-semibold">{milestone.title}</h3>
@@ -1085,7 +1085,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={roiInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="p-8 lg:p-10 rounded-2xl bg-white/[0.02] border border-white/10"
+            className="p-8 lg:p-10 rounded-2xl bg-white/[0.05] border border-white/10"
           >
             <div className="grid md:grid-cols-2 gap-10">
               {/* Inputs */}
@@ -1176,7 +1176,7 @@ export default function LandingPage() {
                   </motion.p>
                 </div>
 
-                <p className="text-xs text-slate-500 text-center">
+                <p className="text-xs text-slate-400 text-center">
                   {t("earnings.disclaimer")}
                 </p>
               </div>
@@ -1186,7 +1186,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== FAI DA TE vs CON E-QUIPE ===== */}
-      <section className="py-24 lg:py-32 bg-white/[0.01]" ref={comparisonRef}>
+      <section className="py-24 lg:py-32 bg-[#111827]" ref={comparisonRef}>
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
@@ -1275,7 +1275,7 @@ export default function LandingPage() {
       <div className="h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
 
       {/* ===== STATS / NUMBERS ===== */}
-      <section className="py-24 relative overflow-hidden" ref={statsRef}>
+      <section className="py-24 relative overflow-hidden bg-[#0a1628]" ref={statsRef}>
         <div className="absolute inset-0 bg-gradient-to-b from-violet-950/30 via-transparent to-blue-950/30" />
         {/* Grid pattern for stats section */}
         <div
@@ -1300,7 +1300,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.6, delay: idx * 0.12, ease: "easeOut" }}
                 className="text-center relative group"
               >
-                <div className={`relative p-8 rounded-2xl bg-white/[0.03] border ${stat.borderColor} hover:bg-white/[0.06] transition-all duration-500 hover:scale-105 hover:shadow-lg`}
+                <div className={`relative p-8 rounded-2xl bg-white/[0.06] border ${stat.borderColor} hover:bg-white/[0.06] transition-all duration-500 hover:scale-105 hover:shadow-lg`}
                   style={{ boxShadow: `0 0 40px ${stat.glowColor}` }}
                 >
                   <p className={`text-4xl lg:text-6xl font-extrabold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
@@ -1370,7 +1370,7 @@ export default function LandingPage() {
                 className={`relative p-6 rounded-2xl border transition-colors ${
                   plan.popular
                     ? "bg-gradient-to-b from-blue-600/10 via-violet-600/5 to-transparent border-blue-500/40 shadow-[0_0_40px_rgba(139,92,246,0.15)]"
-                    : "bg-white/[0.03] border-white/10 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)]"
+                    : "bg-white/[0.06] border-white/10 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)]"
                 }`}
               >
                 {plan.popular && (
@@ -1385,7 +1385,7 @@ export default function LandingPage() {
                   <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">
                     {plan.name}
                   </h3>
-                  <p className="text-xs text-slate-500">{plan.description}</p>
+                  <p className="text-xs text-slate-400">{plan.description}</p>
                 </div>
 
                 <div className="mb-5">
@@ -1437,7 +1437,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="py-24 lg:py-32 relative">
+      <section className="py-24 lg:py-32 relative bg-[#111827]">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -1453,7 +1453,7 @@ export default function LandingPage() {
             {testimonials.map((testimonial, idx) => (
               <TiltCard
                 key={idx}
-                className="p-6 lg:p-8 rounded-2xl bg-[#111114] border border-white/10 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] transition-all duration-300"
+                className="p-6 lg:p-8 rounded-2xl bg-[#111827] border border-white/10 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] transition-all duration-300"
               >
                 <div className="flex gap-1 mb-6">
                   {[...Array(5)].map((_, i) => (
@@ -1499,11 +1499,11 @@ export default function LandingPage() {
             {faqs.map((faq, idx) => (
               <div
                 key={idx}
-                className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden"
+                className="rounded-xl border border-white/5 bg-white/[0.05] overflow-hidden"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-white/[0.02] transition-colors"
+                  className="w-full flex items-center justify-between p-5 text-left hover:bg-white/[0.05] transition-colors"
                 >
                   <span className="font-medium pr-4">{faq.q}</span>
                   <ChevronDownIcon
@@ -1583,7 +1583,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-16 border-t border-white/5">
+      <footer className="py-16 border-t border-white/8 bg-[#080e1a]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-5 gap-8 mb-12">
             {/* Brand */}
@@ -1688,7 +1688,7 @@ export default function LandingPage() {
           </div>
 
           <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-slate-500 text-sm">
+            <p className="text-slate-400 text-sm">
               {t("footer.copyright")}
             </p>
             <div className="flex items-center gap-6 text-sm text-slate-400">
