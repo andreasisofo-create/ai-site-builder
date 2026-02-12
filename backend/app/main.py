@@ -224,6 +224,14 @@ except Exception as e:
     logger.error(traceback.format_exc())
 
 try:
+    from app.api.routes.chat import router as chat_router
+    app.include_router(chat_router)
+    logger.info("Route chat registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route chat: {e}")
+    logger.error(traceback.format_exc())
+
+try:
     from app.api.routes import test_ai
     app.include_router(test_ai.router, prefix="/api", tags=["test"])
     logger.info("Test routes registrate")

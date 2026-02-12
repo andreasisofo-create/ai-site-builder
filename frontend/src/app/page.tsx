@@ -36,6 +36,18 @@ const VideoPlayer = dynamic(
   () => import("@/components/remotion/VideoPlayer"),
   { ssr: false }
 );
+const FeaturesVideoPlayer = dynamic(
+  () => import("@/components/remotion/VideoPlayer").then((m) => ({ default: m.FeaturesVideoPlayer })),
+  { ssr: false }
+);
+const ProcessVideoPlayer = dynamic(
+  () => import("@/components/remotion/VideoPlayer").then((m) => ({ default: m.ProcessVideoPlayer })),
+  { ssr: false }
+);
+const AdsVideoPlayer = dynamic(
+  () => import("@/components/remotion/VideoPlayer").then((m) => ({ default: m.AdsVideoPlayer })),
+  { ssr: false }
+);
 
 // ==================== HOOKS ====================
 
@@ -894,6 +906,16 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
+
+          {/* Process Video */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={stepsInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.6 }}
+            className="mt-16 max-w-4xl mx-auto"
+          >
+            <ProcessVideoPlayer className="shadow-2xl shadow-violet-500/10" />
+          </motion.div>
         </div>
       </section>
 
@@ -953,6 +975,16 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
+
+          {/* Features Video */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={featuresInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.5 }}
+            className="mt-16 max-w-4xl mx-auto"
+          >
+            <FeaturesVideoPlayer className="shadow-2xl shadow-blue-500/10" />
+          </motion.div>
         </div>
       </section>
 
@@ -1088,6 +1120,11 @@ export default function LandingPage() {
                   100% conforme alle policy Google — supervisione umana garantita
                 </span>
               </div>
+            </div>
+
+            {/* Ads Video */}
+            <div className="mt-12 max-w-3xl mx-auto">
+              <AdsVideoPlayer className="shadow-2xl shadow-violet-500/10" />
             </div>
           </motion.div>
         </div>

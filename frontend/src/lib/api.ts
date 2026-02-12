@@ -421,6 +421,20 @@ export async function unpublishSite(siteId: number): Promise<{ success: boolean;
   return handleResponse(res);
 }
 
+// ============ CHAT (Help Chatbot) ============
+
+export async function chatMessage(
+  message: string,
+  history: Array<{ role: string; content: string }>
+): Promise<{ reply: string; error?: string }> {
+  const res = await fetch(`${API_BASE}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, history }),
+  });
+  return res.json();
+}
+
 // ============ UTILS ============
 
 /** Genera uno slug univoco dal nome */

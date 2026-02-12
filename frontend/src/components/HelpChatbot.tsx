@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent, useCallback } from "react";
+import { chatMessage } from "@/lib/api";
 
 // ============ TYPES ============
 
@@ -46,13 +47,11 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
       ["genera"],
     ],
     answer:
-      "Per creare un sito con Site Builder:\n\n" +
-      "1. Dalla dashboard, clicca \"Crea nuovo sito\" o scegli un percorso\n" +
-      "2. Scegli tra Template (categorie: Ristorante, Agenzia, Portfolio, Business) o Personalizzato (l'AI crea da zero)\n" +
-      "3. Inserisci i dati della tua attivita: nome, descrizione, colori, logo\n" +
-      "4. Carica foto o loghi se disponibili (opzionale, max 8 foto)\n" +
-      "5. L'AI genera il tuo sito in circa 60 secondi\n" +
-      "6. Puoi poi modificarlo con la chat AI nell'editor",
+      "Per creare un sito con E-quipe:\n\n" +
+      "1. Dalla dashboard, scegli un template tra le 8 categorie (19 stili disponibili)\n" +
+      "2. Inserisci i dati della tua attivita: nome, descrizione, colori, logo\n" +
+      "3. L'AI genera il tuo sito in circa 60 secondi con animazioni GSAP professionali\n" +
+      "4. Puoi poi modificarlo con la chat AI nell'editor",
     followUp: ["modificare-sito", "template", "pubblicare"],
   },
   {
@@ -110,9 +109,8 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
       "Per pubblicare il tuo sito:\n\n" +
       "1. Apri l'editor del tuo sito\n" +
       "2. Clicca il pulsante \"Pubblica\" in alto a destra\n" +
-      "3. Il sito viene deployato su Vercel\n" +
-      "4. Ricevi un URL dove il tuo sito e visibile online\n\n" +
-      "NOTA: La pubblicazione richiede il piano Creazione Sito (EUR 200) o Premium (EUR 500). Il piano Starter gratuito permette solo l'anteprima.",
+      "3. Il sito viene pubblicato su tuosito.e-quipe.app\n\n" +
+      "NOTA: La pubblicazione richiede il piano Sito Web (EUR 200) o superiore. Il piano Starter gratuito permette solo l'anteprima.",
     followUp: ["piani-prezzi", "dominio"],
   },
   {
@@ -135,23 +133,18 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
       ["acquistare"],
     ],
     answer:
-      "I piani di Site Builder (pagamento unico, NO abbonamento):\n\n" +
+      "I piani E-quipe (pagamento unico, NO abbonamento):\n\n" +
       "STARTER (Gratuito)\n" +
-      "- 1 generazione AI\n" +
-      "- 3 modifiche via chat\n" +
-      "- Solo anteprima, NO pubblicazione\n\n" +
-      "CREAZIONE SITO (EUR 200, una tantum)\n" +
-      "- 3 generazioni AI\n" +
-      "- 20 modifiche via chat\n" +
-      "- Pubblicazione su sottodominio\n" +
-      "- Homepage + 1 pagina extra\n" +
-      "- Pagine aggiuntive a EUR 70/cad.\n\n" +
-      "PREMIUM (EUR 500, una tantum)\n" +
-      "- 5 generazioni AI\n" +
-      "- 30 modifiche via chat\n" +
-      "- Dominio personalizzato incluso\n" +
-      "- Pagine illimitate\n" +
-      "- Priorita di generazione",
+      "- 1 generazione AI, 3 modifiche chat, solo anteprima\n\n" +
+      "SITO WEB (EUR 200)\n" +
+      "- 3 generazioni AI, 20 modifiche chat\n" +
+      "- Pubblicazione su sottodominio e-quipe.app\n\n" +
+      "PREMIUM (EUR 500)\n" +
+      "- 5 generazioni AI, modifiche illimitate\n" +
+      "- Dominio personalizzato incluso\n\n" +
+      "SITO + ADS (EUR 700)\n" +
+      "- Tutto Premium + gestione campagne Meta Ads e Google Ads\n" +
+      "- Gestite dagli esperti di E-quipe",
     followUp: ["creare-sito", "upgrade"],
   },
   {
@@ -493,10 +486,10 @@ export default function HelpChatbot() {
   const initialized = useRef(false);
 
   const WELCOME_MESSAGE =
-    "Ciao! Sono l'assistente di Site Builder. Come posso aiutarti oggi?";
+    "Ciao! Sono l'assistente AI di E-quipe. Posso aiutarti con qualsiasi domanda sui nostri servizi di creazione siti web e gestione campagne Ads. Come posso aiutarti?";
 
   const DEFAULT_ANSWER =
-    "Non sono sicuro di aver capito la tua domanda. Prova a usare i pulsanti qui sotto oppure riformula la domanda.\n\nPosso aiutarti con: creazione siti, modifiche, pubblicazione, piani e prezzi, problemi tecnici e contatto supporto.";
+    "Non sono sicuro di aver capito la tua domanda. Prova a usare i pulsanti qui sotto oppure riformula la domanda.\n\nPosso aiutarti con: creazione siti, modifiche, pubblicazione, piani e prezzi, gestione Ads e contatto supporto.";
 
   // Welcome message on first open
   useEffect(() => {
@@ -575,7 +568,7 @@ export default function HelpChatbot() {
   );
 
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    async (e: FormEvent) => {
       e.preventDefault();
       const text = input.trim();
       if (!text || isTyping) return;
@@ -594,31 +587,62 @@ export default function HelpChatbot() {
       setContactFormVisible(false);
       setShowProblems(false);
 
-      // Find match
-      const match = findBestMatch(text, lastTopicId);
+      // Check for contact keywords locally first (instant)
+      const contactMatch = findBestMatch(text, lastTopicId);
+      if (contactMatch?.answer === "__SHOW_CONTACT_FORM__") {
+        setLastTopicId(contactMatch.id);
+        setIsTyping(true);
+        setTimeout(() => {
+          setIsTyping(false);
+          addBotMessage(
+            "Certo! Per metterti in contatto con il nostro team, compila i campi qui sotto.",
+          );
+          setContactFormVisible(true);
+        }, 300);
+        return;
+      }
 
       setIsTyping(true);
 
-      setTimeout(() => {
+      // Try AI first, fallback to local matching
+      try {
+        const history = messages
+          .filter((m) => m.sender === "user" || m.sender === "bot")
+          .slice(-10)
+          .map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.text,
+          }));
+
+        const result = await chatMessage(text, history);
+
         setIsTyping(false);
 
+        if (result.reply && !result.error) {
+          addBotMessage(result.reply);
+        } else {
+          // Fallback to local matching
+          const match = findBestMatch(text, lastTopicId);
+          if (match) {
+            setLastTopicId(match.id);
+            addBotMessage(match.answer);
+          } else {
+            addBotMessage(DEFAULT_ANSWER);
+          }
+        }
+      } catch {
+        // API failed - fallback to local matching
+        setIsTyping(false);
+        const match = findBestMatch(text, lastTopicId);
         if (match) {
           setLastTopicId(match.id);
-
-          if (match.answer === "__SHOW_CONTACT_FORM__") {
-            addBotMessage(
-              "Certo! Per metterti in contatto con il nostro team, compila i campi qui sotto e invieremo la tua richiesta.",
-            );
-            setContactFormVisible(true);
-          } else {
-            addBotMessage(match.answer);
-          }
+          addBotMessage(match.answer);
         } else {
           addBotMessage(DEFAULT_ANSWER);
         }
-      }, 400);
+      }
     },
-    [input, isTyping, lastTopicId, addBotMessage]
+    [input, isTyping, lastTopicId, messages, addBotMessage]
   );
 
   const handleContactSubmit = useCallback(
@@ -737,7 +761,7 @@ export default function HelpChatbot() {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-white">
-                Assistente Site Builder
+                Assistente E-quipe
               </h3>
               <p className="text-[10px] text-slate-400">Sempre disponibile</p>
             </div>
