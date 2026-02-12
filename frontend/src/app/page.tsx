@@ -30,18 +30,79 @@ import {
   TrophyIcon,
   CalculatorIcon,
 } from "@heroicons/react/24/outline";
+import { useLanguage, translations } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
-// Rendered MP4 video component (replaces heavy Remotion Player)
-function RenderedVideo({ src, className = "" }: { src: string; className?: string }) {
+// Rendered MP4 video component — premium device mockup with animated glow
+function RenderedVideo({
+  src,
+  accentColor = "#8b5cf6",
+  className = "",
+}: {
+  src: string;
+  accentColor?: string;
+  className?: string;
+}) {
   return (
-    <div className={`rounded-2xl overflow-hidden border border-white/10 shadow-2xl ${className}`}>
-      <video
-        src={src}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="w-full h-auto"
+    <div className={`relative group ${className}`}>
+      {/* Background decoration orbs */}
+      <div
+        className="absolute -inset-20 opacity-30 blur-3xl rounded-full pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${accentColor}33 0%, transparent 70%)` }}
+      />
+      <div
+        className="absolute -inset-10 opacity-20 blur-2xl rounded-full pointer-events-none animate-pulse"
+        style={{ background: `radial-gradient(circle at 30% 70%, ${accentColor}22 0%, transparent 60%)` }}
+      />
+
+      {/* Animated glow border wrapper */}
+      <div className="relative rounded-2xl p-[2px] video-glow-border transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+        style={{
+          '--glow-color-1': accentColor,
+          '--glow-color-2': '#3b82f6',
+          '--glow-color-3': '#06b6d4',
+        } as React.CSSProperties}
+      >
+        {/* Animated gradient border */}
+        <div className="absolute -inset-[1px] rounded-2xl video-glow-gradient opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+
+        {/* Browser chrome frame */}
+        <div className="relative rounded-2xl overflow-hidden bg-[#161616]">
+          {/* Top bar */}
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-[#1a1a1a] border-b border-white/5">
+            {/* Traffic lights */}
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+              <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
+              <span className="w-3 h-3 rounded-full bg-[#28c840]" />
+            </div>
+            {/* URL bar */}
+            <div className="flex-1 mx-2">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#111] border border-white/5">
+                <div className="w-3 h-3 rounded-full border border-white/10 flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accentColor }} />
+                </div>
+                <span className="text-[10px] text-slate-500 font-mono truncate">e-quipe.app</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Video content */}
+          <video
+            src={src}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-auto"
+          />
+        </div>
+      </div>
+
+      {/* Bottom glow reflection */}
+      <div
+        className="absolute -bottom-4 left-[10%] right-[10%] h-8 blur-2xl opacity-40 rounded-full pointer-events-none"
+        style={{ background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)` }}
       />
     </div>
   );
@@ -206,9 +267,48 @@ function TiltCard({
   );
 }
 
+// Floating geometric shapes — subtle background decoration
+function FloatingShapes({ variant = "default" }: { variant?: "default" | "alt" }) {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {variant === "default" ? (
+        <>
+          <div className="absolute top-[15%] left-[8%] w-16 h-16 border border-white/[0.04] rounded-lg floating-shape-1" />
+          <div className="absolute top-[60%] right-[12%] w-10 h-10 border border-violet-500/[0.06] rounded-full floating-shape-2" />
+          <div className="absolute bottom-[20%] left-[15%] w-6 h-6 bg-blue-500/[0.04] rounded-sm floating-shape-3 rotate-45" />
+          <div className="absolute top-[35%] right-[5%] w-20 h-[1px] bg-gradient-to-r from-transparent via-white/[0.05] to-transparent floating-shape-1" />
+        </>
+      ) : (
+        <>
+          <div className="absolute top-[25%] right-[10%] w-12 h-12 border border-white/[0.04] rounded-full floating-shape-2" />
+          <div className="absolute bottom-[30%] left-[5%] w-14 h-14 border border-purple-500/[0.05] rounded-lg floating-shape-3 rotate-12" />
+          <div className="absolute top-[70%] right-[18%] w-4 h-4 bg-cyan-500/[0.05] rounded-full floating-shape-1" />
+          <div className="absolute top-[10%] left-[20%] w-24 h-[1px] bg-gradient-to-r from-transparent via-violet-500/[0.06] to-transparent floating-shape-2" />
+        </>
+      )}
+    </div>
+  );
+}
+
+// Dot grid pattern overlay
+function DotGrid() {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none opacity-[0.03]"
+      style={{
+        backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+        backgroundSize: "32px 32px",
+      }}
+    />
+  );
+}
+
 // ==================== MAIN PAGE ====================
 
 export default function LandingPage() {
+  const { language, t } = useLanguage();
+  const tx = translations[language];
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [pricingMode, setPricingMode] = useState<"sito" | "sito+ads">(
@@ -264,11 +364,12 @@ export default function LandingPage() {
   const stat3 = useCounter(1.2, "", statsInView);
 
   // ROI calculations
+  const businessLabels = tx.earnings.businessTypes;
   const roiMultipliers: Record<string, { roi: number; clients: number; label: string }> = {
-    ristorante: { roi: 3.2, clients: 0.04, label: "Ristorante" },
-    studio: { roi: 2.8, clients: 0.025, label: "Studio Professionale" },
-    ecommerce: { roi: 3.5, clients: 0.035, label: "E-commerce" },
-    servizi: { roi: 3.0, clients: 0.03, label: "Servizi" },
+    ristorante: { roi: 3.2, clients: 0.04, label: businessLabels.ristorante },
+    studio: { roi: 2.8, clients: 0.025, label: businessLabels.studio },
+    ecommerce: { roi: 3.5, clients: 0.035, label: businessLabels.ecommerce },
+    servizi: { roi: 3.0, clients: 0.03, label: businessLabels.servizi },
   };
 
   const currentRoi = roiMultipliers[roiBusiness] || roiMultipliers.ristorante;
@@ -276,295 +377,31 @@ export default function LandingPage() {
   const estimatedRoi = Math.round(roiBudget * currentRoi.roi);
   const estimatedRevenue = estimatedRoi - roiBudget;
 
-  // ==================== DATA ====================
+  // ==================== DATA (i18n) ====================
 
-  const steps = [
-    {
-      icon: ChatBubbleBottomCenterTextIcon,
-      title: "Descrivi",
-      description: "Raccontaci del tuo business, i tuoi servizi e il tuo stile.",
-    },
-    {
-      icon: SparklesIcon,
-      title: "Genera",
-      description: "L'AI crea il tuo sito completo in meno di 60 secondi.",
-    },
-    {
-      icon: PaintBrushIcon,
-      title: "Personalizza",
-      description: "Modifica colori, testi e immagini con l'editor chat AI.",
-    },
-    {
-      icon: RocketLaunchIcon,
-      title: "Pubblica",
-      description: "Vai online con un click. Dominio e SSL inclusi.",
-    },
-  ];
+  const stepIcons = [ChatBubbleBottomCenterTextIcon, SparklesIcon, PaintBrushIcon, RocketLaunchIcon];
+  const steps = tx.howItWorks.steps.map((s, i) => ({ icon: stepIcons[i], title: s.title, description: s.description }));
 
-  const features = [
-    {
-      icon: SparklesIcon,
-      title: "AI Generativa",
-      description:
-        "Descrivi il tuo business e ottieni un sito professionale in 60 secondi. L'AI crea layout, testi e design su misura.",
-      large: true,
-    },
-    {
-      icon: SwatchIcon,
-      title: "19 Template Professionali",
-      description:
-        "8 categorie, 19 stili unici: ristoranti, SaaS, portfolio, e-commerce, business, blog, eventi.",
-      large: true,
-    },
-    {
-      icon: CursorArrowRaysIcon,
-      title: "Editor Chat AI",
-      description:
-        "Modifica il tuo sito parlando con l'AI. Cambia colori, testi e layout in linguaggio naturale.",
-      large: false,
-    },
-    {
-      icon: BoltIcon,
-      title: "Animazioni GSAP",
-      description:
-        "29 effetti professionali: scroll, parallax, text-split, magnetic e molto altro.",
-      large: false,
-    },
-    {
-      icon: DevicePhoneMobileIcon,
-      title: "Mobile First",
-      description:
-        "Ogni sito e' ottimizzato per mobile, tablet e desktop fin dal primo pixel.",
-      large: false,
-    },
-    {
-      icon: GlobeAltIcon,
-      title: "Pubblica con 1 Click",
-      description:
-        "Hosting, SSL e sottodominio inclusi. Collega il tuo dominio personalizzato.",
-      large: false,
-    },
-    {
-      icon: CodeBracketIcon,
-      title: "HTML5 Semantico",
-      description:
-        "Codice pulito, SEO ottimizzato, accessibile. Pensato per piacere a Google.",
-      large: false,
-    },
-    {
-      icon: Square3Stack3DIcon,
-      title: "Design Completo",
-      description:
-        "Hero, about, servizi, contatti, footer. Tutto incluso, tutto personalizzabile.",
-      large: false,
-    },
-  ];
+  const featureIcons = [SparklesIcon, SwatchIcon, CursorArrowRaysIcon, BoltIcon, DevicePhoneMobileIcon, GlobeAltIcon, CodeBracketIcon, Square3Stack3DIcon];
+  const featureLarge = [true, true, false, false, false, false, false, false];
+  const features = tx.features.items.map((f, i) => ({ icon: featureIcons[i], title: f.title, description: f.description, large: featureLarge[i] }));
 
-  const adsColumns = [
-    {
-      icon: MegaphoneIcon,
-      title: "Meta Ads",
-      subtitle: "Instagram + Facebook",
-      items: [
-        "Campagne Instagram & Facebook",
-        "A/B testing creativo automatico",
-        "DM automatici ai lead",
-        "Targeting avanzato con AI",
-      ],
-      gradient: "from-blue-500/20 to-cyan-500/20",
-      iconColor: "text-blue-400",
-    },
-    {
-      icon: ChartBarIcon,
-      title: "Google Ads",
-      subtitle: "Search + Display",
-      items: [
-        "Campagne Search & Display",
-        "Keyword optimization con AI",
-        "Policy compliance garantita",
-        "Bidding automatico intelligente",
-      ],
-      gradient: "from-violet-500/20 to-purple-500/20",
-      iconColor: "text-violet-400",
-    },
-    {
-      icon: VideoCameraIcon,
-      title: "Contenuti AI",
-      subtitle: "Video + Grafiche",
-      items: [
-        "Video con Higgsfield AI",
-        "Grafiche per ads e social",
-        "Avatar parlanti AI",
-        "Contenuti ottimizzati per conversione",
-      ],
-      gradient: "from-purple-500/20 to-pink-500/20",
-      iconColor: "text-purple-400",
-    },
-  ];
+  const adsIcons = [MegaphoneIcon, ChartBarIcon, VideoCameraIcon];
+  const adsGradients = ["from-blue-500/20 to-cyan-500/20", "from-violet-500/20 to-purple-500/20", "from-purple-500/20 to-pink-500/20"];
+  const adsIconColors = ["text-blue-400", "text-violet-400", "text-purple-400"];
+  const adsColumns = tx.ads.columns.map((c, i) => ({ icon: adsIcons[i], title: c.title, subtitle: c.subtitle, items: [...c.items], gradient: adsGradients[i], iconColor: adsIconColors[i] }));
 
-  const timelineMilestones = [
-    {
-      time: "Settimana 1",
-      title: "L'AI crea il tuo sito",
-      icon: SparklesIcon,
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      time: "Settimana 2",
-      title: "Lancio campagne Ads",
-      icon: RocketLaunchIcon,
-      color: "from-violet-500 to-purple-500",
-    },
-    {
-      time: "Settimana 4",
-      title: "Primi risultati",
-      icon: ChartBarIcon,
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      time: "Mese 3",
-      title: "Crescita stabile",
-      icon: TrophyIcon,
-      color: "from-amber-500 to-orange-500",
-    },
-  ];
+  const tlIcons = [SparklesIcon, RocketLaunchIcon, ChartBarIcon, TrophyIcon];
+  const tlColors = ["from-blue-500 to-cyan-500", "from-violet-500 to-purple-500", "from-purple-500 to-pink-500", "from-amber-500 to-orange-500"];
+  const timelineMilestones = tx.timeline.milestones.map((m, i) => ({ time: m.time, title: m.title, icon: tlIcons[i], color: tlColors[i] }));
 
-  const pricingPlans = [
-    {
-      name: "STARTER",
-      price: "199",
-      period: "una tantum",
-      description: "Il tuo sito AI, subito online",
-      features: [
-        "Sito AI (1 pagina)",
-        "Hosting su sottodominio",
-        "Certificato SSL incluso",
-        "3 modifiche via chat",
-      ],
-      adsFeatures: [] as string[],
-      cta: "Inizia Ora",
-      popular: false,
-    },
-    {
-      name: "BUSINESS",
-      price: "49",
-      period: "/mese",
-      description: "Sito completo + primi clienti",
-      features: [
-        "Sito completo multi-pagina",
-        "Dominio personalizzato",
-        "Modifiche illimitate via chat",
-        "SSL e hosting inclusi",
-      ],
-      adsFeatures: [
-        "2 campagne Meta/mese",
-        "Report mensile performance",
-      ],
-      cta: "Scegli Business",
-      popular: true,
-    },
-    {
-      name: "GROWTH",
-      price: "99",
-      period: "/mese",
-      description: "Crescita accelerata con AI",
-      features: [
-        "Tutto di Business +",
-        "Dominio personalizzato",
-        "Modifiche illimitate",
-        "Supporto prioritario",
-      ],
-      adsFeatures: [
-        "Google Ads + Meta Ads",
-        "DM automatici ai lead",
-        "5 contenuti IA/mese",
-        "Report settimanale",
-      ],
-      cta: "Scegli Growth",
-      popular: false,
-    },
-    {
-      name: "PREMIUM",
-      price: "199",
-      period: "/mese",
-      description: "Tutto illimitato, strategia dedicata",
-      features: [
-        "Tutto di Growth +",
-        "Pagine illimitate",
-        "Priorita' massima generazione",
-        "Account manager dedicato",
-      ],
-      adsFeatures: [
-        "Campagne illimitate",
-        "Contenuti IA illimitati",
-        "Strategia dedicata mensile",
-        "Supporto prioritario 24/7",
-      ],
-      cta: "Scegli Premium",
-      popular: false,
-    },
-  ];
+  const planPopular = [false, true, false, false];
+  const pricingPlans = tx.pricing.plans.map((p, i) => ({ ...p, features: [...p.features], adsFeatures: [...p.adsFeatures], popular: planPopular[i] }));
 
-  const testimonials = [
-    {
-      quote:
-        "Ho creato il sito in 10 minuti. Con le campagne Ads ho raddoppiato le prenotazioni in 3 mesi.",
-      author: "Marco Rossi",
-      role: "Ristorante Da Mario",
-      avatar: "MR",
-    },
-    {
-      quote:
-        "Sito pronto in un'ora, campagne partite il giorno dopo. 15 nuovi clienti al mese.",
-      author: "Laura Bianchi",
-      role: "Studio Legale",
-      avatar: "LB",
-    },
-    {
-      quote:
-        "L'AI ha capito esattamente il mio stile. Google Ads mi porta 15 contatti a settimana.",
-      author: "Giuseppe Verdi",
-      role: "Fotografo",
-      avatar: "GV",
-    },
-  ];
+  const avatars = ["MR", "LB", "GV"];
+  const testimonials = tx.testimonials.items.map((t, i) => ({ quote: t.quote, author: t.author, role: t.role, avatar: avatars[i] }));
 
-  const faqs = [
-    {
-      q: "Come funziona la creazione del sito?",
-      a: "Scegli un template dalla nostra galleria di 19 stili professionali, descrivi il tuo business in 3 semplici step e l'AI genera il tuo sito completo in meno di 60 secondi. Puoi poi personalizzarlo con l'editor chat AI.",
-    },
-    {
-      q: "Quanto costa il servizio?",
-      a: "Il piano Starter parte da \u20ac199 una tantum per il solo sito. Se vuoi anche la gestione Ads, i piani partono da \u20ac49/mese (Business) con campagne Meta incluse. Puoi sempre iniziare col sito e aggiungere Ads dopo.",
-    },
-    {
-      q: "Chi gestisce le mie campagne Ads?",
-      a: "Le campagne vengono preparate dalla nostra AI e poi riviste e approvate dagli esperti di E-quipe. Ogni campagna ha supervisione umana garantita e monitoraggio continuo.",
-    },
-    {
-      q: "Posso usare il mio dominio?",
-      a: "Certo! Dal piano Business in su puoi collegare il tuo dominio personalizzato. Il piano Starter include un sottodominio gratuito (tuonome.e-quipe.app).",
-    },
-    {
-      q: "Cosa include il monitoraggio 24/7?",
-      a: "Il nostro sistema monitora le performance delle tue campagne in tempo reale. Se un annuncio non performa, viene ottimizzato o sostituito automaticamente. Ricevi report periodici con metriche chiare.",
-    },
-    {
-      q: "Posso iniziare solo col sito e aggiungere Ads dopo?",
-      a: "Assolutamente si! Puoi partire col piano Starter (solo sito) e fare upgrade a Business o Growth in qualsiasi momento per attivare la gestione Ads.",
-    },
-    {
-      q: "Come sono i siti generati?",
-      a: "HTML5 semantico, Tailwind CSS, animazioni GSAP professionali, completamente responsive e SEO-friendly. Codice pulito che piace a Google.",
-    },
-    {
-      q: "Quanto tempo ci vuole per vedere risultati Ads?",
-      a: "Primi risultati in 2-4 settimane, crescita stabile in 2-3 mesi. Ogni campagna viene ottimizzata continuamente dall'AI con supervisione umana.",
-    },
-  ];
-
-  const marqueeItems: string[] = [];
+  const faqs = tx.faq.items.map((f) => ({ q: f.q, a: f.a }));
 
   // ==================== RENDER ====================
 
@@ -593,51 +430,17 @@ export default function LandingPage() {
             </Link>
 
             <div className="hidden lg:flex items-center gap-8">
-              <a
-                href="#features"
-                className="text-sm text-slate-300 hover:text-white transition-colors"
-              >
-                Funzionalita&apos;
-              </a>
-              <a
-                href="#how-it-works"
-                className="text-sm text-slate-300 hover:text-white transition-colors"
-              >
-                Come Funziona
-              </a>
-              <a
-                href="#ads-service"
-                className="text-sm text-slate-300 hover:text-white transition-colors"
-              >
-                Servizio Ads
-              </a>
-              <a
-                href="#pricing"
-                className="text-sm text-slate-300 hover:text-white transition-colors"
-              >
-                Prezzi
-              </a>
-              <Link
-                href="/dashboard"
-                className="text-sm text-slate-300 hover:text-white transition-colors"
-              >
-                Dashboard
-              </Link>
+              <a href="#features" className="text-sm text-slate-300 hover:text-white transition-colors">{t("nav.features")}</a>
+              <a href="#how-it-works" className="text-sm text-slate-300 hover:text-white transition-colors">{t("nav.howItWorks")}</a>
+              <a href="#ads-service" className="text-sm text-slate-300 hover:text-white transition-colors">{t("nav.adsService")}</a>
+              <a href="#pricing" className="text-sm text-slate-300 hover:text-white transition-colors">{t("nav.pricing")}</a>
+              <Link href="/dashboard" className="text-sm text-slate-300 hover:text-white transition-colors">{t("nav.dashboard")}</Link>
             </div>
 
             <div className="hidden lg:flex items-center gap-4">
-              <Link
-                href="/auth"
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
-              >
-                Accedi
-              </Link>
-              <Link
-                href="/auth"
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
-              >
-                Crea il Tuo Sito
-              </Link>
+              <LanguageSwitcher />
+              <Link href="/auth" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">{t("nav.login")}</Link>
+              <Link href="/auth" className="px-5 py-2.5 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full text-sm font-semibold shadow-[0_0_16px_rgba(59,130,246,0.25)] hover:shadow-[0_0_24px_rgba(59,130,246,0.4)] hover:-translate-y-0.5 transition-all">{t("nav.cta")}</Link>
             </div>
 
             <button
@@ -662,54 +465,15 @@ export default function LandingPage() {
               className="lg:hidden bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/5 overflow-hidden"
             >
               <div className="px-6 py-4 space-y-4">
-                <a
-                  href="#features"
-                  className="block text-slate-300 hover:text-white py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Funzionalita&apos;
-                </a>
-                <a
-                  href="#how-it-works"
-                  className="block text-slate-300 hover:text-white py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Come Funziona
-                </a>
-                <a
-                  href="#ads-service"
-                  className="block text-slate-300 hover:text-white py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Servizio Ads
-                </a>
-                <a
-                  href="#pricing"
-                  className="block text-slate-300 hover:text-white py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Prezzi
-                </a>
-                <Link
-                  href="/dashboard"
-                  className="block text-slate-300 hover:text-white py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
+                <a href="#features" className="block text-slate-300 hover:text-white py-2" onClick={() => setMobileMenuOpen(false)}>{t("nav.features")}</a>
+                <a href="#how-it-works" className="block text-slate-300 hover:text-white py-2" onClick={() => setMobileMenuOpen(false)}>{t("nav.howItWorks")}</a>
+                <a href="#ads-service" className="block text-slate-300 hover:text-white py-2" onClick={() => setMobileMenuOpen(false)}>{t("nav.adsService")}</a>
+                <a href="#pricing" className="block text-slate-300 hover:text-white py-2" onClick={() => setMobileMenuOpen(false)}>{t("nav.pricing")}</a>
+                <Link href="/dashboard" className="block text-slate-300 hover:text-white py-2" onClick={() => setMobileMenuOpen(false)}>{t("nav.dashboard")}</Link>
                 <hr className="border-white/10" />
-                <Link
-                  href="/auth"
-                  className="block text-slate-300 hover:text-white py-2"
-                >
-                  Accedi
-                </Link>
-                <Link
-                  href="/auth"
-                  className="block w-full py-3 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full font-semibold text-center"
-                >
-                  Crea il Tuo Sito
-                </Link>
+                <div className="flex items-center gap-3 py-2"><LanguageSwitcher /></div>
+                <Link href="/auth" className="block text-slate-300 hover:text-white py-2">{t("nav.login")}</Link>
+                <Link href="/auth" className="block w-full py-3 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full font-semibold text-center">{t("nav.cta")}</Link>
               </div>
             </motion.div>
           )}
@@ -725,45 +489,73 @@ export default function LandingPage() {
           <div className="hero-orb hero-orb-3 absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px]" />
           <div className="hero-orb hero-orb-4 absolute w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
         </div>
+        <DotGrid />
+        <FloatingShapes />
 
         <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="text-center lg:text-left"
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
-                <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-sm text-slate-300">
-                  AI-Powered Website Builder + Ads Management
-                </span>
-              </div>
+            <div className="text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
+                  <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-sm text-slate-300">{t("hero.badge")}</span>
+                </div>
+              </motion.div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight mb-6">
-                Crea il tuo sito.
+                <motion.span
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+                  className="inline-block"
+                >
+                  {t("hero.titleLine1")}
+                </motion.span>
                 <br />
-                <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-                  Porta clienti.
-                </span>
+                <motion.span
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.25, ease: "easeOut" }}
+                  className="inline-block bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent"
+                >
+                  {t("hero.titleLine2")}
+                </motion.span>
                 <br />
-                Cresci online.
+                <motion.span
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+                  className="inline-block"
+                >
+                  {t("hero.titleLine3")}
+                </motion.span>
               </h1>
 
-              <p className="text-lg lg:text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-                L&apos;unica piattaforma che crea il tuo sito in 60 secondi{" "}
-                <strong className="text-slate-200">E</strong> ti porta clienti
-                con campagne Meta e Google Ads gestite da esperti.
-              </p>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
+                className="text-lg lg:text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
+              >
+                {t("hero.description")}
+              </motion.p>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.65, ease: "easeOut" }}
+                className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
+              >
                 <MagneticButton
                   href="/auth"
-                  className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full font-semibold text-lg hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2"
+                  className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full font-semibold text-lg shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
                 >
-                  Crea il Tuo Sito
+                  {t("hero.ctaPrimary")}
                   <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </MagneticButton>
                 <MagneticButton
@@ -771,27 +563,32 @@ export default function LandingPage() {
                   asAnchor
                   className="group w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 rounded-full font-semibold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                 >
-                  Scopri il Servizio Ads
+                  {t("hero.ctaSecondary")}
                   <ChevronDownIcon className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
                 </MagneticButton>
-              </div>
+              </motion.div>
 
               {/* Trust Badges */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-12 pt-8 border-t border-white/10">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-12 pt-8 border-t border-white/10"
+              >
                 <div className="flex items-center gap-2 text-slate-400">
                   <CheckIcon className="w-5 h-5 text-emerald-400" />
-                  <span className="text-sm">Nessun codice</span>
+                  <span className="text-sm">{t("hero.trustNoCode")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-400">
                   <CheckIcon className="w-5 h-5 text-emerald-400" />
-                  <span className="text-sm">Setup in 60 secondi</span>
+                  <span className="text-sm">{t("hero.trustSetup")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-400">
                   <CheckIcon className="w-5 h-5 text-emerald-400" />
-                  <span className="text-sm">Ads gestiti da esperti</span>
+                  <span className="text-sm">{t("hero.trustAds")}</span>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
 
             {/* Right Visual - Remotion Video Player */}
             <motion.div
@@ -800,7 +597,7 @@ export default function LandingPage() {
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
               className="relative"
             >
-              <RenderedVideo src="/videos/hero.mp4" className="shadow-2xl shadow-purple-500/10" />
+              <RenderedVideo src="/videos/hero.mp4" accentColor="#8b5cf6" />
 
               {/* Floating accent cards */}
               <div className="absolute -bottom-4 -left-4 p-3 rounded-xl bg-[#111]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
@@ -809,10 +606,8 @@ export default function LandingPage() {
                     <CheckIcon className="w-5 h-5 text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Sito Pubblicato!</p>
-                    <p className="text-xs text-slate-400">
-                      Online in 45 secondi
-                    </p>
+                    <p className="text-sm font-medium">{t("hero.floatingPublished")}</p>
+                    <p className="text-xs text-slate-400">{t("hero.floatingPublishedSub")}</p>
                   </div>
                 </div>
               </div>
@@ -820,7 +615,7 @@ export default function LandingPage() {
               <div className="absolute -top-4 -right-4 p-3 rounded-xl bg-[#111]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
                 <div className="flex items-center gap-2">
                   <SparklesIcon className="w-5 h-5 text-violet-400" />
-                  <span className="text-sm font-medium">Generato con AI</span>
+                  <span className="text-sm font-medium">{t("hero.floatingAI")}</span>
                 </div>
               </div>
             </motion.div>
@@ -829,32 +624,34 @@ export default function LandingPage() {
       </section>
 
       {/* ===== QUICK STATS STRIP ===== */}
-      <section className="py-12 border-y border-white/5">
-        <div className="max-w-5xl mx-auto px-6">
+      <section className="py-12 border-y border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/[0.03] via-violet-500/[0.02] to-purple-500/[0.03]" />
+        <div className="max-w-5xl mx-auto px-6 relative">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">60s</p>
-              <p className="text-xs text-slate-500 mt-1">Tempo medio creazione</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">19</p>
-              <p className="text-xs text-slate-500 mt-1">Template professionali</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">29</p>
-              <p className="text-xs text-slate-500 mt-1">Effetti animazione</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">24/7</p>
-              <p className="text-xs text-slate-500 mt-1">Monitoraggio Ads</p>
-            </div>
+            {[
+              { value: t("quickStats.creationTime"), label: t("quickStats.creationTimeLabel"), gradient: "from-blue-400 to-violet-400", glow: "blue" },
+              { value: t("quickStats.templates"), label: t("quickStats.templatesLabel"), gradient: "from-violet-400 to-purple-400", glow: "violet" },
+              { value: t("quickStats.animations"), label: t("quickStats.animationsLabel"), gradient: "from-purple-400 to-pink-400", glow: "purple" },
+              { value: t("quickStats.monitoring"), label: t("quickStats.monitoringLabel"), gradient: "from-pink-400 to-rose-400", glow: "pink" },
+            ].map((stat, idx) => (
+              <div key={idx} className="relative group">
+                <div className={`absolute inset-0 rounded-xl bg-${stat.glow}-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl`} />
+                <div className="relative p-4 rounded-xl hover:bg-white/[0.02] transition-colors duration-300">
+                  <p className={`text-2xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(139,92,246,0.3)]`}>
+                    {stat.value}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">{stat.label}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ===== COME FUNZIONA ===== */}
-      <section id="how-it-works" className="py-24 lg:py-32" ref={stepsRef}>
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="how-it-works" className="py-24 lg:py-32 relative" ref={stepsRef}>
+        <FloatingShapes variant="alt" />
+        <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -862,10 +659,9 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
               className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
             >
-              Da zero al tuo sito
+              {t("howItWorks.title")}
               <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                {" "}
-                in 4 passaggi
+                {t("howItWorks.titleHighlight")}
               </span>
             </motion.h2>
             <motion.p
@@ -874,8 +670,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-lg text-slate-400"
             >
-              Nessuna competenza tecnica richiesta. Descrivi, genera,
-              personalizza e pubblica.
+              {t("howItWorks.subtitle")}
             </motion.p>
           </div>
 
@@ -910,9 +705,9 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={stepsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 max-w-4xl mx-auto"
+            className="mt-16 max-w-3xl mx-auto"
           >
-            <RenderedVideo src="/videos/process.mp4" className="shadow-2xl shadow-violet-500/10" />
+            <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" />
           </motion.div>
         </div>
       </section>
@@ -920,10 +715,12 @@ export default function LandingPage() {
       {/* ===== SITE BUILDER FEATURES (BENTO GRID) ===== */}
       <section
         id="features"
-        className="py-24 lg:py-32 bg-white/[0.01]"
+        className="py-24 lg:py-32 bg-white/[0.01] relative"
         ref={featuresRef}
       >
-        <div className="max-w-7xl mx-auto px-6">
+        <DotGrid />
+        <FloatingShapes />
+        <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -931,10 +728,9 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
               className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
             >
-              Tutto cio&apos; che serve per
+              {t("features.title")}
               <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                {" "}
-                andare online
+                {t("features.titleHighlight")}
               </span>
             </motion.h2>
             <motion.p
@@ -943,8 +739,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-lg text-slate-400"
             >
-              Non serve essere designer o sviluppatori. La nostra AI crea siti
-              professionali che sembrano fatti a mano da un esperto.
+              {t("features.subtitle")}
             </motion.p>
           </div>
 
@@ -979,16 +774,17 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-16 max-w-4xl mx-auto"
+            className="mt-16 max-w-3xl mx-auto"
           >
-            <RenderedVideo src="/videos/features.mp4" className="shadow-2xl shadow-blue-500/10" />
+            <RenderedVideo src="/videos/features.mp4" accentColor="#3b82f6" />
           </motion.div>
         </div>
       </section>
 
       {/* ===== ADS SERVICE SECTION ===== */}
-      <section id="ads-service" className="py-24 lg:py-32" ref={adsRef}>
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="ads-service" className="py-24 lg:py-32 relative" ref={adsRef}>
+        <FloatingShapes variant="alt" />
+        <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -997,9 +793,7 @@ export default function LandingPage() {
             >
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-6">
                 <MegaphoneIcon className="w-4 h-4 text-violet-400" />
-                <span className="text-sm text-violet-300">
-                  Servizio Ads Management
-                </span>
+                <span className="text-sm text-violet-300">{t("ads.badge")}</span>
               </span>
             </motion.div>
 
@@ -1009,10 +803,10 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
             >
-              Non basta avere un sito.
+              {t("ads.title")}
               <br />
               <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Servono clienti.
+                {t("ads.titleHighlight")}
               </span>
             </motion.h2>
             <motion.p
@@ -1021,8 +815,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg text-slate-400"
             >
-              Il nostro team gestisce le tue campagne Meta e Google Ads con il
-              supporto dell&apos;intelligenza artificiale.
+              {t("ads.subtitle")}
             </motion.p>
           </div>
 
@@ -1067,19 +860,15 @@ export default function LandingPage() {
             className="max-w-4xl mx-auto"
           >
             <h3 className="text-center text-lg font-semibold mb-8 text-slate-300">
-              Come funziona il servizio Ads
+              {t("ads.flowTitle")}
             </h3>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="p-5 rounded-xl bg-blue-500/5 border border-blue-500/20 text-center">
                 <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-3">
                   <SparklesIcon className="w-5 h-5 text-blue-400" />
                 </div>
-                <p className="font-semibold text-sm mb-1">
-                  L&apos;IA prepara tutto
-                </p>
-                <p className="text-xs text-slate-400">
-                  Creativita&apos;, copy, targeting
-                </p>
+                <p className="font-semibold text-sm mb-1">{t("ads.flowStep1Title")}</p>
+                <p className="text-xs text-slate-400">{t("ads.flowStep1Sub")}</p>
               </div>
               <div className="p-5 rounded-xl bg-violet-500/5 border border-violet-500/20 text-center relative">
                 <div className="hidden md:block absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 text-slate-600">
@@ -1088,12 +877,8 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center mx-auto mb-3">
                   <ShieldCheckIcon className="w-5 h-5 text-violet-400" />
                 </div>
-                <p className="font-semibold text-sm mb-1">
-                  Gli esperti rivedono e approvano
-                </p>
-                <p className="text-xs text-slate-400">
-                  Supervisione umana esperta
-                </p>
+                <p className="font-semibold text-sm mb-1">{t("ads.flowStep2Title")}</p>
+                <p className="text-xs text-slate-400">{t("ads.flowStep2Sub")}</p>
               </div>
               <div className="p-5 rounded-xl bg-purple-500/5 border border-purple-500/20 text-center relative">
                 <div className="hidden md:block absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 text-slate-600">
@@ -1102,12 +887,8 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-3">
                   <ChartBarIcon className="w-5 h-5 text-purple-400" />
                 </div>
-                <p className="font-semibold text-sm mb-1">
-                  Lancio + monitoraggio 24/7
-                </p>
-                <p className="text-xs text-slate-400">
-                  Ottimizzazione continua
-                </p>
+                <p className="font-semibold text-sm mb-1">{t("ads.flowStep3Title")}</p>
+                <p className="text-xs text-slate-400">{t("ads.flowStep3Sub")}</p>
               </div>
             </div>
 
@@ -1115,22 +896,24 @@ export default function LandingPage() {
               <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                 <ShieldCheckIcon className="w-5 h-5 text-emerald-400" />
                 <span className="text-sm text-emerald-300">
-                  100% conforme alle policy Google — supervisione umana garantita
+                  {t("ads.complianceBadge")}
                 </span>
               </div>
             </div>
 
             {/* Ads Video */}
             <div className="mt-12 max-w-3xl mx-auto">
-              <RenderedVideo src="/videos/ads.mp4" className="shadow-2xl shadow-violet-500/10" />
+              <RenderedVideo src="/videos/ads.mp4" accentColor="#10b981" />
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* ===== BEFORE/AFTER TIMELINE ===== */}
-      <section className="py-24 lg:py-32 bg-white/[0.01]" ref={timelineRef}>
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-24 lg:py-32 bg-white/[0.01] relative" ref={timelineRef}>
+        <DotGrid />
+        <FloatingShapes />
+        <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -1138,10 +921,9 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
               className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
             >
-              Il tuo percorso verso la
+              {t("timeline.title")}
               <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                {" "}
-                crescita
+                {t("timeline.titleHighlight")}
               </span>
             </motion.h2>
             <motion.p
@@ -1150,7 +932,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-lg text-slate-400"
             >
-              Da zero a una crescita stabile in poche settimane.
+              {t("timeline.subtitle")}
             </motion.p>
           </div>
 
@@ -1195,7 +977,7 @@ export default function LandingPage() {
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
                 <CalculatorIcon className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm text-emerald-300">
-                  Calcolatore ROI
+                  {t("earnings.badge")}
                 </span>
               </span>
             </motion.div>
@@ -1206,10 +988,9 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
             >
-              Quanto puoi
+              {t("earnings.title")}
               <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                {" "}
-                guadagnare?
+                {t("earnings.titleHighlight")}
               </span>
             </motion.h2>
             <motion.p
@@ -1218,7 +999,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg text-slate-400"
             >
-              Scopri il ritorno stimato sul tuo investimento Ads.
+              {t("earnings.subtitle")}
             </motion.p>
           </div>
 
@@ -1233,7 +1014,7 @@ export default function LandingPage() {
               <div className="space-y-8">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-3">
-                    Budget mensile Ads
+                    {t("earnings.budgetLabel")}
                   </label>
                   <input
                     type="range"
@@ -1255,7 +1036,7 @@ export default function LandingPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-3">
-                    Tipo di business
+                    {t("earnings.businessTypeLabel")}
                   </label>
                   <div className="grid grid-cols-2 gap-3">
                     {Object.entries(roiMultipliers).map(([key, val]) => (
@@ -1279,7 +1060,7 @@ export default function LandingPage() {
               <div className="space-y-6">
                 <div className="p-5 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
                   <p className="text-sm text-slate-400 mb-1">
-                    Nuovi clienti stimati/mese
+                    {t("earnings.estimatedClientsLabel")}
                   </p>
                   <motion.p
                     key={`clients-${estimatedClients}`}
@@ -1292,7 +1073,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="p-5 rounded-xl bg-blue-500/5 border border-blue-500/20">
-                  <p className="text-sm text-slate-400 mb-1">Fatturato stimato/mese</p>
+                  <p className="text-sm text-slate-400 mb-1">{t("earnings.estimatedRevenueLabel")}</p>
                   <motion.p
                     key={`roi-${estimatedRoi}`}
                     initial={{ opacity: 0, y: 10 }}
@@ -1305,7 +1086,7 @@ export default function LandingPage() {
 
                 <div className="p-5 rounded-xl bg-violet-500/5 border border-violet-500/20">
                   <p className="text-sm text-slate-400 mb-1">
-                    Guadagno netto stimato/mese
+                    {t("earnings.estimatedProfitLabel")}
                   </p>
                   <motion.p
                     key={`revenue-${estimatedRevenue}`}
@@ -1318,7 +1099,7 @@ export default function LandingPage() {
                 </div>
 
                 <p className="text-xs text-slate-500 text-center">
-                  * Stime basate su dati medi di settore. I risultati possono variare.
+                  {t("earnings.disclaimer")}
                 </p>
               </div>
             </div>
@@ -1336,12 +1117,11 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
               className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
             >
-              Fai da Te
+              {t("comparison.title")}
               <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
-                {" "}
-                vs{" "}
+                {t("comparison.titleVs")}
               </span>
-              Con E-quipe
+              {t("comparison.titleBrand")}
             </motion.h2>
           </div>
 
@@ -1353,43 +1133,19 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="p-8 rounded-2xl bg-red-500/[0.03] border border-red-500/10"
             >
-              <h3 className="text-xl font-bold text-red-400 mb-6">Fai da Te</h3>
+              <h3 className="text-xl font-bold text-red-400 mb-6">{t("comparison.diy.title")}</h3>
               <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <XMarkIcon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300 text-sm">
-                    Web designer:{" "}
-                    <span className="line-through text-slate-500">
-                      &euro;2.000-5.000
-                    </span>
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <XMarkIcon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300 text-sm">
-                    Agenzia Ads:{" "}
-                    <span className="line-through text-slate-500">
-                      &euro;500-1.500/mese
-                    </span>
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <XMarkIcon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300 text-sm">
-                    Tempo setup: 2-4 settimane
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <XMarkIcon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300 text-sm">
-                    Gestione continua a carico tuo
-                  </span>
-                </li>
+                {tx.comparison.diy.items.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <XMarkIcon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-slate-300 text-sm">{item}</span>
+                  </li>
+                ))}
               </ul>
               <div className="mt-8 pt-6 border-t border-red-500/10">
-                <p className="text-sm text-slate-400">Totale primo anno</p>
+                <p className="text-sm text-slate-400">{t("comparison.diy.totalLabel")}</p>
                 <p className="text-2xl font-bold text-red-400">
-                  &euro;8.000 - 23.000
+                  {t("comparison.diy.totalValue")}
                 </p>
               </div>
             </motion.div>
@@ -1403,40 +1159,22 @@ export default function LandingPage() {
             >
               <div className="absolute -top-3 right-6">
                 <span className="px-3 py-1 bg-emerald-500 rounded-full text-xs font-bold text-black">
-                  RISPARMIA FINO AL 96%
+                  {t("comparison.equipe.saveBadge")}
                 </span>
               </div>
               <h3 className="text-xl font-bold text-emerald-400 mb-6">
-                Con E-quipe
+                {t("comparison.equipe.title")}
               </h3>
               <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <CheckIcon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300 text-sm">
-                    Sito AI: da &euro;199 una tantum
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckIcon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300 text-sm">
-                    Ads gestiti: da &euro;49/mese
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckIcon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300 text-sm">
-                    Online in 60 secondi
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckIcon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300 text-sm">
-                    AI + supervisione umana inclusa
-                  </span>
-                </li>
+                {tx.comparison.equipe.items.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-slate-300 text-sm">{item}</span>
+                  </li>
+                ))}
               </ul>
               <div className="mt-8 pt-6 border-t border-emerald-500/10">
-                <p className="text-sm text-slate-400">Totale primo anno</p>
+                <p className="text-sm text-slate-400">{t("comparison.equipe.totalLabel")}</p>
                 <motion.p
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={
@@ -1447,7 +1185,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.6, delay: 0.8 }}
                   className="text-2xl font-bold text-emerald-400"
                 >
-                  da &euro;787
+                  {t("comparison.equipe.totalValue")}
                 </motion.p>
               </div>
             </motion.div>
@@ -1456,76 +1194,53 @@ export default function LandingPage() {
       </section>
 
       {/* ===== STATS / NUMBERS ===== */}
-      <section className="py-20 border-y border-white/5" ref={statsRef}>
-        <div className="max-w-5xl mx-auto px-6">
+      <section className="py-20 border-y border-white/5 relative overflow-hidden" ref={statsRef}>
+        <div className="absolute inset-0 bg-gradient-to-b from-violet-500/[0.02] via-transparent to-blue-500/[0.02]" />
+        <div className="max-w-5xl mx-auto px-6 relative">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={statsInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5 }}
-              className="text-center"
-            >
-              <p className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                {stat1}+
-              </p>
-              <p className="text-sm text-slate-400 mt-2">Siti generati</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={statsInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-center"
-            >
-              <p className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-                {stat2}
-              </p>
-              <p className="text-sm text-slate-400 mt-2">
-                Campagne ads attive
-              </p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={statsInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-center"
-            >
-              <p className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                &euro;{stat3}M+
-              </p>
-              <p className="text-sm text-slate-400 mt-2">
-                Fatturato generato ai clienti
-              </p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={statsInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-center"
-            >
-              <p className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                4.8/5
-              </p>
-              <p className="text-sm text-slate-400 mt-2">
-                Rating medio clienti
-              </p>
-            </motion.div>
+            {[
+              { value: <>{stat1}+</>, label: t("stats.sitesGenerated"), gradient: "from-blue-400 to-violet-400", glowColor: "rgba(96,165,250,0.2)" },
+              { value: stat2, label: t("stats.activeCampaigns"), gradient: "from-violet-400 to-purple-400", glowColor: "rgba(139,92,246,0.2)" },
+              { value: <>&euro;{stat3}M+</>, label: t("stats.revenueGenerated"), gradient: "from-purple-400 to-pink-400", glowColor: "rgba(168,85,247,0.2)" },
+              { value: "4.8/5", label: t("stats.clientRating"), gradient: "from-amber-400 to-orange-400", glowColor: "rgba(251,191,36,0.2)" },
+            ].map((stat, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={statsInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="text-center relative group"
+              >
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl pointer-events-none"
+                  style={{ background: `radial-gradient(circle, ${stat.glowColor}, transparent 70%)` }}
+                />
+                <div className="relative p-6 rounded-2xl hover:bg-white/[0.02] transition-colors duration-300">
+                  <p className={`text-4xl lg:text-5xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                    {stat.value}
+                  </p>
+                  <p className="text-sm text-slate-400 mt-2">{stat.label}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ===== PRICING SECTION ===== */}
-      <section id="pricing" className="py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="pricing" className="py-24 lg:py-32 relative">
+        <DotGrid />
+        <FloatingShapes variant="alt" />
+        <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6">
-              Prezzi semplici,
+              {t("pricing.title")}
               <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                {" "}
-                senza sorprese
+                {t("pricing.titleHighlight")}
               </span>
             </h2>
             <p className="text-lg text-slate-400 mb-8">
-              Inizia col sito, aggiungi le Ads quando sei pronto a crescere.
+              {t("pricing.subtitle")}
             </p>
 
             {/* Toggle */}
@@ -1538,7 +1253,7 @@ export default function LandingPage() {
                     : "text-slate-400 hover:text-white"
                 }`}
               >
-                Solo Sito
+                {t("pricing.toggleSite")}
               </button>
               <button
                 onClick={() => setPricingMode("sito+ads")}
@@ -1548,25 +1263,33 @@ export default function LandingPage() {
                     : "text-slate-400 hover:text-white"
                 }`}
               >
-                Sito + Ads
+                {t("pricing.toggleSiteAds")}
               </button>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-7xl mx-auto">
             {pricingPlans.map((plan, idx) => (
+              <div key={idx} className={`relative ${plan.popular ? "pricing-popular-card" : ""}`}>
+                {/* Animated glow border for popular plan */}
+                {plan.popular && (
+                  <div className="absolute -inset-[1px] rounded-2xl pricing-glow-gradient opacity-60" />
+                )}
+                {/* Background glow for popular plan */}
+                {plan.popular && (
+                  <div className="absolute -inset-4 rounded-3xl bg-violet-500/[0.08] blur-2xl pointer-events-none" />
+                )}
               <TiltCard
-                key={idx}
                 className={`relative p-6 rounded-2xl border transition-colors ${
                   plan.popular
-                    ? "bg-gradient-to-b from-blue-600/10 to-transparent border-blue-500/30"
+                    ? "bg-gradient-to-b from-blue-600/10 via-violet-600/5 to-transparent border-blue-500/30 shadow-lg shadow-violet-500/10"
                     : "bg-white/[0.02] border-white/5 hover:border-white/10"
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="px-4 py-1 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full text-xs font-semibold">
-                      Piu&apos; Popolare
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+                    <span className="px-4 py-1.5 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full text-xs font-bold shadow-lg shadow-violet-500/30 pricing-badge-pulse">
+                      {t("pricing.mostPopular")}
                     </span>
                   </div>
                 )}
@@ -1620,6 +1343,7 @@ export default function LandingPage() {
                   {plan.cta}
                 </Link>
               </TiltCard>
+              </div>
             ))}
           </div>
         </div>
@@ -1630,11 +1354,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6">
-              Amato dai clienti
+              {t("testimonials.title")}
             </h2>
             <p className="text-lg text-slate-400">
-              Business di tutta Italia hanno gia&apos; scelto E-quipe per
-              crescere online.
+              {t("testimonials.subtitle")}
             </p>
           </div>
 
@@ -1677,10 +1400,10 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6">
-              Domande frequenti
+              {t("faq.title")}
             </h2>
             <p className="text-lg text-slate-400">
-              Tutto quello che devi sapere su E-quipe.
+              {t("faq.subtitle")}
             </p>
           </div>
 
@@ -1731,19 +1454,19 @@ export default function LandingPage() {
 
             <div className="relative text-center">
               <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-6">
-                Pronto a crescere online?
+                {t("cta.title")}
               </h2>
               <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-                Sito + Ads: tutto quello che serve per il tuo business.
+                {t("cta.description")}
                 <br />
-                Inizia oggi, risultati domani.
+                {t("cta.descriptionLine2")}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <MagneticButton
                   href="/auth"
-                  className="group px-8 py-4 bg-white text-blue-600 rounded-full font-semibold text-lg hover:bg-slate-100 transition-all flex items-center gap-2"
+                  className="group px-8 py-4 bg-white text-blue-600 rounded-full font-semibold text-lg shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 hover:bg-slate-100 transition-all flex items-center gap-2"
                 >
-                  Crea il Tuo Sito
+                  {t("cta.ctaPrimary")}
                   <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </MagneticButton>
                 <MagneticButton
@@ -1752,7 +1475,7 @@ export default function LandingPage() {
                   className="px-8 py-4 bg-white/10 border border-white/20 rounded-full font-semibold text-lg hover:bg-white/20 transition-all flex items-center gap-2"
                 >
                   <EnvelopeIcon className="w-5 h-5" />
-                  Contattaci
+                  {t("cta.ctaSecondary")}
                 </MagneticButton>
               </div>
             </div>
@@ -1770,8 +1493,7 @@ export default function LandingPage() {
                 <Image src="/e-quipe-logo.png" alt="E-quipe" width={120} height={36} className="h-8 w-auto" />
               </Link>
               <p className="text-slate-400 text-sm max-w-sm mb-4">
-                E-quipe S.r.l.s — La piattaforma AI che crea il tuo sito web e
-                gestisce le tue campagne Ads per farti crescere online.
+                {t("footer.brandDescription")}
               </p>
               <div className="flex items-center gap-3">
                 {["Instagram", "LinkedIn", "Facebook", "TikTok", "YouTube"].map(
@@ -1791,38 +1513,26 @@ export default function LandingPage() {
 
             {/* Prodotto */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">Prodotto</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t("footer.productTitle")}</h4>
               <ul className="space-y-2.5 text-slate-400 text-sm">
                 <li>
-                  <a
-                    href="#features"
-                    className="hover:text-white transition-colors"
-                  >
-                    Funzionalita&apos;
+                  <a href="#features" className="hover:text-white transition-colors">
+                    {t("footer.productFeatures")}
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#how-it-works"
-                    className="hover:text-white transition-colors"
-                  >
-                    Come Funziona
+                  <a href="#how-it-works" className="hover:text-white transition-colors">
+                    {t("footer.productHowItWorks")}
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#pricing"
-                    className="hover:text-white transition-colors"
-                  >
-                    Prezzi
+                  <a href="#pricing" className="hover:text-white transition-colors">
+                    {t("footer.productPricing")}
                   </a>
                 </li>
                 <li>
-                  <Link
-                    href="/dashboard"
-                    className="hover:text-white transition-colors"
-                  >
-                    Dashboard
+                  <Link href="/dashboard" className="hover:text-white transition-colors">
+                    {t("footer.productDashboard")}
                   </Link>
                 </li>
               </ul>
@@ -1830,30 +1540,21 @@ export default function LandingPage() {
 
             {/* Servizi Ads */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">Servizi Ads</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t("footer.adsTitle")}</h4>
               <ul className="space-y-2.5 text-slate-400 text-sm">
                 <li>
-                  <a
-                    href="#ads-service"
-                    className="hover:text-white transition-colors"
-                  >
-                    Meta Ads
+                  <a href="#ads-service" className="hover:text-white transition-colors">
+                    {t("footer.adsMetaAds")}
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#ads-service"
-                    className="hover:text-white transition-colors"
-                  >
-                    Google Ads
+                  <a href="#ads-service" className="hover:text-white transition-colors">
+                    {t("footer.adsGoogleAds")}
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#ads-service"
-                    className="hover:text-white transition-colors"
-                  >
-                    Contenuti AI
+                  <a href="#ads-service" className="hover:text-white transition-colors">
+                    {t("footer.adsAIContent")}
                   </a>
                 </li>
               </ul>
@@ -1861,26 +1562,26 @@ export default function LandingPage() {
 
             {/* Supporto */}
             <div>
-              <h4 className="font-semibold mb-4 text-sm">Supporto</h4>
+              <h4 className="font-semibold mb-4 text-sm">{t("footer.supportTitle")}</h4>
               <ul className="space-y-2.5 text-slate-400 text-sm">
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Contatti
+                    {t("footer.supportContact")}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    FAQ
+                    {t("footer.supportFAQ")}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Privacy Policy
+                    {t("footer.supportPrivacy")}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Termini di Servizio
+                    {t("footer.supportTerms")}
                   </a>
                 </li>
               </ul>
@@ -1889,17 +1590,17 @@ export default function LandingPage() {
 
           <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-slate-500 text-sm">
-              &copy; 2026 E-quipe S.r.l.s. Tutti i diritti riservati.
+              {t("footer.copyright")}
             </p>
             <div className="flex items-center gap-6 text-sm text-slate-400">
               <a href="#" className="hover:text-white transition-colors">
-                Privacy
+                {t("footer.footerPrivacy")}
               </a>
               <a href="#" className="hover:text-white transition-colors">
-                Termini
+                {t("footer.footerTerms")}
               </a>
               <a href="#" className="hover:text-white transition-colors">
-                Cookie
+                {t("footer.footerCookies")}
               </a>
             </div>
           </div>
@@ -1908,6 +1609,27 @@ export default function LandingPage() {
 
       {/* ===== CSS KEYFRAMES ===== */}
       <style jsx>{`
+        .video-glow-gradient {
+          background: conic-gradient(
+            from var(--glow-angle, 0deg),
+            var(--glow-color-1),
+            var(--glow-color-2),
+            var(--glow-color-3),
+            var(--glow-color-2),
+            var(--glow-color-1)
+          );
+          animation: glow-spin 4s linear infinite;
+          border-radius: 1rem;
+        }
+        @keyframes glow-spin {
+          0% { --glow-angle: 0deg; }
+          100% { --glow-angle: 360deg; }
+        }
+        @property --glow-angle {
+          syntax: '<angle>';
+          initial-value: 0deg;
+          inherits: false;
+        }
         .hero-orb-1 {
           top: 10%;
           left: 15%;
@@ -1978,6 +1700,48 @@ export default function LandingPage() {
           50% {
             transform: translate(-30px, -40px) scale(1.1);
           }
+        }
+        .floating-shape-1 {
+          animation: float-drift-1 16s ease-in-out infinite;
+        }
+        .floating-shape-2 {
+          animation: float-drift-2 20s ease-in-out infinite;
+        }
+        .floating-shape-3 {
+          animation: float-drift-3 14s ease-in-out infinite;
+        }
+        @keyframes float-drift-1 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          25% { transform: translate(15px, -20px) rotate(5deg); }
+          50% { transform: translate(-10px, 15px) rotate(-3deg); }
+          75% { transform: translate(20px, 10px) rotate(8deg); }
+        }
+        @keyframes float-drift-2 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          33% { transform: translate(-20px, 10px) rotate(-5deg); }
+          66% { transform: translate(15px, -15px) rotate(4deg); }
+        }
+        @keyframes float-drift-3 {
+          0%, 100% { transform: translate(0, 0) rotate(45deg); }
+          50% { transform: translate(10px, -25px) rotate(50deg); }
+        }
+        .pricing-glow-gradient {
+          background: conic-gradient(
+            from var(--glow-angle, 0deg),
+            #3b82f6,
+            #8b5cf6,
+            #a855f7,
+            #8b5cf6,
+            #3b82f6
+          );
+          animation: glow-spin 4s linear infinite;
+        }
+        .pricing-badge-pulse {
+          animation: badge-pulse 2s ease-in-out infinite;
+        }
+        @keyframes badge-pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+          50% { box-shadow: 0 0 16px 4px rgba(139, 92, 246, 0.2); }
         }
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none;
