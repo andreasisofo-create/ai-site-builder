@@ -14,6 +14,22 @@ import {
   FeaturesVideoComposition,
   FEATURES_VIDEO_CONFIG,
 } from "./FeaturesVideo";
+import {
+  StatsVideoComposition,
+  STATS_VIDEO_CONFIG,
+} from "./StatsVideo";
+import {
+  TestimonialsVideoComposition,
+  TESTIMONIALS_VIDEO_CONFIG,
+} from "./TestimonialsVideo";
+import {
+  PricingVideoComposition,
+  PRICING_VIDEO_CONFIG,
+} from "./PricingVideo";
+import {
+  TimelineVideoComposition,
+  TIMELINE_VIDEO_CONFIG,
+} from "./TimelineVideo";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -49,6 +65,38 @@ export const RemotionRoot: React.FC = () => {
         fps={FEATURES_VIDEO_CONFIG.fps}
         width={FEATURES_VIDEO_CONFIG.width}
         height={FEATURES_VIDEO_CONFIG.height}
+      />
+      <Composition
+        id="StatsVideo"
+        component={StatsVideoComposition}
+        durationInFrames={STATS_VIDEO_CONFIG.durationInFrames}
+        fps={STATS_VIDEO_CONFIG.fps}
+        width={STATS_VIDEO_CONFIG.width}
+        height={STATS_VIDEO_CONFIG.height}
+      />
+      <Composition
+        id="TestimonialsVideo"
+        component={TestimonialsVideoComposition}
+        durationInFrames={TESTIMONIALS_VIDEO_CONFIG.durationInFrames}
+        fps={TESTIMONIALS_VIDEO_CONFIG.fps}
+        width={TESTIMONIALS_VIDEO_CONFIG.width}
+        height={TESTIMONIALS_VIDEO_CONFIG.height}
+      />
+      <Composition
+        id="PricingVideo"
+        component={PricingVideoComposition}
+        durationInFrames={PRICING_VIDEO_CONFIG.durationInFrames}
+        fps={PRICING_VIDEO_CONFIG.fps}
+        width={PRICING_VIDEO_CONFIG.width}
+        height={PRICING_VIDEO_CONFIG.height}
+      />
+      <Composition
+        id="TimelineVideo"
+        component={TimelineVideoComposition}
+        durationInFrames={TIMELINE_VIDEO_CONFIG.durationInFrames}
+        fps={TIMELINE_VIDEO_CONFIG.fps}
+        width={TIMELINE_VIDEO_CONFIG.width}
+        height={TIMELINE_VIDEO_CONFIG.height}
       />
     </>
   );

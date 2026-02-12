@@ -77,7 +77,7 @@ const ProcessScene1 = () => {
   const cards = [
     { name: "Restaurant Elegant", color: "#dc2626", category: "Ristorante" },
     { name: "SaaS Gradient", color: "#3b82f6", category: "SaaS" },
-    { name: "Portfolio Gallery", color: "#8b5cf6", category: "Portfolio" },
+    { name: "Portfolio Gallery", color: "#7c3aed", category: "Portfolio" },
     { name: "Business Corporate", color: "#0ea5e9", category: "Business" },
   ];
 
@@ -91,15 +91,15 @@ const ProcessScene1 = () => {
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         fontFamily: FONT,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <GradientOrb color="rgba(139,92,246,0.12)" size={500} x="10%" y="20%" phaseOffset={0} />
-      <GradientOrb color="rgba(59,130,246,0.10)" size={400} x="70%" y="50%" phaseOffset={50} />
+      <GradientOrb color="rgba(139,92,246,0.07)" size={500} x="10%" y="20%" phaseOffset={0} />
+      <GradientOrb color="rgba(59,130,246,0.06)" size={400} x="70%" y="50%" phaseOffset={50} />
 
       <div
         style={{
@@ -128,17 +128,17 @@ const ProcessScene1 = () => {
               gap: 8,
               padding: "8px 20px",
               borderRadius: 24,
-              background: "rgba(99,102,241,0.12)",
-              border: "1px solid rgba(99,102,241,0.25)",
+              background: "rgba(99,102,241,0.08)",
+              border: "1px solid rgba(99,102,241,0.2)",
               marginBottom: 20,
             }}
           >
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#3b82f6", boxShadow: "0 0 8px rgba(59,130,246,0.5)" }} />
-            <span style={{ fontSize: 14, color: "#a5b4fc", letterSpacing: 1.5, fontWeight: 600 }}>STEP 1</span>
+            <span style={{ fontSize: 14, color: "#6366f1", letterSpacing: 1.5, fontWeight: 600 }}>STEP 1</span>
           </div>
-          <h2 style={{ fontSize: 52, fontWeight: 800, color: "white", lineHeight: 1.15 }}>
+          <h2 style={{ fontSize: 52, fontWeight: 800, color: "#0c1222", lineHeight: 1.15 }}>
             Scegli il tuo{" "}
-            <span style={{ background: "linear-gradient(135deg, #60a5fa, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <span style={{ background: "linear-gradient(135deg, #3b82f6, #7c3aed)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               template
             </span>
           </h2>
@@ -160,7 +160,6 @@ const ProcessScene1 = () => {
                 fps,
                 config: { damping: 14, stiffness: 90 },
               });
-              // Perspective tilt based on position
               const tiltDeg = interpolate(
                 Math.sin(frame * 0.04 + i * 1.5),
                 [-1, 1],
@@ -176,16 +175,16 @@ const ProcessScene1 = () => {
                     transform: `translateY(${interpolate(cardEnter, [0, 1], [50, 0])}px) perspective(800px) rotateY(${tiltDeg}deg)`,
                     borderRadius: 16,
                     overflow: "hidden",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    background: "rgba(255,255,255,0.03)",
-                    boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
+                    border: "1px solid #e2e8f0",
+                    background: "#ffffff",
+                    boxShadow: "0 20px 50px rgba(0,0,0,0.06)",
                   }}
                 >
                   {/* Preview area */}
                   <div
                     style={{
                       height: 200,
-                      background: `linear-gradient(135deg, ${card.color}20, ${card.color}08)`,
+                      background: `linear-gradient(135deg, ${card.color}12, ${card.color}05)`,
                       padding: 20,
                       display: "flex",
                       flexDirection: "column",
@@ -196,20 +195,20 @@ const ProcessScene1 = () => {
                       <div style={{ width: 50, height: 8, borderRadius: 4, background: card.color, opacity: 0.5 }} />
                       <div style={{ display: "flex", gap: 6 }}>
                         {[1, 2, 3].map((n) => (
-                          <div key={n} style={{ width: 20, height: 5, borderRadius: 3, background: "rgba(255,255,255,0.12)" }} />
+                          <div key={n} style={{ width: 20, height: 5, borderRadius: 3, background: "rgba(0,0,0,0.08)" }} />
                         ))}
                       </div>
                     </div>
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: 6 }}>
-                      <div style={{ width: "80%", height: 12, borderRadius: 6, background: "rgba(255,255,255,0.18)" }} />
-                      <div style={{ width: "55%", height: 8, borderRadius: 4, background: "rgba(255,255,255,0.1)" }} />
+                      <div style={{ width: "80%", height: 12, borderRadius: 6, background: "rgba(0,0,0,0.1)" }} />
+                      <div style={{ width: "55%", height: 8, borderRadius: 4, background: "rgba(0,0,0,0.06)" }} />
                       <div style={{ width: 60, height: 16, borderRadius: 5, background: card.color, opacity: 0.7, marginTop: 8 }} />
                     </div>
                   </div>
                   {/* Footer */}
                   <div style={{ padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: "white", marginBottom: 2 }}>{card.name}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#0c1222", marginBottom: 2 }}>{card.name}</p>
                       <p style={{ fontSize: 11, color: "#64748b" }}>{card.category}</p>
                     </div>
                     <div style={{ width: 10, height: 10, borderRadius: "50%", background: card.color }} />
@@ -234,7 +233,6 @@ const ProcessScene2 = () => {
 
   const titleEnter = spring({ frame, fps, config: { damping: 15 } });
 
-  // Form fields with typewriter
   const fields = [
     { label: "NOME ATTIVITA", value: "Trattoria Bella Vista", delay: 10, typeStart: 15, typeEnd: 50 },
     { label: "SETTORE", value: "Ristorante Italiano", delay: 25, typeStart: 35, typeEnd: 55 },
@@ -242,7 +240,6 @@ const ProcessScene2 = () => {
     { label: "DESCRIZIONE", value: "Cucina tradizionale con un tocco contemporaneo", delay: 55, typeStart: 60, typeEnd: 85 },
   ];
 
-  // Progress dots
   const progressSteps = 3;
   const currentStep = interpolate(frame, [0, 90], [0, progressSteps], {
     extrapolateLeft: "clamp",
@@ -252,15 +249,15 @@ const ProcessScene2 = () => {
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         fontFamily: FONT,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <GradientOrb color="rgba(99,102,241,0.12)" size={500} x="20%" y="15%" phaseOffset={0} />
-      <GradientOrb color="rgba(168,85,247,0.10)" size={400} x="65%" y="55%" phaseOffset={40} />
+      <GradientOrb color="rgba(99,102,241,0.07)" size={500} x="20%" y="15%" phaseOffset={0} />
+      <GradientOrb color="rgba(168,85,247,0.06)" size={400} x="65%" y="55%" phaseOffset={40} />
 
       <div
         style={{
@@ -274,7 +271,6 @@ const ProcessScene2 = () => {
           maxWidth: 700,
         }}
       >
-        {/* Step badge + Title */}
         <div
           style={{
             opacity: interpolate(titleEnter, [0, 1], [0, 1]),
@@ -289,16 +285,16 @@ const ProcessScene2 = () => {
               gap: 8,
               padding: "8px 20px",
               borderRadius: 24,
-              background: "rgba(99,102,241,0.12)",
-              border: "1px solid rgba(99,102,241,0.25)",
+              background: "rgba(99,102,241,0.08)",
+              border: "1px solid rgba(99,102,241,0.2)",
               marginBottom: 20,
             }}
           >
-            <span style={{ fontSize: 14, color: "#a5b4fc", letterSpacing: 1.5, fontWeight: 600 }}>STEP 2</span>
+            <span style={{ fontSize: 14, color: "#6366f1", letterSpacing: 1.5, fontWeight: 600 }}>STEP 2</span>
           </div>
-          <h2 style={{ fontSize: 48, fontWeight: 800, color: "white", lineHeight: 1.15 }}>
+          <h2 style={{ fontSize: 48, fontWeight: 800, color: "#0c1222", lineHeight: 1.15 }}>
             Descrivi il tuo{" "}
-            <span style={{ background: "linear-gradient(135deg, #60a5fa, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <span style={{ background: "linear-gradient(135deg, #3b82f6, #7c3aed)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               business
             </span>
           </h2>
@@ -315,9 +311,8 @@ const ProcessScene2 = () => {
                     width: 12,
                     height: 12,
                     borderRadius: "50%",
-                    background: active ? "linear-gradient(135deg, #3b82f6, #8b5cf6)" : "rgba(255,255,255,0.1)",
-                    border: active ? "none" : "1px solid rgba(255,255,255,0.15)",
-                    transition: "background 0.3s",
+                    background: active ? "linear-gradient(135deg, #3b82f6, #7c3aed)" : "#e2e8f0",
+                    border: active ? "none" : "1px solid #cbd5e1",
                     boxShadow: active ? "0 0 10px rgba(99,102,241,0.4)" : "none",
                   }}
                 />
@@ -327,7 +322,7 @@ const ProcessScene2 = () => {
                       width: 40,
                       height: 2,
                       borderRadius: 1,
-                      background: currentStep > i + 1 ? "rgba(99,102,241,0.4)" : "rgba(255,255,255,0.06)",
+                      background: currentStep > i + 1 ? "rgba(99,102,241,0.4)" : "#e2e8f0",
                     }}
                   />
                 )}
@@ -370,15 +365,16 @@ const ProcessScene2 = () => {
                   style={{
                     padding: "12px 16px",
                     borderRadius: 10,
-                    background: "rgba(255,255,255,0.04)",
+                    background: "#ffffff",
                     border: frame >= field.typeStart && visibleChars < field.value.length
                       ? "1px solid rgba(99,102,241,0.4)"
-                      : "1px solid rgba(255,255,255,0.08)",
+                      : "1px solid #e2e8f0",
                     fontSize: 16,
-                    color: "white",
+                    color: "#0c1222",
                     minHeight: 44,
                     display: "flex",
                     alignItems: "center",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
                   }}
                 >
                   {frame >= field.typeStart && (
@@ -387,7 +383,7 @@ const ProcessScene2 = () => {
                       <span
                         style={{
                           opacity: cursorOpacity,
-                          borderRight: "2px solid #818cf8",
+                          borderRight: "2px solid #6366f1",
                           marginLeft: 1,
                           display: "inline-block",
                           height: 18,
@@ -415,29 +411,24 @@ const ProcessScene3 = () => {
 
   const titleEnter = spring({ frame, fps, config: { damping: 15 } });
 
-  // Neural network node positions (3 layers)
   const layers = [
-    // Input layer
     [
       { x: 200, y: 250 },
       { x: 200, y: 400 },
       { x: 200, y: 550 },
       { x: 200, y: 700 },
     ],
-    // Hidden layer
     [
       { x: 600, y: 300 },
       { x: 600, y: 475 },
       { x: 600, y: 650 },
     ],
-    // Output layer
     [
       { x: 1000, y: 375 },
       { x: 1000, y: 575 },
     ],
   ];
 
-  // Connection paths between layers
   const connections: { path: string; delay: number }[] = [];
   layers.forEach((layer, li) => {
     if (li < layers.length - 1) {
@@ -452,21 +443,20 @@ const ProcessScene3 = () => {
     }
   });
 
-  // Pulsing effect for data flow
   const pulsePhase = frame * 0.06;
 
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         fontFamily: FONT,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <GradientOrb color="rgba(99,102,241,0.15)" size={600} x="30%" y="30%" phaseOffset={0} />
-      <GradientOrb color="rgba(168,85,247,0.12)" size={500} x="60%" y="50%" phaseOffset={40} />
+      <GradientOrb color="rgba(99,102,241,0.08)" size={600} x="30%" y="30%" phaseOffset={0} />
+      <GradientOrb color="rgba(168,85,247,0.06)" size={500} x="60%" y="50%" phaseOffset={40} />
 
       <div
         style={{
@@ -479,7 +469,6 @@ const ProcessScene3 = () => {
           height: "100%",
         }}
       >
-        {/* Title overlay at top */}
         <div
           style={{
             position: "absolute",
@@ -499,22 +488,21 @@ const ProcessScene3 = () => {
               gap: 8,
               padding: "8px 20px",
               borderRadius: 24,
-              background: "rgba(99,102,241,0.12)",
-              border: "1px solid rgba(99,102,241,0.25)",
+              background: "rgba(99,102,241,0.08)",
+              border: "1px solid rgba(99,102,241,0.2)",
               marginBottom: 16,
             }}
           >
-            <span style={{ fontSize: 14, color: "#a5b4fc", letterSpacing: 1.5, fontWeight: 600 }}>STEP 3</span>
+            <span style={{ fontSize: 14, color: "#6366f1", letterSpacing: 1.5, fontWeight: 600 }}>STEP 3</span>
           </div>
-          <h2 style={{ fontSize: 48, fontWeight: 800, color: "white" }}>
+          <h2 style={{ fontSize: 48, fontWeight: 800, color: "#0c1222" }}>
             {"L'AI "}
-            <span style={{ background: "linear-gradient(135deg, #60a5fa, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <span style={{ background: "linear-gradient(135deg, #3b82f6, #7c3aed)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               lavora
             </span>
           </h2>
         </div>
 
-        {/* Neural network SVG */}
         <svg
           viewBox="0 0 1200 900"
           style={{
@@ -526,12 +514,12 @@ const ProcessScene3 = () => {
           }}
         >
           <defs>
-            <linearGradient id="connectionGrad" x1="0" y1="0" x2="1" y2="0">
+            <linearGradient id="connectionGradW" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor="#3b82f6" />
-              <stop offset="50%" stopColor="#8b5cf6" />
+              <stop offset="50%" stopColor="#7c3aed" />
               <stop offset="100%" stopColor="#a855f7" />
             </linearGradient>
-            <filter id="glow">
+            <filter id="glowW">
               <feGaussianBlur stdDeviation="3" result="coloredBlur" />
               <feMerge>
                 <feMergeNode in="coloredBlur" />
@@ -540,7 +528,6 @@ const ProcessScene3 = () => {
             </filter>
           </defs>
 
-          {/* Connection paths with evolvePath animation */}
           {connections.map((conn, i) => {
             const pathProgress = interpolate(
               frame,
@@ -552,7 +539,7 @@ const ProcessScene3 = () => {
             const pulseOpacity = interpolate(
               Math.sin(pulsePhase + i * 0.3),
               [-1, 1],
-              [0.15, 0.5]
+              [0.2, 0.6]
             );
 
             return (
@@ -560,7 +547,7 @@ const ProcessScene3 = () => {
                 key={i}
                 d={conn.path}
                 fill="none"
-                stroke="url(#connectionGrad)"
+                stroke="url(#connectionGradW)"
                 strokeWidth={2}
                 opacity={pulseOpacity}
                 strokeDasharray={evolved.strokeDasharray}
@@ -569,7 +556,6 @@ const ProcessScene3 = () => {
             );
           })}
 
-          {/* Nodes */}
           {layers.map((layer, li) =>
             layer.map((node, ni) => {
               const nodeEnter = spring({
@@ -583,29 +569,26 @@ const ProcessScene3 = () => {
                 [-1, 1],
                 [0.3, 1]
               );
-              const nodeColor = li === 0 ? "#3b82f6" : li === 1 ? "#8b5cf6" : "#a855f7";
+              const nodeColor = li === 0 ? "#3b82f6" : li === 1 ? "#7c3aed" : "#a855f7";
 
               return (
-                <g key={`${li}-${ni}`} filter="url(#glow)">
-                  {/* Outer glow */}
+                <g key={`${li}-${ni}`} filter="url(#glowW)">
                   <circle
                     cx={node.x}
                     cy={node.y}
                     r={22 * nodeScale}
-                    fill={`${nodeColor}20`}
+                    fill={`${nodeColor}15`}
                     opacity={glowIntensity}
                   />
-                  {/* Node circle */}
                   <circle
                     cx={node.x}
                     cy={node.y}
                     r={14 * nodeScale}
-                    fill="#0a0a0a"
+                    fill="#ffffff"
                     stroke={nodeColor}
                     strokeWidth={2}
                     opacity={nodeScale}
                   />
-                  {/* Center dot */}
                   <circle
                     cx={node.x}
                     cy={node.y}
@@ -618,7 +601,6 @@ const ProcessScene3 = () => {
             })
           )}
 
-          {/* Layer labels */}
           <text x={200} y={820} textAnchor="middle" fill="#64748b" fontSize={14} fontFamily={FONT} fontWeight={600}>
             INPUT
           </text>
@@ -644,15 +626,13 @@ const ProcessScene4 = () => {
 
   const titleEnter = spring({ frame, fps, config: { damping: 15 } });
 
-  // Before -> After transition
   const revealProgress = interpolate(frame, [20, 50], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
 
-  // Celebration confetti
-  const confettiColors = ["#3b82f6", "#8b5cf6", "#22c55e", "#f59e0b", "#ec4899", "#06b6d4"];
+  const confettiColors = ["#3b82f6", "#7c3aed", "#22c55e", "#f59e0b", "#ec4899", "#06b6d4"];
   const confetti = Array.from({ length: 30 }, (_, i) => ({
     x: seededRandom(i * 5 + 1) * 1920,
     startY: -20 - seededRandom(i * 5 + 2) * 200,
@@ -668,7 +648,6 @@ const ProcessScene4 = () => {
     extrapolateRight: "clamp",
   });
 
-  // "Sito Pronto!" badge
   const badgeEnter = spring({
     frame: frame - 50,
     fps,
@@ -678,7 +657,7 @@ const ProcessScene4 = () => {
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         fontFamily: FONT,
         display: "flex",
         alignItems: "center",
@@ -686,8 +665,8 @@ const ProcessScene4 = () => {
         overflow: "hidden",
       }}
     >
-      <GradientOrb color="rgba(34,197,94,0.12)" size={500} x="40%" y="25%" phaseOffset={0} />
-      <GradientOrb color="rgba(59,130,246,0.08)" size={400} x="15%" y="60%" phaseOffset={60} />
+      <GradientOrb color="rgba(34,197,94,0.07)" size={500} x="40%" y="25%" phaseOffset={0} />
+      <GradientOrb color="rgba(59,130,246,0.05)" size={400} x="15%" y="60%" phaseOffset={60} />
 
       {/* Confetti */}
       {confettiProgress > 0 &&
@@ -727,7 +706,6 @@ const ProcessScene4 = () => {
           gap: 32,
         }}
       >
-        {/* Title */}
         <div
           style={{
             opacity: interpolate(titleEnter, [0, 1], [0, 1]),
@@ -742,14 +720,14 @@ const ProcessScene4 = () => {
               gap: 8,
               padding: "8px 20px",
               borderRadius: 24,
-              background: "rgba(34,197,94,0.12)",
-              border: "1px solid rgba(34,197,94,0.25)",
+              background: "rgba(34,197,94,0.08)",
+              border: "1px solid rgba(34,197,94,0.2)",
               marginBottom: 16,
             }}
           >
-            <span style={{ fontSize: 14, color: "#86efac", letterSpacing: 1.5, fontWeight: 600 }}>STEP 4</span>
+            <span style={{ fontSize: 14, color: "#16a34a", letterSpacing: 1.5, fontWeight: 600 }}>STEP 4</span>
           </div>
-          <h2 style={{ fontSize: 48, fontWeight: 800, color: "white" }}>
+          <h2 style={{ fontSize: 48, fontWeight: 800, color: "#0c1222" }}>
             Il tuo sito e{" "}
             <span style={{ background: "linear-gradient(135deg, #22c55e, #3b82f6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               pronto!
@@ -765,12 +743,12 @@ const ProcessScene4 = () => {
               width: 400,
               borderRadius: 14,
               overflow: "hidden",
-              border: "1px solid rgba(255,255,255,0.06)",
+              border: "1px solid #e2e8f0",
               opacity: interpolate(revealProgress, [0, 0.5], [1, 0.3], { extrapolateRight: "clamp" }),
               transform: `scale(${interpolate(revealProgress, [0, 1], [1, 0.85])})`,
             }}
           >
-            <div style={{ height: 30, background: "#161616", display: "flex", alignItems: "center", padding: "0 10px", gap: 5 }}>
+            <div style={{ height: 30, background: "#f8fafc", display: "flex", alignItems: "center", padding: "0 10px", gap: 5, borderBottom: "1px solid #e2e8f0" }}>
               <div style={{ display: "flex", gap: 4 }}>
                 <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff5f57" }} />
                 <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ffbd2e" }} />
@@ -780,17 +758,17 @@ const ProcessScene4 = () => {
             <div
               style={{
                 height: 200,
-                background: "#111",
+                background: "#f8fafc",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <div style={{ textAlign: "center" }}>
-                <div style={{ width: 40, height: 40, borderRadius: 8, border: "2px dashed rgba(255,255,255,0.1)", margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 20 }}>+</span>
+                <div style={{ width: 40, height: 40, borderRadius: 8, border: "2px dashed #cbd5e1", margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ color: "#cbd5e1", fontSize: 20 }}>+</span>
                 </div>
-                <p style={{ fontSize: 12, color: "#475569" }}>Pagina vuota</p>
+                <p style={{ fontSize: 12, color: "#94a3b8" }}>Pagina vuota</p>
               </div>
             </div>
           </div>
@@ -798,9 +776,9 @@ const ProcessScene4 = () => {
           {/* Arrow */}
           <div style={{ opacity: interpolate(revealProgress, [0.2, 0.5], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
             <svg width={40} height={40} viewBox="0 0 40 40">
-              <path d="M8 20 L28 20 M22 12 L30 20 L22 28" fill="none" stroke="url(#arrowGradP)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M8 20 L28 20 M22 12 L30 20 L22 28" fill="none" stroke="url(#arrowGradPW)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
               <defs>
-                <linearGradient id="arrowGradP" x1="0" y1="0" x2="1" y2="0">
+                <linearGradient id="arrowGradPW" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#22c55e" />
                   <stop offset="100%" stopColor="#3b82f6" />
                 </linearGradient>
@@ -814,13 +792,13 @@ const ProcessScene4 = () => {
               width: 400,
               borderRadius: 14,
               overflow: "hidden",
-              border: "1px solid rgba(255,255,255,0.08)",
-              boxShadow: `0 25px 80px rgba(0,0,0,0.5), 0 0 ${revealProgress * 40}px rgba(34,197,94,0.15)`,
+              border: "1px solid #e2e8f0",
+              boxShadow: `0 25px 80px rgba(0,0,0,0.08), 0 0 ${revealProgress * 40}px rgba(34,197,94,0.1)`,
               opacity: interpolate(revealProgress, [0.3, 0.7], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
               transform: `scale(${interpolate(revealProgress, [0.3, 0.7], [0.9, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })})`,
             }}
           >
-            <div style={{ height: 30, background: "#161616", display: "flex", alignItems: "center", padding: "0 10px", gap: 5 }}>
+            <div style={{ height: 30, background: "#f8fafc", display: "flex", alignItems: "center", padding: "0 10px", gap: 5, borderBottom: "1px solid #e2e8f0" }}>
               <div style={{ display: "flex", gap: 4 }}>
                 <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff5f57" }} />
                 <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ffbd2e" }} />
@@ -830,31 +808,30 @@ const ProcessScene4 = () => {
                 bella-vista.e-quipe.app
               </div>
             </div>
-            <div style={{ background: "linear-gradient(135deg, #0a1a0a, #152a15)", padding: 16 }}>
-              {/* Nav */}
+            <div style={{ background: "#ffffff", padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "white" }}>Bella Vista</span>
-                <div style={{ display: "flex", gap: 8, fontSize: 8, color: "rgba(255,255,255,0.5)" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#0c1222" }}>Bella Vista</span>
+                <div style={{ display: "flex", gap: 8, fontSize: 8, color: "#94a3b8" }}>
                   <span>Menu</span><span>About</span><span>Contatti</span>
                 </div>
               </div>
-              {/* Hero */}
-              <h3 style={{ fontSize: 18, fontWeight: 800, color: "white", marginBottom: 4 }}>
-                Sapori autentici,
-                <br />
-                <span style={{ color: "#22c55e" }}>esperienza unica</span>
-              </h3>
-              <p style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", marginBottom: 10 }}>
-                Tradizione e innovazione dal 1998
-              </p>
-              <div style={{ display: "flex", gap: 8 }}>
-                <div style={{ padding: "5px 12px", borderRadius: 5, background: "#22c55e", color: "white", fontSize: 9, fontWeight: 600 }}>Prenota</div>
-                <div style={{ padding: "5px 12px", borderRadius: 5, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", color: "white", fontSize: 9 }}>Menu</div>
+              <div style={{ background: "linear-gradient(135deg, #f0fdf4, #ecfdf5)", borderRadius: 8, padding: 12, marginBottom: 12 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: "#0c1222", marginBottom: 4 }}>
+                  Sapori autentici,
+                  <br />
+                  <span style={{ color: "#22c55e" }}>esperienza unica</span>
+                </h3>
+                <p style={{ fontSize: 9, color: "#64748b", marginBottom: 10 }}>
+                  Tradizione e innovazione dal 1998
+                </p>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ padding: "5px 12px", borderRadius: 5, background: "#22c55e", color: "white", fontSize: 9, fontWeight: 600 }}>Prenota</div>
+                  <div style={{ padding: "5px 12px", borderRadius: 5, background: "#f1f5f9", border: "1px solid #e2e8f0", color: "#1e293b", fontSize: 9 }}>Menu</div>
+                </div>
               </div>
-              {/* Mini sections */}
-              <div style={{ display: "flex", gap: 6, marginTop: 12 }}>
+              <div style={{ display: "flex", gap: 6 }}>
                 {["Chi Siamo", "Menu", "Galleria", "Contatti"].map((s) => (
-                  <div key={s} style={{ flex: 1, padding: "8px 4px", borderRadius: 6, background: "rgba(255,255,255,0.03)", textAlign: "center", fontSize: 8, color: "#64748b" }}>
+                  <div key={s} style={{ flex: 1, padding: "8px 4px", borderRadius: 6, background: "#f8fafc", textAlign: "center", fontSize: 8, color: "#64748b" }}>
                     {s}
                   </div>
                 ))}
@@ -873,16 +850,16 @@ const ProcessScene4 = () => {
             gap: 12,
             padding: "14px 28px",
             borderRadius: 20,
-            background: "rgba(34,197,94,0.1)",
-            border: "1px solid rgba(34,197,94,0.25)",
-            boxShadow: "0 0 30px rgba(34,197,94,0.15)",
+            background: "rgba(34,197,94,0.08)",
+            border: "1px solid rgba(34,197,94,0.2)",
+            boxShadow: "0 0 30px rgba(34,197,94,0.1)",
           }}
         >
           <svg width={24} height={24} viewBox="0 0 24 24">
             <circle cx={12} cy={12} r={12} fill="#22c55e" />
             <path d="M7 12 L10 15.5 L17 8.5" fill="none" stroke="white" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span style={{ fontSize: 18, fontWeight: 700, color: "#86efac" }}>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "#16a34a" }}>
             Sito generato in 47 secondi
           </span>
         </div>

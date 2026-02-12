@@ -71,13 +71,12 @@ const FeaturesScene1 = () => {
   const templates = [
     { name: "Restaurant Elegant", color: "#dc2626", accent: "#fca5a5" },
     { name: "SaaS Gradient", color: "#3b82f6", accent: "#93c5fd" },
-    { name: "Portfolio Minimal", color: "#8b5cf6", accent: "#c4b5fd" },
+    { name: "Portfolio Minimal", color: "#7c3aed", accent: "#c4b5fd" },
     { name: "E-commerce Modern", color: "#22c55e", accent: "#86efac" },
     { name: "Business Corporate", color: "#0ea5e9", accent: "#7dd3fc" },
     { name: "Blog Editorial", color: "#f59e0b", accent: "#fcd34d" },
   ];
 
-  // Zoom into the selected template card
   const zoomProgress = interpolate(frame, [55, 75], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -87,15 +86,15 @@ const FeaturesScene1 = () => {
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         fontFamily: FONT,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <GradientOrb color="rgba(139,92,246,0.12)" size={500} x="10%" y="15%" phaseOffset={0} />
-      <GradientOrb color="rgba(59,130,246,0.10)" size={400} x="65%" y="55%" phaseOffset={60} />
+      <GradientOrb color="rgba(139,92,246,0.07)" size={500} x="10%" y="15%" phaseOffset={0} />
+      <GradientOrb color="rgba(59,130,246,0.06)" size={400} x="65%" y="55%" phaseOffset={60} />
 
       <div
         style={{
@@ -110,7 +109,6 @@ const FeaturesScene1 = () => {
           transform: `scale(${interpolate(zoomProgress, [0, 1], [1, 1.15])})`,
         }}
       >
-        {/* Title */}
         <div
           style={{
             opacity: interpolate(titleEnter, [0, 1], [0, 1]),
@@ -123,9 +121,9 @@ const FeaturesScene1 = () => {
               display: "inline-flex",
               padding: "6px 16px",
               borderRadius: 20,
-              background: "rgba(139,92,246,0.1)",
-              border: "1px solid rgba(139,92,246,0.2)",
-              color: "#c4b5fd",
+              background: "rgba(139,92,246,0.08)",
+              border: "1px solid rgba(139,92,246,0.15)",
+              color: "#7c3aed",
               fontSize: 13,
               fontWeight: 600,
               letterSpacing: 1.5,
@@ -138,14 +136,14 @@ const FeaturesScene1 = () => {
             style={{
               fontSize: 48,
               fontWeight: 800,
-              color: "white",
+              color: "#0c1222",
               lineHeight: 1.2,
             }}
           >
             Scegli il tuo{" "}
             <span
               style={{
-                background: "linear-gradient(135deg, #60a5fa, #a78bfa)",
+                background: "linear-gradient(135deg, #3b82f6, #7c3aed)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -155,7 +153,6 @@ const FeaturesScene1 = () => {
           </h2>
         </div>
 
-        {/* Template grid */}
         <div
           style={{
             display: "grid",
@@ -187,45 +184,41 @@ const FeaturesScene1 = () => {
                   borderRadius: 14,
                   overflow: "hidden",
                   border: isSelected
-                    ? `2px solid rgba(139,92,246,${interpolate(selectedGlow, [0, 1], [0.1, 0.6])})`
-                    : "1px solid rgba(255,255,255,0.06)",
-                  background: "rgba(255,255,255,0.03)",
+                    ? `2px solid rgba(124,58,237,${interpolate(selectedGlow, [0, 1], [0.1, 0.6])})`
+                    : "1px solid #e2e8f0",
+                  background: "#ffffff",
                   boxShadow: isSelected
-                    ? `0 0 ${selectedGlow * 30}px rgba(139,92,246,${selectedGlow * 0.3})`
-                    : "none",
+                    ? `0 0 ${selectedGlow * 30}px rgba(124,58,237,${selectedGlow * 0.2})`
+                    : "0 2px 8px rgba(0,0,0,0.04)",
                 }}
               >
-                {/* Mini site preview */}
                 <div
                   style={{
                     height: 110,
-                    background: `linear-gradient(135deg, ${tmpl.color}15, ${tmpl.color}08)`,
+                    background: `linear-gradient(135deg, ${tmpl.color}10, ${tmpl.color}05)`,
                     padding: 12,
                     display: "flex",
                     flexDirection: "column",
                     gap: 6,
                   }}
                 >
-                  {/* Fake nav */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ width: 40, height: 6, borderRadius: 3, background: tmpl.color, opacity: 0.6 }} />
                     <div style={{ display: "flex", gap: 4 }}>
                       {[1, 2, 3].map((n) => (
-                        <div key={n} style={{ width: 16, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
+                        <div key={n} style={{ width: 16, height: 4, borderRadius: 2, background: "rgba(0,0,0,0.08)" }} />
                       ))}
                     </div>
                   </div>
-                  {/* Fake hero */}
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
-                    <div style={{ width: "70%", height: 8, borderRadius: 4, background: "rgba(255,255,255,0.2)" }} />
-                    <div style={{ width: "50%", height: 6, borderRadius: 3, background: "rgba(255,255,255,0.1)" }} />
+                    <div style={{ width: "70%", height: 8, borderRadius: 4, background: "rgba(0,0,0,0.1)" }} />
+                    <div style={{ width: "50%", height: 6, borderRadius: 3, background: "rgba(0,0,0,0.06)" }} />
                     <div style={{ width: 50, height: 12, borderRadius: 4, background: tmpl.color, opacity: 0.8, marginTop: 4 }} />
                   </div>
                 </div>
-                {/* Card footer */}
                 <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: 8 }}>
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: tmpl.color }} />
-                  <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>{tmpl.name}</span>
+                  <span style={{ fontSize: 12, color: "#64748b", fontWeight: 500 }}>{tmpl.name}</span>
                 </div>
               </div>
             );
@@ -246,7 +239,6 @@ const FeaturesScene2 = () => {
 
   const titleEnter = spring({ frame, fps, config: { damping: 15 } });
 
-  // JSON code typewriter
   const codeLines = [
     '{ "business": "Ristorante Da Mario",',
     '  "style": "elegant",',
@@ -261,14 +253,12 @@ const FeaturesScene2 = () => {
   });
   const visibleChars = Math.floor(typeProgress * allCode.length);
 
-  // Arrow / transform animation
   const transformProgress = interpolate(frame, [55, 75], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
 
-  // Website preview fade in
   const siteEnter = spring({
     frame: frame - 60,
     fps,
@@ -278,15 +268,15 @@ const FeaturesScene2 = () => {
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         fontFamily: FONT,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <GradientOrb color="rgba(59,130,246,0.12)" size={500} x="15%" y="20%" phaseOffset={0} />
-      <GradientOrb color="rgba(139,92,246,0.10)" size={400} x="70%" y="50%" phaseOffset={50} />
+      <GradientOrb color="rgba(59,130,246,0.07)" size={500} x="15%" y="20%" phaseOffset={0} />
+      <GradientOrb color="rgba(139,92,246,0.06)" size={400} x="70%" y="50%" phaseOffset={50} />
 
       <div
         style={{
@@ -300,7 +290,6 @@ const FeaturesScene2 = () => {
           maxWidth: 1100,
         }}
       >
-        {/* Title */}
         <div
           style={{
             opacity: interpolate(titleEnter, [0, 1], [0, 1]),
@@ -308,11 +297,11 @@ const FeaturesScene2 = () => {
             textAlign: "center",
           }}
         >
-          <h2 style={{ fontSize: 42, fontWeight: 800, color: "white" }}>
+          <h2 style={{ fontSize: 42, fontWeight: 800, color: "#0c1222" }}>
             Da JSON a{" "}
             <span
               style={{
-                background: "linear-gradient(135deg, #60a5fa, #a78bfa)",
+                background: "linear-gradient(135deg, #3b82f6, #7c3aed)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -322,7 +311,6 @@ const FeaturesScene2 = () => {
           </h2>
         </div>
 
-        {/* Code -> Website transformation */}
         <div style={{ display: "flex", alignItems: "center", gap: 32, width: "100%" }}>
           {/* Code panel */}
           <div
@@ -330,8 +318,8 @@ const FeaturesScene2 = () => {
               flex: 1,
               padding: "20px 24px",
               borderRadius: 14,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "#1e293b",
+              border: "1px solid #334155",
               fontFamily: "monospace",
               fontSize: 14,
               lineHeight: 1.6,
@@ -372,15 +360,15 @@ const FeaturesScene2 = () => {
           >
             <svg width={60} height={60} viewBox="0 0 60 60">
               <defs>
-                <linearGradient id="arrowGrad" x1="0" y1="0" x2="1" y2="0">
+                <linearGradient id="arrowGradF" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#3b82f6" />
-                  <stop offset="100%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#7c3aed" />
                 </linearGradient>
               </defs>
               <path
                 d="M10 30 L40 30 M32 20 L44 30 L32 40"
                 fill="none"
-                stroke="url(#arrowGrad)"
+                stroke="url(#arrowGradF)"
                 strokeWidth={3}
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -394,21 +382,21 @@ const FeaturesScene2 = () => {
               flex: 1,
               borderRadius: 14,
               overflow: "hidden",
-              border: "1px solid rgba(255,255,255,0.08)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+              border: "1px solid #e2e8f0",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.06)",
               opacity: interpolate(siteEnter, [0, 1], [0, 1]),
               transform: `scale(${interpolate(siteEnter, [0, 1], [0.9, 1])})`,
             }}
           >
-            {/* Chrome bar */}
             <div
               style={{
                 height: 32,
-                background: "#161616",
+                background: "#f8fafc",
                 display: "flex",
                 alignItems: "center",
                 padding: "0 10px",
                 gap: 6,
+                borderBottom: "1px solid #e2e8f0",
               }}
             >
               <div style={{ display: "flex", gap: 4 }}>
@@ -420,20 +408,19 @@ const FeaturesScene2 = () => {
                 ristorante-da-mario.e-quipe.app
               </div>
             </div>
-            {/* Mini site */}
-            <div style={{ height: 180, background: "linear-gradient(135deg, #1a0a0a, #2a1515)", padding: 16 }}>
+            <div style={{ height: 180, background: "linear-gradient(135deg, #fef2f2, #fff1f2)", padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-                <div style={{ width: 50, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.3)" }} />
+                <div style={{ width: 50, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.15)" }} />
                 <div style={{ display: "flex", gap: 8 }}>
                   {["Menu", "About", "Contatti"].map((t) => (
-                    <span key={t} style={{ fontSize: 8, color: "rgba(255,255,255,0.4)" }}>{t}</span>
+                    <span key={t} style={{ fontSize: 8, color: "#94a3b8" }}>{t}</span>
                   ))}
                 </div>
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 800, color: "white", marginBottom: 4 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 800, color: "#0c1222", marginBottom: 4 }}>
                 Il vero gusto della tradizione
               </h3>
-              <p style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", marginBottom: 10 }}>
+              <p style={{ fontSize: 9, color: "#64748b", marginBottom: 10 }}>
                 Cucina romana autentica dal 1985
               </p>
               <div
@@ -467,25 +454,20 @@ const FeaturesScene3 = () => {
 
   const titleEnter = spring({ frame, fps, config: { damping: 15 } });
 
-  // Simulated GSAP animation effects
-  // fade-up
   const fadeUpProgress = interpolate(frame, [15, 40], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  // scale-in
   const scaleInProgress = interpolate(frame, [25, 50], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.34, 1.56, 0.64, 1),
   });
-  // text-split
   const splitText = "Animazioni GSAP";
   const splitProgress = interpolate(frame, [20, 55], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  // magnetic button hover simulation
   const magneticPhase = Math.sin(frame * 0.08) * 8;
 
   const effects = [
@@ -498,15 +480,15 @@ const FeaturesScene3 = () => {
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         fontFamily: FONT,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <GradientOrb color="rgba(59,130,246,0.12)" size={500} x="20%" y="20%" phaseOffset={0} />
-      <GradientOrb color="rgba(168,85,247,0.10)" size={400} x="60%" y="60%" phaseOffset={40} />
+      <GradientOrb color="rgba(59,130,246,0.07)" size={500} x="20%" y="20%" phaseOffset={0} />
+      <GradientOrb color="rgba(168,85,247,0.06)" size={400} x="60%" y="60%" phaseOffset={40} />
 
       <div
         style={{
@@ -520,7 +502,6 @@ const FeaturesScene3 = () => {
           maxWidth: 1100,
         }}
       >
-        {/* Title */}
         <div
           style={{
             opacity: interpolate(titleEnter, [0, 1], [0, 1]),
@@ -533,9 +514,9 @@ const FeaturesScene3 = () => {
               display: "inline-flex",
               padding: "6px 16px",
               borderRadius: 20,
-              background: "rgba(59,130,246,0.1)",
-              border: "1px solid rgba(59,130,246,0.2)",
-              color: "#93c5fd",
+              background: "rgba(59,130,246,0.08)",
+              border: "1px solid rgba(59,130,246,0.15)",
+              color: "#3b82f6",
               fontSize: 13,
               fontWeight: 600,
               letterSpacing: 1.5,
@@ -544,11 +525,11 @@ const FeaturesScene3 = () => {
           >
             29 EFFETTI PROFESSIONALI
           </div>
-          <h2 style={{ fontSize: 42, fontWeight: 800, color: "white" }}>
+          <h2 style={{ fontSize: 42, fontWeight: 800, color: "#0c1222" }}>
             Animazioni{" "}
             <span
               style={{
-                background: "linear-gradient(135deg, #60a5fa, #a78bfa)",
+                background: "linear-gradient(135deg, #3b82f6, #7c3aed)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -558,19 +539,19 @@ const FeaturesScene3 = () => {
           </h2>
         </div>
 
-        {/* 2x2 animation demo grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, width: "100%" }}>
           {/* fade-up demo */}
           <div
             style={{
               padding: 24,
               borderRadius: 16,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
               minHeight: 160,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
             }}
           >
             <span style={{ fontSize: 11, color: "#64748b", fontFamily: "monospace" }}>{effects[0].code}</span>
@@ -580,13 +561,13 @@ const FeaturesScene3 = () => {
                 transform: `translateY(${interpolate(fadeUpProgress, [0, 1], [30, 0])}px)`,
               }}
             >
-              <div style={{ width: "80%", height: 10, borderRadius: 5, background: "rgba(59,130,246,0.4)", marginBottom: 8 }} />
-              <div style={{ width: "60%", height: 8, borderRadius: 4, background: "rgba(59,130,246,0.2)" }} />
-              <div style={{ marginTop: 12, width: 80, height: 28, borderRadius: 6, background: "rgba(59,130,246,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#93c5fd" }}>
+              <div style={{ width: "80%", height: 10, borderRadius: 5, background: "rgba(59,130,246,0.25)", marginBottom: 8 }} />
+              <div style={{ width: "60%", height: 8, borderRadius: 4, background: "rgba(59,130,246,0.15)" }} />
+              <div style={{ marginTop: 12, width: 80, height: 28, borderRadius: 6, background: "rgba(59,130,246,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#3b82f6" }}>
                 CTA Button
               </div>
             </div>
-            <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600 }}>fade-up</span>
+            <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>fade-up</span>
           </div>
 
           {/* scale-in demo */}
@@ -594,12 +575,13 @@ const FeaturesScene3 = () => {
             style={{
               padding: 24,
               borderRadius: 16,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
               minHeight: 160,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
             }}
           >
             <span style={{ fontSize: 11, color: "#64748b", fontFamily: "monospace" }}>{effects[1].code}</span>
@@ -609,7 +591,7 @@ const FeaturesScene3 = () => {
                   width: 80,
                   height: 80,
                   borderRadius: 16,
-                  background: "linear-gradient(135deg, rgba(139,92,246,0.4), rgba(59,130,246,0.4))",
+                  background: "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(59,130,246,0.2))",
                   transform: `scale(${interpolate(scaleInProgress, [0, 1], [0, 1])})`,
                   opacity: scaleInProgress,
                   display: "flex",
@@ -618,11 +600,11 @@ const FeaturesScene3 = () => {
                 }}
               >
                 <svg width={32} height={32} viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#c4b5fd" />
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#7c3aed" />
                 </svg>
               </div>
             </div>
-            <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600 }}>scale-in</span>
+            <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>scale-in</span>
           </div>
 
           {/* text-split demo */}
@@ -630,12 +612,13 @@ const FeaturesScene3 = () => {
             style={{
               padding: 24,
               borderRadius: 16,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
               minHeight: 160,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
             }}
           >
             <span style={{ fontSize: 11, color: "#64748b", fontFamily: "monospace" }}>{effects[2].code}</span>
@@ -653,7 +636,7 @@ const FeaturesScene3 = () => {
                     style={{
                       fontSize: 28,
                       fontWeight: 800,
-                      color: "white",
+                      color: "#0c1222",
                       opacity: charProgress,
                       transform: `translateY(${interpolate(charProgress, [0, 1], [20, 0])}px)`,
                       display: "inline-block",
@@ -665,7 +648,7 @@ const FeaturesScene3 = () => {
                 );
               })}
             </div>
-            <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600 }}>text-split</span>
+            <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>text-split</span>
           </div>
 
           {/* magnetic demo */}
@@ -673,12 +656,13 @@ const FeaturesScene3 = () => {
             style={{
               padding: 24,
               borderRadius: 16,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
               minHeight: 160,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
             }}
           >
             <span style={{ fontSize: 11, color: "#64748b", fontFamily: "monospace" }}>{effects[3].code}</span>
@@ -687,18 +671,18 @@ const FeaturesScene3 = () => {
                 style={{
                   padding: "12px 32px",
                   borderRadius: 12,
-                  background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+                  background: "linear-gradient(135deg, #3b82f6, #7c3aed)",
                   color: "white",
                   fontSize: 16,
                   fontWeight: 700,
                   transform: `translate(${magneticPhase}px, ${magneticPhase * 0.5}px)`,
-                  boxShadow: "0 8px 30px rgba(99,102,241,0.3)",
+                  boxShadow: "0 8px 30px rgba(99,102,241,0.25)",
                 }}
               >
                 Hover Me
               </div>
             </div>
-            <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600 }}>magnetic</span>
+            <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>magnetic</span>
           </div>
         </div>
       </div>
@@ -716,7 +700,6 @@ const FeaturesScene4 = () => {
 
   const titleEnter = spring({ frame, fps, config: { damping: 15 } });
 
-  // Domain URL typewriter
   const domainText = "mio-business.e-quipe.app";
   const typeProgress = interpolate(frame, [20, 50], [0, 1], {
     extrapolateLeft: "clamp",
@@ -725,10 +708,8 @@ const FeaturesScene4 = () => {
   const visibleChars = Math.floor(typeProgress * domainText.length);
   const cursorOpacity = visibleChars < domainText.length ? (Math.sin(frame * 0.3) > 0 ? 1 : 0) : 0;
 
-  // Globe rotation
   const globeRotation = frame * 1.2;
 
-  // Connection lines around globe
   const connectionLines = Array.from({ length: 8 }, (_, i) => {
     const angle = (i / 8) * Math.PI * 2 + globeRotation * 0.01;
     const radius = 80;
@@ -741,7 +722,6 @@ const FeaturesScene4 = () => {
     };
   });
 
-  // Published badge
   const publishEnter = spring({
     frame: frame - 55,
     fps,
@@ -751,15 +731,15 @@ const FeaturesScene4 = () => {
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         fontFamily: FONT,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <GradientOrb color="rgba(34,197,94,0.12)" size={500} x="40%" y="25%" phaseOffset={0} />
-      <GradientOrb color="rgba(59,130,246,0.08)" size={400} x="20%" y="60%" phaseOffset={60} />
+      <GradientOrb color="rgba(34,197,94,0.07)" size={500} x="40%" y="25%" phaseOffset={0} />
+      <GradientOrb color="rgba(59,130,246,0.05)" size={400} x="20%" y="60%" phaseOffset={60} />
 
       <div
         style={{
@@ -771,7 +751,6 @@ const FeaturesScene4 = () => {
           gap: 40,
         }}
       >
-        {/* Title */}
         <div
           style={{
             opacity: interpolate(titleEnter, [0, 1], [0, 1]),
@@ -779,7 +758,7 @@ const FeaturesScene4 = () => {
             textAlign: "center",
           }}
         >
-          <h2 style={{ fontSize: 48, fontWeight: 800, color: "white" }}>
+          <h2 style={{ fontSize: 48, fontWeight: 800, color: "#0c1222" }}>
             Pubblica con{" "}
             <span
               style={{
@@ -793,10 +772,8 @@ const FeaturesScene4 = () => {
           </h2>
         </div>
 
-        {/* Globe visualization */}
         <div style={{ position: "relative", width: 200, height: 200 }}>
           <svg width={200} height={200} viewBox="-100 -100 200 200">
-            {/* Connection lines */}
             {connectionLines.map((line, i) => (
               <line
                 key={i}
@@ -810,23 +787,21 @@ const FeaturesScene4 = () => {
                 strokeLinecap="round"
               />
             ))}
-            {/* Globe circle */}
             <circle
               cx={0}
               cy={0}
               r={55}
               fill="none"
-              stroke="rgba(59,130,246,0.3)"
+              stroke="rgba(59,130,246,0.25)"
               strokeWidth={2}
             />
-            {/* Meridians */}
             <ellipse
               cx={0}
               cy={0}
               rx={55}
               ry={20}
               fill="none"
-              stroke="rgba(59,130,246,0.15)"
+              stroke="rgba(59,130,246,0.12)"
               strokeWidth={1}
               transform={`rotate(${globeRotation * 0.3})`}
             />
@@ -836,12 +811,10 @@ const FeaturesScene4 = () => {
               rx={20}
               ry={55}
               fill="none"
-              stroke="rgba(59,130,246,0.15)"
+              stroke="rgba(59,130,246,0.12)"
               strokeWidth={1}
             />
-            {/* Center dot */}
             <circle cx={0} cy={0} r={6} fill="#3b82f6" />
-            {/* Endpoints */}
             {connectionLines.map((line, i) => (
               <circle
                 key={`dot-${i}`}
@@ -855,13 +828,12 @@ const FeaturesScene4 = () => {
           </svg>
         </div>
 
-        {/* Domain URL bar */}
         <div
           style={{
             padding: "14px 28px",
             borderRadius: 14,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            background: "#f8fafc",
+            border: "1px solid #e2e8f0",
             display: "flex",
             alignItems: "center",
             gap: 12,
@@ -876,7 +848,7 @@ const FeaturesScene4 = () => {
               boxShadow: "0 0 8px rgba(34,197,94,0.5)",
             }}
           />
-          <span style={{ fontSize: 20, color: "#e2e8f0", fontFamily: "monospace", fontWeight: 500 }}>
+          <span style={{ fontSize: 20, color: "#1e293b", fontFamily: "monospace", fontWeight: 500 }}>
             https://{domainText.slice(0, visibleChars)}
             <span
               style={{
@@ -890,7 +862,6 @@ const FeaturesScene4 = () => {
           </span>
         </div>
 
-        {/* Published badge */}
         <div
           style={{
             opacity: interpolate(publishEnter, [0, 1], [0, 1]),
@@ -900,8 +871,8 @@ const FeaturesScene4 = () => {
             gap: 10,
             padding: "12px 24px",
             borderRadius: 16,
-            background: "rgba(34,197,94,0.1)",
-            border: "1px solid rgba(34,197,94,0.25)",
+            background: "rgba(34,197,94,0.08)",
+            border: "1px solid rgba(34,197,94,0.2)",
           }}
         >
           <svg width={20} height={20} viewBox="0 0 20 20">
@@ -915,7 +886,7 @@ const FeaturesScene4 = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#86efac" }}>
+          <span style={{ fontSize: 16, fontWeight: 600, color: "#16a34a" }}>
             Sito online — SSL incluso
           </span>
         </div>
