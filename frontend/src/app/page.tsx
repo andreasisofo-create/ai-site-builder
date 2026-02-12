@@ -33,56 +33,65 @@ import {
 import { useLanguage, translations } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
-// Rendered MP4 video component — premium device mockup with animated glow
+// Rendered MP4 video component — visible neon glow device mockup
 function RenderedVideo({
   src,
   accentColor = "#8b5cf6",
+  label,
   className = "",
 }: {
   src: string;
   accentColor?: string;
+  label?: string;
   className?: string;
 }) {
   return (
     <div className={`relative group ${className}`}>
-      {/* Background decoration orbs */}
+      {/* Visible glow behind the box */}
       <div
-        className="absolute -inset-20 opacity-30 blur-3xl rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${accentColor}33 0%, transparent 70%)` }}
-      />
-      <div
-        className="absolute -inset-10 opacity-20 blur-2xl rounded-full pointer-events-none animate-pulse"
-        style={{ background: `radial-gradient(circle at 30% 70%, ${accentColor}22 0%, transparent 60%)` }}
+        className="absolute -inset-4 rounded-3xl blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-700 pointer-events-none"
+        style={{ background: `radial-gradient(ellipse at center, ${accentColor}55 0%, ${accentColor}20 40%, transparent 70%)` }}
       />
 
-      {/* Animated glow border wrapper */}
-      <div className="relative rounded-2xl p-[2px] video-glow-border transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+      {/* Label badge */}
+      {label && (
+        <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-20">
+          <span
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white border backdrop-blur-sm"
+            style={{
+              background: `linear-gradient(135deg, ${accentColor}cc, ${accentColor}88)`,
+              borderColor: `${accentColor}66`,
+              boxShadow: `0 0 20px ${accentColor}44`,
+            }}
+          >
+            <VideoCameraIcon className="w-3.5 h-3.5" />
+            {label}
+          </span>
+        </div>
+      )}
+
+      {/* Solid visible gradient border */}
+      <div
+        className="relative rounded-2xl p-[2px] transition-transform duration-500 ease-out group-hover:scale-[1.02]"
         style={{
-          '--glow-color-1': accentColor,
-          '--glow-color-2': '#3b82f6',
-          '--glow-color-3': '#06b6d4',
-        } as React.CSSProperties}
+          background: `linear-gradient(135deg, ${accentColor}, #3b82f6, #06b6d4, ${accentColor})`,
+          backgroundSize: '300% 300%',
+          animation: 'gradient-shift 4s ease infinite',
+        }}
       >
-        {/* Animated gradient border */}
-        <div className="absolute -inset-[1px] rounded-2xl video-glow-gradient opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
-
         {/* Browser chrome frame */}
-        <div className="relative rounded-2xl overflow-hidden bg-[#161616]">
+        <div className="relative rounded-2xl overflow-hidden bg-[#0a0a0a]">
           {/* Top bar */}
-          <div className="flex items-center gap-3 px-4 py-2.5 bg-[#1a1a1a] border-b border-white/5">
-            {/* Traffic lights */}
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-[#111] border-b border-white/10">
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-              <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
-              <span className="w-3 h-3 rounded-full bg-[#28c840]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
             </div>
-            {/* URL bar */}
             <div className="flex-1 mx-2">
-              <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#111] border border-white/5">
-                <div className="w-3 h-3 rounded-full border border-white/10 flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accentColor }} />
-                </div>
-                <span className="text-[10px] text-slate-500 font-mono truncate">e-quipe.app</span>
+              <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-black/50 border border-white/10">
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: accentColor, boxShadow: `0 0 6px ${accentColor}` }} />
+                <span className="text-[10px] text-slate-400 font-mono truncate">e-quipe.app</span>
               </div>
             </div>
           </div>
@@ -99,9 +108,9 @@ function RenderedVideo({
         </div>
       </div>
 
-      {/* Bottom glow reflection */}
+      {/* Bottom neon glow reflection */}
       <div
-        className="absolute -bottom-4 left-[10%] right-[10%] h-8 blur-2xl opacity-40 rounded-full pointer-events-none"
+        className="absolute -bottom-6 left-[5%] right-[5%] h-12 blur-2xl opacity-60 rounded-full pointer-events-none"
         style={{ background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)` }}
       />
     </div>
@@ -267,37 +276,39 @@ function TiltCard({
   );
 }
 
-// Floating geometric shapes — subtle background decoration
+// Floating geometric shapes — visible animated background decoration
 function FloatingShapes({ variant = "default" }: { variant?: "default" | "alt" }) {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {variant === "default" ? (
         <>
-          <div className="absolute top-[15%] left-[8%] w-16 h-16 border border-white/[0.04] rounded-lg floating-shape-1" />
-          <div className="absolute top-[60%] right-[12%] w-10 h-10 border border-violet-500/[0.06] rounded-full floating-shape-2" />
-          <div className="absolute bottom-[20%] left-[15%] w-6 h-6 bg-blue-500/[0.04] rounded-sm floating-shape-3 rotate-45" />
-          <div className="absolute top-[35%] right-[5%] w-20 h-[1px] bg-gradient-to-r from-transparent via-white/[0.05] to-transparent floating-shape-1" />
+          <div className="absolute top-[15%] left-[8%] w-20 h-20 border border-violet-500/20 rounded-xl floating-shape-1 shadow-[0_0_30px_rgba(139,92,246,0.1)]" />
+          <div className="absolute top-[60%] right-[12%] w-14 h-14 border border-blue-500/20 rounded-full floating-shape-2 shadow-[0_0_20px_rgba(59,130,246,0.1)]" />
+          <div className="absolute bottom-[20%] left-[15%] w-8 h-8 bg-blue-500/10 rounded-sm floating-shape-3 rotate-45" />
+          <div className="absolute top-[35%] right-[5%] w-32 h-[2px] bg-gradient-to-r from-transparent via-violet-500/20 to-transparent floating-shape-1" />
+          <div className="absolute top-[80%] left-[40%] w-6 h-6 border border-cyan-500/15 rounded-full floating-shape-2" />
         </>
       ) : (
         <>
-          <div className="absolute top-[25%] right-[10%] w-12 h-12 border border-white/[0.04] rounded-full floating-shape-2" />
-          <div className="absolute bottom-[30%] left-[5%] w-14 h-14 border border-purple-500/[0.05] rounded-lg floating-shape-3 rotate-12" />
-          <div className="absolute top-[70%] right-[18%] w-4 h-4 bg-cyan-500/[0.05] rounded-full floating-shape-1" />
-          <div className="absolute top-[10%] left-[20%] w-24 h-[1px] bg-gradient-to-r from-transparent via-violet-500/[0.06] to-transparent floating-shape-2" />
+          <div className="absolute top-[25%] right-[10%] w-16 h-16 border border-purple-500/20 rounded-full floating-shape-2 shadow-[0_0_25px_rgba(168,85,247,0.1)]" />
+          <div className="absolute bottom-[30%] left-[5%] w-18 h-18 border border-blue-500/15 rounded-lg floating-shape-3 rotate-12" />
+          <div className="absolute top-[70%] right-[18%] w-5 h-5 bg-emerald-500/15 rounded-full floating-shape-1" />
+          <div className="absolute top-[10%] left-[20%] w-32 h-[2px] bg-gradient-to-r from-transparent via-violet-500/20 to-transparent floating-shape-2" />
+          <div className="absolute bottom-[10%] right-[30%] w-10 h-10 border border-pink-500/15 rounded-lg floating-shape-1 rotate-45" />
         </>
       )}
     </div>
   );
 }
 
-// Dot grid pattern overlay
+// Dot grid pattern overlay — visible
 function DotGrid() {
   return (
     <div
-      className="absolute inset-0 pointer-events-none opacity-[0.03]"
+      className="absolute inset-0 pointer-events-none opacity-[0.07]"
       style={{
-        backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-        backgroundSize: "32px 32px",
+        backgroundImage: "radial-gradient(circle, rgba(139,92,246,0.5) 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
       }}
     />
   );
@@ -411,7 +422,7 @@ export default function LandingPage() {
       <div
         className="pointer-events-none fixed inset-0 z-[60] hidden lg:block"
         style={{
-          background: `radial-gradient(600px circle at ${cursorPos.x}px ${cursorPos.y}px, rgba(139,92,246,0.06), rgba(59,130,246,0.03) 40%, transparent 70%)`,
+          background: `radial-gradient(500px circle at ${cursorPos.x}px ${cursorPos.y}px, rgba(139,92,246,0.12), rgba(59,130,246,0.06) 40%, transparent 70%)`,
         }}
       />
 
@@ -440,7 +451,7 @@ export default function LandingPage() {
             <div className="hidden lg:flex items-center gap-4">
               <LanguageSwitcher />
               <Link href="/auth" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">{t("nav.login")}</Link>
-              <Link href="/auth" className="px-5 py-2.5 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full text-sm font-semibold shadow-[0_0_16px_rgba(59,130,246,0.25)] hover:shadow-[0_0_24px_rgba(59,130,246,0.4)] hover:-translate-y-0.5 transition-all">{t("nav.cta")}</Link>
+              <Link href="/auth" className="px-6 py-2.5 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_35px_rgba(139,92,246,0.6)] hover:-translate-y-0.5 transition-all duration-300">{t("nav.cta")}</Link>
             </div>
 
             <button
@@ -482,14 +493,23 @@ export default function LandingPage() {
 
       {/* ===== HERO SECTION ===== */}
       <section className="relative min-h-screen flex items-center pt-20">
-        {/* Animated gradient mesh background */}
+        {/* Animated gradient mesh background — stronger */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="hero-orb hero-orb-1 absolute w-[700px] h-[700px] bg-blue-600/20 rounded-full blur-[128px]" />
-          <div className="hero-orb hero-orb-2 absolute w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-[100px]" />
-          <div className="hero-orb hero-orb-3 absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px]" />
-          <div className="hero-orb hero-orb-4 absolute w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
+          <div className="hero-orb hero-orb-1 absolute w-[800px] h-[800px] bg-blue-600/30 rounded-full blur-[128px]" />
+          <div className="hero-orb hero-orb-2 absolute w-[600px] h-[600px] bg-violet-600/25 rounded-full blur-[100px]" />
+          <div className="hero-orb hero-orb-3 absolute w-[700px] h-[700px] bg-purple-600/20 rounded-full blur-[120px]" />
+          <div className="hero-orb hero-orb-4 absolute w-[500px] h-[500px] bg-cyan-500/15 rounded-full blur-[100px]" />
         </div>
-        <DotGrid />
+        {/* Visible grid pattern — like Vercel/Linear */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.12]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(139,92,246,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.3) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px',
+          }}
+        />
+        {/* Radial fade to hide grid edges */}
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,#0a0a0a_80%)]" />
         <FloatingShapes />
 
         <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32">
@@ -553,7 +573,7 @@ export default function LandingPage() {
               >
                 <MagneticButton
                   href="/auth"
-                  className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full font-semibold text-lg shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+                  className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 rounded-full font-bold text-lg shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:shadow-[0_0_50px_rgba(139,92,246,0.7)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   {t("hero.ctaPrimary")}
                   <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -597,7 +617,7 @@ export default function LandingPage() {
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
               className="relative"
             >
-              <RenderedVideo src="/videos/hero.mp4" accentColor="#8b5cf6" />
+              <RenderedVideo src="/videos/hero.mp4" accentColor="#8b5cf6" label="Live Preview" />
 
               {/* Floating accent cards */}
               <div className="absolute -bottom-4 -left-4 p-3 rounded-xl bg-[#111]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
@@ -623,24 +643,26 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ===== GRADIENT DIVIDER ===== */}
+      <div className="h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+
       {/* ===== QUICK STATS STRIP ===== */}
-      <section className="py-12 border-y border-white/5 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/[0.03] via-violet-500/[0.02] to-purple-500/[0.03]" />
+      <section className="py-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/[0.08] via-violet-500/[0.06] to-purple-500/[0.08]" />
         <div className="max-w-5xl mx-auto px-6 relative">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { value: t("quickStats.creationTime"), label: t("quickStats.creationTimeLabel"), gradient: "from-blue-400 to-violet-400", glow: "blue" },
-              { value: t("quickStats.templates"), label: t("quickStats.templatesLabel"), gradient: "from-violet-400 to-purple-400", glow: "violet" },
-              { value: t("quickStats.animations"), label: t("quickStats.animationsLabel"), gradient: "from-purple-400 to-pink-400", glow: "purple" },
-              { value: t("quickStats.monitoring"), label: t("quickStats.monitoringLabel"), gradient: "from-pink-400 to-rose-400", glow: "pink" },
+              { value: t("quickStats.creationTime"), label: t("quickStats.creationTimeLabel"), gradient: "from-blue-400 to-violet-400", borderColor: "border-blue-500/30" },
+              { value: t("quickStats.templates"), label: t("quickStats.templatesLabel"), gradient: "from-violet-400 to-purple-400", borderColor: "border-violet-500/30" },
+              { value: t("quickStats.animations"), label: t("quickStats.animationsLabel"), gradient: "from-purple-400 to-pink-400", borderColor: "border-purple-500/30" },
+              { value: t("quickStats.monitoring"), label: t("quickStats.monitoringLabel"), gradient: "from-pink-400 to-rose-400", borderColor: "border-pink-500/30" },
             ].map((stat, idx) => (
               <div key={idx} className="relative group">
-                <div className={`absolute inset-0 rounded-xl bg-${stat.glow}-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl`} />
-                <div className="relative p-4 rounded-xl hover:bg-white/[0.02] transition-colors duration-300">
-                  <p className={`text-2xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(139,92,246,0.3)]`}>
+                <div className={`relative p-6 rounded-2xl bg-white/[0.03] border ${stat.borderColor} hover:bg-white/[0.06] transition-all duration-300 hover:scale-105`}>
+                  <p className={`text-3xl md:text-4xl font-extrabold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
                     {stat.value}
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">{stat.label}</p>
+                  <p className="text-sm text-slate-400 mt-2">{stat.label}</p>
                 </div>
               </div>
             ))}
@@ -648,8 +670,12 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ===== GRADIENT DIVIDER ===== */}
+      <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+
       {/* ===== COME FUNZIONA ===== */}
       <section id="how-it-works" className="py-24 lg:py-32 relative" ref={stepsRef}>
+        <div className="absolute inset-0 bg-gradient-to-b from-violet-950/20 via-transparent to-blue-950/20 pointer-events-none" />
         <FloatingShapes variant="alt" />
         <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -686,7 +712,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.5, delay: idx * 0.15 }}
                 className="relative text-center"
               >
-                <div className="relative z-10 w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                <div className="relative z-10 w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 border-2 border-violet-500/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(139,92,246,0.2)]">
                   <step.icon className="w-10 h-10 text-blue-400" />
                   <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-violet-500 flex items-center justify-center text-sm font-bold">
                     {idx + 1}
@@ -705,19 +731,23 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={stepsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 max-w-3xl mx-auto"
+            className="mt-16 max-w-2xl mx-auto"
           >
-            <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" />
+            <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" label="Come Funziona" />
           </motion.div>
         </div>
       </section>
 
       {/* ===== SITE BUILDER FEATURES (BENTO GRID) ===== */}
+      {/* ===== GRADIENT DIVIDER ===== */}
+      <div className="h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
+
       <section
         id="features"
-        className="py-24 lg:py-32 bg-white/[0.01] relative"
+        className="py-24 lg:py-32 relative"
         ref={featuresRef}
       >
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/15 via-transparent to-violet-950/15 pointer-events-none" />
         <DotGrid />
         <FloatingShapes />
         <div className="max-w-7xl mx-auto px-6 relative">
@@ -753,7 +783,7 @@ export default function LandingPage() {
                 className={feature.large ? "lg:col-span-2" : ""}
               >
                 <TiltCard
-                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-colors"
+                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] hover:border-violet-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)]"
                 >
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-white/5 flex items-center justify-center mb-5">
                     <feature.icon className="w-6 h-6 text-blue-400" />
@@ -774,9 +804,9 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-16 max-w-3xl mx-auto"
+            className="mt-16 max-w-2xl mx-auto"
           >
-            <RenderedVideo src="/videos/features.mp4" accentColor="#3b82f6" />
+            <RenderedVideo src="/videos/features.mp4" accentColor="#3b82f6" label="Features Demo" />
           </motion.div>
         </div>
       </section>
@@ -902,8 +932,8 @@ export default function LandingPage() {
             </div>
 
             {/* Ads Video */}
-            <div className="mt-12 max-w-3xl mx-auto">
-              <RenderedVideo src="/videos/ads.mp4" accentColor="#10b981" />
+            <div className="mt-12 max-w-2xl mx-auto">
+              <RenderedVideo src="/videos/ads.mp4" accentColor="#10b981" label="Ads Manager" />
             </div>
           </motion.div>
         </div>
@@ -1193,33 +1223,42 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ===== GRADIENT DIVIDER ===== */}
+      <div className="h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+
       {/* ===== STATS / NUMBERS ===== */}
-      <section className="py-20 border-y border-white/5 relative overflow-hidden" ref={statsRef}>
-        <div className="absolute inset-0 bg-gradient-to-b from-violet-500/[0.02] via-transparent to-blue-500/[0.02]" />
+      <section className="py-24 relative overflow-hidden" ref={statsRef}>
+        <div className="absolute inset-0 bg-gradient-to-b from-violet-950/30 via-transparent to-blue-950/30" />
+        {/* Grid pattern for stats section */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.06]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(139,92,246,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.4) 1px, transparent 1px)`,
+            backgroundSize: '80px 80px',
+          }}
+        />
         <div className="max-w-5xl mx-auto px-6 relative">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { value: <>{stat1}+</>, label: t("stats.sitesGenerated"), gradient: "from-blue-400 to-violet-400", glowColor: "rgba(96,165,250,0.2)" },
-              { value: stat2, label: t("stats.activeCampaigns"), gradient: "from-violet-400 to-purple-400", glowColor: "rgba(139,92,246,0.2)" },
-              { value: <>&euro;{stat3}M+</>, label: t("stats.revenueGenerated"), gradient: "from-purple-400 to-pink-400", glowColor: "rgba(168,85,247,0.2)" },
-              { value: "4.8/5", label: t("stats.clientRating"), gradient: "from-amber-400 to-orange-400", glowColor: "rgba(251,191,36,0.2)" },
+              { value: <>{stat1}+</>, label: t("stats.sitesGenerated"), gradient: "from-blue-400 to-violet-400", borderColor: "border-blue-500/30", glowColor: "rgba(96,165,250,0.15)" },
+              { value: stat2, label: t("stats.activeCampaigns"), gradient: "from-violet-400 to-purple-400", borderColor: "border-violet-500/30", glowColor: "rgba(139,92,246,0.15)" },
+              { value: <>&euro;{stat3}M+</>, label: t("stats.revenueGenerated"), gradient: "from-purple-400 to-pink-400", borderColor: "border-purple-500/30", glowColor: "rgba(168,85,247,0.15)" },
+              { value: "4.8/5", label: t("stats.clientRating"), gradient: "from-amber-400 to-orange-400", borderColor: "border-amber-500/30", glowColor: "rgba(251,191,36,0.15)" },
             ].map((stat, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={statsInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                animate={statsInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+                transition={{ duration: 0.6, delay: idx * 0.12, ease: "easeOut" }}
                 className="text-center relative group"
               >
-                <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl pointer-events-none"
-                  style={{ background: `radial-gradient(circle, ${stat.glowColor}, transparent 70%)` }}
-                />
-                <div className="relative p-6 rounded-2xl hover:bg-white/[0.02] transition-colors duration-300">
-                  <p className={`text-4xl lg:text-5xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                <div className={`relative p-8 rounded-2xl bg-white/[0.03] border ${stat.borderColor} hover:bg-white/[0.06] transition-all duration-500 hover:scale-105 hover:shadow-lg`}
+                  style={{ boxShadow: `0 0 40px ${stat.glowColor}` }}
+                >
+                  <p className={`text-4xl lg:text-6xl font-extrabold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
                     {stat.value}
                   </p>
-                  <p className="text-sm text-slate-400 mt-2">{stat.label}</p>
+                  <p className="text-sm text-slate-300 mt-3 font-medium">{stat.label}</p>
                 </div>
               </motion.div>
             ))}
@@ -1282,8 +1321,8 @@ export default function LandingPage() {
               <TiltCard
                 className={`relative p-6 rounded-2xl border transition-colors ${
                   plan.popular
-                    ? "bg-gradient-to-b from-blue-600/10 via-violet-600/5 to-transparent border-blue-500/30 shadow-lg shadow-violet-500/10"
-                    : "bg-white/[0.02] border-white/5 hover:border-white/10"
+                    ? "bg-gradient-to-b from-blue-600/10 via-violet-600/5 to-transparent border-blue-500/40 shadow-[0_0_40px_rgba(139,92,246,0.15)]"
+                    : "bg-white/[0.03] border-white/10 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)]"
                 }`}
               >
                 {plan.popular && (
@@ -1445,12 +1484,23 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ===== GRADIENT DIVIDER ===== */}
+      <div className="h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+
       {/* ===== FINAL CTA ===== */}
       <section className="py-24 lg:py-32">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="relative p-12 lg:p-20 rounded-3xl overflow-hidden">
+          <div className="relative p-12 lg:p-20 rounded-3xl overflow-hidden shadow-[0_0_80px_rgba(139,92,246,0.3)]">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-violet-600 to-purple-700" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.1),transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_50%)]" />
+            {/* Grid pattern overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none opacity-[0.08]"
+              style={{
+                backgroundImage: `linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)`,
+                backgroundSize: '40px 40px',
+              }}
+            />
 
             <div className="relative text-center">
               <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-6">
@@ -1609,26 +1659,10 @@ export default function LandingPage() {
 
       {/* ===== CSS KEYFRAMES ===== */}
       <style jsx>{`
-        .video-glow-gradient {
-          background: conic-gradient(
-            from var(--glow-angle, 0deg),
-            var(--glow-color-1),
-            var(--glow-color-2),
-            var(--glow-color-3),
-            var(--glow-color-2),
-            var(--glow-color-1)
-          );
-          animation: glow-spin 4s linear infinite;
-          border-radius: 1rem;
-        }
-        @keyframes glow-spin {
-          0% { --glow-angle: 0deg; }
-          100% { --glow-angle: 360deg; }
-        }
-        @property --glow-angle {
-          syntax: '<angle>';
-          initial-value: 0deg;
-          inherits: false;
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
         .hero-orb-1 {
           top: 10%;
@@ -1726,15 +1760,9 @@ export default function LandingPage() {
           50% { transform: translate(10px, -25px) rotate(50deg); }
         }
         .pricing-glow-gradient {
-          background: conic-gradient(
-            from var(--glow-angle, 0deg),
-            #3b82f6,
-            #8b5cf6,
-            #a855f7,
-            #8b5cf6,
-            #3b82f6
-          );
-          animation: glow-spin 4s linear infinite;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6, #a855f7, #3b82f6);
+          background-size: 300% 300%;
+          animation: gradient-shift 4s ease infinite;
         }
         .pricing-badge-pulse {
           animation: badge-pulse 2s ease-in-out infinite;
