@@ -552,42 +552,79 @@ export default function LandingPage() {
               </motion.div>
 
               {/* Trust Badges */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-12 pt-8 border-t border-white/10"
-              >
+              {/* Trust Feature Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 pt-8 border-t border-white/10">
                 {[
-                  { text: t("hero.trustNoCode"), icon: CodeBracketIcon, color: "#8b5cf6" },
-                  { text: t("hero.trustSetup"), icon: BoltIcon, color: "#3b82f6" },
-                  { text: t("hero.trustAds"), icon: MegaphoneIcon, color: "#06b6d4" },
-                ].map((badge, idx) => (
+                  { text: t("hero.trustNoCode"), icon: CodeBracketIcon, color: "#8b5cf6", colorName: "violet" },
+                  { text: t("hero.trustSetup"), icon: BoltIcon, color: "#3b82f6", colorName: "blue" },
+                  { text: t("hero.trustAds"), icon: MegaphoneIcon, color: "#06b6d4", colorName: "cyan" },
+                ].map((card, idx) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.4, delay: 0.9 + idx * 0.12 }}
-                    className="flex items-center gap-2.5 px-4 py-2.5 rounded-full border backdrop-blur-sm"
+                    initial={{ opacity: 0, y: 30, rotateX: 15 }}
+                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                    transition={{ duration: 0.6, delay: 0.9 + idx * 0.15, ease: "easeOut" }}
+                    whileHover={{ scale: 1.05, y: -4 }}
+                    className="relative p-5 rounded-2xl border overflow-hidden cursor-default"
                     style={{
-                      background: `linear-gradient(135deg, ${badge.color}15, ${badge.color}08)`,
-                      borderColor: `${badge.color}30`,
-                      boxShadow: `0 0 20px ${badge.color}15, inset 0 1px 0 rgba(255,255,255,0.05)`,
+                      background: `linear-gradient(145deg, ${card.color}12, ${card.color}05, transparent)`,
+                      borderColor: `${card.color}25`,
                     }}
                   >
-                    <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center"
+                    {/* Animated glow orb */}
+                    <motion.div
+                      className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none"
+                      style={{ background: card.color, opacity: 0.12 }}
+                      animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.1, 0.2, 0.1],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: idx * 0.5,
+                        ease: "easeInOut",
+                      }}
+                    />
+
+                    {/* Animated icon */}
+                    <motion.div
+                      className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
                       style={{
-                        background: `linear-gradient(135deg, ${badge.color}30, ${badge.color}10)`,
-                        boxShadow: `0 0 12px ${badge.color}25`,
+                        background: `linear-gradient(135deg, ${card.color}25, ${card.color}10)`,
+                        boxShadow: `0 0 20px ${card.color}20`,
+                      }}
+                      animate={{
+                        boxShadow: [
+                          `0 0 15px ${card.color}15`,
+                          `0 0 30px ${card.color}30`,
+                          `0 0 15px ${card.color}15`,
+                        ],
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        delay: idx * 0.4,
+                        ease: "easeInOut",
                       }}
                     >
-                      <badge.icon className="w-3.5 h-3.5" style={{ color: badge.color }} />
-                    </div>
-                    <span className="text-sm font-semibold text-white/90">{badge.text}</span>
+                      <card.icon className="w-5 h-5" style={{ color: card.color }} />
+                    </motion.div>
+
+                    {/* Text */}
+                    <p className="text-base font-bold text-white">{card.text}</p>
+
+                    {/* Animated bottom line */}
+                    <motion.div
+                      className="absolute bottom-0 left-0 h-[2px]"
+                      style={{ background: `linear-gradient(90deg, transparent, ${card.color}, transparent)` }}
+                      initial={{ width: "0%" }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 1.2, delay: 1.2 + idx * 0.2, ease: "easeOut" }}
+                    />
                   </motion.div>
                 ))}
-              </motion.div>
+              </div>
             </div>
 
             {/* Right Visual - Single main video */}
