@@ -32,6 +32,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { useLanguage, translations } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Rendered MP4 video component — visible neon glow device mockup
 function RenderedVideo({
@@ -295,8 +300,9 @@ export default function LandingPage() {
   // Section refs
   const stepsRef = useRef(null);
   const stepsInView = useInView(stepsRef, { once: true, margin: "-100px" });
-  const featuresRef = useRef(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
   const featuresInView = useInView(featuresRef, { once: true, margin: "-100px" });
+  const featuresGalleryRef = useRef<HTMLDivElement>(null);
   const adsRef = useRef(null);
   const adsInView = useInView(adsRef, { once: true, margin: "-100px" });
   const timelineRef = useRef(null);
@@ -326,6 +332,141 @@ export default function LandingPage() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // GSAP infinite horizontal loop for features section
+  useGSAP(() => {
+    const gallery = featuresGalleryRef.current;
+    if (!gallery) return;
+    const cards = gsap.utils.toArray<HTMLElement>(gallery.querySelectorAll(".feature-loop-card"));
+    if (cards.length === 0) return;
+
+    // horizontalLoop helper (from GSAP docs)
+    function horizontalLoop(items: HTMLElement[], config: Record<string, unknown> = {}) {
+      const tl = gsap.timeline({
+        repeat: config.repeat as number,
+        paused: config.paused as boolean,
+        defaults: { ease: "none" },
+        onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100),
+      });
+      const length = items.length;
+      const startX = items[0].offsetLeft;
+      const times: number[] = [];
+      const widths: number[] = [];
+      const xPercents: number[] = [];
+      let curIndex = 0;
+      const pixelsPerSecond = ((config.speed as number) || 1) * 100;
+      const snapFn = config.snap === false ? (v: number) => v : gsap.utils.snap((config.snap as number) || 1);
+      let totalWidth: number;
+
+      gsap.set(items, {
+        xPercent: (i: number, el: HTMLElement) => {
+          const w = parseFloat(gsap.getProperty(el, "width", "px") as string);
+          widths[i] = w;
+          xPercents[i] = snapFn(
+            (parseFloat(gsap.getProperty(el, "x", "px") as string) / w) * 100 + (gsap.getProperty(el, "xPercent") as number)
+          );
+          return xPercents[i];
+        },
+      });
+      gsap.set(items, { x: 0 });
+
+      totalWidth =
+        items[length - 1].offsetLeft +
+        (xPercents[length - 1] / 100) * widths[length - 1] -
+        startX +
+        items[length - 1].offsetWidth * (gsap.getProperty(items[length - 1], "scaleX") as number) +
+        (parseFloat(config.paddingRight as string) || 0);
+
+      for (let i = 0; i < length; i++) {
+        const item = items[i];
+        const curX = (xPercents[i] / 100) * widths[i];
+        const distanceToStart = item.offsetLeft + curX - startX;
+        const distanceToLoop = distanceToStart + widths[i] * (gsap.getProperty(item, "scaleX") as number);
+
+        tl.to(item, { xPercent: snapFn(((curX - distanceToLoop) / widths[i]) * 100), duration: distanceToLoop / pixelsPerSecond }, 0)
+          .fromTo(
+            item,
+            { xPercent: snapFn(((curX - distanceToLoop + totalWidth) / widths[i]) * 100) },
+            { xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false },
+            distanceToLoop / pixelsPerSecond
+          )
+          .add("label" + i, distanceToStart / pixelsPerSecond);
+        times[i] = distanceToStart / pixelsPerSecond;
+      }
+
+      function toIndex(index: number, vars: gsap.TweenVars = {}) {
+        if (Math.abs(index - curIndex) > length / 2) {
+          index += index > curIndex ? -length : length;
+        }
+        const newIndex = gsap.utils.wrap(0, length, index);
+        const time = times[newIndex];
+        let newTime = time;
+        if (time > tl.time() !== index > curIndex) {
+          vars.modifiers = { time: gsap.utils.wrap(0, tl.duration()) };
+          newTime += tl.duration() * (index > curIndex ? 1 : -1);
+        }
+        curIndex = newIndex;
+        vars.overwrite = true;
+        return tl.tweenTo(newTime, vars);
+      }
+
+      (tl as unknown as Record<string, unknown>).next = (vars: gsap.TweenVars) => toIndex(curIndex + 1, vars);
+      (tl as unknown as Record<string, unknown>).previous = (vars: gsap.TweenVars) => toIndex(curIndex - 1, vars);
+      (tl as unknown as Record<string, unknown>).current = () => curIndex;
+      (tl as unknown as Record<string, unknown>).toIndex = (index: number, vars: gsap.TweenVars) => toIndex(index, vars);
+      (tl as unknown as Record<string, unknown>).times = times;
+      tl.progress(1, true).progress(0, true);
+      if (config.reversed) {
+        tl.vars.onReverseComplete?.call(tl);
+        tl.reverse();
+      }
+      return tl;
+    }
+
+    const loop = horizontalLoop(cards, { speed: 0.5, repeat: -1, paddingRight: "24px" });
+    let iteration = 0;
+    const playhead = { offset: 0 };
+    const wrapTime = gsap.utils.wrap(0, loop.duration());
+    const scrub = gsap.to(playhead, {
+      offset: 0,
+      onUpdate() {
+        loop.time(wrapTime(playhead.offset));
+      },
+      duration: 0.5,
+      ease: "power3",
+      paused: true,
+    });
+
+    const trigger = ScrollTrigger.create({
+      trigger: gallery,
+      start: "top top",
+      end: "+=3000",
+      pin: true,
+      onUpdate(self) {
+        const scroll = self.scroll();
+        if (scroll > self.end - 1) {
+          wrap(1, 1);
+        } else if (scroll < 1 && self.direction < 0) {
+          wrap(-1, self.end - 1);
+        } else {
+          scrub.vars.offset = (iteration + self.progress) * loop.duration();
+          scrub.invalidate().restart();
+        }
+      },
+    });
+
+    function wrap(iterationDelta: number, scrollTo: number) {
+      iteration += iterationDelta;
+      trigger.scroll(scrollTo);
+      trigger.update();
+    }
+
+    return () => {
+      trigger.kill();
+      scrub.kill();
+      loop.kill();
+    };
+  }, { scope: featuresGalleryRef, dependencies: [] });
 
   // Stats counters
   const stat1 = useCounter(2847, "", statsInView);
@@ -551,80 +692,6 @@ export default function LandingPage() {
                 </MagneticButton>
               </motion.div>
 
-              {/* Trust Badges */}
-              {/* Trust Feature Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 pt-8 border-t border-white/10">
-                {[
-                  { text: t("hero.trustNoCode"), icon: CodeBracketIcon, color: "#8b5cf6", colorName: "violet" },
-                  { text: t("hero.trustSetup"), icon: BoltIcon, color: "#3b82f6", colorName: "blue" },
-                  { text: t("hero.trustAds"), icon: MegaphoneIcon, color: "#06b6d4", colorName: "cyan" },
-                ].map((card, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 30, rotateX: 15 }}
-                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                    transition={{ duration: 0.6, delay: 0.9 + idx * 0.15, ease: "easeOut" }}
-                    whileHover={{ scale: 1.05, y: -4 }}
-                    className="relative p-5 rounded-2xl border overflow-hidden cursor-default"
-                    style={{
-                      background: `linear-gradient(145deg, ${card.color}12, ${card.color}05, transparent)`,
-                      borderColor: `${card.color}25`,
-                    }}
-                  >
-                    {/* Animated glow orb */}
-                    <motion.div
-                      className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none"
-                      style={{ background: card.color, opacity: 0.12 }}
-                      animate={{
-                        scale: [1, 1.3, 1],
-                        opacity: [0.1, 0.2, 0.1],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        delay: idx * 0.5,
-                        ease: "easeInOut",
-                      }}
-                    />
-
-                    {/* Animated icon */}
-                    <motion.div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
-                      style={{
-                        background: `linear-gradient(135deg, ${card.color}25, ${card.color}10)`,
-                        boxShadow: `0 0 20px ${card.color}20`,
-                      }}
-                      animate={{
-                        boxShadow: [
-                          `0 0 15px ${card.color}15`,
-                          `0 0 30px ${card.color}30`,
-                          `0 0 15px ${card.color}15`,
-                        ],
-                      }}
-                      transition={{
-                        duration: 2.5,
-                        repeat: Infinity,
-                        delay: idx * 0.4,
-                        ease: "easeInOut",
-                      }}
-                    >
-                      <card.icon className="w-5 h-5" style={{ color: card.color }} />
-                    </motion.div>
-
-                    {/* Text */}
-                    <p className="text-base font-bold text-white">{card.text}</p>
-
-                    {/* Animated bottom line */}
-                    <motion.div
-                      className="absolute bottom-0 left-0 h-[2px]"
-                      style={{ background: `linear-gradient(90deg, transparent, ${card.color}, transparent)` }}
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 1.2, delay: 1.2 + idx * 0.2, ease: "easeOut" }}
-                    />
-                  </motion.div>
-                ))}
-              </div>
             </div>
 
             {/* Right Visual - Single main video */}
@@ -656,6 +723,66 @@ export default function LandingPage() {
                 </div>
               </div>
             </motion.div>
+          </div>
+
+          {/* Trust Feature Cards - Full width, centered */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-16 pt-10 border-t border-white/10 max-w-4xl mx-auto">
+            {[
+              { text: t("hero.trustNoCode"), icon: CodeBracketIcon, color: "#8b5cf6", colorName: "violet" },
+              { text: t("hero.trustSetup"), icon: BoltIcon, color: "#3b82f6", colorName: "blue" },
+              { text: t("hero.trustAds"), icon: MegaphoneIcon, color: "#06b6d4", colorName: "cyan" },
+            ].map((card, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30, rotateX: 15 }}
+                animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                transition={{ duration: 0.6, delay: 0.9 + idx * 0.15, ease: "easeOut" }}
+                whileHover={{ scale: 1.05, y: -4 }}
+                className="relative p-6 rounded-2xl border overflow-hidden cursor-default text-center"
+                style={{
+                  background: `linear-gradient(145deg, ${card.color}12, ${card.color}05, transparent)`,
+                  borderColor: `${card.color}25`,
+                }}
+              >
+                {/* Animated glow orb */}
+                <motion.div
+                  className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none"
+                  style={{ background: card.color, opacity: 0.12 }}
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }}
+                  transition={{ duration: 3, repeat: Infinity, delay: idx * 0.5, ease: "easeInOut" }}
+                />
+
+                {/* Animated icon */}
+                <motion.div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
+                  style={{
+                    background: `linear-gradient(135deg, ${card.color}25, ${card.color}10)`,
+                    boxShadow: `0 0 20px ${card.color}20`,
+                  }}
+                  animate={{
+                    boxShadow: [
+                      `0 0 15px ${card.color}15`,
+                      `0 0 30px ${card.color}30`,
+                      `0 0 15px ${card.color}15`,
+                    ],
+                  }}
+                  transition={{ duration: 2.5, repeat: Infinity, delay: idx * 0.4, ease: "easeInOut" }}
+                >
+                  <card.icon className="w-6 h-6" style={{ color: card.color }} />
+                </motion.div>
+
+                <p className="text-base font-bold text-white">{card.text}</p>
+
+                {/* Animated bottom line */}
+                <motion.div
+                  className="absolute bottom-0 left-0 h-[2px]"
+                  style={{ background: `linear-gradient(90deg, transparent, ${card.color}, transparent)` }}
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1.2, delay: 1.2 + idx * 0.2, ease: "easeOut" }}
+                />
+              </motion.div>
+            ))}
           </div>
 
         </div>
@@ -771,77 +898,71 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ===== SITE BUILDER FEATURES (BENTO GRID) ===== */}
-      <section
+      {/* ===== SITE BUILDER FEATURES (INFINITE HORIZONTAL LOOP) ===== */}
+      <div
         id="features"
-        className="py-24 lg:py-32 relative bg-blue-600"
-        ref={featuresRef}
+        ref={featuresGalleryRef}
+        className="relative bg-blue-600 overflow-hidden"
       >
-        <div className="max-w-7xl mx-auto px-6 relative">
-          <motion.div
-            initial={{ opacity: 0, x: -60 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={featuresInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6 }}
-              className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-white"
-            >
-              {t("features.title")}
-              {t("features.titleHighlight")}
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={featuresInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-lg text-white/70"
-            >
-              {t("features.subtitle")}
-            </motion.p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {features.map((feature, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                animate={featuresInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: idx * 0.08 }}
-                className={feature.large ? "lg:col-span-2" : ""}
-              >
-                <TiltCard
-                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/20 border border-white/20 hover:bg-white/25 transition-all duration-300"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center mb-5">
-                    <feature.icon className="w-6 h-6 text-white/80" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3 text-white">
-                    {feature.title}
-                  </h3>
-                  <p className="text-white/70 leading-relaxed text-sm">
-                    {feature.description}
-                  </p>
-                </TiltCard>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Features Video — compact */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+        {/* Title section */}
+        <div className="text-center max-w-3xl mx-auto px-6 pt-24 pb-12" ref={featuresRef}>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-16 max-w-2xl mx-auto"
+            transition={{ duration: 0.6 }}
+            className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-white"
           >
-              <RenderedVideo src="/videos/features.mp4" accentColor="#1e40af" />
-          </motion.div>
-          </motion.div>
+            {t("features.title")}
+            <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+              {t("features.titleHighlight")}
+            </span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={featuresInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-lg text-white/70"
+          >
+            {t("features.subtitle")}
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={featuresInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-sm text-white/40 mt-4 flex items-center justify-center gap-2"
+          >
+            <ChevronDownIcon className="w-4 h-4 animate-bounce" />
+            Scorri per esplorare
+            <ChevronDownIcon className="w-4 h-4 animate-bounce" />
+          </motion.p>
         </div>
-      </section>
+
+        {/* Horizontal looping cards */}
+        <div className="flex gap-6 px-6 pb-24 pt-4 will-change-transform">
+          {features.map((feature, idx) => (
+            <div
+              key={idx}
+              className="feature-loop-card flex-shrink-0 w-[320px] lg:w-[380px]"
+            >
+              <div className="h-full p-7 lg:p-9 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+                <div className="w-14 h-14 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-white/25 transition-all duration-300">
+                  <feature.icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-white">
+                  {feature.title}
+                </h3>
+                <p className="text-white/70 leading-relaxed text-sm">
+                  {feature.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Gradient fades on edges */}
+        <div className="absolute top-0 left-0 bottom-0 w-24 bg-gradient-to-r from-blue-600 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 right-0 bottom-0 w-24 bg-gradient-to-l from-blue-600 to-transparent pointer-events-none z-10" />
+      </div>
 
       {/* ===== ADS SERVICE SECTION ===== */}
       <section id="ads-service" className="py-24 lg:py-32 relative" ref={adsRef}>
