@@ -553,23 +553,40 @@ export default function LandingPage() {
 
               {/* Trust Badges */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
-                className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-12 pt-8 border-t border-white/10"
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-12 pt-8 border-t border-white/10"
               >
-                <div className="flex items-center gap-2 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-emerald-400" />
-                  <span className="text-sm">{t("hero.trustNoCode")}</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-emerald-400" />
-                  <span className="text-sm">{t("hero.trustSetup")}</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-400">
-                  <CheckIcon className="w-5 h-5 text-emerald-400" />
-                  <span className="text-sm">{t("hero.trustAds")}</span>
-                </div>
+                {[
+                  { text: t("hero.trustNoCode"), icon: CodeBracketIcon, color: "#8b5cf6" },
+                  { text: t("hero.trustSetup"), icon: BoltIcon, color: "#3b82f6" },
+                  { text: t("hero.trustAds"), icon: MegaphoneIcon, color: "#06b6d4" },
+                ].map((badge, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: 0.9 + idx * 0.12 }}
+                    className="flex items-center gap-2.5 px-4 py-2.5 rounded-full border backdrop-blur-sm"
+                    style={{
+                      background: `linear-gradient(135deg, ${badge.color}15, ${badge.color}08)`,
+                      borderColor: `${badge.color}30`,
+                      boxShadow: `0 0 20px ${badge.color}15, inset 0 1px 0 rgba(255,255,255,0.05)`,
+                    }}
+                  >
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{
+                        background: `linear-gradient(135deg, ${badge.color}30, ${badge.color}10)`,
+                        boxShadow: `0 0 12px ${badge.color}25`,
+                      }}
+                    >
+                      <badge.icon className="w-3.5 h-3.5" style={{ color: badge.color }} />
+                    </div>
+                    <span className="text-sm font-semibold text-white/90">{badge.text}</span>
+                  </motion.div>
+                ))}
               </motion.div>
             </div>
 
@@ -604,28 +621,6 @@ export default function LandingPage() {
             </motion.div>
           </div>
 
-          {/* ===== 3 VIDEO DEMOS IN A ROW ===== */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
-            className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
-          >
-            {[
-              { src: "/videos/process.mp4", accent: "#7c3aed" },
-              { src: "/videos/features.mp4", accent: "#3b82f6" },
-              { src: "/videos/ads.mp4", accent: "#06b6d4" },
-            ].map((video, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.0 + idx * 0.15 }}
-              >
-                <RenderedVideo src={video.src} accentColor={video.accent} />
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
