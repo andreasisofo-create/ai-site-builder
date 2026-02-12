@@ -131,6 +131,8 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
       ["pagare"],
       ["comprare"],
       ["acquistare"],
+      ["ads"],
+      ["pubblicita"],
     ],
     answer:
       "I piani E-quipe (pagamento unico, NO abbonamento):\n\n" +
@@ -155,22 +157,48 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
       ["temi", "tema"],
       ["categorie"],
       ["ristorante"],
-      ["agenzia"],
       ["portfolio"],
       ["business"],
       ["stile", "stili"],
+      ["saas"],
+      ["blog"],
+      ["evento"],
+      ["ecommerce"],
     ],
     answer:
-      "Template disponibili in Site Builder:\n\n" +
-      "Il piano gratuito usa solo la modalita \"Personalizzato\" (AI crea da zero).\n" +
-      "I template richiedono piano Creazione Sito o Premium.\n\n" +
-      "4 categorie disponibili:\n" +
-      "- Ristorante & Food: 3 stili (Elegante, Accogliente, Moderno)\n" +
-      "- Agenzia & Startup: 3 stili (Bold, Pulito, Dark)\n" +
-      "- Portfolio & Creativo: 3 stili (Galleria, Minimal, Colorato)\n" +
-      "- Business & Professionale: 3 stili (Corporate, Trust, Fresco)\n\n" +
-      "Ogni template include 84 varianti di componenti HTML (hero, about, services, gallery, testimonials, contact, pricing, FAQ, footer, ecc.)",
+      "Template disponibili in E-quipe:\n\n" +
+      "8 categorie, 19 stili professionali:\n" +
+      "- Ristorante: 3 stili (Elegante, Accogliente, Moderno)\n" +
+      "- SaaS: 3 stili (Gradient, Clean, Dark)\n" +
+      "- Portfolio: 3 stili (Galleria, Minimal, Creativo)\n" +
+      "- E-commerce: 2 stili (Modern, Luxury)\n" +
+      "- Business: 3 stili (Corporate, Trust, Fresh)\n" +
+      "- Blog: 2 stili (Editorial, Dark)\n" +
+      "- Eventi: 2 stili (Vibrant, Minimal)\n" +
+      "- Custom: 1 stile (l'AI crea da zero)",
     followUp: ["creare-sito", "piani-prezzi"],
+  },
+  {
+    id: "ads",
+    keywords: [
+      ["ads"],
+      ["pubblicita"],
+      ["campagne"],
+      ["meta", "ads"],
+      ["google", "ads"],
+      ["facebook"],
+      ["instagram"],
+      ["advertising"],
+      ["sponsorizzate"],
+    ],
+    answer:
+      "E-quipe offre gestione campagne pubblicitarie:\n\n" +
+      "- Campagne Meta Ads (Facebook/Instagram) e Google Ads\n" +
+      "- Gestite dagli esperti di E-quipe (team umano dedicato)\n" +
+      "- Setup completo, monitoraggio e ottimizzazione continua\n" +
+      "- Report mensili dettagliati\n\n" +
+      "Incluso nel piano Sito + Ads (EUR 700) oppure contatta il supporto per maggiori info.",
+    followUp: ["piani-prezzi", "contatto"],
   },
   {
     id: "problema-generazione",
@@ -202,7 +230,7 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
     ],
     answer:
       "Se non riesci a pubblicare il sito:\n\n" +
-      "- Verifica di avere un piano Creazione Sito (EUR 200) o Premium (EUR 500)\n" +
+      "- Verifica di avere un piano Sito Web (EUR 200) o superiore\n" +
       "- Il piano Starter gratuito NON include la pubblicazione\n" +
       "- Per fare l'upgrade, dalla dashboard clicca su uno dei pulsanti di upgrade\n\n" +
       "Se hai gia un piano a pagamento e il problema persiste, contatta il supporto.",
@@ -274,7 +302,7 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
     answer:
       "Per cambiare piano:\n\n" +
       "1. Vai alla dashboard\n" +
-      "2. Nella sezione upgrade, clicca su \"Creazione Sito - EUR 200\" o \"Premium - EUR 500\"\n" +
+      "2. Nella sezione upgrade, scegli il piano desiderato\n" +
       "3. Verrai reindirizzato al pagamento sicuro\n" +
       "4. Dopo il pagamento, il piano si attiva immediatamente\n\n" +
       "Il pagamento e una tantum, non e un abbonamento mensile.",
@@ -306,7 +334,7 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
     ],
     answer:
       "Informazioni sul dominio:\n\n" +
-      "- Piano Creazione Sito: il sito viene pubblicato su un sottodominio (tuosito.e-quipe.app)\n" +
+      "- Piano Sito Web: il sito viene pubblicato su un sottodominio (tuosito.e-quipe.app)\n" +
       "- Piano Premium: dominio personalizzato incluso (es. tuosito.it)\n" +
       "- Il certificato SSL e incluso in tutti i piani a pagamento\n" +
       "- L'hosting e illimitato\n\n" +
@@ -327,12 +355,12 @@ const KNOWLEDGE_BASE: KnowledgeTopic[] = [
       ["agenzia"],
     ],
     answer:
-      "Per siti piu complessi e personalizzati, e-quipe Studio offre servizi professionali:\n\n" +
+      "Per siti piu complessi e personalizzati, E-quipe offre servizi professionali:\n\n" +
       "- Design su misura\n" +
       "- Funzionalita avanzate\n" +
       "- E-commerce\n" +
       "- Integrazioni custom\n" +
-      "- Sviluppo web completo\n\n" +
+      "- Gestione campagne Ads (Meta + Google)\n\n" +
       "Contatta il supporto tramite il pulsante qui sotto per maggiori informazioni.",
     followUp: ["contatto"],
   },
@@ -454,7 +482,7 @@ function formatTime(date: Date): string {
 }
 
 function sendContactEmail(data: ContactFormData) {
-  const subject = encodeURIComponent("Richiesta assistenza - Site Builder");
+  const subject = encodeURIComponent("Richiesta assistenza - E-quipe");
   const body = encodeURIComponent(
     `Nome: ${data.nome}\nContatto: ${data.contatto}\nMessaggio: ${data.messaggio || "Nessun messaggio aggiuntivo"}`
   );
@@ -763,7 +791,7 @@ export default function HelpChatbot() {
               <h3 className="text-sm font-semibold text-white">
                 Assistente E-quipe
               </h3>
-              <p className="text-[10px] text-slate-400">Sempre disponibile</p>
+              <p className="text-[10px] text-slate-400">AI - Sempre disponibile</p>
             </div>
           </div>
           <button

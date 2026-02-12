@@ -27,3 +27,6 @@ slowapi==0.1.9
 resend>=2.5.0
 
 # Payments (Revolut - uses httpx, no SDK needed)
+
+# Vector Database
+chromadb>=0.4.22
