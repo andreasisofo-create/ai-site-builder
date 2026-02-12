@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
-import dynamic from "next/dynamic";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
   ArrowRightIcon,
@@ -32,22 +31,21 @@ import {
   CalculatorIcon,
 } from "@heroicons/react/24/outline";
 
-const VideoPlayer = dynamic(
-  () => import("@/components/remotion/VideoPlayer"),
-  { ssr: false }
-);
-const FeaturesVideoPlayer = dynamic(
-  () => import("@/components/remotion/VideoPlayer").then((m) => ({ default: m.FeaturesVideoPlayer })),
-  { ssr: false }
-);
-const ProcessVideoPlayer = dynamic(
-  () => import("@/components/remotion/VideoPlayer").then((m) => ({ default: m.ProcessVideoPlayer })),
-  { ssr: false }
-);
-const AdsVideoPlayer = dynamic(
-  () => import("@/components/remotion/VideoPlayer").then((m) => ({ default: m.AdsVideoPlayer })),
-  { ssr: false }
-);
+// Rendered MP4 video component (replaces heavy Remotion Player)
+function RenderedVideo({ src, className = "" }: { src: string; className?: string }) {
+  return (
+    <div className={`rounded-2xl overflow-hidden border border-white/10 shadow-2xl ${className}`}>
+      <video
+        src={src}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full h-auto"
+      />
+    </div>
+  );
+}
 
 // ==================== HOOKS ====================
 
@@ -802,7 +800,7 @@ export default function LandingPage() {
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
               className="relative"
             >
-              <VideoPlayer className="shadow-2xl shadow-purple-500/10" />
+              <RenderedVideo src="/videos/hero.mp4" className="shadow-2xl shadow-purple-500/10" />
 
               {/* Floating accent cards */}
               <div className="absolute -bottom-4 -left-4 p-3 rounded-xl bg-[#111]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
@@ -914,7 +912,7 @@ export default function LandingPage() {
             transition={{ duration: 0.7, delay: 0.6 }}
             className="mt-16 max-w-4xl mx-auto"
           >
-            <ProcessVideoPlayer className="shadow-2xl shadow-violet-500/10" />
+            <RenderedVideo src="/videos/process.mp4" className="shadow-2xl shadow-violet-500/10" />
           </motion.div>
         </div>
       </section>
@@ -983,7 +981,7 @@ export default function LandingPage() {
             transition={{ duration: 0.7, delay: 0.5 }}
             className="mt-16 max-w-4xl mx-auto"
           >
-            <FeaturesVideoPlayer className="shadow-2xl shadow-blue-500/10" />
+            <RenderedVideo src="/videos/features.mp4" className="shadow-2xl shadow-blue-500/10" />
           </motion.div>
         </div>
       </section>
@@ -1124,7 +1122,7 @@ export default function LandingPage() {
 
             {/* Ads Video */}
             <div className="mt-12 max-w-3xl mx-auto">
-              <AdsVideoPlayer className="shadow-2xl shadow-violet-500/10" />
+              <RenderedVideo src="/videos/ads.mp4" className="shadow-2xl shadow-violet-500/10" />
             </div>
           </motion.div>
         </div>
