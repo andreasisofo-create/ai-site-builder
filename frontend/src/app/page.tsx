@@ -610,7 +610,7 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
-            {/* Right Visual - Remotion Video Player */}
+            {/* Right Visual - Single main video */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -640,6 +640,49 @@ export default function LandingPage() {
               </div>
             </motion.div>
           </div>
+
+          {/* ===== 3 SMALL VIDEO DEMOS IN A ROW ===== */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+            className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"
+          >
+            {[
+              { src: "/videos/process.mp4", label: "AI Builder", accent: "#7c3aed", offset: "" },
+              { src: "/videos/features.mp4", label: "Templates", accent: "#3b82f6", offset: "md:-translate-y-4" },
+              { src: "/videos/ads.mp4", label: "Ads Manager", accent: "#06b6d4", offset: "" },
+            ].map((video, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.0 + idx * 0.15 }}
+                className={`${video.offset}`}
+              >
+                <RenderedVideo src={video.src} accentColor={video.accent} label={video.label} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ===== LOGO MARQUEE — SOCIAL PROOF ===== */}
+      <section className="py-12 border-y border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-[#0a0a0a] z-10 pointer-events-none" />
+        <p className="text-center text-xs font-medium text-slate-500 tracking-[0.2em] uppercase mb-8">
+          {language === "en" ? "Trusted by businesses worldwide" : "Scelto da aziende in tutto il mondo"}
+        </p>
+        <div className="flex items-center gap-16 animate-marquee whitespace-nowrap">
+          {[...Array(2)].map((_, setIdx) => (
+            <div key={setIdx} className="flex items-center gap-16 shrink-0">
+              {["Meta", "Google", "Shopify", "Stripe", "Vercel", "Next.js", "TailwindCSS", "Framer"].map((brand, i) => (
+                <span key={i} className="text-xl font-bold text-white/20 hover:text-white/50 transition-colors duration-300 cursor-default select-none">
+                  {brand}
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </section>
 
@@ -726,14 +769,14 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* Process Video */}
+          {/* Process Video — compact */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={stepsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 max-w-2xl mx-auto"
+            className="mt-16 max-w-lg mx-auto"
           >
-            <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" label="Come Funziona" />
+            <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" label={language === "en" ? "How It Works" : "Come Funziona"} />
           </motion.div>
         </div>
       </section>
@@ -799,12 +842,12 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* Features Video */}
+          {/* Features Video — compact */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-16 max-w-2xl mx-auto"
+            className="mt-16 max-w-lg mx-auto"
           >
             <RenderedVideo src="/videos/features.mp4" accentColor="#3b82f6" label="Features Demo" />
           </motion.div>
@@ -931,8 +974,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Ads Video */}
-            <div className="mt-12 max-w-2xl mx-auto">
+            {/* Ads Video — compact */}
+            <div className="mt-12 max-w-lg mx-auto">
               <RenderedVideo src="/videos/ads.mp4" accentColor="#10b981" label="Ads Manager" />
             </div>
           </motion.div>
@@ -1663,6 +1706,16 @@ export default function LandingPage() {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
+        }
+        @keyframes marquee-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee-scroll 25s linear infinite;
+        }
+        .animate-marquee:hover {
+          animation-play-state: paused;
         }
         .hero-orb-1 {
           top: 10%;
