@@ -509,16 +509,6 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              >
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
-                  <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-sm text-slate-300">{t("hero.badge")}</span>
-                </div>
-              </motion.div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black uppercase leading-[1.1] tracking-tight mb-6">
                 <motion.span
@@ -774,15 +764,6 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* Process Video — compact */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={stepsInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 max-w-2xl mx-auto"
-          >
-              <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" />
-          </motion.div>
           </motion.div>
         </div>
       </section>
