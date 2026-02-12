@@ -716,7 +716,7 @@ export default function LandingPage() {
                   <p className="text-3xl md:text-4xl font-black text-white">
                     {stat.value}
                   </p>
-                  <p className="text-sm text-blue-100 mt-2 font-medium">{stat.label}</p>
+                  <p className="text-sm text-white/70 mt-2 font-medium">{stat.label}</p>
                 </div>
               </div>
             ))}
@@ -784,7 +784,7 @@ export default function LandingPage() {
                   </span>
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <p className="text-slate-300 text-sm leading-relaxed">
                   {step.description}
                 </p>
               </motion.div>
@@ -833,7 +833,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={featuresInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-lg text-blue-100"
+              className="text-lg text-white/70"
             >
               {t("features.subtitle")}
             </motion.p>
@@ -849,15 +849,15 @@ export default function LandingPage() {
                 className={feature.large ? "lg:col-span-2" : ""}
               >
                 <TiltCard
-                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/15 border border-blue-800/20 hover:bg-white/20 transition-all duration-300"
+                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/20 border border-white/20 hover:bg-white/25 transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-blue-800/30 border border-blue-800/20 flex items-center justify-center mb-5">
-                    <feature.icon className="w-6 h-6 text-blue-200" />
+                  <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center mb-5">
+                    <feature.icon className="w-6 h-6 text-white/80" />
                   </div>
                   <h3 className="text-xl font-semibold mb-3 text-white">
                     {feature.title}
                   </h3>
-                  <p className="text-blue-100 leading-relaxed text-sm">
+                  <p className="text-white/70 leading-relaxed text-sm">
                     {feature.description}
                   </p>
                 </TiltCard>
@@ -1040,7 +1040,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={timelineInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-lg text-blue-100"
+              className="text-lg text-white/70"
             >
               {t("timeline.subtitle")}
             </motion.p>
@@ -1059,13 +1059,13 @@ export default function LandingPage() {
                 className="relative text-center"
               >
                 <div
-                  className="relative z-10 w-32 h-32 rounded-2xl bg-white/20 border border-blue-800/20 p-[1px] mx-auto mb-6"
+                  className="relative z-10 w-32 h-32 rounded-2xl bg-white/20 border border-white/20 p-[1px] mx-auto mb-6"
                 >
-                  <div className="w-full h-full rounded-2xl bg-blue-700/40 flex items-center justify-center">
+                  <div className="w-full h-full rounded-2xl bg-white/10 flex items-center justify-center">
                     <milestone.icon className="w-12 h-12 text-white" />
                   </div>
                 </div>
-                <p className="text-xs text-blue-200 uppercase tracking-wider font-semibold mb-2">
+                <p className="text-xs text-white/60 uppercase tracking-wider font-semibold mb-2">
                   {milestone.time}
                 </p>
                 <h3 className="text-lg font-semibold text-white">{milestone.title}</h3>
@@ -1262,7 +1262,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={comparisonInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="p-8 rounded-2xl bg-white/15 border border-blue-800/20"
+              className="p-8 rounded-2xl bg-white/20 border border-white/20"
             >
               <h3 className="text-xl font-bold text-red-300 mb-6">{t("comparison.diy.title")}</h3>
               <ul className="space-y-4">
@@ -1274,7 +1274,7 @@ export default function LandingPage() {
                 ))}
               </ul>
               <div className="mt-8 pt-6 border-t border-white/20">
-                <p className="text-sm text-blue-100">{t("comparison.diy.totalLabel")}</p>
+                <p className="text-sm text-white/70">{t("comparison.diy.totalLabel")}</p>
                 <p className="text-2xl font-bold text-red-300">
                   {t("comparison.diy.totalValue")}
                 </p>
@@ -1286,7 +1286,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: 30 }}
               animate={comparisonInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="p-8 rounded-2xl bg-white/20 border border-blue-800/20 relative"
+              className="p-8 rounded-2xl bg-white/25 border border-white/20 relative"
             >
               <div className="absolute -top-3 right-6">
                 <span className="px-3 py-1 bg-[#0c1222] rounded-full text-xs font-bold text-white">
@@ -1305,7 +1305,7 @@ export default function LandingPage() {
                 ))}
               </ul>
               <div className="mt-8 pt-6 border-t border-white/20">
-                <p className="text-sm text-blue-100">{t("comparison.equipe.totalLabel")}</p>
+                <p className="text-sm text-white/70">{t("comparison.equipe.totalLabel")}</p>
                 <motion.p
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={
@@ -1517,7 +1517,7 @@ export default function LandingPage() {
             <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-white">
               {t("testimonials.title")}
             </h2>
-            <p className="text-lg text-blue-100">
+            <p className="text-lg text-white/70">
               {t("testimonials.subtitle")}
             </p>
           </div>
@@ -1526,7 +1526,7 @@ export default function LandingPage() {
             {testimonials.map((testimonial, idx) => (
               <TiltCard
                 key={idx}
-                className="p-6 lg:p-8 rounded-2xl bg-white/15 border border-blue-800/20 hover:bg-white/20 transition-all duration-300"
+                className="p-6 lg:p-8 rounded-2xl bg-white/20 border border-white/20 hover:bg-white/25 transition-all duration-300"
               >
                 <div className="flex gap-1 mb-6">
                   {[...Array(5)].map((_, i) => (
@@ -1545,7 +1545,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="font-medium text-white">{testimonial.author}</p>
-                    <p className="text-sm text-blue-200">
+                    <p className="text-sm text-white/60">
                       {testimonial.role}
                     </p>
                   </div>
@@ -1645,7 +1645,7 @@ export default function LandingPage() {
               <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-white">
                 {t("cta.title")}
               </h2>
-              <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+              <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
                 {t("cta.description")}
                 <br />
                 {t("cta.descriptionLine2")}
