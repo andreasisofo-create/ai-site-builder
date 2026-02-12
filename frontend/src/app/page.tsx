@@ -419,7 +419,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0c1222] text-white overflow-x-hidden relative">
       {/* ===== NOISE TEXTURE OVERLAY — Premium depth ===== */}
-      <div className="fixed inset-0 pointer-events-none z-[70] opacity-[0.035]"
+      <div className="fixed inset-0 pointer-events-none z-[70] opacity-[0.02]"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }}
       />
 
@@ -532,7 +532,7 @@ export default function LandingPage() {
                 </div>
               </motion.div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black uppercase leading-[1.1] tracking-tight mb-6">
                 <motion.span
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -622,7 +622,9 @@ export default function LandingPage() {
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
               className="relative"
             >
-              <RenderedVideo src="/videos/hero.mp4" accentColor="#8b5cf6" label="Live Preview" />
+              <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+                <RenderedVideo src="/videos/hero.mp4" accentColor="#8b5cf6" label="Live Preview" />
+              </div>
 
               {/* Floating accent cards */}
               <div className="absolute -bottom-4 -left-4 p-3 rounded-xl bg-[#0f1729]/90 backdrop-blur-xl border border-white/10 shadow-xl hidden sm:block">
@@ -665,7 +667,9 @@ export default function LandingPage() {
                 transition={{ duration: 0.5, delay: 1.0 + idx * 0.15 }}
                 className={`${video.offset}`}
               >
-                <RenderedVideo src={video.src} accentColor={video.accent} label={video.label} />
+                <div className={`transform ${idx % 2 === 0 ? 'rotate-2' : '-rotate-2'} hover:rotate-0 transition-transform duration-500`}>
+                  <RenderedVideo src={video.src} accentColor={video.accent} label={video.label} />
+                </div>
               </motion.div>
             ))}
           </motion.div>
@@ -691,47 +695,60 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ===== GRADIENT DIVIDER ===== */}
-      <div className="h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
-
       {/* ===== QUICK STATS STRIP ===== */}
-      <section className="py-16 relative overflow-hidden bg-[#0a1628]">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/[0.08] via-violet-500/[0.06] to-purple-500/[0.08]" />
+      <section className="py-20 relative overflow-hidden bg-blue-600">
         <div className="max-w-5xl mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { value: t("quickStats.creationTime"), label: t("quickStats.creationTimeLabel"), gradient: "from-blue-400 to-violet-400", borderColor: "border-blue-500/30" },
-              { value: t("quickStats.templates"), label: t("quickStats.templatesLabel"), gradient: "from-violet-400 to-purple-400", borderColor: "border-violet-500/30" },
-              { value: t("quickStats.animations"), label: t("quickStats.animationsLabel"), gradient: "from-purple-400 to-pink-400", borderColor: "border-purple-500/30" },
-              { value: t("quickStats.monitoring"), label: t("quickStats.monitoringLabel"), gradient: "from-pink-400 to-rose-400", borderColor: "border-pink-500/30" },
+              { value: t("quickStats.creationTime"), label: t("quickStats.creationTimeLabel") },
+              { value: t("quickStats.templates"), label: t("quickStats.templatesLabel") },
+              { value: t("quickStats.animations"), label: t("quickStats.animationsLabel") },
+              { value: t("quickStats.monitoring"), label: t("quickStats.monitoringLabel") },
             ].map((stat, idx) => (
               <div key={idx} className="relative group">
-                <div className={`relative p-6 rounded-2xl bg-white/[0.06] border ${stat.borderColor} hover:bg-white/[0.06] transition-all duration-300 hover:scale-105`}>
-                  <p className={`text-3xl md:text-4xl font-extrabold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                <div className="relative p-6 rounded-2xl bg-white/20 border border-blue-700/30 hover:bg-white/25 transition-all duration-300 hover:scale-105">
+                  <p className="text-3xl md:text-4xl font-black text-[#0c1222]">
                     {stat.value}
                   </p>
-                  <p className="text-sm text-slate-400 mt-2">{stat.label}</p>
+                  <p className="text-sm text-blue-950 mt-2 font-medium">{stat.label}</p>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Stats Video */}
+          <div className="mt-12 max-w-sm mx-auto">
+            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
+              <RenderedVideo src="/videos/stats.mp4" accentColor="#1e40af" label="Stats" />
+            </div>
+          </div>
+          </motion.div>
         </div>
       </section>
-
-      {/* ===== GRADIENT DIVIDER ===== */}
-      <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
 
       {/* ===== COME FUNZIONA ===== */}
       <section id="how-it-works" className="py-24 lg:py-32 relative" ref={stepsRef}>
         <div className="absolute inset-0 bg-gradient-to-b from-violet-950/20 via-transparent to-blue-950/20 pointer-events-none" />
         <FloatingShapes variant="alt" />
         <div className="max-w-7xl mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={stepsInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
+              className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6"
             >
               {t("howItWorks.title")}
               <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
@@ -779,43 +796,44 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={stepsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 max-w-lg mx-auto"
+            className="mt-16 max-w-sm mx-auto"
           >
-            <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" label={language === "en" ? "How It Works" : "Come Funziona"} />
+            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
+              <RenderedVideo src="/videos/process.mp4" accentColor="#7c3aed" label={language === "en" ? "How It Works" : "Come Funziona"} />
+            </div>
+          </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* ===== SITE BUILDER FEATURES (BENTO GRID) ===== */}
-      {/* ===== GRADIENT DIVIDER ===== */}
-      <div className="h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
-
       <section
         id="features"
-        className="py-24 lg:py-32 relative bg-[#111827]"
+        className="py-24 lg:py-32 relative bg-blue-600"
         ref={featuresRef}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/15 via-transparent to-violet-950/15 pointer-events-none" />
-        <DotGrid />
-        <FloatingShapes />
         <div className="max-w-7xl mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={featuresInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
+              className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-[#0c1222]"
             >
               {t("features.title")}
-              <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                {t("features.titleHighlight")}
-              </span>
+              {t("features.titleHighlight")}
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={featuresInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-lg text-slate-400"
+              className="text-lg text-blue-100"
             >
               {t("features.subtitle")}
             </motion.p>
@@ -831,15 +849,15 @@ export default function LandingPage() {
                 className={feature.large ? "lg:col-span-2" : ""}
               >
                 <TiltCard
-                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/[0.06] border border-white/10 hover:bg-white/[0.06] hover:border-violet-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)]"
+                  className="h-full p-6 lg:p-8 rounded-2xl bg-white/15 border border-blue-800/20 hover:bg-white/20 transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-white/5 flex items-center justify-center mb-5">
-                    <feature.icon className="w-6 h-6 text-blue-400" />
+                  <div className="w-12 h-12 rounded-xl bg-blue-800/30 border border-blue-800/20 flex items-center justify-center mb-5">
+                    <feature.icon className="w-6 h-6 text-blue-200" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">
+                  <h3 className="text-xl font-semibold mb-3 text-[#0c1222]">
                     {feature.title}
                   </h3>
-                  <p className="text-slate-400 leading-relaxed text-sm">
+                  <p className="text-blue-950 leading-relaxed text-sm">
                     {feature.description}
                   </p>
                 </TiltCard>
@@ -852,9 +870,12 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-16 max-w-lg mx-auto"
+            className="mt-16 max-w-sm mx-auto"
           >
-            <RenderedVideo src="/videos/features.mp4" accentColor="#3b82f6" label="Features Demo" />
+            <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+              <RenderedVideo src="/videos/features.mp4" accentColor="#1e40af" label="Features Demo" />
+            </div>
+          </motion.div>
           </motion.div>
         </div>
       </section>
@@ -863,6 +884,12 @@ export default function LandingPage() {
       <section id="ads-service" className="py-24 lg:py-32 relative" ref={adsRef}>
         <FloatingShapes variant="alt" />
         <div className="max-w-7xl mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -879,7 +906,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={adsInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
+              className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6"
             >
               {t("ads.title")}
               <br />
@@ -980,35 +1007,40 @@ export default function LandingPage() {
             </div>
 
             {/* Ads Video — compact */}
-            <div className="mt-12 max-w-lg mx-auto">
-              <RenderedVideo src="/videos/ads.mp4" accentColor="#10b981" label="Ads Manager" />
+            <div className="mt-12 max-w-sm mx-auto">
+              <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                <RenderedVideo src="/videos/ads.mp4" accentColor="#10b981" label="Ads Manager" />
+              </div>
             </div>
+          </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* ===== BEFORE/AFTER TIMELINE ===== */}
-      <section className="py-24 lg:py-32 bg-[#111827] relative" ref={timelineRef}>
-        <DotGrid />
-        <FloatingShapes />
+      <section className="py-24 lg:py-32 bg-blue-600 relative" ref={timelineRef}>
         <div className="max-w-7xl mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={timelineInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
+              className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-[#0c1222]"
             >
               {t("timeline.title")}
-              <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                {t("timeline.titleHighlight")}
-              </span>
+              {t("timeline.titleHighlight")}
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={timelineInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-lg text-slate-400"
+              className="text-lg text-blue-100"
             >
               {t("timeline.subtitle")}
             </motion.p>
@@ -1016,7 +1048,7 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-4 gap-6 relative">
             {/* Connecting line */}
-            <div className="hidden md:block absolute top-16 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-blue-500/20 via-violet-500/20 via-purple-500/20 to-amber-500/20" />
+            <div className="hidden md:block absolute top-16 left-[12.5%] right-[12.5%] h-0.5 bg-[#0c1222]/20" />
 
             {timelineMilestones.map((milestone, idx) => (
               <motion.div
@@ -1027,25 +1059,39 @@ export default function LandingPage() {
                 className="relative text-center"
               >
                 <div
-                  className={`relative z-10 w-32 h-32 rounded-2xl bg-gradient-to-br ${milestone.color} p-[1px] mx-auto mb-6`}
+                  className="relative z-10 w-32 h-32 rounded-2xl bg-white/20 border border-blue-800/20 p-[1px] mx-auto mb-6"
                 >
-                  <div className="w-full h-full rounded-2xl bg-[#0c1222] flex items-center justify-center">
-                    <milestone.icon className="w-12 h-12 text-white/80" />
+                  <div className="w-full h-full rounded-2xl bg-blue-700/40 flex items-center justify-center">
+                    <milestone.icon className="w-12 h-12 text-[#0c1222]" />
                   </div>
                 </div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">
+                <p className="text-xs text-blue-950 uppercase tracking-wider font-semibold mb-2">
                   {milestone.time}
                 </p>
-                <h3 className="text-lg font-semibold">{milestone.title}</h3>
+                <h3 className="text-lg font-semibold text-[#0c1222]">{milestone.title}</h3>
               </motion.div>
             ))}
           </div>
+
+          {/* Timeline Video */}
+          <div className="mt-12 max-w-sm mx-auto">
+            <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+              <RenderedVideo src="/videos/timeline.mp4" accentColor="#1e40af" label="Timeline" />
+            </div>
+          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ===== ROI CALCULATOR ===== */}
       <section className="py-24 lg:py-32" ref={roiRef}>
         <div className="max-w-4xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1064,7 +1110,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={roiInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
+              className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6"
             >
               {t("earnings.title")}
               <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
@@ -1182,21 +1228,28 @@ export default function LandingPage() {
               </div>
             </div>
           </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* ===== FAI DA TE vs CON E-QUIPE ===== */}
-      <section className="py-24 lg:py-32 bg-[#111827]" ref={comparisonRef}>
+      <section className="py-24 lg:py-32 bg-blue-600" ref={comparisonRef}>
         <div className="max-w-5xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={comparisonInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6"
+              className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-[#0c1222]"
             >
               {t("comparison.title")}
-              <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+              <span className="text-red-800">
                 {t("comparison.titleVs")}
               </span>
               {t("comparison.titleBrand")}
@@ -1209,20 +1262,20 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={comparisonInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="p-8 rounded-2xl bg-red-500/[0.03] border border-red-500/10"
+              className="p-8 rounded-2xl bg-white/15 border border-blue-800/20"
             >
-              <h3 className="text-xl font-bold text-red-400 mb-6">{t("comparison.diy.title")}</h3>
+              <h3 className="text-xl font-bold text-red-800 mb-6">{t("comparison.diy.title")}</h3>
               <ul className="space-y-4">
                 {tx.comparison.diy.items.map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <XMarkIcon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-slate-300 text-sm">{item}</span>
+                    <XMarkIcon className="w-5 h-5 text-red-800 flex-shrink-0 mt-0.5" />
+                    <span className="text-[#0c1222] text-sm">{item}</span>
                   </li>
                 ))}
               </ul>
-              <div className="mt-8 pt-6 border-t border-red-500/10">
-                <p className="text-sm text-slate-400">{t("comparison.diy.totalLabel")}</p>
-                <p className="text-2xl font-bold text-red-400">
+              <div className="mt-8 pt-6 border-t border-blue-800/20">
+                <p className="text-sm text-blue-950">{t("comparison.diy.totalLabel")}</p>
+                <p className="text-2xl font-bold text-red-800">
                   {t("comparison.diy.totalValue")}
                 </p>
               </div>
@@ -1233,26 +1286,26 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: 30 }}
               animate={comparisonInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="p-8 rounded-2xl bg-emerald-500/[0.03] border border-emerald-500/10 relative"
+              className="p-8 rounded-2xl bg-white/20 border border-blue-800/20 relative"
             >
               <div className="absolute -top-3 right-6">
-                <span className="px-3 py-1 bg-emerald-500 rounded-full text-xs font-bold text-black">
+                <span className="px-3 py-1 bg-[#0c1222] rounded-full text-xs font-bold text-white">
                   {t("comparison.equipe.saveBadge")}
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-emerald-400 mb-6">
+              <h3 className="text-xl font-bold text-emerald-900 mb-6">
                 {t("comparison.equipe.title")}
               </h3>
               <ul className="space-y-4">
                 {tx.comparison.equipe.items.map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <CheckIcon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-slate-300 text-sm">{item}</span>
+                    <CheckIcon className="w-5 h-5 text-emerald-900 flex-shrink-0 mt-0.5" />
+                    <span className="text-[#0c1222] text-sm">{item}</span>
                   </li>
                 ))}
               </ul>
-              <div className="mt-8 pt-6 border-t border-emerald-500/10">
-                <p className="text-sm text-slate-400">{t("comparison.equipe.totalLabel")}</p>
+              <div className="mt-8 pt-6 border-t border-blue-800/20">
+                <p className="text-sm text-blue-950">{t("comparison.equipe.totalLabel")}</p>
                 <motion.p
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={
@@ -1261,37 +1314,32 @@ export default function LandingPage() {
                       : {}
                   }
                   transition={{ duration: 0.6, delay: 0.8 }}
-                  className="text-2xl font-bold text-emerald-400"
+                  className="text-2xl font-bold text-emerald-900"
                 >
                   {t("comparison.equipe.totalValue")}
                 </motion.p>
               </div>
             </motion.div>
           </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* ===== GRADIENT DIVIDER ===== */}
-      <div className="h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
-
       {/* ===== STATS / NUMBERS ===== */}
-      <section className="py-24 relative overflow-hidden bg-[#0a1628]" ref={statsRef}>
-        <div className="absolute inset-0 bg-gradient-to-b from-violet-950/30 via-transparent to-blue-950/30" />
-        {/* Grid pattern for stats section */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.06]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(139,92,246,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.4) 1px, transparent 1px)`,
-            backgroundSize: '80px 80px',
-          }}
-        />
+      <section className="py-24 relative overflow-hidden" ref={statsRef}>
         <div className="max-w-5xl mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { value: <>{stat1}+</>, label: t("stats.sitesGenerated"), gradient: "from-blue-400 to-violet-400", borderColor: "border-blue-500/30", glowColor: "rgba(96,165,250,0.15)" },
-              { value: stat2, label: t("stats.activeCampaigns"), gradient: "from-violet-400 to-purple-400", borderColor: "border-violet-500/30", glowColor: "rgba(139,92,246,0.15)" },
-              { value: <>&euro;{stat3}M+</>, label: t("stats.revenueGenerated"), gradient: "from-purple-400 to-pink-400", borderColor: "border-purple-500/30", glowColor: "rgba(168,85,247,0.15)" },
-              { value: "4.8/5", label: t("stats.clientRating"), gradient: "from-amber-400 to-orange-400", borderColor: "border-amber-500/30", glowColor: "rgba(251,191,36,0.15)" },
+              { value: <>{stat1}+</>, label: t("stats.sitesGenerated") },
+              { value: stat2, label: t("stats.activeCampaigns") },
+              { value: <>&euro;{stat3}M+</>, label: t("stats.revenueGenerated") },
+              { value: "4.8/5", label: t("stats.clientRating") },
             ].map((stat, idx) => (
               <motion.div
                 key={idx}
@@ -1300,10 +1348,8 @@ export default function LandingPage() {
                 transition={{ duration: 0.6, delay: idx * 0.12, ease: "easeOut" }}
                 className="text-center relative group"
               >
-                <div className={`relative p-8 rounded-2xl bg-white/[0.06] border ${stat.borderColor} hover:bg-white/[0.06] transition-all duration-500 hover:scale-105 hover:shadow-lg`}
-                  style={{ boxShadow: `0 0 40px ${stat.glowColor}` }}
-                >
-                  <p className={`text-4xl lg:text-6xl font-extrabold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                <div className="relative p-8 rounded-2xl bg-white/[0.06] border border-white/10 hover:bg-white/[0.08] transition-all duration-500 hover:scale-105 hover:shadow-lg">
+                  <p className="text-4xl lg:text-6xl font-black text-white">
                     {stat.value}
                   </p>
                   <p className="text-sm text-slate-300 mt-3 font-medium">{stat.label}</p>
@@ -1311,6 +1357,14 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
+
+          {/* Stats Video */}
+          <div className="mt-12 max-w-sm mx-auto">
+            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
+              <RenderedVideo src="/videos/stats.mp4" accentColor="#8b5cf6" label="Stats" />
+            </div>
+          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -1319,8 +1373,14 @@ export default function LandingPage() {
         <DotGrid />
         <FloatingShapes variant="alt" />
         <div className="max-w-7xl mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6">
+            <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6">
               {t("pricing.title")}
               <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
                 {t("pricing.titleHighlight")}
@@ -1433,18 +1493,31 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+
+          {/* Pricing Video */}
+          <div className="mt-12 max-w-sm mx-auto">
+            <div className="transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+              <RenderedVideo src="/videos/pricing.mp4" accentColor="#8b5cf6" label="Pricing" />
+            </div>
+          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="py-24 lg:py-32 relative bg-[#111827]">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent pointer-events-none" />
+      <section className="py-24 lg:py-32 relative bg-blue-600">
         <div className="max-w-7xl mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6">
+            <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-[#0c1222]">
               {t("testimonials.title")}
             </h2>
-            <p className="text-lg text-slate-400">
+            <p className="text-lg text-blue-100">
               {t("testimonials.subtitle")}
             </p>
           </div>
@@ -1453,7 +1526,7 @@ export default function LandingPage() {
             {testimonials.map((testimonial, idx) => (
               <TiltCard
                 key={idx}
-                className="p-6 lg:p-8 rounded-2xl bg-[#111827] border border-white/10 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] transition-all duration-300"
+                className="p-6 lg:p-8 rounded-2xl bg-white/15 border border-blue-800/20 hover:bg-white/20 transition-all duration-300"
               >
                 <div className="flex gap-1 mb-6">
                   {[...Array(5)].map((_, i) => (
@@ -1463,16 +1536,16 @@ export default function LandingPage() {
                     />
                   ))}
                 </div>
-                <p className="text-slate-300 mb-6 leading-relaxed">
+                <p className="text-[#0c1222] mb-6 leading-relaxed">
                   &ldquo;{testimonial.quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center font-semibold text-sm">
+                  <div className="w-12 h-12 rounded-full bg-[#0c1222] flex items-center justify-center font-semibold text-sm text-white">
                     {testimonial.avatar}
                   </div>
                   <div>
-                    <p className="font-medium">{testimonial.author}</p>
-                    <p className="text-sm text-slate-400">
+                    <p className="font-medium text-[#0c1222]">{testimonial.author}</p>
+                    <p className="text-sm text-blue-950">
                       {testimonial.role}
                     </p>
                   </div>
@@ -1480,14 +1553,28 @@ export default function LandingPage() {
               </TiltCard>
             ))}
           </div>
+
+          {/* Testimonials Video */}
+          <div className="mt-12 max-w-sm mx-auto">
+            <div className="transform rotate-2 hover:rotate-0 transition-transform duration-500">
+              <RenderedVideo src="/videos/testimonials.mp4" accentColor="#1e40af" label="Testimonials" />
+            </div>
+          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ===== FAQ ACCORDION ===== */}
       <section className="py-24 lg:py-32">
         <div className="max-w-3xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight mb-6">
+            <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6">
               {t("faq.title")}
             </h2>
             <p className="text-lg text-slate-400">
@@ -1530,32 +1617,35 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+          </motion.div>
         </div>
       </section>
-
-      {/* ===== GRADIENT DIVIDER ===== */}
-      <div className="h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
       {/* ===== FINAL CTA ===== */}
       <section className="py-24 lg:py-32">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="relative p-12 lg:p-20 rounded-3xl overflow-hidden shadow-[0_0_80px_rgba(139,92,246,0.3)]">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-violet-600 to-purple-700" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_50%)]" />
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+          <div className="relative p-12 lg:p-20 rounded-3xl overflow-hidden shadow-[0_0_80px_rgba(59,130,246,0.3)]">
+            <div className="absolute inset-0 bg-blue-600" />
             {/* Grid pattern overlay */}
             <div
               className="absolute inset-0 pointer-events-none opacity-[0.08]"
               style={{
-                backgroundImage: `linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)`,
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.2) 1px, transparent 1px)`,
                 backgroundSize: '40px 40px',
               }}
             />
 
             <div className="relative text-center">
-              <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-6">
+              <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-[#0c1222]">
                 {t("cta.title")}
               </h2>
-              <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
+              <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
                 {t("cta.description")}
                 <br />
                 {t("cta.descriptionLine2")}
@@ -1563,7 +1653,7 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <MagneticButton
                   href="/auth"
-                  className="group px-8 py-4 bg-white text-blue-600 rounded-full font-semibold text-lg shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 hover:bg-slate-100 transition-all flex items-center gap-2"
+                  className="group px-8 py-4 bg-[#0c1222] text-white rounded-full font-semibold text-lg shadow-[0_0_20px_rgba(12,18,34,0.3)] hover:shadow-[0_0_30px_rgba(12,18,34,0.5)] hover:-translate-y-0.5 transition-all flex items-center gap-2"
                 >
                   {t("cta.ctaPrimary")}
                   <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -1571,7 +1661,7 @@ export default function LandingPage() {
                 <MagneticButton
                   href="mailto:info@e-quipe.com"
                   asAnchor
-                  className="px-8 py-4 bg-white/10 border border-white/20 rounded-full font-semibold text-lg hover:bg-white/20 transition-all flex items-center gap-2"
+                  className="px-8 py-4 bg-white/15 border border-blue-800/20 rounded-full font-semibold text-lg text-[#0c1222] hover:bg-white/25 transition-all flex items-center gap-2"
                 >
                   <EnvelopeIcon className="w-5 h-5" />
                   {t("cta.ctaSecondary")}
@@ -1579,6 +1669,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+          </motion.div>
         </div>
       </section>
 
