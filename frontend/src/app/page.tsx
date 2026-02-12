@@ -333,139 +333,28 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // GSAP infinite horizontal loop for features section
+  // GSAP horizontal scroll for features section
   useGSAP(() => {
     const gallery = featuresGalleryRef.current;
     if (!gallery) return;
-    const cards = gsap.utils.toArray<HTMLElement>(gallery.querySelectorAll(".feature-loop-card"));
-    if (cards.length === 0) return;
+    const track = gallery.querySelector<HTMLElement>(".features-track");
+    if (!track) return;
 
-    // horizontalLoop helper (from GSAP docs)
-    function horizontalLoop(items: HTMLElement[], config: Record<string, unknown> = {}) {
-      const tl = gsap.timeline({
-        repeat: config.repeat as number,
-        paused: config.paused as boolean,
-        defaults: { ease: "none" },
-        onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100),
-      });
-      const length = items.length;
-      const startX = items[0].offsetLeft;
-      const times: number[] = [];
-      const widths: number[] = [];
-      const xPercents: number[] = [];
-      let curIndex = 0;
-      const pixelsPerSecond = ((config.speed as number) || 1) * 100;
-      const snapFn = config.snap === false ? (v: number) => v : gsap.utils.snap((config.snap as number) || 1);
-      let totalWidth: number;
+    const totalScroll = track.scrollWidth - gallery.offsetWidth;
 
-      gsap.set(items, {
-        xPercent: (i: number, el: HTMLElement) => {
-          const w = parseFloat(gsap.getProperty(el, "width", "px") as string);
-          widths[i] = w;
-          xPercents[i] = snapFn(
-            (parseFloat(gsap.getProperty(el, "x", "px") as string) / w) * 100 + (gsap.getProperty(el, "xPercent") as number)
-          );
-          return xPercents[i];
-        },
-      });
-      gsap.set(items, { x: 0 });
-
-      totalWidth =
-        items[length - 1].offsetLeft +
-        (xPercents[length - 1] / 100) * widths[length - 1] -
-        startX +
-        items[length - 1].offsetWidth * (gsap.getProperty(items[length - 1], "scaleX") as number) +
-        (parseFloat(config.paddingRight as string) || 0);
-
-      for (let i = 0; i < length; i++) {
-        const item = items[i];
-        const curX = (xPercents[i] / 100) * widths[i];
-        const distanceToStart = item.offsetLeft + curX - startX;
-        const distanceToLoop = distanceToStart + widths[i] * (gsap.getProperty(item, "scaleX") as number);
-
-        tl.to(item, { xPercent: snapFn(((curX - distanceToLoop) / widths[i]) * 100), duration: distanceToLoop / pixelsPerSecond }, 0)
-          .fromTo(
-            item,
-            { xPercent: snapFn(((curX - distanceToLoop + totalWidth) / widths[i]) * 100) },
-            { xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false },
-            distanceToLoop / pixelsPerSecond
-          )
-          .add("label" + i, distanceToStart / pixelsPerSecond);
-        times[i] = distanceToStart / pixelsPerSecond;
-      }
-
-      function toIndex(index: number, vars: gsap.TweenVars = {}) {
-        if (Math.abs(index - curIndex) > length / 2) {
-          index += index > curIndex ? -length : length;
-        }
-        const newIndex = gsap.utils.wrap(0, length, index);
-        const time = times[newIndex];
-        let newTime = time;
-        if (time > tl.time() !== index > curIndex) {
-          vars.modifiers = { time: gsap.utils.wrap(0, tl.duration()) };
-          newTime += tl.duration() * (index > curIndex ? 1 : -1);
-        }
-        curIndex = newIndex;
-        vars.overwrite = true;
-        return tl.tweenTo(newTime, vars);
-      }
-
-      (tl as unknown as Record<string, unknown>).next = (vars: gsap.TweenVars) => toIndex(curIndex + 1, vars);
-      (tl as unknown as Record<string, unknown>).previous = (vars: gsap.TweenVars) => toIndex(curIndex - 1, vars);
-      (tl as unknown as Record<string, unknown>).current = () => curIndex;
-      (tl as unknown as Record<string, unknown>).toIndex = (index: number, vars: gsap.TweenVars) => toIndex(index, vars);
-      (tl as unknown as Record<string, unknown>).times = times;
-      tl.progress(1, true).progress(0, true);
-      if (config.reversed) {
-        tl.vars.onReverseComplete?.call(tl);
-        tl.reverse();
-      }
-      return tl;
-    }
-
-    const loop = horizontalLoop(cards, { speed: 0.5, repeat: -1, paddingRight: "24px" });
-    let iteration = 0;
-    const playhead = { offset: 0 };
-    const wrapTime = gsap.utils.wrap(0, loop.duration());
-    const scrub = gsap.to(playhead, {
-      offset: 0,
-      onUpdate() {
-        loop.time(wrapTime(playhead.offset));
-      },
-      duration: 0.5,
-      ease: "power3",
-      paused: true,
-    });
-
-    const trigger = ScrollTrigger.create({
-      trigger: gallery,
-      start: "top top",
-      end: "+=3000",
-      pin: true,
-      onUpdate(self) {
-        const scroll = self.scroll();
-        if (scroll > self.end - 1) {
-          wrap(1, 1);
-        } else if (scroll < 1 && self.direction < 0) {
-          wrap(-1, self.end - 1);
-        } else {
-          scrub.vars.offset = (iteration + self.progress) * loop.duration();
-          scrub.invalidate().restart();
-        }
+    gsap.to(track, {
+      x: -totalScroll,
+      ease: "none",
+      scrollTrigger: {
+        trigger: gallery,
+        start: "top top",
+        end: () => `+=${totalScroll}`,
+        pin: true,
+        scrub: 1,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
       },
     });
-
-    function wrap(iterationDelta: number, scrollTo: number) {
-      iteration += iterationDelta;
-      trigger.scroll(scrollTo);
-      trigger.update();
-    }
-
-    return () => {
-      trigger.kill();
-      scrub.kill();
-      loop.kill();
-    };
   }, { scope: featuresGalleryRef, dependencies: [] });
 
   // Stats counters
@@ -898,19 +787,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ===== SITE BUILDER FEATURES (INFINITE HORIZONTAL LOOP) ===== */}
-      <div
+      {/* ===== SITE BUILDER FEATURES (HORIZONTAL SCROLL) ===== */}
+      <section
         id="features"
         ref={featuresGalleryRef}
-        className="relative bg-blue-600 overflow-hidden"
+        className="relative bg-blue-600 overflow-hidden h-screen"
       >
-        {/* Title section */}
-        <div className="text-center max-w-3xl mx-auto px-6 pt-24 pb-12" ref={featuresRef}>
+        {/* Title */}
+        <div className="text-center max-w-3xl mx-auto px-6 pt-16 pb-8" ref={featuresRef}>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-white"
+            className="text-4xl lg:text-6xl font-black uppercase tracking-tight mb-4 text-white"
           >
             {t("features.title")}
             <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
@@ -925,24 +814,14 @@ export default function LandingPage() {
           >
             {t("features.subtitle")}
           </motion.p>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={featuresInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-sm text-white/40 mt-4 flex items-center justify-center gap-2"
-          >
-            <ChevronDownIcon className="w-4 h-4 animate-bounce" />
-            Scorri per esplorare
-            <ChevronDownIcon className="w-4 h-4 animate-bounce" />
-          </motion.p>
         </div>
 
-        {/* Horizontal looping cards */}
-        <div className="flex gap-6 px-6 pb-24 pt-4 will-change-transform">
+        {/* Horizontal scrolling track */}
+        <div className="features-track flex gap-6 px-8 pb-16 pt-4 will-change-transform items-stretch" style={{ width: "max-content" }}>
           {features.map((feature, idx) => (
             <div
               key={idx}
-              className="feature-loop-card flex-shrink-0 w-[320px] lg:w-[380px]"
+              className="flex-shrink-0 w-[320px] lg:w-[380px]"
             >
               <div className="h-full p-7 lg:p-9 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 group">
                 <div className="w-14 h-14 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-white/25 transition-all duration-300">
@@ -959,10 +838,10 @@ export default function LandingPage() {
           ))}
         </div>
 
-        {/* Gradient fades on edges */}
-        <div className="absolute top-0 left-0 bottom-0 w-24 bg-gradient-to-r from-blue-600 to-transparent pointer-events-none z-10" />
-        <div className="absolute top-0 right-0 bottom-0 w-24 bg-gradient-to-l from-blue-600 to-transparent pointer-events-none z-10" />
-      </div>
+        {/* Edge fades */}
+        <div className="absolute top-0 left-0 bottom-0 w-16 bg-gradient-to-r from-blue-600 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 right-0 bottom-0 w-16 bg-gradient-to-l from-blue-600 to-transparent pointer-events-none z-10" />
+      </section>
 
       {/* ===== ADS SERVICE SECTION ===== */}
       <section id="ads-service" className="py-24 lg:py-32 relative" ref={adsRef}>
