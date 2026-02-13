@@ -434,10 +434,16 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={proofInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: idx * 0.08 }}
-                className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
               >
-                <div className="aspect-[4/3] bg-slate-100 flex items-center justify-center">
-                  <Globe className="w-10 h-10 text-slate-300" />
+                <div className="aspect-[4/3] bg-slate-50 overflow-hidden">
+                  <Image
+                    src={demo.image}
+                    alt={demo.name}
+                    width={600}
+                    height={450}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
                 <div className="p-4">
                   <p className="font-semibold text-sm text-slate-900">

@@ -115,12 +115,12 @@ export const translations = {
       title: "Loro l'hanno gia' fatto",
       subtitle: "Attivita' reali che sono andate online con E-quipe.",
       demos: [
-        { name: "Trattoria Da Mario", category: "Ristorante" },
-        { name: "Studio Legale Bianchi", category: "Studio Professionale" },
-        { name: "Fiori di Campo", category: "Negozio" },
-        { name: "Marco Foto", category: "Portfolio" },
-        { name: "TechStart", category: "SaaS" },
-        { name: "Beauty Zone", category: "Centro Estetico" },
+        { name: "Ristorante Amore", category: "Ristorante", image: "/images/demos/ristorante.png" },
+        { name: "Modern Hair Studio", category: "Parrucchiere", image: "/images/demos/parrucchiere.png" },
+        { name: "Smile & Co. Dental", category: "Studio Dentistico", image: "/images/demos/dentista.png" },
+        { name: "FitZone Gym", category: "Palestra", image: "/images/demos/palestra.png" },
+        { name: "Studio Legale Rossi", category: "Studio Professionale", image: "/images/demos/avvocato.png" },
+        { name: "Noir & Blanc", category: "E-commerce", image: "/images/demos/ecommerce.png" },
       ],
       testimonials: [
         {
