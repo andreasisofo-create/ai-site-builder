@@ -258,25 +258,24 @@ export default function LandingPage() {
             </motion.div>
           </div>
 
-          {/* Video Placeholder */}
+          {/* Hero Video */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
             className="mt-16 max-w-4xl mx-auto"
           >
-            <div className="relative aspect-video rounded-2xl bg-slate-100 border border-slate-200 shadow-xl overflow-hidden flex items-center justify-center">
-              <div className="text-center">
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/25"
-                  style={{
-                    background: "linear-gradient(135deg, #4F46E5, #7C3AED)",
-                  }}
-                >
-                  <Play className="w-7 h-7 text-white ml-1" />
-                </div>
-                <p className="text-slate-400 text-sm">Video demo</p>
-              </div>
+            <div className="relative aspect-video rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+                poster="/videos/hero-poster.jpg"
+              >
+                <source src="/videos/hero.mp4" type="video/mp4" />
+              </video>
             </div>
           </motion.div>
         </div>
