@@ -16,9 +16,6 @@ from app.models.site_version import SiteVersion
 
 router = APIRouter()
 
-# Admin credentials (hardcoded - separate from user auth)
-ADMIN_USERNAME = "E-quipe"
-ADMIN_PASSWORD = "E-quipe!"
 ALGORITHM = "HS256"
 
 
@@ -81,7 +78,7 @@ async def require_admin(authorization: str = Header(...)):
 @router.post("/login", response_model=AdminTokenResponse)
 async def admin_login(data: AdminLoginRequest):
     """Admin login with separate credentials."""
-    if data.username != ADMIN_USERNAME or data.password != ADMIN_PASSWORD:
+    if data.username != settings.ADMIN_USERNAME or data.password != settings.ADMIN_PASSWORD:
         raise HTTPException(status_code=401, detail="Invalid admin credentials")
 
     token = create_admin_token()
@@ -275,6 +272,30 @@ async def admin_update_user(
     db.refresh(user)
 
     return {"message": "User updated", "user_id": user.id}
+
+
+@router.post("/users/{user_id}/reset-password")
+async def admin_reset_password(
+    user_id: int,
+    data: dict,
+    admin=Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    """Reset a user's password (admin only)."""
+    from app.core.security import get_password_hash
+
+    new_password = data.get("password")
+    if not new_password or len(new_password) < 4:
+        raise HTTPException(status_code=400, detail="Password must be at least 4 characters")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.hashed_password = get_password_hash(new_password)
+    db.commit()
+
+    return {"message": f"Password reset for {user.email}", "user_id": user.id}
 
 
 @router.delete("/users/{user_id}")
