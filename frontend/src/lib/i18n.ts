@@ -111,6 +111,52 @@ export const translations = {
         },
       ],
     },
+    ads: {
+      badge: "Servizio Ads Management",
+      title: "Non basta avere un sito.",
+      titleHighlight: "Servono clienti.",
+      subtitle:
+        "Il nostro team gestisce le tue campagne Meta e Google Ads con il supporto dell'intelligenza artificiale.",
+      columns: [
+        {
+          title: "Meta Ads",
+          subtitle: "Instagram + Facebook",
+          items: [
+            "Campagne Instagram & Facebook",
+            "A/B testing automatico",
+            "DM automatici ai lead",
+            "Targeting avanzato con AI",
+          ],
+        },
+        {
+          title: "Google Ads",
+          subtitle: "Search + Display",
+          items: [
+            "Campagne Search & Display",
+            "Keyword optimization con AI",
+            "Policy compliance garantita",
+            "Bidding automatico intelligente",
+          ],
+        },
+        {
+          title: "Report Mensile",
+          subtitle: "Dati chiari, risultati misurabili",
+          items: [
+            "Dashboard con metriche chiave",
+            "Analisi costo per lead",
+            "Confronto performance mensile",
+            "Suggerimenti AI per ottimizzare",
+          ],
+        },
+      ],
+      flowTitle: "Come funziona il servizio Ads",
+      flowSteps: [
+        { title: "L'AI prepara tutto", subtitle: "Creativita', copy, targeting" },
+        { title: "Un esperto revisiona", subtitle: "Supervisione umana garantita" },
+        { title: "Monitoraggio 24/7", subtitle: "Ottimizzazione continua" },
+      ],
+      complianceBadge: "100% conforme alle policy Google e Meta — supervisione umana garantita",
+    },
     socialProof: {
       title: "Loro l'hanno gia' fatto",
       subtitle: "Attivita' reali che sono andate online con E-quipe.",
