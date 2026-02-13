@@ -272,7 +272,6 @@ export default function LandingPage() {
                 muted
                 playsInline
                 className="w-full h-full object-cover"
-                poster="/videos/hero-poster.jpg"
               >
                 <source src="/videos/hero.mp4" type="video/mp4" />
               </video>
