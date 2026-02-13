@@ -30,10 +30,49 @@ import {
   TimelineVideoComposition,
   TIMELINE_VIDEO_CONFIG,
 } from "./TimelineVideo";
+import {
+  NewHeroVideoComposition,
+  NEW_HERO_VIDEO_CONFIG,
+} from "./NewHeroVideo";
+import {
+  NewHowItWorksVideoComposition,
+  NEW_HOW_IT_WORKS_VIDEO_CONFIG,
+} from "./NewHowItWorksVideo";
+import {
+  NewAdsVideoComposition,
+  NEW_ADS_VIDEO_CONFIG,
+} from "./NewAdsVideo";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* NEW light-themed videos */}
+      <Composition
+        id="NewHeroVideo"
+        component={NewHeroVideoComposition}
+        durationInFrames={NEW_HERO_VIDEO_CONFIG.durationInFrames}
+        fps={NEW_HERO_VIDEO_CONFIG.fps}
+        width={NEW_HERO_VIDEO_CONFIG.width}
+        height={NEW_HERO_VIDEO_CONFIG.height}
+      />
+      <Composition
+        id="NewHowItWorksVideo"
+        component={NewHowItWorksVideoComposition}
+        durationInFrames={NEW_HOW_IT_WORKS_VIDEO_CONFIG.durationInFrames}
+        fps={NEW_HOW_IT_WORKS_VIDEO_CONFIG.fps}
+        width={NEW_HOW_IT_WORKS_VIDEO_CONFIG.width}
+        height={NEW_HOW_IT_WORKS_VIDEO_CONFIG.height}
+      />
+      <Composition
+        id="NewAdsVideo"
+        component={NewAdsVideoComposition}
+        durationInFrames={NEW_ADS_VIDEO_CONFIG.durationInFrames}
+        fps={NEW_ADS_VIDEO_CONFIG.fps}
+        width={NEW_ADS_VIDEO_CONFIG.width}
+        height={NEW_ADS_VIDEO_CONFIG.height}
+      />
+
+      {/* Old dark-themed videos (kept for reference) */}
       <Composition
         id="HeroVideo"
         component={HeroVideoComposition}
