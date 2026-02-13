@@ -22,6 +22,7 @@ export const translations = {
       pricing: "Prezzi",
       faq: "FAQ",
       cta: "Prova Gratis",
+      ads: "Servizio Ads",
     },
     hero: {
       title: "Il tuo sito professionale in 60 secondi.",
@@ -161,12 +162,12 @@ export const translations = {
       title: "Loro l'hanno gia' fatto",
       subtitle: "Attivita' reali che sono andate online con E-quipe.",
       demos: [
-        { name: "Ristorante Amore", category: "Ristorante", image: "/images/demos/ristorante.png" },
-        { name: "Modern Hair Studio", category: "Parrucchiere", image: "/images/demos/parrucchiere.png" },
-        { name: "Smile & Co. Dental", category: "Studio Dentistico", image: "/images/demos/dentista.png" },
-        { name: "FitZone Gym", category: "Palestra", image: "/images/demos/palestra.png" },
-        { name: "Studio Legale Rossi", category: "Studio Professionale", image: "/images/demos/avvocato.png" },
-        { name: "Noir & Blanc", category: "E-commerce", image: "/images/demos/ecommerce.png" },
+        { name: "Ristorante Amore", category: "Ristorante", image: "/images/demos/ristorante.webp" },
+        { name: "Modern Hair Studio", category: "Parrucchiere", image: "/images/demos/parrucchiere.webp" },
+        { name: "Smile & Co. Dental", category: "Studio Dentistico", image: "/images/demos/dentista.webp" },
+        { name: "FitZone Gym", category: "Palestra", image: "/images/demos/palestra.webp" },
+        { name: "Studio Legale Rossi", category: "Studio Professionale", image: "/images/demos/avvocato.webp" },
+        { name: "Noir & Blanc", category: "E-commerce", image: "/images/demos/ecommerce.webp" },
       ],
       testimonials: [
         {
@@ -190,6 +191,7 @@ export const translations = {
       title: "Prezzi chiari. Nessuna sorpresa.",
       subtitle: "Parti col sito, aggiungi le campagne quando vuoi crescere.",
       adBudgetNote: "* Il budget pubblicitario (da dare a Meta/Google) e' separato e lo decidi tu.",
+      recommended: "Consigliato",
       plans: [
         {
           name: "Starter",
@@ -254,6 +256,11 @@ export const translations = {
         },
       ],
     },
+    cta: {
+      title: "Pronto a portare la tua attivita' online?",
+      subtitle: "Crea il tuo sito in 60 secondi. Gratis, senza carta di credito.",
+      button: "Crea il tuo sito gratis",
+    },
     faq: {
       title: "Domande frequenti",
       items: [
@@ -313,7 +320,325 @@ export const translations = {
         terms: "Termini di Servizio",
         cookies: "Cookie Policy",
       },
+      bottomLinks: {
+        privacy: "Privacy",
+        terms: "Termini",
+        cookies: "Cookie",
+      },
       copyright: "\u00A9 2026 E-quipe S.r.l.s. Tutti i diritti riservati. P.IVA: 12345678901",
+    },
+  },
+  en: {
+    nav: {
+      howItWorks: "How It Works",
+      features: "Features",
+      pricing: "Pricing",
+      faq: "FAQ",
+      cta: "Try Free",
+      ads: "Ads Service",
+    },
+    hero: {
+      title: "Your professional website in 60 seconds.",
+      subtitle: "Your customers, starting tomorrow.",
+      description:
+        "Describe your business, choose a style, and AI creates your site. Then we launch ad campaigns to bring you real customers.",
+      cta: "Create your site for free",
+      ctaSecondary: "See how it works",
+    },
+    howItWorks: {
+      label: "Online in 3 steps",
+      title: "From zero to your website, in less than a coffee break.",
+      steps: [
+        {
+          title: "Describe your business",
+          description:
+            "Answer 3 questions: what you do, where you are, what style you prefer. That's all you need.",
+        },
+        {
+          title: "AI generates your site",
+          description:
+            "In 60 seconds you get a complete website: copy, images, colors and professional animations.",
+        },
+        {
+          title: "Publish and get customers",
+          description:
+            "Your site goes live with one click. If you want, we launch campaigns right away to bring you customers.",
+        },
+      ],
+    },
+    features: {
+      title: "Everything you need to be online",
+      tabs: {
+        site: "Create Site",
+        clients: "Get Customers",
+      },
+      site: [
+        {
+          title: "Site ready in 60 seconds",
+          description: "Answer 3 questions and AI creates your complete site. Copy, photos, colors: all done.",
+        },
+        {
+          title: "19 professional styles",
+          description: "Restaurant, studio, shop, portfolio: choose the perfect design for your business.",
+        },
+        {
+          title: "Edits via chat",
+          description: "Type 'change color to blue' or 'add opening hours'. AI modifies the site for you.",
+        },
+        {
+          title: "Perfect on mobile",
+          description: "Your site automatically adapts to phone, tablet and computer.",
+        },
+        {
+          title: "Online with one click",
+          description: "Hosting, SSL certificate and web address included. No hidden costs.",
+        },
+        {
+          title: "Built for Google",
+          description: "Code optimized for search engines. Your customers find you more easily.",
+        },
+      ],
+      clients: [
+        {
+          title: "Meta Ads campaigns",
+          description: "We advertise on Instagram and Facebook to introduce your business to people near you.",
+        },
+        {
+          title: "Google Ads campaigns",
+          description: "When people search for your services on Google, they find you. Targeted campaigns in your area.",
+        },
+        {
+          title: "AI-created content",
+          description: "Videos, graphics and copy for your ads. All created automatically by AI.",
+        },
+        {
+          title: "Full management",
+          description: "You don't do anything. Our team sets up, monitors and optimizes campaigns for you.",
+        },
+        {
+          title: "Clear monthly reports",
+          description: "You know exactly how many people saw your ad and how many contacted you.",
+        },
+        {
+          title: "Budget under control",
+          description: "You decide how much to spend. No surprise costs, only measurable results.",
+        },
+      ],
+    },
+    ads: {
+      badge: "Ads Management Service",
+      title: "Having a website is not enough.",
+      titleHighlight: "You need customers.",
+      subtitle:
+        "Our team manages your Meta and Google Ads campaigns with AI support.",
+      columns: [
+        {
+          title: "Meta Ads",
+          subtitle: "Instagram + Facebook",
+          items: [
+            "Instagram & Facebook campaigns",
+            "Automatic A/B testing",
+            "Automated DMs to leads",
+            "Advanced AI targeting",
+          ],
+        },
+        {
+          title: "Google Ads",
+          subtitle: "Search + Display",
+          items: [
+            "Search & Display campaigns",
+            "AI keyword optimization",
+            "Guaranteed policy compliance",
+            "Smart automated bidding",
+          ],
+        },
+        {
+          title: "Monthly Report",
+          subtitle: "Clear data, measurable results",
+          items: [
+            "Dashboard with key metrics",
+            "Cost per lead analysis",
+            "Monthly performance comparison",
+            "AI suggestions to optimize",
+          ],
+        },
+      ],
+      flowTitle: "How the Ads service works",
+      flowSteps: [
+        { title: "AI prepares everything", subtitle: "Creatives, copy, targeting" },
+        { title: "An expert reviews", subtitle: "Human oversight guaranteed" },
+        { title: "24/7 monitoring", subtitle: "Continuous optimization" },
+      ],
+      complianceBadge: "100% compliant with Google and Meta policies — guaranteed human oversight",
+    },
+    socialProof: {
+      title: "They've already done it",
+      subtitle: "Real businesses that went online with E-quipe.",
+      demos: [
+        { name: "Ristorante Amore", category: "Restaurant", image: "/images/demos/ristorante.webp" },
+        { name: "Modern Hair Studio", category: "Hair Salon", image: "/images/demos/parrucchiere.webp" },
+        { name: "Smile & Co. Dental", category: "Dental Office", image: "/images/demos/dentista.webp" },
+        { name: "FitZone Gym", category: "Gym", image: "/images/demos/palestra.webp" },
+        { name: "Studio Legale Rossi", category: "Law Firm", image: "/images/demos/avvocato.webp" },
+        { name: "Noir & Blanc", category: "E-commerce", image: "/images/demos/ecommerce.webp" },
+      ],
+      testimonials: [
+        {
+          quote: "I created the site during my lunch break. The next day I had already received two booking requests.",
+          author: "Marco R.",
+          role: "Ristorante Da Mario, Rome",
+        },
+        {
+          quote: "I never had a website. In 10 minutes I was online with a result that looks agency-made.",
+          author: "Laura B.",
+          role: "Law Firm, Milan",
+        },
+        {
+          quote: "Google campaigns bring me 10 contacts a week. I had to hire another person.",
+          author: "Giuseppe V.",
+          role: "Plumber, Turin",
+        },
+      ],
+    },
+    pricing: {
+      title: "Clear pricing. No surprises.",
+      subtitle: "Start with the site, add campaigns when you want to grow.",
+      adBudgetNote: "* Ad budget (to pay Meta/Google) is separate and you decide the amount.",
+      recommended: "Recommended",
+      plans: [
+        {
+          name: "Starter",
+          price: "199",
+          period: "one-time",
+          description: "For those who just want the site",
+          features: [
+            "AI site (1 page)",
+            "Free subdomain",
+            "SSL certificate",
+            "3 chat edits",
+          ],
+          cta: "Create your site",
+          popular: false,
+        },
+        {
+          name: "Business",
+          price: "49",
+          period: "/month",
+          description: "Site + first customers",
+          features: [
+            "Multi-page site",
+            "Custom domain",
+            "Unlimited edits",
+            "2 Meta campaigns/month",
+            "Monthly report",
+          ],
+          cta: "Choose Business",
+          popular: false,
+        },
+        {
+          name: "Growth",
+          price: "99",
+          period: "/month",
+          description: "Accelerated growth",
+          features: [
+            "Everything in Business +",
+            "Google Ads + Meta Ads",
+            "5 AI content/month",
+            "Automated DMs to leads",
+            "Weekly report",
+            "Priority support",
+          ],
+          cta: "Choose Growth",
+          popular: true,
+        },
+        {
+          name: "Premium",
+          price: "199",
+          period: "/month",
+          description: "Everything unlimited",
+          features: [
+            "Everything in Growth +",
+            "Unlimited pages",
+            "Unlimited campaigns",
+            "Unlimited AI content",
+            "Dedicated account manager",
+            "24/7 support",
+          ],
+          cta: "Choose Premium",
+          popular: false,
+        },
+      ],
+    },
+    cta: {
+      title: "Ready to take your business online?",
+      subtitle: "Create your site in 60 seconds. Free, no credit card required.",
+      button: "Create your site for free",
+    },
+    faq: {
+      title: "Frequently asked questions",
+      items: [
+        {
+          q: "Do I need to know how to code?",
+          a: "No. Answer 3 questions about your business and AI creates everything: copy, images, colors. If you want to change something, type in the chat what you want (e.g. 'add opening hours') and AI does it for you.",
+        },
+        {
+          q: "How long does it take to create the site?",
+          a: "Less than 60 seconds. Choose a template, describe your business and the site is ready. Then you can customize it as much as you want.",
+        },
+        {
+          q: "Can I use my own domain (e.g. myname.com)?",
+          a: "Yes, from the Business plan onwards you can connect your domain. With the Starter plan you get a free address like yourname.e-quipe.app.",
+        },
+        {
+          q: "How do ad campaigns work?",
+          a: "Our team sets up campaigns on Meta (Instagram and Facebook) and Google for you. You choose the budget, we do the rest: creatives, targeting, monitoring and optimization.",
+        },
+        {
+          q: "How much should I spend on advertising?",
+          a: "You decide the ad budget and it's separate from the plan cost. With 200-300 euros per month you already get good results for a local business.",
+        },
+        {
+          q: "Can I start with just the site and add campaigns later?",
+          a: "Of course. The Starter plan is just the site. When you're ready to get more customers, upgrade to Business or Growth and we activate the campaigns.",
+        },
+        {
+          q: "How long before I see campaign results?",
+          a: "First contacts usually arrive within 2-4 weeks. Growth becomes stable after 2-3 months of active campaigns.",
+        },
+        {
+          q: "Can I cancel anytime?",
+          a: "Yes, no commitment. You can cancel the monthly plan anytime. The Starter site (one-time) is yours forever.",
+        },
+      ],
+    },
+    footer: {
+      description:
+        "E-quipe creates your website with artificial intelligence and manages ad campaigns to bring you real customers.",
+      product: "Product",
+      productLinks: {
+        howItWorks: "How It Works",
+        features: "Features",
+        pricing: "Pricing",
+        dashboard: "Dashboard",
+      },
+      company: "Company",
+      companyLinks: {
+        about: "About Us",
+        contact: "Contact",
+        blog: "Blog",
+      },
+      legal: "Legal",
+      legalLinks: {
+        privacy: "Privacy Policy",
+        terms: "Terms of Service",
+        cookies: "Cookie Policy",
+      },
+      bottomLinks: {
+        privacy: "Privacy",
+        terms: "Terms",
+        cookies: "Cookies",
+      },
+      copyright: "\u00A9 2026 E-quipe S.r.l.s. All rights reserved. VAT: 12345678901",
     },
   },
 } as const;

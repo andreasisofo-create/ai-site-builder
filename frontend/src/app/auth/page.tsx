@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { API_BASE } from "@/lib/api";
+import { useLanguage } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -31,6 +33,7 @@ export default function AuthPage() {
 
   const { login, register, googleLogin, microsoftLogin, isAuthenticated } = useAuth();
   const router = useRouter();
+  const { language } = useLanguage();
 
   // Navigate to dashboard when auth state confirms authentication.
   // This ensures navigation happens AFTER React state is committed,
@@ -50,7 +53,7 @@ export default function AuthPage() {
       const result = await login(email, password);
 
       if (!result.success) {
-        setError(result.error || "Errore durante il login");
+        setError(result.error || (language === "en" ? "Login error" : "Errore durante il login"));
         setLoading(false);
       }
       // Navigation handled by useEffect when isAuthenticated changes
@@ -58,7 +61,7 @@ export default function AuthPage() {
       const result = await register(email, password, fullName);
 
       if (!result.success) {
-        setError(result.error || "Errore durante la registrazione");
+        setError(result.error || (language === "en" ? "Registration error" : "Errore durante la registrazione"));
         setLoading(false);
       }
       // Navigation handled by useEffect when isAuthenticated changes
@@ -84,10 +87,10 @@ export default function AuthPage() {
       if (res.ok) {
         setForgotSuccess(true);
       } else {
-        setError("Si e' verificato un errore. Riprova tra qualche minuto.");
+        setError(language === "en" ? "An error occurred. Please try again in a few minutes." : "Si e' verificato un errore. Riprova tra qualche minuto.");
       }
     } catch {
-      setError("Errore di connessione. Riprova.");
+      setError(language === "en" ? "Connection error. Please try again." : "Errore di connessione. Riprova.");
     } finally {
       setForgotLoading(false);
     }
@@ -98,8 +101,9 @@ export default function AuthPage() {
       {/* Left Side - Form */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12">
         <div className="w-full max-w-md">
-          {/* Logo */}
-          <div className="flex items-center justify-center mb-12">
+          {/* Logo and Language Switcher */}
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex-1"></div>
             <Image
               src="/logo.png"
               alt="E-quipe Logo"
@@ -107,16 +111,19 @@ export default function AuthPage() {
               height={48}
               className="h-12 w-auto"
             />
+            <div className="flex-1 flex justify-end">
+              <LanguageSwitcher />
+            </div>
           </div>
 
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">
-              {isLogin ? 'Bentornato' : 'Crea il tuo account'}
+              {isLogin ? (language === "en" ? 'Welcome back' : 'Bentornato') : (language === "en" ? 'Create your account' : 'Crea il tuo account')}
             </h1>
             <p className="text-slate-400">
               {isLogin
-                ? 'Accedi per continuare a costruire il tuo sito'
-                : 'Inizia il tuo viaggio con E-quipe'}
+                ? (language === "en" ? 'Sign in to continue building your site' : 'Accedi per continuare a costruire il tuo sito')
+                : (language === "en" ? 'Start your journey with E-quipe' : 'Inizia il tuo viaggio con E-quipe')}
             </p>
           </div>
 
@@ -131,7 +138,7 @@ export default function AuthPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            Continua con Google
+            {language === "en" ? "Continue with Google" : "Continua con Google"}
           </button>
 
           <button
@@ -144,7 +151,7 @@ export default function AuthPage() {
               <path fill="#05a6f0" d="M1 12h10v10H1z" />
               <path fill="#ffba08" d="M12 12h10v10H12z" />
             </svg>
-            Continua con Microsoft
+            {language === "en" ? "Continue with Microsoft" : "Continua con Microsoft"}
           </button>
 
           <div className="relative mb-6">
@@ -152,7 +159,9 @@ export default function AuthPage() {
               <div className="w-full border-t border-white/10"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-slate-950 text-slate-400">oppure con email</span>
+              <span className="px-2 bg-slate-950 text-slate-400">
+                {language === "en" ? "or with email" : "oppure con email"}
+              </span>
             </div>
           </div>
 
@@ -170,22 +179,27 @@ export default function AuthPage() {
                 <div className="w-16 h-16 mx-auto rounded-full bg-green-500/10 flex items-center justify-center">
                   <MailIcon className="w-8 h-8 text-green-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white">Controlla la tua email</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  {language === "en" ? "Check your email" : "Controlla la tua email"}
+                </h3>
                 <p className="text-slate-400 text-sm">
-                  Se l&apos;email esiste nel nostro sistema, riceverai un link per reimpostare la password.
-                  Controlla anche la cartella spam.
+                  {language === "en"
+                    ? "If the email exists in our system, you will receive a password reset link. Also check your spam folder."
+                    : "Se l'email esiste nel nostro sistema, riceverai un link per reimpostare la password. Controlla anche la cartella spam."}
                 </p>
                 <button
                   onClick={() => { setShowForgotPassword(false); setForgotSuccess(false); setForgotEmail(""); setError(""); }}
                   className="text-blue-400 hover:underline font-medium text-sm"
                 >
-                  Torna al login
+                  {language === "en" ? "Back to login" : "Torna al login"}
                 </button>
               </div>
             ) : (
               <div className="space-y-4">
                 <p className="text-slate-400 text-sm">
-                  Inserisci l&apos;email associata al tuo account e ti invieremo un link per reimpostare la password.
+                  {language === "en"
+                    ? "Enter the email associated with your account and we will send you a password reset link."
+                    : "Inserisci l'email associata al tuo account e ti invieremo un link per reimpostare la password."}
                 </p>
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <div>
@@ -212,7 +226,7 @@ export default function AuthPage() {
                     {forgotLoading ? (
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      "Invia link di reset"
+                      language === "en" ? "Send reset link" : "Invia link di reset"
                     )}
                   </button>
                 </form>
@@ -221,7 +235,7 @@ export default function AuthPage() {
                     onClick={() => { setShowForgotPassword(false); setError(""); }}
                     className="text-blue-400 hover:underline font-medium text-sm"
                   >
-                    Torna al login
+                    {language === "en" ? "Back to login" : "Torna al login"}
                   </button>
                 </p>
               </div>
@@ -233,7 +247,7 @@ export default function AuthPage() {
                 {!isLogin && (
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Nome completo
+                      {language === "en" ? "Full name" : "Nome completo"}
                     </label>
                     <div className="relative">
                       <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
@@ -295,7 +309,7 @@ export default function AuthPage() {
                         onClick={() => { setShowForgotPassword(true); setError(""); }}
                         className="text-sm text-slate-400 hover:text-blue-400 transition-colors"
                       >
-                        Password dimenticata?
+                        {language === "en" ? "Forgot password?" : "Password dimenticata?"}
                       </button>
                     </div>
                   )}
@@ -309,8 +323,13 @@ export default function AuthPage() {
                       className="mt-1 rounded border-white/10 bg-white/5 text-blue-500 focus:ring-blue-500"
                     />
                     <p className="text-sm text-slate-400">
-                      Accetto i <Link href="#" className="text-blue-400 hover:underline">Termini di servizio</Link> e la{' '}
-                      <Link href="#" className="text-blue-400 hover:underline">Privacy Policy</Link>
+                      {language === "en" ? (
+                        <>I accept the <Link href="/legal/terms" className="text-blue-400 hover:underline">Terms of Service</Link> and{' '}
+                        <Link href="/legal/privacy" className="text-blue-400 hover:underline">Privacy Policy</Link></>
+                      ) : (
+                        <>Accetto i <Link href="/legal/terms" className="text-blue-400 hover:underline">Termini di servizio</Link> e la{' '}
+                        <Link href="/legal/privacy" className="text-blue-400 hover:underline">Privacy Policy</Link></>
+                      )}
                     </p>
                   </div>
                 )}
@@ -324,7 +343,7 @@ export default function AuthPage() {
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
-                      {isLogin ? 'Accedi' : 'Crea Account'}
+                      {isLogin ? (language === "en" ? 'Sign in' : 'Accedi') : (language === "en" ? 'Create Account' : 'Crea Account')}
                       <ArrowRightIcon className="w-5 h-5" />
                     </>
                   )}
@@ -332,12 +351,14 @@ export default function AuthPage() {
               </form>
 
               <p className="mt-6 text-center text-slate-400">
-                {isLogin ? "Non hai un account?" : "Hai già un account?"}{' '}
+                {isLogin
+                  ? (language === "en" ? "Don't have an account?" : "Non hai un account?")
+                  : (language === "en" ? "Already have an account?" : "Hai già un account?")}{' '}
                 <button
                   onClick={() => setIsLogin(!isLogin)}
                   className="text-blue-400 hover:underline font-medium"
                 >
-                  {isLogin ? 'Registrati' : 'Accedi'}
+                  {isLogin ? (language === "en" ? 'Sign up' : 'Registrati') : (language === "en" ? 'Sign in' : 'Accedi')}
                 </button>
               </p>
             </>
@@ -346,7 +367,7 @@ export default function AuthPage() {
           {/* Back to Home */}
           <div className="mt-8 text-center">
             <Link href="/" className="text-slate-500 hover:text-white transition-colors text-sm">
-              ← Torna alla home
+              ← {language === "en" ? "Back to home" : "Torna alla home"}
             </Link>
           </div>
         </div>

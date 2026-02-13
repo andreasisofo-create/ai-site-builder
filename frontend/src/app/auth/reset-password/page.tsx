@@ -12,6 +12,8 @@ import {
   CheckCircleIcon,
 } from "lucide-react";
 import { API_BASE } from "@/lib/api";
+import { useLanguage } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState("");
@@ -24,6 +26,7 @@ function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (!token) {
@@ -36,12 +39,12 @@ function ResetPasswordForm() {
     setError("");
 
     if (password.length < 6) {
-      setError("La password deve avere almeno 6 caratteri");
+      setError(language === "en" ? "Password must be at least 6 characters" : "La password deve avere almeno 6 caratteri");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Le password non corrispondono");
+      setError(language === "en" ? "Passwords do not match" : "Le password non corrispondono");
       return;
     }
 
@@ -60,10 +63,10 @@ function ResetPasswordForm() {
         setSuccess(true);
         setTimeout(() => router.push("/auth"), 3000);
       } else {
-        setError(data.detail || "Si e' verificato un errore. Il link potrebbe essere scaduto.");
+        setError(data.detail || (language === "en" ? "An error occurred. The link may have expired." : "Si e' verificato un errore. Il link potrebbe essere scaduto."));
       }
     } catch {
-      setError("Errore di connessione. Riprova.");
+      setError(language === "en" ? "Connection error. Please try again." : "Errore di connessione. Riprova.");
     } finally {
       setLoading(false);
     }
@@ -78,26 +81,29 @@ function ResetPasswordForm() {
           <div className="w-16 h-16 mx-auto rounded-full bg-green-500/10 flex items-center justify-center">
             <CheckCircleIcon className="w-8 h-8 text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white">Password reimpostata!</h2>
+          <h2 className="text-2xl font-bold text-white">
+            {language === "en" ? "Password reset!" : "Password reimpostata!"}
+          </h2>
           <p className="text-slate-400">
-            La tua password e&apos; stata aggiornata con successo.
-            Verrai reindirizzato alla pagina di login...
+            {language === "en"
+              ? "Your password has been successfully updated. You will be redirected to the login page..."
+              : "La tua password e' stata aggiornata con successo. Verrai reindirizzato alla pagina di login..."}
           </p>
           <Link
             href="/auth"
             className="inline-block text-blue-400 hover:underline font-medium"
           >
-            Vai al login
+            {language === "en" ? "Go to login" : "Vai al login"}
           </Link>
         </div>
       ) : (
         <>
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">
-              Nuova password
+              {language === "en" ? "New password" : "Nuova password"}
             </h1>
             <p className="text-slate-400">
-              Scegli una nuova password per il tuo account
+              {language === "en" ? "Choose a new password for your account" : "Scegli una nuova password per il tuo account"}
             </p>
           </div>
 
@@ -111,7 +117,7 @@ function ResetPasswordForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Nuova password
+                {language === "en" ? "New password" : "Nuova password"}
               </label>
               <div className="relative">
                 <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
@@ -136,7 +142,7 @@ function ResetPasswordForm() {
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Conferma password
+                {language === "en" ? "Confirm password" : "Conferma password"}
               </label>
               <div className="relative">
                 <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
@@ -160,14 +166,14 @@ function ResetPasswordForm() {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                "Reimposta password"
+                language === "en" ? "Reset password" : "Reimposta password"
               )}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <Link href="/auth" className="text-slate-400 hover:text-blue-400 transition-colors text-sm">
-              Torna al login
+              {language === "en" ? "Back to login" : "Torna al login"}
             </Link>
           </div>
         </>
@@ -180,7 +186,8 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
-        <div className="flex items-center justify-center mb-12">
+        <div className="flex items-center justify-between mb-12">
+          <div className="flex-1"></div>
           <Image
             src="/logo.png"
             alt="E-quipe Logo"
@@ -188,9 +195,12 @@ export default function ResetPasswordPage() {
             height={48}
             className="h-12 w-auto"
           />
+          <div className="flex-1 flex justify-end">
+            <LanguageSwitcher />
+          </div>
         </div>
         <Suspense fallback={
-          <div className="text-center text-slate-400">Caricamento...</div>
+          <div className="text-center text-slate-400">Loading...</div>
         }>
           <ResetPasswordForm />
         </Suspense>

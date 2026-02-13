@@ -23,6 +23,7 @@ import {
 import toast from "react-hot-toast";
 import { getSite, updateSite, refineWebsite, deploySite, Site } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { useLanguage } from "@/lib/i18n";
 import EquipePromo from "@/components/EquipePromo";
 
 interface ChatMessage {
@@ -32,19 +33,30 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const QUICK_ACTIONS = [
-  "Cambia la combinazione di colori",
-  "Aggiungi una nuova sezione",
-  "Modifica i testi del sito",
-  "Migliora il design mobile",
-  "Cambia il font del sito",
-  "Aggiungi animazioni",
-];
+const QUICK_ACTIONS = {
+  it: [
+    "Cambia la combinazione di colori",
+    "Aggiungi una nuova sezione",
+    "Modifica i testi del sito",
+    "Migliora il design mobile",
+    "Cambia il font del sito",
+    "Aggiungi animazioni",
+  ],
+  en: [
+    "Change the color scheme",
+    "Add a new section",
+    "Edit the site texts",
+    "Improve mobile design",
+    "Change the site font",
+    "Add animations",
+  ],
+};
 
 export default function Editor() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { language } = useLanguage();
   const siteId = params.id as string;
 
   const [site, setSite] = useState<Site | null>(null);
@@ -101,7 +113,7 @@ export default function Editor() {
       const data = await getSite(Number(siteId));
       setSite(data);
     } catch (error: any) {
-      toast.error(error.message || "Errore nel caricamento sito");
+      toast.error(error.message || (language === "en" ? "Error loading site" : "Errore nel caricamento sito"));
       router.push("/dashboard");
     } finally {
       setLoading(false);
@@ -116,14 +128,14 @@ export default function Editor() {
       const result = await deploySite(site.id);
       if (result.success && result.url) {
         setPublishedUrl(result.url);
-        toast.success("Sito pubblicato!");
+        toast.success(language === "en" ? "Site published!" : "Sito pubblicato!");
       }
       loadSite();
     } catch (error: any) {
       if (error.isQuotaError || error.quota?.upgrade_required) {
-        toast.error("Passa al piano Base o Premium per pubblicare il sito.");
+        toast.error(language === "en" ? "Upgrade to Base or Premium plan to publish the site." : "Passa al piano Base o Premium per pubblicare il sito.");
       } else {
-        toast.error(error.message || "Errore nella pubblicazione");
+        toast.error(error.message || (language === "en" ? "Error publishing" : "Errore nella pubblicazione"));
       }
     } finally {
       setIsPublishing(false);
@@ -149,6 +161,7 @@ export default function Editor() {
       const result = await refineWebsite({
         site_id: site.id,
         message: text,
+        language,
       });
 
       if (result.success && result.html_content) {
@@ -161,7 +174,9 @@ export default function Editor() {
         const aiMsg: ChatMessage = {
           id: (Date.now() + 1).toString(),
           role: "assistant",
-          content: `Modifica applicata con successo! (${Math.round((result.generation_time_ms || 0) / 1000)}s)`,
+          content: language === "en"
+            ? `Edit applied successfully! (${Math.round((result.generation_time_ms || 0) / 1000)}s)`
+            : `Modifica applicata con successo! (${Math.round((result.generation_time_ms || 0) / 1000)}s)`,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiMsg]);
@@ -170,7 +185,9 @@ export default function Editor() {
         const errorMsg: ChatMessage = {
           id: (Date.now() + 1).toString(),
           role: "assistant",
-          content: result.error || "La modifica non ha prodotto risultati. Riprova con una richiesta diversa.",
+          content: result.error || (language === "en"
+            ? "The edit did not produce results. Try again with a different request."
+            : "La modifica non ha prodotto risultati. Riprova con una richiesta diversa."),
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, errorMsg]);
@@ -179,11 +196,13 @@ export default function Editor() {
       const errorMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `Errore: ${error.message || "Impossibile applicare la modifica"}`,
+        content: language === "en"
+          ? `Error: ${error.message || "Could not apply the edit"}`
+          : `Errore: ${error.message || "Impossibile applicare la modifica"}`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMsg]);
-      toast.error(error.message || "Errore durante la modifica");
+      toast.error(error.message || (language === "en" ? "Error during edit" : "Errore durante la modifica"));
     } finally {
       setIsRefining(false);
     }
@@ -200,10 +219,10 @@ export default function Editor() {
     if (site) {
       updateSite(site.id, { html_content: previousHtml } as any)
         .then(() => {
-          toast.success("Modifica annullata");
+          toast.success(language === "en" ? "Edit undone" : "Modifica annullata");
         })
         .catch(() => {
-          toast.error("Errore durante l'annullamento");
+          toast.error(language === "en" ? "Error during undo" : "Errore durante l'annullamento");
         })
         .finally(() => setIsUndoing(false));
     } else {
@@ -213,7 +232,9 @@ export default function Editor() {
     const undoMsg: ChatMessage = {
       id: Date.now().toString(),
       role: "assistant",
-      content: "Modifica annullata. Ripristinata la versione precedente.",
+      content: language === "en"
+        ? "Edit undone. Previous version restored."
+        : "Modifica annullata. Ripristinata la versione precedente.",
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, undoMsg]);
@@ -230,7 +251,9 @@ export default function Editor() {
 
   const handlePhotoUrlSubmit = () => {
     if (!photoUrl.trim()) return;
-    appendToChat(`[Inserisci questa immagine: ${photoUrl.trim()}]`);
+    appendToChat(language === "en"
+      ? `[Insert this image: ${photoUrl.trim()}]`
+      : `[Inserisci questa immagine: ${photoUrl.trim()}]`);
     setPhotoUrl("");
     setActivePopover(null);
   };
@@ -239,13 +262,15 @@ export default function Editor() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Immagine troppo grande (max 5MB)");
+      toast.error(language === "en" ? "Image too large (max 5MB)" : "Immagine troppo grande (max 5MB)");
       return;
     }
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result as string;
-      appendToChat(`[Inserisci questa immagine: ${dataUrl}]`);
+      appendToChat(language === "en"
+        ? `[Insert this image: ${dataUrl}]`
+        : `[Inserisci questa immagine: ${dataUrl}]`);
       setActivePopover(null);
     };
     reader.readAsDataURL(file);
@@ -255,10 +280,12 @@ export default function Editor() {
   const handleVideoSubmit = () => {
     if (!videoUrl.trim()) return;
     if (!validateVideoUrl(videoUrl.trim())) {
-      setVideoError("URL non valido. Usa un link YouTube o Vimeo.");
+      setVideoError(language === "en" ? "Invalid URL. Use a YouTube or Vimeo link." : "URL non valido. Usa un link YouTube o Vimeo.");
       return;
     }
-    appendToChat(`[Inserisci video: ${videoUrl.trim()}]`);
+    appendToChat(language === "en"
+      ? `[Insert video: ${videoUrl.trim()}]`
+      : `[Inserisci video: ${videoUrl.trim()}]`);
     setVideoUrl("");
     setVideoError("");
     setActivePopover(null);
@@ -266,7 +293,9 @@ export default function Editor() {
 
   const handleEmbedSubmit = () => {
     if (!embedCode.trim()) return;
-    appendToChat(`[Inserisci embed: ${embedCode.trim()}]`);
+    appendToChat(language === "en"
+      ? `[Insert embed: ${embedCode.trim()}]`
+      : `[Inserisci embed: ${embedCode.trim()}]`);
     setEmbedCode("");
     setActivePopover(null);
   };
@@ -286,28 +315,28 @@ export default function Editor() {
         return (
           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-sm">
             <CheckCircleIcon className="w-4 h-4" />
-            Online
+            {language === "en" ? "Online" : "Online"}
           </span>
         );
       case "ready":
         return (
           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400 text-sm">
             <SparklesIcon className="w-4 h-4" />
-            Pronto
+            {language === "en" ? "Ready" : "Pronto"}
           </span>
         );
       case "generating":
         return (
           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-400 text-sm">
             <ArrowPathIcon className="w-4 h-4 animate-spin" />
-            Generazione...
+            {language === "en" ? "Generating..." : "Generazione..."}
           </span>
         );
       default:
         return (
           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-500/20 text-slate-400 text-sm">
             <ExclamationCircleIcon className="w-4 h-4" />
-            Bozza
+            {language === "en" ? "Draft" : "Bozza"}
           </span>
         );
     }
@@ -325,9 +354,9 @@ export default function Editor() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white">
         <div className="text-center">
-          <p className="text-slate-400">Sito non trovato</p>
+          <p className="text-slate-400">{language === "en" ? "Site not found" : "Sito non trovato"}</p>
           <Link href="/dashboard" className="text-blue-500 hover:underline mt-2 inline-block">
-            Torna alla dashboard
+            {language === "en" ? "Back to dashboard" : "Torna alla dashboard"}
           </Link>
         </div>
       </div>
@@ -364,7 +393,7 @@ export default function Editor() {
                   ? "bg-white/10 text-white"
                   : "text-slate-400 hover:text-white"
               }`}
-              title="Desktop view"
+              title={language === "en" ? "Desktop view" : "Vista desktop"}
             >
               <ComputerDesktopIcon className="w-5 h-5" />
             </button>
@@ -375,7 +404,7 @@ export default function Editor() {
                   ? "bg-white/10 text-white"
                   : "text-slate-400 hover:text-white"
               }`}
-              title="Mobile view"
+              title={language === "en" ? "Mobile view" : "Vista mobile"}
             >
               <DevicePhoneMobileIcon className="w-5 h-5" />
             </button>
@@ -391,10 +420,10 @@ export default function Editor() {
                   ? "bg-blue-600 text-white"
                   : "text-slate-300 hover:text-white hover:bg-white/5"
               }`}
-              title="Modifica con AI"
+              title={language === "en" ? "Edit with AI" : "Modifica con AI"}
             >
               <ChatBubbleLeftRightIcon className="w-4 h-4" />
-              <span className="hidden md:inline">Chat AI</span>
+              <span className="hidden md:inline">{language === "en" ? "AI Chat" : "Chat AI"}</span>
             </button>
 
             {/* Publish */}
@@ -407,13 +436,13 @@ export default function Editor() {
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
                 >
                   <EyeIcon className="w-4 h-4" />
-                  Visita
+                  {language === "en" ? "Visit" : "Visita"}
                 </a>
                 <button
                   onClick={handlePublish}
                   disabled={isPublishing}
                   className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all disabled:opacity-50"
-                  title="Aggiorna il deploy"
+                  title={language === "en" ? "Update deployment" : "Aggiorna il deploy"}
                 >
                   {isPublishing ? (
                     <ArrowPathIcon className="w-4 h-4 animate-spin" />
@@ -431,12 +460,12 @@ export default function Editor() {
                 {isPublishing ? (
                   <>
                     <ArrowPathIcon className="w-4 h-4 animate-spin" />
-                    Pubblicazione...
+                    {language === "en" ? "Publishing..." : "Pubblicazione..."}
                   </>
                 ) : (
                   <>
                     <PaperAirplaneIcon className="w-4 h-4" />
-                    Pubblica
+                    {language === "en" ? "Publish" : "Pubblica"}
                   </>
                 )}
               </button>
@@ -480,15 +509,19 @@ export default function Editor() {
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-slate-900">
                   <SparklesIcon className="w-12 h-12 mb-4 opacity-50" />
-                  <p className="text-lg font-medium">Nessun contenuto generato</p>
+                  <p className="text-lg font-medium">
+                    {language === "en" ? "No content generated" : "Nessun contenuto generato"}
+                  </p>
                   <p className="text-sm opacity-70 mt-1">
-                    Il sito non &egrave; stato ancora generato dall&apos;AI
+                    {language === "en"
+                      ? "The site has not been generated by AI yet"
+                      : "Il sito non è stato ancora generato dall'AI"}
                   </p>
                   <Link
                     href="/dashboard/new"
                     className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-sm transition-colors"
                   >
-                    Crea nuovo sito
+                    {language === "en" ? "Create new site" : "Crea nuovo sito"}
                   </Link>
                 </div>
               )}
@@ -514,7 +547,7 @@ export default function Editor() {
             <div className="p-4 border-b border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <SparklesIcon className="w-5 h-5 text-blue-400" />
-                <h3 className="font-semibold">Modifica con AI</h3>
+                <h3 className="font-semibold">{language === "en" ? "Edit with AI" : "Modifica con AI"}</h3>
               </div>
               <div className="flex items-center gap-1">
                 {htmlHistory.length > 0 && (
@@ -522,10 +555,10 @@ export default function Editor() {
                     onClick={handleUndo}
                     disabled={isUndoing || isRefining}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-colors disabled:opacity-50"
-                    title="Annulla ultima modifica"
+                    title={language === "en" ? "Undo last edit" : "Annulla ultima modifica"}
                   >
                     <ArrowUturnLeftIcon className="w-3.5 h-3.5" />
-                    Annulla
+                    {language === "en" ? "Undo" : "Annulla"}
                   </button>
                 )}
                 <button
@@ -543,12 +576,14 @@ export default function Editor() {
                 <div className="text-center py-8">
                   <SparklesIcon className="w-10 h-10 text-blue-400/50 mx-auto mb-3" />
                   <p className="text-slate-400 text-sm mb-4">
-                    Descrivi le modifiche che vuoi apportare al tuo sito
+                    {language === "en"
+                      ? "Describe the changes you want to make to your site"
+                      : "Descrivi le modifiche che vuoi apportare al tuo sito"}
                   </p>
 
                   {/* Quick Actions */}
                   <div className="space-y-2">
-                    {QUICK_ACTIONS.map((action) => (
+                    {QUICK_ACTIONS[language as "it" | "en"].map((action) => (
                       <button
                         key={action}
                         onClick={() => handleSendMessage(action)}
@@ -584,7 +619,7 @@ export default function Editor() {
                 <div className="flex justify-start">
                   <div className="bg-white/5 text-slate-400 px-4 py-3 rounded-2xl rounded-bl-md text-sm flex items-center gap-2">
                     <ArrowPathIcon className="w-4 h-4 animate-spin" />
-                    Applicazione modifiche...
+                    {language === "en" ? "Applying changes..." : "Applicazione modifiche..."}
                   </div>
                 </div>
               )}
@@ -604,7 +639,7 @@ export default function Editor() {
                         ? "bg-white/10 text-white"
                         : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
-                    title="Inserisci immagine"
+                    title={language === "en" ? "Insert image" : "Inserisci immagine"}
                   >
                     <PhotoIcon className="w-4 h-4" />
                   </button>
@@ -615,7 +650,7 @@ export default function Editor() {
                         ? "bg-white/10 text-white"
                         : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
-                    title="Inserisci video"
+                    title={language === "en" ? "Insert video" : "Inserisci video"}
                   >
                     <VideoCameraIcon className="w-4 h-4" />
                   </button>
@@ -626,7 +661,7 @@ export default function Editor() {
                         ? "bg-white/10 text-white"
                         : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
-                    title="Inserisci embed"
+                    title={language === "en" ? "Insert embed" : "Inserisci embed"}
                   >
                     <CodeBracketIcon className="w-4 h-4" />
                   </button>
@@ -636,14 +671,18 @@ export default function Editor() {
                 {activePopover === "photo" && (
                   <div className="absolute bottom-full left-0 mb-2 w-72 bg-[#1a1a1a] border border-white/10 rounded-xl p-3 shadow-xl z-10">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium text-slate-300">Inserisci immagine</span>
+                      <span className="text-xs font-medium text-slate-300">
+                        {language === "en" ? "Insert image" : "Inserisci immagine"}
+                      </span>
                       <button onClick={() => setActivePopover(null)} className="text-slate-500 hover:text-white">
                         <XMarkIcon className="w-3.5 h-3.5" />
                       </button>
                     </div>
                     <div className="space-y-2">
                       <div>
-                        <label className="text-xs text-slate-400 mb-1 block">Incolla URL immagine</label>
+                        <label className="text-xs text-slate-400 mb-1 block">
+                          {language === "en" ? "Paste image URL" : "Incolla URL immagine"}
+                        </label>
                         <div className="flex gap-1.5">
                           <input
                             type="text"
@@ -663,7 +702,9 @@ export default function Editor() {
                         </div>
                       </div>
                       <div className="border-t border-white/5 pt-2">
-                        <label className="text-xs text-slate-400 mb-1 block">Carica dal dispositivo</label>
+                        <label className="text-xs text-slate-400 mb-1 block">
+                          {language === "en" ? "Upload from device" : "Carica dal dispositivo"}
+                        </label>
                         <input
                           ref={fileInputRef}
                           type="file"
@@ -675,7 +716,7 @@ export default function Editor() {
                           onClick={() => fileInputRef.current?.click()}
                           className="w-full py-1.5 bg-white/5 border border-white/10 border-dashed rounded-lg text-xs text-slate-400 hover:text-white hover:border-white/20 transition-colors"
                         >
-                          Scegli file...
+                          {language === "en" ? "Choose file..." : "Scegli file..."}
                         </button>
                       </div>
                     </div>
@@ -686,13 +727,17 @@ export default function Editor() {
                 {activePopover === "video" && (
                   <div className="absolute bottom-full left-0 mb-2 w-72 bg-[#1a1a1a] border border-white/10 rounded-xl p-3 shadow-xl z-10">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium text-slate-300">Inserisci video</span>
+                      <span className="text-xs font-medium text-slate-300">
+                        {language === "en" ? "Insert video" : "Inserisci video"}
+                      </span>
                       <button onClick={() => setActivePopover(null)} className="text-slate-500 hover:text-white">
                         <XMarkIcon className="w-3.5 h-3.5" />
                       </button>
                     </div>
                     <div>
-                      <label className="text-xs text-slate-400 mb-1 block">Incolla link YouTube o Vimeo</label>
+                      <label className="text-xs text-slate-400 mb-1 block">
+                        {language === "en" ? "Paste YouTube or Vimeo link" : "Incolla link YouTube o Vimeo"}
+                      </label>
                       <div className="flex gap-1.5">
                         <input
                           type="text"
@@ -721,14 +766,18 @@ export default function Editor() {
                 {activePopover === "embed" && (
                   <div className="absolute bottom-full left-0 mb-2 w-80 bg-[#1a1a1a] border border-white/10 rounded-xl p-3 shadow-xl z-10">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium text-slate-300">Inserisci embed</span>
+                      <span className="text-xs font-medium text-slate-300">
+                        {language === "en" ? "Insert embed" : "Inserisci embed"}
+                      </span>
                       <button onClick={() => setActivePopover(null)} className="text-slate-500 hover:text-white">
                         <XMarkIcon className="w-3.5 h-3.5" />
                       </button>
                     </div>
                     <div>
                       <label className="text-xs text-slate-400 mb-1 block">
-                        Incolla il codice embed (iframe, script, etc.)
+                        {language === "en"
+                          ? "Paste embed code (iframe, script, etc.)"
+                          : "Incolla il codice embed (iframe, script, etc.)"}
                       </label>
                       <textarea
                         value={embedCode}
@@ -742,7 +791,7 @@ export default function Editor() {
                         disabled={!embedCode.trim()}
                         className="mt-1.5 w-full py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-lg text-xs font-medium transition-colors"
                       >
-                        Inserisci
+                        {language === "en" ? "Insert" : "Inserisci"}
                       </button>
                     </div>
                   </div>
@@ -755,7 +804,7 @@ export default function Editor() {
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Descrivi la modifica..."
+                  placeholder={language === "en" ? "Describe the edit..." : "Descrivi la modifica..."}
                   disabled={isRefining}
                   rows={2}
                   className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
@@ -769,7 +818,9 @@ export default function Editor() {
                 </button>
               </div>
               <p className="text-xs text-slate-500 mt-2">
-                Invio per inviare, Shift+Invio per nuova riga
+                {language === "en"
+                  ? "Enter to send, Shift+Enter for new line"
+                  : "Invio per inviare, Shift+Invio per nuova riga"}
               </p>
             </div>
           </aside>

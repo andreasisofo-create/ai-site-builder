@@ -38,15 +38,17 @@ import toast from "react-hot-toast";
 import { fetchSites, deleteSite, Site, createCheckoutSession } from "@/lib/api";
 import GenerationCounter from "@/components/GenerationCounter";
 import { TEMPLATE_CATEGORIES, generateStylePreviewHtml } from "@/lib/templates";
+import { useLanguage } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
-const SIDEBAR_ITEMS = [
-  { icon: FolderIcon, label: "Progetti", active: true },
+const SIDEBAR_ITEMS = (language: string) => [
+  { icon: FolderIcon, label: language === "en" ? "Projects" : "Progetti", active: true },
   { icon: Squares2X2Icon, label: "Templates", active: false },
-  { icon: ShoppingCartIcon, label: "Carrello", active: false },
+  { icon: ShoppingCartIcon, label: language === "en" ? "Cart" : "Carrello", active: false },
 ];
 
-const FILTER_TABS = [
-  { id: "all", label: "Tutti" },
+const FILTER_TABS = (language: string) => [
+  { id: "all", label: language === "en" ? "All" : "Tutti" },
   ...TEMPLATE_CATEGORIES.filter(c => c.id !== "custom").map(c => ({ id: c.id, label: c.label.split(" & ")[0] })),
 ];
 
@@ -63,6 +65,7 @@ function Dashboard() {
   useRequireAuth("/auth");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { language } = useLanguage();
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(false); // Default to false to show UI immediately
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,19 +75,23 @@ function Dashboard() {
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("all");
+  const [showAllTemplates, setShowAllTemplates] = useState(false);
 
   // Mostra notifica dopo pagamento riuscito
   useEffect(() => {
     const paymentStatus = searchParams.get("payment");
     const planName = searchParams.get("plan");
     if (paymentStatus === "success") {
-      toast.success(`Piano ${planName === "premium" ? "Premium" : "Creazione Sito"} attivato con successo!`);
+      const planText = language === "en"
+        ? (planName === "premium" ? "Premium" : "Site Creation")
+        : (planName === "premium" ? "Premium" : "Creazione Sito");
+      toast.success(language === "en" ? `${planText} plan activated successfully!` : `Piano ${planText} attivato con successo!`);
       router.replace("/dashboard");
     } else if (paymentStatus === "cancelled") {
-      toast.error("Pagamento annullato");
+      toast.error(language === "en" ? "Payment cancelled" : "Pagamento annullato");
       router.replace("/dashboard");
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, language]);
 
   // Carica siti dal backend
   useEffect(() => {
@@ -99,7 +106,7 @@ function Dashboard() {
       const data = await fetchSites();
       setSites(data);
     } catch (error: any) {
-      toast.error(error.message || "Errore nel caricamento siti");
+      toast.error(error.message || (language === "en" ? "Error loading sites" : "Errore nel caricamento siti"));
     } finally {
       setLoading(false);
     }
@@ -107,18 +114,18 @@ function Dashboard() {
 
   const handleDeleteSite = async (siteId: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Sei sicuro di voler eliminare questo sito?")) return;
+    if (!confirm(language === "en" ? "Are you sure you want to delete this site?" : "Sei sicuro di voler eliminare questo sito?")) return;
 
     try {
       setIsDeleting(siteId);
       await deleteSite(siteId);
-      toast.success("Sito eliminato");
+      toast.success(language === "en" ? "Site deleted" : "Sito eliminato");
       setSites(sites.filter(s => s.id !== siteId));
       if (selectedSite?.id === siteId) {
         setSelectedSite(null);
       }
     } catch (error: any) {
-      toast.error(error.message || "Errore nell'eliminazione");
+      toast.error(error.message || (language === "en" ? "Error deleting site" : "Errore nell'eliminazione"));
     } finally {
       setIsDeleting(null);
     }
@@ -130,7 +137,7 @@ function Dashboard() {
       const { checkout_url } = await createCheckoutSession(plan);
       window.location.href = checkout_url;
     } catch (error: any) {
-      toast.error(error.message || "Errore durante il checkout");
+      toast.error(error.message || (language === "en" ? "Checkout error" : "Errore durante il checkout"));
       setIsCheckingOut(null);
     }
   };
@@ -146,7 +153,7 @@ function Dashboard() {
   const formatDate = (dateString: string) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat("it-IT", {
+    return new Intl.DateTimeFormat(language === "en" ? "en-US" : "it-IT", {
       day: "numeric",
       month: "short",
     }).format(date);
@@ -216,18 +223,22 @@ function Dashboard() {
 
         {/* Navigation */}
         <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-          {SIDEBAR_ITEMS.map((item) => (
+          {SIDEBAR_ITEMS(language).map((item) => (
             <button
               key={item.label}
               onClick={() => {
-                if (item.label === "Progetti") {
+                const projectLabel = language === "en" ? "Projects" : "Progetti";
+                const cartLabel = language === "en" ? "Cart" : "Carrello";
+                const comingSoon = language === "en" ? "Coming Soon" : "Prossimamente";
+
+                if (item.label === projectLabel) {
                   document.getElementById("section-progetti")?.scrollIntoView({ behavior: "smooth" });
                 } else if (item.label === "Templates") {
                   document.getElementById("section-templates")?.scrollIntoView({ behavior: "smooth" });
-                } else if (item.label === "Carrello") {
-                  toast("Carrello: Prossimamente", { icon: "🛒" });
+                } else if (item.label === cartLabel) {
+                  toast(`${cartLabel}: ${comingSoon}`, { icon: "🛒" });
                 } else {
-                  toast(`${item.label}: Prossimamente`, { icon: "🚧" });
+                  toast(`${item.label}: ${comingSoon}`, { icon: "🚧" });
                 }
                 setMobileSidebarOpen(false);
               }}
@@ -285,6 +296,13 @@ function Dashboard() {
               <ChevronDownIcon className="w-4 h-4 -rotate-90" />
             )}
           </button>
+
+          {/* Language Switcher */}
+          {sidebarOpen && (
+            <div className="px-4 pb-2 flex justify-center">
+              <LanguageSwitcher />
+            </div>
+          )}
         </div>
       </aside>
 
@@ -310,7 +328,7 @@ function Dashboard() {
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 type="text"
-                placeholder="Cerca nei tuoi siti..."
+                placeholder={language === "en" ? "Search your sites..." : "Cerca nei tuoi siti..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all"
@@ -329,7 +347,7 @@ function Dashboard() {
               className="px-3 lg:px-4 py-2 bg-white text-black rounded-full font-medium text-sm hover:bg-slate-200 transition-colors flex items-center gap-2"
             >
               <PlusIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Crea nuovo sito</span>
+              <span className="hidden sm:inline">{language === "en" ? "Create new site" : "Crea nuovo sito"}</span>
             </button>
 
             <Menu as="div" className="relative">
@@ -355,7 +373,7 @@ function Dashboard() {
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-white truncate">
-                          {user?.full_name || "Utente"}
+                          {user?.full_name || (language === "en" ? "User" : "Utente")}
                         </p>
                         <p className="text-xs text-slate-400 truncate">
                           {user?.email}
@@ -367,7 +385,7 @@ function Dashboard() {
                   {/* Abbonamento */}
                   <div className="px-4 py-3 border-b border-white/10">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-slate-400">Piano</span>
+                      <span className="text-xs text-slate-400">{language === "en" ? "Plan" : "Piano"}</span>
                       {(user as any)?.plan === "premium" || (user as any)?.is_premium ? (
                         <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 text-xs font-medium flex items-center gap-1">
                           <StarIcon className="w-3 h-3" />
@@ -375,7 +393,7 @@ function Dashboard() {
                         </span>
                       ) : (user as any)?.plan === "base" ? (
                         <span className="px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-medium">
-                          Creazione Sito
+                          {language === "en" ? "Site Creation" : "Creazione Sito"}
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-medium">
@@ -399,7 +417,7 @@ function Dashboard() {
                           } w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 transition-colors`}
                         >
                           <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
-                          Esci
+                          {language === "en" ? "Logout" : "Esci"}
                         </button>
                       )}
                     </Menu.Item>
@@ -413,46 +431,33 @@ function Dashboard() {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8 lg:space-y-12 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
 
-          {/* Hero Section */}
-          <section className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#111]">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-purple-900/20" />
-            <div className="relative p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="max-w-xl space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium uppercase tracking-wider">
-                  <SparklesIcon className="w-3 h-3" />
-                  Nuovo Aggiornamento
-                </div>
-                <h2 className="text-3xl font-bold tracking-tight">Scopri Site Builder Studio</h2>
-                <p className="text-slate-400 text-lg leading-relaxed">
-                  Crea siti web straordinari con l'aiuto dell'AI. Parti da un template o lascia che l'intelligenza artificiale costruisca tutto per te in 60 secondi.
-                </p>
-                <div className="flex flex-wrap gap-4 pt-2">
-                  <button
-                    onClick={() => createSite()}
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-medium transition-all shadow-lg shadow-blue-900/20"
-                  >
-                    Inizia a Creare
-                  </button>
-                  <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full font-medium transition-all flex items-center gap-2">
-                    <PlayCircleIcon className="w-5 h-5" />
-                    Guarda Tutorial
-                  </button>
-                </div>
+          {/* Hero: Choose Your Path */}
+          <section className="grid md:grid-cols-2 gap-6">
+            {/* Card 1: AI Builder */}
+            <button onClick={() => createSite()} className="group relative rounded-2xl p-8 text-left transition-all hover:-translate-y-1 hover:shadow-2xl border border-white/10 bg-gradient-to-br from-blue-950/80 to-indigo-950/50 hover:border-blue-500/30">
+              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6">
+                <SparklesIcon className="w-7 h-7 text-blue-400" />
               </div>
-              <div className="relative w-full max-w-sm aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black/50 hidden md:block">
-                <Image
-                  src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80"
-                  alt="Studio Preview"
-                  fill
-                  className="object-cover opacity-80"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                    <PlayCircleIcon className="w-6 h-6 text-white" />
-                  </div>
-                </div>
+              <h3 className="text-xl font-bold text-white mb-2">{language === "en" ? "Smart Builder" : "Costruttore Intelligente"}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-6">{language === "en" ? "Answer a few questions about your business and AI creates your complete website in 60 seconds." : "Rispondi a poche domande sulla tua attivita' e l'AI crea il tuo sito completo in 60 secondi."}</p>
+              <span className="inline-flex items-center gap-2 text-blue-400 text-sm font-medium group-hover:gap-3 transition-all">
+                {language === "en" ? "Start creating" : "Inizia a creare"}
+                <ArrowRightIcon className="w-4 h-4" />
+              </span>
+            </button>
+
+            {/* Card 2: Browse Templates */}
+            <button onClick={() => { setShowAllTemplates(true); setTimeout(() => document.getElementById("section-templates")?.scrollIntoView({ behavior: "smooth" }), 100); }} className="group relative rounded-2xl p-8 text-left transition-all hover:-translate-y-1 hover:shadow-2xl border border-white/10 bg-gradient-to-br from-violet-950/80 to-purple-950/50 hover:border-violet-500/30">
+              <div className="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-6">
+                <Squares2X2Icon className="w-7 h-7 text-violet-400" />
               </div>
-            </div>
+              <h3 className="text-xl font-bold text-white mb-2">{language === "en" ? "Choose a Template" : "Scegli un Template"}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-6">{language === "en" ? "Browse 19 professional designs and customize with your content." : "Sfoglia 19 design professionali e personalizzali con i tuoi contenuti."}</p>
+              <span className="inline-flex items-center gap-2 text-violet-400 text-sm font-medium group-hover:gap-3 transition-all">
+                {language === "en" ? "Browse templates" : "Sfoglia i template"}
+                <ArrowRightIcon className="w-4 h-4" />
+              </span>
+            </button>
           </section>
 
           {/* Upgrade Banner - mostra solo per piano free */}
@@ -463,10 +468,14 @@ function Dashboard() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <StarIcon className="w-5 h-5 text-amber-400" />
-                      <h3 className="text-lg font-semibold">Sblocca tutto il potenziale</h3>
+                      <h3 className="text-lg font-semibold">
+                        {language === "en" ? "Unlock Full Potential" : "Sblocca tutto il potenziale"}
+                      </h3>
                     </div>
                     <p className="text-slate-400 text-sm max-w-lg">
-                      Passa a un piano a pagamento per pubblicare il tuo sito, ottenere piu generazioni AI e modifiche illimitate.
+                      {language === "en"
+                        ? "Upgrade to a paid plan to publish your site, get more AI generations, and unlimited edits."
+                        : "Passa a un piano a pagamento per pubblicare il tuo sito, ottenere piu generazioni AI e modifiche illimitate."}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-3">
@@ -478,7 +487,7 @@ function Dashboard() {
                       {isCheckingOut === "base" ? (
                         <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                       ) : null}
-                      Creazione Sito - 200
+                      {language === "en" ? "Site Creation - 200" : "Creazione Sito - 200"}
                     </button>
                     <button
                       onClick={() => handleUpgrade("premium")}
@@ -496,29 +505,159 @@ function Dashboard() {
             </section>
           )}
 
-          {/* Template Gallery Section */}
-          <section id="section-templates">
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2">Scegli un Template per Iniziare</h3>
-              <p className="text-slate-400 text-sm">Clicca su un template per personalizzarlo con i tuoi contenuti</p>
+          {/* My Sites Section */}
+          <section id="section-progetti">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold">
+                {language === "en" ? "Your Projects" : "I Tuoi Progetti"}
+              </h3>
+              <div className="flex gap-2">
+                <button className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-colors">
+                  <Bars3Icon className="w-5 h-5" />
+                </button>
+                <button className="p-2 bg-white/10 rounded-lg text-white transition-colors">
+                  <Squares2X2Icon className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
-            {/* Filter Tabs */}
-            <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-              {FILTER_TABS.map((tab) => (
+            {filteredSites.length === 0 ? (
+              <div className="text-center py-16 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+                <div className="w-14 h-14 rounded-full bg-white/5 mx-auto flex items-center justify-center mb-4">
+                  <FolderIcon className="w-7 h-7 text-slate-500" />
+                </div>
+                <h3 className="text-base font-medium text-white mb-1">
+                  {language === "en" ? "No projects yet" : "Nessun progetto ancora"}
+                </h3>
+                <p className="text-slate-500 text-sm mb-5">
+                  {language === "en" ? "Create your first website with AI" : "Crea il tuo primo sito web con l'AI"}
+                </p>
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveFilter(tab.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                    activeFilter === tab.id
-                      ? "bg-white text-black"
-                      : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
-                  }`}
+                  onClick={() => createSite()}
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-medium transition-all"
                 >
-                  {tab.label}
+                  {language === "en" ? "Create First Project" : "Crea Primo Progetto"}
                 </button>
-              ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredSites.map((site) => (
+                  <div
+                    key={site.id}
+                    onClick={() => setSelectedSite(site)}
+                    className="group bg-[#111] rounded-xl border border-white/5 overflow-hidden hover:border-white/20 transition-all cursor-pointer hover:shadow-xl"
+                  >
+                    <div className="aspect-video relative bg-[#1a1a1a] overflow-hidden">
+                      {site.thumbnail ? (
+                        <Image
+                          src={site.thumbnail}
+                          alt={site.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <GlobeAltIcon className="w-12 h-12 text-slate-700" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
+                        <Link
+                          href={`/editor/${site.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-4 py-2 bg-white text-black rounded-full text-sm font-medium hover:scale-105 transition-transform"
+                        >
+                          {language === "en" ? "Edit" : "Modifica"}
+                        </Link>
+                        <button
+                          onClick={(e) => handleDeleteSite(site.id, e)}
+                          disabled={isDeleting === site.id}
+                          className="px-4 py-2 bg-red-500/80 text-white rounded-full text-sm font-medium hover:bg-red-500 hover:scale-105 transition-all disabled:opacity-50"
+                        >
+                          {isDeleting === site.id ? "..." : (language === "en" ? "Delete" : "Elimina")}
+                        </button>
+                        {site.is_published && (
+                          <Link
+                            href={`https://${site.slug}.e-quipe.app`}
+                            target="_blank"
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-2 bg-white/20 text-white rounded-full hover:bg-white/30 transition-colors"
+                          >
+                            <ArrowUpRightIcon className="w-5 h-5" />
+                          </Link>
+                        )}
+                      </div>
+                      <div className="absolute top-3 left-3 px-2 py-1 bg-black/80 backdrop-blur-md rounded-md border border-white/10 flex items-center gap-2">
+                        {getStatusIcon(site.status)}
+                        <span className="text-xs font-medium text-slate-200 capitalize">{site.status}</span>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h4 className="font-medium text-white group-hover:text-blue-400 transition-colors">{site.name}</h4>
+                          <p className="text-sm text-slate-500 mt-0.5">{site.slug}.e-quipe.app</p>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); }}
+                          className="p-1 text-slate-500 hover:text-white transition-colors"
+                        >
+                          <EllipsisVerticalIcon className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between text-xs text-slate-600">
+                        <span>{language === "en" ? "Modified" : "Modificato"} {formatDate(site.updated_at || site.created_at)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* Template Gallery Section */}
+          <section id="section-templates">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-2xl font-bold mb-1">
+                  {showAllTemplates
+                    ? (language === "en" ? "All Templates" : "Tutti i Template")
+                    : (language === "en" ? "Trending Templates" : "Template in Tendenza")}
+                </h3>
+                {!showAllTemplates && (
+                  <p className="text-slate-400 text-sm">
+                    {language === "en" ? "Popular designs to get you started" : "Design popolari per iniziare"}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => setShowAllTemplates(!showAllTemplates)}
+                className="px-4 py-2 rounded-full text-sm font-medium bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition-all flex items-center gap-2"
+              >
+                {showAllTemplates
+                  ? (language === "en" ? "Show less" : "Mostra meno")
+                  : (language === "en" ? "See all" : "Vedi tutti")}
+                <ArrowRightIcon className={`w-3.5 h-3.5 transition-transform ${showAllTemplates ? "rotate-90" : ""}`} />
+              </button>
             </div>
+
+            {/* Filter Tabs - only when showing all */}
+            {showAllTemplates && (
+              <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+                {FILTER_TABS(language).map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveFilter(tab.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                      activeFilter === tab.id
+                        ? "bg-white text-black"
+                        : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Template Grid with lock overlay for free users */}
             <div className="relative">
@@ -527,30 +666,38 @@ function Dashboard() {
                   <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
                     <LockClosedIcon className="w-8 h-8 text-slate-400" />
                   </div>
-                  <p className="text-lg text-white font-semibold mb-1">Template Premium</p>
-                  <p className="text-slate-400 text-sm mb-5 text-center max-w-sm">Sblocca tutti i template professionali con un piano Base o Premium</p>
+                  <p className="text-lg text-white font-semibold mb-1">
+                    {language === "en" ? "Premium Templates" : "Template Premium"}
+                  </p>
+                  <p className="text-slate-400 text-sm mb-5 text-center max-w-sm">
+                    {language === "en"
+                      ? "Unlock all professional templates with a Base or Premium plan"
+                      : "Sblocca tutti i template professionali con un piano Base o Premium"}
+                  </p>
                   <button
                     onClick={() => handleUpgrade("base")}
                     className="px-6 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-full text-sm font-semibold transition-colors"
                   >
-                    Sblocca Templates
+                    {language === "en" ? "Unlock Templates" : "Sblocca Templates"}
                   </button>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {TEMPLATE_CATEGORIES
-                  .filter(cat => activeFilter === "all" || cat.id === activeFilter)
-                  .flatMap(cat =>
-                    cat.styles.map(style => ({ style, categoryLabel: cat.label, categoryId: cat.id }))
-                  )
-                  .map(({ style, categoryLabel, categoryId }) => (
+              <div className={`grid gap-6 ${showAllTemplates ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3" : "grid-cols-2 md:grid-cols-4"}`}>
+                {(() => {
+                  const allTemplates = TEMPLATE_CATEGORIES
+                    .filter(cat => !showAllTemplates || activeFilter === "all" || cat.id === activeFilter)
+                    .flatMap(cat =>
+                      cat.styles.map(style => ({ style, categoryLabel: cat.label, categoryId: cat.id }))
+                    );
+                  const templatesToShow = showAllTemplates ? allTemplates : allTemplates.slice(0, 4);
+                  return templatesToShow.map(({ style, categoryLabel }) => (
                     <div
                       key={style.id}
                       onClick={() => {
                         const userPlan = (user as any)?.plan || "free";
                         if (userPlan === "free" || !userPlan) {
-                          toast("Disponibile con piano Base o Premium", { icon: "🔒" });
+                          toast(language === "en" ? "Available with Base or Premium plan" : "Disponibile con piano Base o Premium", { icon: "🔒" });
                           return;
                         }
                         router.push(`/dashboard/new?style=${style.id}`);
@@ -584,136 +731,33 @@ function Dashboard() {
                             <div className="w-4 h-4 rounded-full border border-white/10" style={{ background: style.secondaryColor }} />
                           </div>
                           <div className="flex items-center gap-1 text-xs text-slate-500 group-hover:text-blue-400 transition-colors">
-                            <span>Usa template</span>
+                            <span>{language === "en" ? "Use template" : "Usa template"}</span>
                             <ArrowRightIcon className="w-3 h-3" />
                           </div>
                         </div>
                       </div>
                     </div>
-                  ))}
+                  ));
+                })()}
               </div>
             </div>
-          </section>
-
-          {/* My Sites Section */}
-          <section id="section-progetti">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold">I Tuoi Progetti</h3>
-              <div className="flex gap-2">
-                <button className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-colors">
-                  <Bars3Icon className="w-5 h-5" />
-                </button>
-                <button className="p-2 bg-white/10 rounded-lg text-white transition-colors">
-                  <Squares2X2Icon className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {filteredSites.length === 0 ? (
-              <div className="text-center py-20 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                <div className="w-16 h-16 rounded-full bg-white/5 mx-auto flex items-center justify-center mb-4">
-                  <FolderIcon className="w-8 h-8 text-slate-500" />
-                </div>
-                <h3 className="text-lg font-medium text-white mb-2">Nessun progetto trovato</h3>
-                <p className="text-slate-400 mb-6">Inizia creando il tuo primo sito web con l'AI</p>
-                <button
-                  onClick={() => createSite()}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-medium transition-all"
-                >
-                  Crea Primo Progetto
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredSites.map((site) => (
-                  <div
-                    key={site.id}
-                    onClick={() => setSelectedSite(site)}
-                    className="group bg-[#111] rounded-xl border border-white/5 overflow-hidden hover:border-white/20 transition-all cursor-pointer hover:shadow-xl"
-                  >
-                    {/* Thumbnail */}
-                    <div className="aspect-video relative bg-[#1a1a1a] overflow-hidden">
-                      {site.thumbnail ? (
-                        <Image
-                          src={site.thumbnail}
-                          alt={site.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <GlobeAltIcon className="w-12 h-12 text-slate-700" />
-                        </div>
-                      )}
-
-                      {/* Overlay Actions */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
-                        <Link
-                          href={`/editor/${site.id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="px-4 py-2 bg-white text-black rounded-full text-sm font-medium hover:scale-105 transition-transform"
-                        >
-                          Modifica
-                        </Link>
-                        <button
-                          onClick={(e) => handleDeleteSite(site.id, e)}
-                          disabled={isDeleting === site.id}
-                          className="px-4 py-2 bg-red-500/80 text-white rounded-full text-sm font-medium hover:bg-red-500 hover:scale-105 transition-all disabled:opacity-50"
-                        >
-                          {isDeleting === site.id ? "..." : "Elimina"}
-                        </button>
-                        {site.is_published && (
-                          <Link
-                            href={`https://${site.slug}.e-quipe.app`}
-                            target="_blank"
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-2 bg-white/20 text-white rounded-full hover:bg-white/30 transition-colors"
-                          >
-                            <ArrowUpRightIcon className="w-5 h-5" />
-                          </Link>
-                        )}
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="absolute top-3 left-3 px-2 py-1 bg-black/80 backdrop-blur-md rounded-md border border-white/10 flex items-center gap-2">
-                        {getStatusIcon(site.status)}
-                        <span className="text-xs font-medium text-slate-200 capitalize">{site.status}</span>
-                      </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h4 className="font-medium text-white group-hover:text-blue-400 transition-colors">{site.name}</h4>
-                          <p className="text-sm text-slate-500 mt-0.5">{site.slug}.e-quipe.app</p>
-                        </div>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); /* Menu logic */ }}
-                          className="p-1 text-slate-500 hover:text-white transition-colors"
-                        >
-                          <EllipsisVerticalIcon className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <div className="mt-4 flex items-center justify-between text-xs text-slate-600">
-                        <span>Modificato {formatDate(site.updated_at || site.created_at)}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </section>
 
           {/* Resources Section */}
           <section>
-            <h3 className="text-xl font-semibold mb-6">Guarda video tutorial</h3>
+            <h3 className="text-xl font-semibold mb-6">
+              {language === "en" ? "Watch video tutorials" : "Guarda video tutorial"}
+            </h3>
             <div className="grid md:grid-cols-3 gap-6">
-              {[
+              {(language === "en" ? [
+                "Explore the Site Builder editor",
+                "How to optimize SEO",
+                "Connect a custom domain"
+              ] : [
                 "Esplora l'editor di Site Builder",
                 "Come ottimizzare il SEO",
                 "Collegare un dominio personalizzato"
-              ].map((title, idx) => (
+              ]).map((title, idx) => (
                 <div key={idx} className="flex gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-colors cursor-pointer group">
                   <div className="w-32 aspect-video bg-black/50 rounded-lg border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:border-blue-500/30 transition-colors">
                     <PlayCircleIcon className="w-8 h-8 text-slate-600 group-hover:text-blue-500 transition-colors" />
@@ -721,7 +765,7 @@ function Dashboard() {
                   <div className="flex flex-col justify-center">
                     <h4 className="text-sm font-medium text-slate-200 group-hover:text-white mb-1">{title}</h4>
                     <p className="text-xs text-blue-400 flex items-center gap-1 group-hover:underline">
-                      Riproduci video
+                      {language === "en" ? "Play video" : "Riproduci video"}
                     </p>
                   </div>
                 </div>
@@ -738,7 +782,9 @@ function Dashboard() {
           <div className="h-full flex flex-col">
             {/* Header */}
             <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">
-              <h3 className="font-semibold">Dettagli Sito</h3>
+              <h3 className="font-semibold">
+                {language === "en" ? "Site Details" : "Dettagli Sito"}
+              </h3>
               <button onClick={() => setSelectedSite(null)} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white">
                 <XMarkIcon className="w-5 h-5" />
               </button>
@@ -753,7 +799,7 @@ function Dashboard() {
                 )}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <Link href={`/editor/${selectedSite.id}`} className="px-6 py-2 bg-white text-black rounded-full font-medium transform hover:scale-105 transition-all">
-                    Apri Editor
+                    {language === "en" ? "Open Editor" : "Apri Editor"}
                   </Link>
                 </div>
               </div>
@@ -761,7 +807,9 @@ function Dashboard() {
               {/* Info Block */}
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Nome Sito</label>
+                  <label className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+                    {language === "en" ? "Site Name" : "Nome Sito"}
+                  </label>
                   <div className="flex items-center gap-2 mt-1">
                     <h2 className="text-2xl font-bold">{selectedSite.name}</h2>
                     <button className="p-1 hover:bg-white/10 rounded"><PencilIcon className="w-4 h-4 text-slate-400" /></button>
@@ -769,7 +817,9 @@ function Dashboard() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Dominio</label>
+                  <label className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+                    {language === "en" ? "Domain" : "Dominio"}
+                  </label>
                   <a href={`https://${selectedSite.slug}.e-quipe.app`} target="_blank" className="flex items-center gap-2 mt-1 text-blue-400 hover:underline">
                     {selectedSite.slug}.e-quipe.app
                     <ArrowUpRightIcon className="w-4 h-4" />
@@ -781,18 +831,18 @@ function Dashboard() {
               <div className="grid grid-cols-2 gap-3">
                 <Link href={`/editor/${selectedSite.id}`} className="col-span-2 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium flex items-center justify-center gap-2 transition-colors">
                   <PencilIcon className="w-4 h-4" />
-                  Modifica Sito
+                  {language === "en" ? "Edit Site" : "Modifica Sito"}
                 </Link>
                 <button
                   onClick={(e) => handleDeleteSite(selectedSite.id, e)}
                   className="py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors"
                 >
                   {isDeleting === selectedSite.id ? <div className="w-4 h-4 border-2 border-current rounded-full animate-spin" /> : <TrashIcon className="w-4 h-4" />}
-                  Elimina
+                  {language === "en" ? "Delete" : "Elimina"}
                 </button>
                 <button className="py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors">
                   <Cog6ToothIcon className="w-4 h-4" />
-                  Impostazioni
+                  {language === "en" ? "Settings" : "Impostazioni"}
                 </button>
               </div>
             </div>

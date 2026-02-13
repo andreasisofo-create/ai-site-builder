@@ -208,6 +208,7 @@ export interface RefineRequest {
   site_id: number;
   message: string;
   section?: string;
+  language?: string;
 }
 
 export interface RefineResponse {
@@ -425,12 +426,13 @@ export async function unpublishSite(siteId: number): Promise<{ success: boolean;
 
 export async function chatMessage(
   message: string,
-  history: Array<{ role: string; content: string }>
+  history: Array<{ role: string; content: string }>,
+  language?: string
 ): Promise<{ reply: string; error?: string }> {
   const res = await fetch(`${API_BASE}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, history }),
+    body: JSON.stringify({ message, history, language: language || "it" }),
   });
   return res.json();
 }

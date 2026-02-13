@@ -28,12 +28,9 @@ import {
   Shield,
   Target,
 } from "lucide-react";
-import { translations } from "@/lib/i18n";
+import { translations, useLanguage } from "@/lib/i18n";
 import { useRef } from "react";
-
-// ==================== DATA ====================
-
-const tx = translations.it;
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 // ==================== ANIMATION HELPERS ====================
 
@@ -45,6 +42,9 @@ const fadeUp = {
 // ==================== MAIN PAGE ====================
 
 export default function LandingPage() {
+  const { language } = useLanguage();
+  const tx = translations[language];
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"site" | "clients">("site");
@@ -120,7 +120,7 @@ export default function LandingPage() {
                 href="#ads-service"
                 className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
               >
-                Servizio Ads
+                {tx.nav.ads}
               </a>
               <a
                 href="#prezzi"
@@ -137,6 +137,7 @@ export default function LandingPage() {
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
+              <LanguageSwitcher />
               <Link
                 href="/auth"
                 className="px-5 py-2.5 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:opacity-90 shadow-md shadow-indigo-500/25"
@@ -189,7 +190,7 @@ export default function LandingPage() {
                   className="block text-slate-600 hover:text-slate-900 py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Servizio Ads
+                  {tx.nav.ads}
                 </a>
                 <a
                   href="#prezzi"
@@ -205,6 +206,10 @@ export default function LandingPage() {
                 >
                   {tx.nav.faq}
                 </a>
+                <hr className="border-slate-200" />
+                <div className="flex justify-center">
+                  <LanguageSwitcher />
+                </div>
                 <hr className="border-slate-200" />
                 <Link
                   href="/auth"
@@ -846,7 +851,7 @@ export default function LandingPage() {
                           boxShadow: "0 4px 12px rgba(79, 70, 229, 0.4)",
                         }}
                       >
-                        Consigliato
+                        {tx.pricing.recommended}
                       </span>
                     </div>
                   </>
@@ -989,10 +994,10 @@ export default function LandingPage() {
 
             <div className="relative">
               <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white mb-4">
-                Pronto a portare la tua attivita&apos; online?
+                {tx.cta.title}
               </h2>
               <p className="text-lg text-indigo-200 mb-8 max-w-xl mx-auto">
-                Crea il tuo sito in 60 secondi. Gratis, senza carta di credito.
+                {tx.cta.subtitle}
               </p>
               <Link
                 href="/auth"
@@ -1002,7 +1007,7 @@ export default function LandingPage() {
                   boxShadow: "0 8px 32px rgba(255, 255, 255, 0.25), 0 2px 8px rgba(255, 255, 255, 0.15)",
                 }}
               >
-                Crea il tuo sito gratis
+                {tx.cta.button}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -1136,19 +1141,19 @@ export default function LandingPage() {
                 href="/privacy"
                 className="hover:text-slate-700 transition-colors"
               >
-                Privacy
+                {tx.footer.bottomLinks.privacy}
               </Link>
               <Link
                 href="/terms"
                 className="hover:text-slate-700 transition-colors"
               >
-                Termini
+                {tx.footer.bottomLinks.terms}
               </Link>
               <Link
                 href="/cookies"
                 className="hover:text-slate-700 transition-colors"
               >
-                Cookie
+                {tx.footer.bottomLinks.cookies}
               </Link>
             </div>
           </div>

@@ -642,7 +642,12 @@ export default function HelpChatbot() {
             content: m.text,
           }));
 
-        const result = await chatMessage(text, history);
+        // Get language from localStorage
+        const language = typeof window !== "undefined"
+          ? localStorage.getItem("e-quipe-lang") || "it"
+          : "it";
+
+        const result = await chatMessage(text, history, language);
 
         setIsTyping(false);
 
