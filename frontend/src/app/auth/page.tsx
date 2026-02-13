@@ -14,6 +14,7 @@ import {
   AlertCircleIcon
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { API_BASE } from "@/lib/api";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -23,6 +24,10 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
 
   const { login, register, googleLogin, microsoftLogin, isAuthenticated } = useAuth();
   const router = useRouter();
@@ -62,6 +67,30 @@ export default function AuthPage() {
 
   const handleGoogleLogin = async () => {
     googleLogin();
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+
+      if (res.ok) {
+        setForgotSuccess(true);
+      } else {
+        setError("Si e' verificato un errore. Riprova tra qualche minuto.");
+      }
+    } catch {
+      setError("Errore di connessione. Riprova.");
+    } finally {
+      setForgotLoading(false);
+    }
   };
 
   return (
@@ -134,106 +163,185 @@ export default function AuthPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Nome completo
-                </label>
-                <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                  <input
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                    placeholder="Mario Rossi"
-                  />
+          {showForgotPassword ? (
+            /* Forgot Password Form */
+            forgotSuccess ? (
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 mx-auto rounded-full bg-green-500/10 flex items-center justify-center">
+                  <MailIcon className="w-8 h-8 text-green-400" />
                 </div>
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <MailIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="tu@email.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="••••••••"
-                />
+                <h3 className="text-lg font-semibold text-white">Controlla la tua email</h3>
+                <p className="text-slate-400 text-sm">
+                  Se l&apos;email esiste nel nostro sistema, riceverai un link per reimpostare la password.
+                  Controlla anche la cartella spam.
+                </p>
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                  onClick={() => { setShowForgotPassword(false); setForgotSuccess(false); setForgotEmail(""); setError(""); }}
+                  className="text-blue-400 hover:underline font-medium text-sm"
                 >
-                  {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                  Torna al login
                 </button>
               </div>
-            </div>
-
-            {!isLogin && (
-              <div className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  required
-                  className="mt-1 rounded border-white/10 bg-white/5 text-blue-500 focus:ring-blue-500"
-                />
-                <p className="text-sm text-slate-400">
-                  Accetto i <Link href="#" className="text-blue-400 hover:underline">Termini di servizio</Link> e la{' '}
-                  <Link href="#" className="text-blue-400 hover:underline">Privacy Policy</Link>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-slate-400 text-sm">
+                  Inserisci l&apos;email associata al tuo account e ti invieremo un link per reimpostare la password.
+                </p>
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Email
+                    </label>
+                    <div className="relative">
+                      <MailIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                      <input
+                        type="email"
+                        required
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                        placeholder="tu@email.com"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl font-semibold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {forgotLoading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      "Invia link di reset"
+                    )}
+                  </button>
+                </form>
+                <p className="text-center">
+                  <button
+                    onClick={() => { setShowForgotPassword(false); setError(""); }}
+                    className="text-blue-400 hover:underline font-medium text-sm"
+                  >
+                    Torna al login
+                  </button>
                 </p>
               </div>
-            )}
+            )
+          ) : (
+            /* Login / Register Form */
+            <>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Nome completo
+                    </label>
+                    <div className="relative">
+                      <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                      <input
+                        type="text"
+                        required
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                        placeholder="Mario Rossi"
+                      />
+                    </div>
+                  </div>
+                )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl font-semibold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  {isLogin ? 'Accedi' : 'Crea Account'}
-                  <ArrowRightIcon className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          </form>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Email
+                  </label>
+                  <div className="relative">
+                    <MailIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                      placeholder="tu@email.com"
+                    />
+                  </div>
+                </div>
 
-          <p className="mt-6 text-center text-slate-400">
-            {isLogin ? "Non hai un account?" : "Hai già un account?"}{' '}
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-400 hover:underline font-medium"
-            >
-              {isLogin ? 'Registrati' : 'Accedi'}
-            </button>
-          </p>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                    >
+                      {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {isLogin && (
+                    <div className="mt-2 text-right">
+                      <button
+                        type="button"
+                        onClick={() => { setShowForgotPassword(true); setError(""); }}
+                        className="text-sm text-slate-400 hover:text-blue-400 transition-colors"
+                      >
+                        Password dimenticata?
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {!isLogin && (
+                  <div className="flex items-start gap-2">
+                    <input
+                      type="checkbox"
+                      required
+                      className="mt-1 rounded border-white/10 bg-white/5 text-blue-500 focus:ring-blue-500"
+                    />
+                    <p className="text-sm text-slate-400">
+                      Accetto i <Link href="#" className="text-blue-400 hover:underline">Termini di servizio</Link> e la{' '}
+                      <Link href="#" className="text-blue-400 hover:underline">Privacy Policy</Link>
+                    </p>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl font-semibold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      {isLogin ? 'Accedi' : 'Crea Account'}
+                      <ArrowRightIcon className="w-5 h-5" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <p className="mt-6 text-center text-slate-400">
+                {isLogin ? "Non hai un account?" : "Hai già un account?"}{' '}
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-blue-400 hover:underline font-medium"
+                >
+                  {isLogin ? 'Registrati' : 'Accedi'}
+                </button>
+              </p>
+            </>
+          )}
 
           {/* Back to Home */}
           <div className="mt-8 text-center">

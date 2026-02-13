@@ -94,6 +94,23 @@ async def lifespan(app: FastAPI):
             logger.info("Connessione al database...")
             Base.metadata.create_all(bind=engine)
             logger.info("Database inizializzato correttamente")
+
+            # Add new columns to existing tables (create_all doesn't ALTER)
+            from sqlalchemy import text as sql_text
+            migrations = [
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token_expires TIMESTAMP WITH TIME ZONE",
+                "ALTER TABLE sites ADD COLUMN IF NOT EXISTS qc_score FLOAT",
+                "ALTER TABLE sites ADD COLUMN IF NOT EXISTS qc_report JSON",
+            ]
+            with engine.connect() as conn:
+                for stmt in migrations:
+                    try:
+                        conn.execute(sql_text(stmt))
+                    except Exception:
+                        pass  # Column already exists or different DB dialect
+                conn.commit()
+            logger.info("Migrazioni colonne completate")
         except Exception as e:
             logger.error(f"Errore connessione database: {e}")
             logger.error(traceback.format_exc())

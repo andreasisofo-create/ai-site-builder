@@ -29,6 +29,7 @@ from typing import Dict, Any, Optional, List, Callable
 from app.services.kimi_client import kimi
 from app.services.template_assembler import assembler as template_assembler
 from app.services.sanitizer import sanitize_input, sanitize_output
+from app.services.quality_control import qc_pipeline
 
 # Design knowledge (ChromaDB) - graceful fallback if not available
 try:
@@ -788,9 +789,43 @@ Return ONLY the JSON object."""
             return {"success": False, "error": f"Errore assemblaggio: {str(e)}"}
 
         if on_progress:
-            on_progress(4, "Il tuo sito e' pronto!", {
-                "phase": "complete",
+            on_progress(4, "Sito assemblato, controllo qualita'...", {
+                "phase": "assembled",
             })
+
+        # === STEP 5: Quality Control ===
+        qc_report_data = None
+        try:
+            qc_report = await qc_pipeline.run_full_qc(
+                html=html_content,
+                theme_config=theme,
+                requested_sections=sections,
+                style_id=template_style_id or "custom-free",
+                on_progress=on_progress,
+            )
+            qc_report_data = qc_report.to_dict()
+
+            # Use fixed HTML if QC applied fixes
+            if qc_report.html_after and qc_report.html_after != qc_report.html_before:
+                html_content = qc_report.html_after
+                logger.info(
+                    f"[DataBinding] QC applied fixes: score {qc_report.overall_score} -> {qc_report.final_score}"
+                )
+
+            if on_progress:
+                status_msg = "Sito approvato!" if qc_report.passed else "Sito pronto (revisione consigliata)"
+                on_progress(5, status_msg, {
+                    "phase": "complete",
+                    "qc_score": qc_report.final_score,
+                    "qc_passed": qc_report.passed,
+                })
+        except Exception as e:
+            logger.warning(f"[DataBinding] QC pipeline failed (non-blocking): {e}")
+            # QC failure is non-blocking: return the original HTML
+            if on_progress:
+                on_progress(5, "Il tuo sito e' pronto!", {
+                    "phase": "complete",
+                })
 
         generation_time = int((time.time() - start_time) * 1000)
         cost = self.kimi.calculate_cost(total_tokens_in, total_tokens_out)
@@ -808,8 +843,9 @@ Return ONLY the JSON object."""
             "tokens_output": total_tokens_out,
             "cost_usd": cost,
             "generation_time_ms": generation_time,
-            "pipeline_steps": 4,
+            "pipeline_steps": 5,
             "site_data": site_data,
+            "qc_report": qc_report_data,
         }
 
     # =========================================================

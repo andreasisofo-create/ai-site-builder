@@ -197,7 +197,7 @@ async def _run_generation_background(
         if not user.is_premium and not user.is_superuser:
             user.generations_used += 1
 
-        # Salva HTML, versione e site_data
+        # Salva HTML, versione, site_data e QC report
         if site and result.get("html_content"):
             site.html_content = result["html_content"]
             site.status = "ready"
@@ -205,6 +205,11 @@ async def _run_generation_background(
             site.generation_message = ""
             if result.get("site_data"):
                 site.config = result["site_data"]
+            # Store QC results
+            qc_data = result.get("qc_report")
+            if qc_data:
+                site.qc_score = qc_data.get("final_score")
+                site.qc_report = qc_data
             _save_version(db, site, result["html_content"], "Generazione iniziale AI")
 
         db.commit()
@@ -399,7 +404,7 @@ async def get_generation_status(
 
     is_generating = site.status == "generating"
     step = site.generation_step if is_generating else 0
-    total_steps = 4 if settings.GENERATION_PIPELINE == "databinding" else 3
+    total_steps = 5 if settings.GENERATION_PIPELINE == "databinding" else 3
 
     # Calcola percentuale
     if not is_generating:
@@ -424,6 +429,33 @@ async def get_generation_status(
         "percentage": percentage,
         "message": site.generation_message or "",
         "preview_data": preview_data,
+    }
+
+
+# ============ QC REPORT ============
+
+@router.get("/qc-report/{site_id}")
+async def get_qc_report(
+    site_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Returns the QC report for a given site, if available."""
+    site = db.query(Site).filter(
+        Site.id == site_id,
+        Site.owner_id == current_user.id,
+    ).first()
+
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    if not site.qc_report:
+        raise HTTPException(status_code=404, detail="Nessun report QC disponibile per questo sito")
+
+    return {
+        "site_id": site.id,
+        "qc_score": site.qc_score,
+        "qc_report": site.qc_report,
     }
 
 

@@ -83,6 +83,10 @@ class User(Base):
     email_verification_token = Column(String, nullable=True)
     email_verification_token_created_at = Column(DateTime(timezone=True), nullable=True)
 
+    # Password reset
+    password_reset_token = Column(String, nullable=True)
+    password_reset_token_expires = Column(DateTime(timezone=True), nullable=True)
+
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -150,6 +154,13 @@ class User(Base):
         from datetime import timedelta
         expiry = self.email_verification_token_created_at + timedelta(hours=24)
         return datetime.now(timezone.utc) < expiry
+
+    @property
+    def is_reset_token_valid(self) -> bool:
+        """Controlla se il token di reset password e' ancora valido (1h)."""
+        if not self.password_reset_token or not self.password_reset_token_expires:
+            return False
+        return datetime.now(timezone.utc) < self.password_reset_token_expires
 
     def activate_plan(self, plan_name: str):
         """Attiva un piano dopo il pagamento. Imposta tutti i limiti.

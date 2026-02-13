@@ -1,17 +1,21 @@
 """Configurazione applicazione"""
 
+import logging
 import os
+import secrets
 from pydantic_settings import BaseSettings
 from typing import List
+
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
     """Impostazioni dell'applicazione"""
-    
+
     # App
     APP_NAME: str = "Site Builder"
     DEBUG: bool = False
-    SECRET_KEY: str = "your-secret-key-change-in-production"
+    SECRET_KEY: str = secrets.token_hex(32)
     
     # Database (PostgreSQL - Supabase in produzione, locale via Docker)
     DATABASE_URL: str = "postgresql://sitebuilder:sitebuilder123@localhost:5432/sitebuilder"
@@ -31,8 +35,13 @@ class Settings(BaseSettings):
     
     # Se impostato a true, permette richieste da qualsiasi origine (NON sicuro per produzione!)
     # Utile per debugging temporaneo
-    CORS_ALLOW_ALL: bool = True  # ATTENZIONE: Cambia a False dopo aver verificato tutto funzioni
+    CORS_ALLOW_ALL: bool = False
     
+    # Admin
+    ADMIN_EMAILS: str = ""  # Comma-separated list of admin emails for auto-premium
+    ADMIN_USERNAME: str = "E-quipe"
+    ADMIN_PASSWORD: str = "E-quipe!"
+
     # JWT
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 giorni
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
@@ -52,6 +61,13 @@ class Settings(BaseSettings):
     def active_api_key(self) -> str:
         """Ritorna la prima API key disponibile (MOONSHOT > KIMI)."""
         return self.MOONSHOT_API_KEY or self.KIMI_API_KEY
+
+    @property
+    def admin_emails_list(self) -> List[str]:
+        """Parse ADMIN_EMAILS comma-separated string into a list of lowercase emails."""
+        if not self.ADMIN_EMAILS:
+            return []
+        return [e.strip().lower() for e in self.ADMIN_EMAILS.split(",") if e.strip()]
     
     # AI Configuration
     AI_MAX_TOKENS: int = 6000
@@ -107,3 +123,10 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Warn if SECRET_KEY was not explicitly set (using auto-generated random key)
+if os.environ.get("SECRET_KEY") is None:
+    logger.warning(
+        "SECRET_KEY not set in environment. Using a random key. "
+        "Sessions will not persist across restarts. Set SECRET_KEY in .env for production."
+    )

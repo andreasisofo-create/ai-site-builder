@@ -67,7 +67,8 @@ function Dashboard() {
   const [loading, setLoading] = useState(false); // Default to false to show UI immediately
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -179,21 +180,38 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex overflow-hidden">
-      {/* Sidebar - Stile Wix Studio/VS Code */}
+      {/* Mobile sidebar backdrop */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Hidden on mobile, visible on desktop */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-[#111] border-r border-white/5 transition-all duration-300 z-50 flex flex-col ${sidebarOpen ? "w-64" : "w-16"
-          }`}
+        className={`fixed left-0 top-0 h-full bg-[#111] border-r border-white/5 transition-all duration-300 flex flex-col
+          ${mobileSidebarOpen ? "translate-x-0 z-50" : "-translate-x-full z-50"}
+          lg:translate-x-0 ${sidebarOpen ? "w-64" : "lg:w-16 w-64"}
+        `}
       >
         {/* Logo Area */}
-        <div className="h-16 flex items-center px-4 border-b border-white/5">
+        <div className="h-16 flex items-center px-4 border-b border-white/5 justify-between">
           <Link href="/" className="flex items-center gap-3 overflow-hidden">
             <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
               <SparklesIcon className="w-5 h-5 text-white" />
             </div>
-            {sidebarOpen && (
+            {(sidebarOpen || mobileSidebarOpen) && (
               <span className="font-semibold text-lg whitespace-nowrap">Studio</span>
             )}
           </Link>
+          {/* Close button - mobile only */}
+          <button
+            onClick={() => setMobileSidebarOpen(false)}
+            className="lg:hidden p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors"
+          >
+            <XMarkIcon className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -211,6 +229,7 @@ function Dashboard() {
                 } else {
                   toast(`${item.label}: Prossimamente`, { icon: "🚧" });
                 }
+                setMobileSidebarOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${item.active
                 ? "bg-white/10 text-white"
@@ -247,7 +266,14 @@ function Dashboard() {
           </a>
 
           <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => {
+              // On mobile, close the overlay; on desktop, toggle sidebar width
+              if (window.innerWidth < 1024) {
+                setMobileSidebarOpen(false);
+              } else {
+                setSidebarOpen(!sidebarOpen);
+              }
+            }}
             className="w-full flex items-center justify-center p-2 text-slate-500 hover:text-white transition-colors"
           >
             {sidebarOpen ? (
@@ -264,15 +290,23 @@ function Dashboard() {
 
       {/* Main Content */}
       <main
-        className={`flex-1 flex flex-col h-screen transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-16"
+        className={`flex-1 flex flex-col h-screen transition-all duration-300 ml-0 ${sidebarOpen ? "lg:ml-64" : "lg:ml-16"
           }`}
       >
         {/* Top Header */}
-        <header className="h-16 px-8 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl flex items-center justify-between sticky top-0 z-40">
-          <div className="flex items-center gap-4 flex-1">
-            <h1 className="text-lg font-semibold">Dashboard</h1>
-            <div className="w-px h-4 bg-white/10 mx-2" />
-            <div className="relative max-w-sm w-full">
+        <header className="h-16 px-4 lg:px-8 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl flex items-center justify-between sticky top-0 z-40">
+          <div className="flex items-center gap-3 lg:gap-4 flex-1 min-w-0">
+            {/* Hamburger menu - mobile only */}
+            <button
+              onClick={() => setMobileSidebarOpen(true)}
+              className="lg:hidden p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors flex-shrink-0"
+            >
+              <Bars3Icon className="w-6 h-6" />
+            </button>
+
+            <h1 className="text-lg font-semibold flex-shrink-0">Dashboard</h1>
+            <div className="w-px h-4 bg-white/10 mx-1 lg:mx-2 hidden sm:block" />
+            <div className="relative max-w-sm w-full hidden sm:block">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 type="text"
@@ -284,7 +318,7 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 lg:gap-4">
             <button className="p-2 text-slate-400 hover:text-white transition-colors relative">
               <BellIcon className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-[#0a0a0a]" />
@@ -292,10 +326,10 @@ function Dashboard() {
 
             <button
               onClick={() => createSite()}
-              className="px-4 py-2 bg-white text-black rounded-full font-medium text-sm hover:bg-slate-200 transition-colors flex items-center gap-2"
+              className="px-3 lg:px-4 py-2 bg-white text-black rounded-full font-medium text-sm hover:bg-slate-200 transition-colors flex items-center gap-2"
             >
               <PlusIcon className="w-4 h-4" />
-              Crea nuovo sito
+              <span className="hidden sm:inline">Crea nuovo sito</span>
             </button>
 
             <Menu as="div" className="relative">
@@ -377,7 +411,7 @@ function Dashboard() {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-12 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8 lg:space-y-12 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
 
           {/* Hero Section */}
           <section className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#111]">
@@ -700,7 +734,7 @@ function Dashboard() {
 
       {/* Detail Overlay / Drawer (Opzionale, simile a prima ma più pulito) */}
       {selectedSite && (
-        <aside className="fixed right-0 top-0 h-full w-96 bg-[#111] border-l border-white/10 z-[60] shadow-2xl transform transition-transform animate-in slide-in-from-right duration-200">
+        <aside className="fixed right-0 top-0 h-full w-full sm:w-96 bg-[#111] border-l border-white/10 z-[60] shadow-2xl transform transition-transform animate-in slide-in-from-right duration-200">
           <div className="h-full flex flex-col">
             {/* Header */}
             <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">

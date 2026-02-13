@@ -1,6 +1,6 @@
 """Modello Sito Web"""
 
-from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey, JSON
+from sqlalchemy import Column, Integer, Float, String, Text, Boolean, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
@@ -41,6 +41,10 @@ class Site(Base):
     # Generation progress tracking
     generation_step = Column(Integer, default=0)  # 0=idle, 1=analyzing, 2=generating, 3=reviewing
     generation_message = Column(String, default="")
+
+    # Quality Control
+    qc_score = Column(Float, nullable=True)
+    qc_report = Column(JSON, nullable=True)
 
     # Deploy
     vercel_project_id = Column(String)

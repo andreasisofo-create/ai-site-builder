@@ -17,7 +17,7 @@ from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token, decode_token, get_current_active_user
 from app.models.user import User
 from app.services.oauth_service import oauth_service
-from app.services.email_service import send_verification_email
+from app.services.email_service import send_verification_email, send_password_reset_email
 from app.core.rate_limiter import limiter
 
 router = APIRouter()
@@ -30,6 +30,15 @@ class RegisterRequest(BaseModel):
     email: str
     password: str
     full_name: str = ""
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
 
 
 class OAuthLoginRequest(BaseModel):
@@ -111,7 +120,7 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
     if not user or not user.hashed_password or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Credenziali non valide")
     
-    if user.email.lower() == "andrea.sisofo@e-quipe.it" and not user.is_premium:
+    if user.email.lower() in settings.admin_emails_list and not user.is_premium:
         user.is_premium = True
         db.add(user)
         db.commit()
@@ -188,7 +197,7 @@ async def oauth_login(data: OAuthLoginRequest, db: Session = Depends(get_db)):
             db.refresh(user)
         
         # Admin/Premium override
-        if user.email.lower() == "andrea.sisofo@e-quipe.it" and not user.is_premium:
+        if user.email.lower() in settings.admin_emails_list and not user.is_premium:
             user.is_premium = True
             db.add(user)
             db.commit()
@@ -348,7 +357,7 @@ async def google_oauth_callback(
             db.refresh(user)
 
         # Admin override
-        if user.email.lower() == "andrea.sisofo@e-quipe.it" and not user.is_premium:
+        if user.email.lower() in settings.admin_emails_list and not user.is_premium:
             user.is_premium = True
             db.add(user)
             db.commit()
@@ -480,7 +489,7 @@ async def microsoft_oauth_callback(
             db.refresh(user)
 
         # Admin override
-        if user.email.lower() == "andrea.sisofo@e-quipe.it" and not user.is_premium:
+        if user.email.lower() in settings.admin_emails_list and not user.is_premium:
             user.is_premium = True
             db.add(user)
             db.commit()
@@ -572,6 +581,64 @@ async def get_quota(current_user: User = Depends(get_current_active_user)):
         "remaining_pages": current_user.remaining_pages,
         "has_remaining_pages": current_user.has_remaining_pages,
     }
+
+
+# ============= PASSWORD RESET =============
+
+@router.post("/forgot-password")
+@limiter.limit("3/hour")
+async def forgot_password(request: Request, data: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """Richiedi reset password. Rate limit: 3/ora per IP. Risponde sempre con successo."""
+    from datetime import timedelta
+
+    # Cerca utente per email
+    user = db.query(User).filter(User.email.ilike(data.email)).first()
+
+    if user and user.hashed_password:
+        # Genera token sicuro
+        token = secrets.token_urlsafe(32)
+        user.password_reset_token = token
+        user.password_reset_token_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+        db.commit()
+
+        reset_url = f"{FRONTEND_URL}/auth/reset-password?token={token}"
+        email_sent = send_password_reset_email(user.email, reset_url)
+
+        if not email_sent:
+            # In sviluppo senza Resend, logga il link
+            print(f"[DEBUG] Password reset link: {reset_url}")
+
+    # Rispondi sempre con successo per non rivelare se l'email esiste
+    return {
+        "message": "Se l'email esiste nel nostro sistema, riceverai un link per reimpostare la password."
+    }
+
+
+@router.post("/reset-password")
+async def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)):
+    """Reimposta la password usando il token di reset."""
+    if not data.token or not data.new_password:
+        raise HTTPException(status_code=400, detail="Token e nuova password sono obbligatori")
+
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="La password deve avere almeno 6 caratteri")
+
+    user = db.query(User).filter(User.password_reset_token == data.token).first()
+
+    if not user or not user.is_reset_token_valid:
+        raise HTTPException(
+            status_code=400,
+            detail="Il link di reset non e' valido o e' scaduto. Richiedi un nuovo link."
+        )
+
+    # Aggiorna password
+    user.hashed_password = get_password_hash(data.new_password)
+    # Invalida il token
+    user.password_reset_token = None
+    user.password_reset_token_expires = None
+    db.commit()
+
+    return {"message": "Password reimpostata con successo! Ora puoi accedere con la nuova password."}
 
 
 # ============= EMAIL VERIFICATION =============
@@ -724,6 +791,8 @@ async def migrate_db(db: Session = Depends(get_db)):
             ("pages_used", "INTEGER DEFAULT 0"),
             ("pages_limit", "INTEGER DEFAULT 1"),
             ("revolut_customer_id", "VARCHAR"),
+            ("password_reset_token", "VARCHAR"),
+            ("password_reset_token_expires", "TIMESTAMPTZ"),
         ]
 
         # Migrazioni per tabella sites
