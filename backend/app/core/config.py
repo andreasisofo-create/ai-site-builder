@@ -31,6 +31,9 @@ class Settings(BaseSettings):
         # Domini Vercel (frontend produzione)
         "https://site-generator-v2.vercel.app",
         "https://www.site-generator-v2.vercel.app",
+        # Dominio custom
+        "https://e-quipe.app",
+        "https://www.e-quipe.app",
     ]
     
     # Se impostato a true, permette richieste da qualsiasi origine (NON sicuro per produzione!)
