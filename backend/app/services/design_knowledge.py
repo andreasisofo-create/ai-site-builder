@@ -26,6 +26,8 @@ CATEGORIES = [
     "typography",
     "gsap_snippets",
     "creative_prompts",
+    "professional_blueprints",
+    "section_references",
 ]
 
 def get_collection():
@@ -122,11 +124,31 @@ def get_creative_context(style_id: str, category_label: str, sections: Optional[
     """
     context_parts = []
 
+    # PRIORITY 1: Professional blueprint for this business category
+    blueprint_query = f"{category_label} professional website blueprint design guide"
+    blueprints = search_patterns(blueprint_query, n_results=2, category="professional_blueprints")
+    if blueprints:
+        context_parts.append("## PROFESSIONAL SITE BLUEPRINT (follow this closely):")
+        for bp in blueprints:
+            context_parts.append(bp['content'][:600])
+
+    # PRIORITY 2: Section-specific design references
+    if sections:
+        section_query = " ".join(sections[:4]) + " professional section design reference"
+        refs = search_patterns(section_query, n_results=3, category="section_references")
+        if refs:
+            context_parts.append("\n## Section Design References:")
+            for r in refs:
+                meta = r["metadata"]
+                context_parts.append(f"- {r['content'][:300]}")
+                if meta.get("code_snippet"):
+                    context_parts.append(f"  HTML: {meta['code_snippet'][:400]}")
+
     # Search for style-relevant animations
     style_query = f"{category_label} {style_id} website animations effects"
-    animations = search_patterns(style_query, n_results=5, category="scroll_effects")
+    animations = search_patterns(style_query, n_results=4, category="scroll_effects")
     if animations:
-        context_parts.append("## Animation Effects to Apply:")
+        context_parts.append("\n## Animation Effects to Apply:")
         for a in animations:
             meta = a["metadata"]
             context_parts.append(f"- {a['content'][:200]}")
@@ -141,11 +163,18 @@ def get_creative_context(style_id: str, category_label: str, sections: Optional[
             context_parts.append(f"- {lp['content'][:200]}")
 
     # Get creative prompts
-    creative = search_patterns(f"creative {category_label} professional", n_results=5, category="creative_prompts")
+    creative = search_patterns(f"creative {category_label} professional", n_results=4, category="creative_prompts")
     if creative:
         context_parts.append("\n## Creative Directives:")
         for c in creative:
             context_parts.append(f"- {c['content'][:150]}")
+
+    # Get color palette suggestion
+    palette = search_patterns(f"{category_label} color palette", n_results=2, category="color_palettes")
+    if palette:
+        context_parts.append("\n## Color Inspiration:")
+        for p in palette:
+            context_parts.append(f"- {p['content'][:200]}")
 
     # Get GSAP snippets for sections
     if sections:

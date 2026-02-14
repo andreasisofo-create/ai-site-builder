@@ -72,6 +72,10 @@ class TemplateAssembler:
 
         Supports nested repeats: outer repeats are expanded first, then inner
         repeats within each item are expanded recursively using item data.
+
+        Auto-injects INDEX (1-based) and INDEX_PADDED (zero-padded, e.g. "01")
+        into each item so templates like services-tabs-01 and services-minimal-list-01
+        can reference {{INDEX}} and {{INDEX_PADDED}}.
         """
         pattern = r'<!-- REPEAT:(\w+) -->(.*?)<!-- /REPEAT:\1 -->'
 
@@ -82,11 +86,18 @@ class TemplateAssembler:
             if not isinstance(items, list) or not items:
                 return ""
             fragments = []
-            for item in items:
+            for idx, item in enumerate(items):
                 if isinstance(item, dict):
+                    # Inject index placeholders for templates that need them
+                    item_with_index = {
+                        **item,
+                        "INDEX": str(idx + 1),
+                        "INDEX_PADDED": f"{idx + 1:02d}",
+                        "INDEX_ZERO": str(idx),
+                    }
                     # Recursively expand nested repeats within this item
-                    fragment = self._expand_repeats(inner_template, item)
-                    fragment = self._replace_placeholders(fragment, item)
+                    fragment = self._expand_repeats(inner_template, item_with_index)
+                    fragment = self._replace_placeholders(fragment, item_with_index)
                 else:
                     fragment = inner_template
                 fragments.append(fragment)

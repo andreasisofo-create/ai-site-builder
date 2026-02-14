@@ -166,13 +166,16 @@ document.addEventListener('DOMContentLoaded', function () {
         el.appendChild(span);
       });
     } else {
-      var pieces = splitBy === 'words' ? text.split(/\s+/) : text.split('');
+      var pieces = splitBy === 'words' ? text.split(/\s+/).filter(function(p) { return p.length > 0; }) : text.split('');
       pieces.forEach(function (piece, i) {
         var span = document.createElement('span');
-        span.textContent = piece === ' ' || (splitBy === 'words' && i < pieces.length - 1) ? piece + ' ' : piece;
+        span.textContent = piece;
         span.style.display = 'inline-block';
         span.style.opacity = '0';
-        if (piece === ' ') span.style.width = '0.3em';
+        // Add margin-right for word spacing (except last word)
+        if (splitBy === 'words' && i < pieces.length - 1) {
+          span.style.marginRight = '0.3em';
+        }
         el.appendChild(span);
       });
     }

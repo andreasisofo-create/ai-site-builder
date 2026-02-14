@@ -956,6 +956,357 @@ PATTERNS = [
         "complexity": "low",
         "impact_score": 8,
     },
+
+    # ====================================================
+    # PROFESSIONAL BLUEPRINTS (8) - Complete design guides per category
+    # ====================================================
+    {
+        "id": "blueprint_restaurant",
+        "content": """RESTAURANT WEBSITE BLUEPRINT - Award-winning design:
+PALETTE: Dark moody (bg #1a1a2e or warm cream #fdf6ee), accent gold/terracotta/burgundy. NEVER plain white bg.
+FONTS: Heading=Playfair Display (italic for elegance) or DM Serif Display, Body=Inter or Nunito Sans.
+HERO: Full-bleed food photography with dark gradient overlay (from-black/70). Hero title: evocative, max 4-5 words like "Dove il Gusto Diventa Arte" or "L'Essenza della Cucina Italiana". NEVER "Benvenuti al Ristorante". Include scroll-down indicator arrow.
+ABOUT: Split layout (image left 50%, text right 50%) with the chef/founder story. Stats: "Anni di esperienza", "Piatti signature", "Stelle Michelin" or similar. Use data-counter.
+SERVICES/MENU: Card grid with hover lift effect. Each card has food emoji icon, dish category name, evocative 2-line description. Use stagger animation. Cards: rounded corners, subtle shadow, bg-[var(--color-bg-alt)].
+TESTIMONIALS: Quote cards with large decorative quote marks (text-6xl opacity-20), customer name + "Cliente fedele da 3 anni" type specifics.
+CTA: Gradient background section with "Prenota il Tuo Tavolo" + phone number + reservation button (magnetic).
+CONTACT: Map + address + hours. Clean card layout.
+OVERALL FEEL: Intimate, luxurious, warm. Like dining at a Michelin restaurant. Every image should make you hungry.""",
+        "category": "professional_blueprints",
+        "tags": ["restaurant", "blueprint", "food", "dining"],
+        "complexity": "medium",
+        "impact_score": 10,
+    },
+    {
+        "id": "blueprint_saas",
+        "content": """SAAS/TECH WEBSITE BLUEPRINT - Modern startup landing page:
+PALETTE: Dark theme (bg #0f172a or #0a0a0a) with vibrant gradient accents (purple-to-blue #6c5ce7→#0984e3 or teal-to-cyan #00cec9→#0984e3). Light variant: clean white bg with bold primary.
+FONTS: Heading=Space Grotesk or Sora (geometric, tech feel), Body=Inter or DM Sans. NEVER serif for tech.
+HERO: Centered layout, massive headline (text-5xl to text-7xl, font-extrabold). Gradient text effect on key word. Subtitle: clear value proposition in 1-2 lines. Two CTAs: primary (filled, magnetic) + secondary (outlined). Decorative: floating gradient orbs (blur-3xl, opacity-10), dot grid pattern.
+FEATURES: Bento grid (2x3 or asymmetric) with icon + title + description per card. Cards have subtle border, hover glow effect (hover:border-primary/30 hover:shadow-primary/10). Icons: tech-relevant emojis (⚡🚀🔒🎯📊🤖).
+SERVICES: 3-column cards with number/icon top, bold title, benefit-focused description. Stagger animation. Dark cards on light bg or vice versa.
+SOCIAL PROOF: Stats counter row (data-counter): "10K+ Utenti", "99.9% Uptime", "4.9/5 Rating", "150+ Integrazioni". Then logo marquee of partner companies.
+TESTIMONIALS: Grid of cards with profile image, name, role, company, quote. Or carousel.
+PRICING: 3-tier pricing cards, center card "highlighted" (border-primary, scale-105, "Popolare" badge). Features checklist.
+CTA: Full-width gradient section with bold headline + email input + button. Gradient-flow animation.
+OVERALL FEEL: Cutting-edge, trustworthy, fast. Like Vercel, Linear, or Stripe landing pages.""",
+        "category": "professional_blueprints",
+        "tags": ["saas", "blueprint", "tech", "startup", "landing"],
+        "complexity": "medium",
+        "impact_score": 10,
+    },
+    {
+        "id": "blueprint_portfolio",
+        "content": """PORTFOLIO/CREATIVE WEBSITE BLUEPRINT - Artistic showcase:
+PALETTE: Monochrome base (pure black #0a0a0a + white #ffffff) with ONE accent color (electric blue, coral, or neon green). OR editorial warm (cream bg, rich black text, subtle accent).
+FONTS: Heading=Clash Display or Cabinet Grotesk (bold statement), Body=Inter. For editorial: Playfair Display heading + DM Sans body.
+HERO: Full-screen with name/title huge (text-8xl+), subtitle in smaller text. Minimal elements, lots of whitespace. Name can be outlined text (-webkit-text-stroke). Scroll indicator at bottom.
+GALLERY: Masonry grid or spotlight layout with image-zoom effect. Images should dominate. Minimal text overlays. Hover reveals project title + category. Use image-reveal animation.
+ABOUT: Short personal statement, split layout with portrait photo. Stats: "Progetti completati", "Anni di esperienza", "Clienti soddisfatti". Keep it minimal and impactful.
+SERVICES: Minimal list with hover-expand or alternating rows. Not card-heavy - clean, editorial feel.
+CONTACT: Super clean - just email, social links, and optional form. Centered layout.
+OVERALL FEEL: Clean, confident, artistic. Let the work speak. Like a top Awwwards portfolio.""",
+        "category": "professional_blueprints",
+        "tags": ["portfolio", "blueprint", "creative", "artistic"],
+        "complexity": "medium",
+        "impact_score": 10,
+    },
+    {
+        "id": "blueprint_ecommerce",
+        "content": """E-COMMERCE WEBSITE BLUEPRINT - Product-focused shopping:
+PALETTE: Clean white bg (#ffffff) with bold primary (deep blue, emerald, or black), warm accent for CTAs (coral, amber). Luxury variant: dark bg with gold/champagne accent.
+FONTS: Heading=Outfit or Epilogue (modern commerce), Body=Inter or Plus Jakarta Sans. Luxury: DM Serif Display + Nunito Sans.
+HERO: Split layout - product image 60% right with parallax, text 40% left with headline + price highlight + CTA. OR full-bleed product photo with text overlay. Badge: "Spedizione Gratuita" or "Nuovo Arrivo".
+PRODUCTS/SERVICES: Card grid with product images (aspect-ratio 1/1 or 4/5, object-cover). Hover: image scale 1.05 + quick-view overlay. Price prominent. Cards: clean white bg, subtle shadow.
+FEATURES: Icon row showing benefits: 🚚 Spedizione Gratis, 🔒 Pagamento Sicuro, ↩️ Reso Facile, ⭐ Garanzia Qualità.
+TESTIMONIALS: Customer reviews with star rating ⭐⭐⭐⭐⭐, photo, verified badge.
+CTA: Product showcase + urgency ("Ultimi Pezzi", "Solo Questa Settimana") + big CTA button.
+OVERALL FEEL: Trust-building, clean, product-focused. Like a premium Shopify store.""",
+        "category": "professional_blueprints",
+        "tags": ["ecommerce", "blueprint", "shop", "product"],
+        "complexity": "medium",
+        "impact_score": 10,
+    },
+    {
+        "id": "blueprint_business",
+        "content": """BUSINESS/CORPORATE WEBSITE BLUEPRINT - Professional trust-building:
+PALETTE: Navy/dark blue primary (#1e3a5f or #1e40af), light gray bg (#f8fafc), warm accent (amber #f59e0b or teal #0d9488). OR modern: white bg with bold single accent.
+FONTS: Heading=Epilogue or Outfit (professional yet modern), Body=Inter or Source Sans 3. For trust: DM Serif Display + Nunito Sans.
+HERO: Split layout or centered. Photo of team/office/product. Headline: benefit-focused, NOT "La Nostra Azienda". Example: "Trasformiamo Idee in Risultati Concreti". Trust badges below CTA.
+ABOUT: Company story with timeline or alternating image-text rows. Stats: revenue, clients, years, team size with data-counter. Split image + text.
+SERVICES: 3 or 4 cards with icons, hover tilt effect. Each service: icon, bold title, 2-line benefit description, "Scopri di più" link.
+TEAM: Grid of team member cards with photo, name, role. Hover effect reveals bio. Professional headshots.
+TESTIMONIALS: Client quotes with company logos. Spotlight style for premium feel.
+CTA: Bold section with gradient or dark bg. "Richiedi una Consulenza Gratuita" + contact form or phone.
+CONTACT: Professional form (name, email, phone, company, message) + office address + map.
+OVERALL FEEL: Trustworthy, competent, approachable. Like a top consulting firm website.""",
+        "category": "professional_blueprints",
+        "tags": ["business", "blueprint", "corporate", "professional"],
+        "complexity": "medium",
+        "impact_score": 10,
+    },
+    {
+        "id": "blueprint_blog",
+        "content": """BLOG/EDITORIAL WEBSITE BLUEPRINT - Content-focused reading:
+PALETTE: Warm editorial: cream bg (#faf8f5), rich black text (#1a1a1a), accent coral or deep red. Dark variant: #121212 bg, white text, neon accent.
+FONTS: Heading=Playfair Display or Fraunces (editorial character), Body=Source Serif 4 or Lora for reading. Display: Clash Display for modern editorial.
+HERO: Editorial mastheadstyle. Large publication name, featured article with full-bleed image, headline overlay. Clean, magazine-like. OR minimal centered title with typewriter effect.
+ABOUT: Short mission statement, centered narrow layout (max-w-3xl). Personal tone. "Chi Sono" with portrait.
+SERVICES/CATEGORIES: Minimal list or card grid showing content categories. Clean hover underline effects. Tag-based navigation.
+GALLERY: Article cards with featured image, category badge, title, excerpt, read time. Masonry or clean grid.
+CONTACT: Newsletter signup (email input + subscribe button) + social links. "Resta Aggiornato" CTA.
+OVERALL FEEL: Intellectual, clean, readable. Generous whitespace. Like Medium or a premium magazine.""",
+        "category": "professional_blueprints",
+        "tags": ["blog", "blueprint", "editorial", "magazine"],
+        "complexity": "medium",
+        "impact_score": 10,
+    },
+    {
+        "id": "blueprint_event",
+        "content": """EVENT/COMMUNITY WEBSITE BLUEPRINT - Energetic and time-sensitive:
+PALETTE: Vibrant and energetic. Primary: electric purple (#7c3aed) or hot pink (#ec4899), accent: yellow (#fbbf24) or cyan (#06b6d4). Dark bg for energy, or white bg for corporate events.
+FONTS: Heading=Sora or Space Grotesk (bold, geometric), Body=Inter or DM Sans. Festival: Clash Display for max impact.
+HERO: Full-screen with event name massive (text-7xl+), date and location prominent, countdown timer (data-counter), animated shapes background (float + morph-bg). CTA: "Iscriviti Ora" or "Acquista Biglietti" (magnetic, gradient).
+ABOUT: Event description with key highlights. Split layout with event photo/video. "Perché Partecipare" with benefit icons.
+SERVICES/SCHEDULE: Timeline of event schedule with time, talk title, speaker. OR tab-based day selector. Process steps: 1. Registrati, 2. Partecipa, 3. Connettiti.
+TEAM/SPEAKERS: Speaker cards with photo, name, role, company, talk topic. Grid or carousel.
+CTA: Urgency-driven. "Solo 50 Posti Rimasti" + countdown + ticket button. Gradient animated background.
+CONTACT: Registration form (name, email, ticket type) + venue address + map.
+OVERALL FEEL: Exciting, urgent, community-driven. Creates FOMO. Like a tech conference or festival website.""",
+        "category": "professional_blueprints",
+        "tags": ["event", "blueprint", "conference", "community"],
+        "complexity": "medium",
+        "impact_score": 10,
+    },
+    {
+        "id": "blueprint_general",
+        "content": """UNIVERSAL DESIGN PRINCIPLES FOR ALL PROFESSIONAL WEBSITES:
+1. HERO must be min-h-screen with massive typography (text-5xl to text-8xl heading). Never smaller.
+2. EVERY section heading: data-animate="text-split" data-split-type="words". Hero h1: chars or words.
+3. EVERY CTA button: data-animate="magnetic". Primary buttons: filled bg-primary with hover scale. Secondary: outlined.
+4. EVERY card grid: data-animate="stagger" parent, stagger-item children. Cards: hover:-translate-y-1 hover:shadow-xl transition.
+5. Section spacing: py-20 lg:py-32 minimum. Content max-w-7xl mx-auto px-6.
+6. Visual rhythm: alternate bg-[var(--color-bg)] and bg-[var(--color-bg-alt)] between sections.
+7. DECORATIVE ELEMENTS in hero: 2-3 blurred gradient orbs (absolute, blur-3xl, opacity-5 to opacity-15, primary/accent colors).
+8. Images: all use loading="lazy", rounded corners (rounded-2xl), overflow-hidden container with image-zoom.
+9. NO generic Italian text ever. Every word must be specific to the business.
+10. Font hierarchy: h1 text-5xl md:text-7xl, h2 text-3xl md:text-5xl, h3 text-xl md:text-2xl, body text-base md:text-lg.
+11. Color usage: primary for CTAs and accents, secondary for supporting elements, accent for highlights and badges.
+12. Footer: always include business name, description, nav links, social links, copyright with CURRENT_YEAR.""",
+        "category": "professional_blueprints",
+        "tags": ["universal", "blueprint", "rules", "all-categories"],
+        "complexity": "low",
+        "impact_score": 10,
+    },
+
+    # ====================================================
+    # SECTION REFERENCES (8) - Concrete HTML/CSS examples
+    # ====================================================
+    {
+        "id": "ref_hero_professional",
+        "content": "Professional hero section: full viewport height, centered content with max-w-4xl, massive headline with text-split animation, subtitle with blur-in, two CTAs (primary filled + secondary outlined), decorative gradient orbs in background, optional scroll indicator arrow at bottom.",
+        "category": "section_references",
+        "tags": ["hero", "reference", "professional", "fullscreen"],
+        "complexity": "medium",
+        "impact_score": 10,
+        "code": """<section class="min-h-screen relative overflow-hidden flex items-center bg-[var(--color-bg)]">
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl opacity-10" data-animate="float" style="background: var(--color-primary);"></div>
+    <div class="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full blur-3xl opacity-8" data-animate="float" data-delay="1" style="background: var(--color-accent);"></div>
+  </div>
+  <div class="relative max-w-7xl mx-auto px-6 py-32 text-center">
+    <p class="text-sm uppercase tracking-widest text-[var(--color-primary)] font-semibold mb-6" data-animate="fade-up">Etichetta</p>
+    <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-extrabold text-[var(--color-text)] mb-8 leading-tight" data-animate="text-split" data-split-type="words">Headline Potente</h1>
+    <p class="text-xl md:text-2xl text-[var(--color-text-muted)] max-w-2xl mx-auto mb-12" data-animate="blur-in" data-delay="0.3">Sottotitolo evocativo che crea desiderio.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center" data-animate="fade-up" data-delay="0.5">
+      <a href="#contact" class="px-8 py-4 bg-[var(--color-primary)] text-white rounded-xl font-semibold text-lg hover:scale-105 transition-transform shadow-lg" data-animate="magnetic">CTA Primaria</a>
+      <a href="#about" class="px-8 py-4 border-2 border-[var(--color-primary)] text-[var(--color-primary)] rounded-xl font-semibold text-lg hover:bg-[var(--color-primary)] hover:text-white transition-all">Scopri di Più</a>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "ref_services_professional",
+        "content": "Professional services section: section heading with pre-label, 3-column card grid with stagger animation, each card has emoji icon, bold title, description, hover lift effect. Alternating background from hero.",
+        "category": "section_references",
+        "tags": ["services", "reference", "cards", "grid"],
+        "complexity": "low",
+        "impact_score": 9,
+        "code": """<section class="py-20 lg:py-32 bg-[var(--color-bg-alt)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-sm uppercase tracking-widest text-[var(--color-primary)] font-semibold mb-4" data-animate="fade-up">I Nostri Servizi</p>
+      <h2 class="text-3xl md:text-5xl font-heading font-bold text-[var(--color-text)] mb-6" data-animate="text-split" data-split-type="words">Titolo Sezione</h2>
+      <p class="text-lg text-[var(--color-text-muted)] max-w-2xl mx-auto" data-animate="fade-up" data-delay="0.2">Sottotitolo descrittivo.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate="stagger">
+      <div class="stagger-item group bg-[var(--color-bg)] rounded-2xl p-8 shadow-sm hover:-translate-y-2 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-[var(--color-primary)]/20">
+        <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🎯</div>
+        <h3 class="text-xl font-heading font-bold text-[var(--color-text)] mb-3">Servizio</h3>
+        <p class="text-[var(--color-text-muted)] leading-relaxed">Descrizione benefit-focused.</p>
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "ref_about_professional",
+        "content": "Professional about section: split layout (image left 45%, text right 55%), decorative frame around image, stats counters row, business story paragraph. Image uses image-zoom effect.",
+        "category": "section_references",
+        "tags": ["about", "reference", "split", "stats"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """<section class="py-20 lg:py-32 bg-[var(--color-bg)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div class="relative" data-animate="fade-right">
+        <div class="absolute -inset-4 border border-[var(--color-primary)]/20 rounded-2xl"></div>
+        <div class="relative overflow-hidden rounded-2xl" data-animate="image-zoom">
+          <img src="..." alt="..." class="w-full aspect-[4/3] object-cover" loading="lazy">
+        </div>
+      </div>
+      <div>
+        <p class="text-sm uppercase tracking-widest text-[var(--color-primary)] font-semibold mb-4" data-animate="fade-up">Chi Siamo</p>
+        <h2 class="text-3xl md:text-5xl font-heading font-bold text-[var(--color-text)] mb-6" data-animate="text-split" data-split-type="words">La Nostra Storia</h2>
+        <p class="text-lg text-[var(--color-text-muted)] leading-relaxed mb-8" data-animate="fade-up" data-delay="0.2">Testo descrittivo.</p>
+        <div class="grid grid-cols-3 gap-6" data-animate="stagger">
+          <div class="stagger-item text-center">
+            <div class="text-3xl font-heading font-bold text-[var(--color-primary)]" data-counter="25" data-counter-suffix="+">0</div>
+            <div class="text-sm text-[var(--color-text-muted)] mt-1">Anni</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "ref_testimonials_professional",
+        "content": "Professional testimonials section: large decorative quote marks, client quote in larger text (text-xl), author name with role, optional profile image or initial avatar. Cards with subtle bg and shadow.",
+        "category": "section_references",
+        "tags": ["testimonials", "reference", "quotes", "social-proof"],
+        "complexity": "low",
+        "impact_score": 8,
+        "code": """<section class="py-20 lg:py-32 bg-[var(--color-bg-alt)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-5xl font-heading font-bold text-[var(--color-text)]" data-animate="text-split" data-split-type="words">Cosa Dicono di Noi</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate="stagger">
+      <div class="stagger-item bg-[var(--color-bg)] rounded-2xl p-8 shadow-sm relative">
+        <div class="text-6xl text-[var(--color-primary)] opacity-20 absolute top-4 left-6 font-serif">"</div>
+        <p class="text-lg text-[var(--color-text)] leading-relaxed mb-6 relative z-10 pt-8">Citazione specifica e dettagliata.</p>
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white font-bold">M</div>
+          <div>
+            <p class="font-semibold text-[var(--color-text)]">Nome Cognome</p>
+            <p class="text-sm text-[var(--color-text-muted)]">Ruolo, Azienda</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "ref_cta_professional",
+        "content": "Professional CTA section: bold gradient or dark background with gradient-flow animation, large headline (text-4xl), subtitle, single prominent CTA button with magnetic effect. Creates urgency.",
+        "category": "section_references",
+        "tags": ["cta", "reference", "conversion", "gradient"],
+        "complexity": "low",
+        "impact_score": 9,
+        "code": """<section class="py-20 lg:py-32 relative overflow-hidden" data-animate="gradient-flow" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); background-size: 400% 400%;">
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-20 bg-white" data-animate="float"></div>
+  </div>
+  <div class="relative max-w-4xl mx-auto px-6 text-center">
+    <h2 class="text-3xl md:text-5xl font-heading font-bold text-white mb-6" data-animate="text-split" data-split-type="words">Pronto a Iniziare?</h2>
+    <p class="text-xl text-white/80 mb-10 max-w-2xl mx-auto" data-animate="fade-up" data-delay="0.2">Testo persuasivo che crea urgenza.</p>
+    <a href="#contact" class="inline-block px-10 py-5 bg-white text-[var(--color-primary)] rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl" data-animate="magnetic">Testo CTA</a>
+  </div>
+</section>""",
+    },
+    {
+        "id": "ref_contact_professional",
+        "content": "Professional contact section: split layout with form on one side and contact info (address, phone, email, hours) on the other. Form has proper inputs with labels, submit button with magnetic effect.",
+        "category": "section_references",
+        "tags": ["contact", "reference", "form", "split"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """<section class="py-20 lg:py-32 bg-[var(--color-bg)]" id="contact">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-5xl font-heading font-bold text-[var(--color-text)]" data-animate="text-split" data-split-type="words">Contattaci</h2>
+      <p class="text-lg text-[var(--color-text-muted)] mt-4" data-animate="fade-up">Sottotitolo.</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+      <div data-animate="fade-right">
+        <form class="space-y-6">
+          <div><label class="block text-sm font-medium text-[var(--color-text)] mb-2">Nome</label><input type="text" class="w-full px-4 py-3 rounded-xl border border-[var(--color-text-muted)]/20 bg-[var(--color-bg-alt)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition"></div>
+          <div><label class="block text-sm font-medium text-[var(--color-text)] mb-2">Email</label><input type="email" class="w-full px-4 py-3 rounded-xl border border-[var(--color-text-muted)]/20 bg-[var(--color-bg-alt)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition"></div>
+          <div><label class="block text-sm font-medium text-[var(--color-text)] mb-2">Messaggio</label><textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-[var(--color-text-muted)]/20 bg-[var(--color-bg-alt)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition resize-none"></textarea></div>
+          <button type="submit" class="w-full py-4 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:scale-[1.02] transition-transform" data-animate="magnetic">Invia Messaggio</button>
+        </form>
+      </div>
+      <div class="space-y-8" data-animate="fade-left">
+        <div class="flex gap-4"><div class="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center text-[var(--color-primary)]">📍</div><div><p class="font-semibold text-[var(--color-text)]">Indirizzo</p><p class="text-[var(--color-text-muted)]">Via Example 123</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "ref_features_professional",
+        "content": "Professional features section: bento grid layout with mixed card sizes, icon + title + description per feature. Cards have gradient border on hover, stagger entrance animation. Modern tech feel.",
+        "category": "section_references",
+        "tags": ["features", "reference", "bento", "grid"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """<section class="py-20 lg:py-32 bg-[var(--color-bg)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-sm uppercase tracking-widest text-[var(--color-primary)] font-semibold mb-4" data-animate="fade-up">Funzionalità</p>
+      <h2 class="text-3xl md:text-5xl font-heading font-bold text-[var(--color-text)] mb-6" data-animate="text-split" data-split-type="words">Perché Scegliere Noi</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-animate="stagger">
+      <div class="stagger-item group bg-[var(--color-bg-alt)] rounded-2xl p-8 border border-transparent hover:border-[var(--color-primary)]/30 hover:shadow-lg hover:shadow-[var(--color-primary)]/5 transition-all duration-300">
+        <div class="w-14 h-14 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition-transform">⚡</div>
+        <h3 class="text-lg font-heading font-bold text-[var(--color-text)] mb-3">Feature Title</h3>
+        <p class="text-[var(--color-text-muted)] leading-relaxed">Benefit-focused description.</p>
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "ref_footer_professional",
+        "content": "Professional footer: dark background, multi-column layout with business info, nav links, contact details. Social media icons. Copyright bar at bottom. Clean, comprehensive.",
+        "category": "section_references",
+        "tags": ["footer", "reference", "navigation", "dark"],
+        "complexity": "low",
+        "impact_score": 7,
+        "code": """<footer class="bg-[var(--color-text)] text-white/80 pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+      <div class="md:col-span-2">
+        <h3 class="text-2xl font-heading font-bold text-white mb-4">{{BUSINESS_NAME}}</h3>
+        <p class="text-white/60 leading-relaxed max-w-md">{{FOOTER_DESCRIPTION}}</p>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white mb-4">Link Utili</h4>
+        <ul class="space-y-2 text-white/60"><li><a href="#about" class="hover:text-white transition">Chi Siamo</a></li><li><a href="#services" class="hover:text-white transition">Servizi</a></li><li><a href="#contact" class="hover:text-white transition">Contatti</a></li></ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white mb-4">Contatti</h4>
+        <ul class="space-y-2 text-white/60"><li>{{CONTACT_EMAIL}}</li><li>{{CONTACT_PHONE}}</li><li>{{CONTACT_ADDRESS}}</li></ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10 pt-8 text-center text-white/40 text-sm">
+      <p>&copy; {{CURRENT_YEAR}} {{BUSINESS_NAME}}. Tutti i diritti riservati.</p>
+    </div>
+  </div>
+</footer>""",
+    },
 ]
 
 

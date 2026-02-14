@@ -242,6 +242,7 @@ class DataBindingGenerator:
         business_description: str,
         style_preferences: Optional[Dict[str, Any]] = None,
         reference_image_url: Optional[str] = None,
+        creative_context: str = "",
     ) -> Dict[str, Any]:
         """Kimi returns JSON with color palette and fonts."""
         style_hint = ""
@@ -251,12 +252,18 @@ class DataBindingGenerator:
             if style_preferences.get("mood"):
                 style_hint += f"Mood/style: {style_preferences['mood']}. "
 
-        prompt = f"""You are an award-winning UI designer. Generate a STUNNING color palette and typography for a website.
+        # Extract palette guidance from creative context (blueprints)
+        palette_hint = ""
+        if creative_context:
+            # Extract just the palette/font recommendations (first ~500 chars of blueprint)
+            palette_hint = f"\nPROFESSIONAL DESIGN REFERENCE:\n{creative_context[:500]}\n"
+
+        prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
 
 BUSINESS: {business_name} - {business_description[:500]}
 {style_hint}
-
+{palette_hint}
 Return this exact JSON structure:
 {{
   "primary_color": "#hex",
@@ -272,17 +279,36 @@ Return this exact JSON structure:
   "font_body_url": "FontName:wght@400;500;600"
 }}
 
-DESIGN RULES:
-- Create a BOLD, MEMORABLE palette - never boring defaults like plain blue/gray
-- Use modern color trends: deep purples, warm ambers, rich teals, vibrant corals
-- Primary should be saturated and striking, accent should create visual pop
-- WCAG AA contrast between text and bg colors (minimum 4.5:1 ratio)
-- bg_color: prefer rich tones (deep navy, warm cream, soft sage) over plain white/black
-- bg_alt_color: subtle shift from bg_color for section alternation
-- Font pairing: heading font should have CHARACTER (Playfair Display, Sora, Space Grotesk, Clash Display, Cabinet Grotesk, Outfit, DM Serif Display, Fraunces, Epilogue)
-- Body font: clean and readable (Inter, DM Sans, Plus Jakarta Sans, Nunito Sans, Source Sans 3)
-- NEVER use default Inter for headings - pick something with personality
-- Return ONLY the JSON object"""
+=== COLOR RULES (CRITICAL) ===
+- primary_color: SATURATED and VIBRANT. High chroma, fully alive. Never desaturated, never grayish. Think #E63946 not #8b9da5, think #7C3AED not #6677aa.
+- secondary_color: COMPLEMENTARY to primary, not just a darker shade. If primary is warm, secondary can be cool (and vice versa). Must be visually distinct.
+- accent_color: must POP against the palette. Use a CONTRASTING hue from primary (not analogous). Examples: deep blue primary + electric amber accent, forest green primary + coral accent, purple primary + lime accent. The accent is for CTAs and highlights — it must DEMAND attention.
+- bg_color: NEVER plain #ffffff or #000000. Use rich tones: warm cream (#FAF7F2), deep navy (#0A1628), charcoal slate (#1A1D23), soft sage (#F0F4F1), warm blush (#FFF5F5), ivory (#FFFDF7). The background sets the entire mood.
+- bg_alt_color: must be NOTICEABLY different from bg_color (at least 8-12% lightness shift). If bg is light, bg_alt should be a tinted pastel (e.g. soft lavender, light sand). If bg is dark, bg_alt should be 2-3 shades lighter. Sections must visually alternate.
+- text_color: WCAG AA contrast against bg_color (minimum 4.5:1). For dark bg use near-white (#F1F5F9), for light bg use rich dark (#0F172A or #1A1A2E).
+- text_muted_color: 40-50% opacity feel vs text_color. Must still be readable.
+- BANNED dull palettes: no all-blue (#3b82f6 + #1e40af + #2563eb), no corporate gray, no monochromatic schemes. Every color should earn its place.
+
+=== FONT PAIRING RULES (CRITICAL) ===
+Pick ONE of these curated pairings based on the business personality:
+
+ELEGANT/LUXURY: "Playfair Display" (heading) + "Inter" (body)
+MODERN TECH/SAAS: "Space Grotesk" (heading) + "DM Sans" (body)
+CLEAN STARTUP: "Sora" (heading) + "Inter" (body)
+EDITORIAL/BLOG: "DM Serif Display" (heading) + "Plus Jakarta Sans" (body)
+BOLD CREATIVE: "Cabinet Grotesk" (heading) + "Inter" (body)
+GEOMETRIC MODERN: "Outfit" (heading) + "DM Sans" (body)
+WARM ARTISAN: "Fraunces" (heading) + "Nunito Sans" (body)
+PROFESSIONAL: "Epilogue" (heading) + "Source Sans 3" (body)
+
+- NEVER use the same font for heading and body
+- NEVER use Inter, Roboto, Open Sans, or Arial for headings — they lack personality
+- Heading fonts must have VISUAL CHARACTER: serifs, distinctive letter shapes, or bold geometric forms
+- Body fonts must be CLEAN and highly readable at 16px
+- font_heading_url format: "FontName:wght@400;600;700;800" (replace spaces with +)
+- font_body_url format: "FontName:wght@400;500;600"
+
+Return ONLY the JSON object"""
 
         if reference_image_url:
             result = await self.kimi.call_with_image(
@@ -328,10 +354,10 @@ DESIGN RULES:
         # Inject creative context from design knowledge base
         knowledge_hint = ""
         if creative_context:
-            knowledge_hint = f"\n\nDESIGN KNOWLEDGE (use these insights for better copy):\n{creative_context[:1500]}\n"
+            knowledge_hint = f"\n\nDESIGN KNOWLEDGE (follow these professional guidelines closely):\n{creative_context[:2500]}\n"
 
-        prompt = f"""You are a world-class Italian copywriter creating text for a stunning, award-winning website.{knowledge_hint}
-Your text must be BOLD, EVOCATIVE, and EMOTIONALLY COMPELLING - never generic or corporate.
+        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.{knowledge_hint}
+Your copy must be SHARP, EVOCATIVE, and EMOTIONALLY MAGNETIC. Every word earns its place. Zero filler, zero corporate jargon.
 Return ONLY valid JSON, no markdown.
 
 BUSINESS: {business_name}
@@ -339,16 +365,44 @@ DESCRIPTION: {business_description[:800]}
 SECTIONS NEEDED: {sections_str}
 {contact_str}
 
-CREATIVE WRITING RULES:
-- Hero headline: MAX 6 words, powerful and memorable. Use strong verbs, evoke emotion.
-  GOOD: "Dove il Gusto Incontra l'Arte" / "Il Futuro Inizia Qui"
-  BAD: "Benvenuti nel Nostro Sito" / "La Nostra Azienda"
-- Subtitles: Poetic but clear, 1-2 sentences max. Create intrigue.
-- Service descriptions: Benefit-focused, not feature-focused. What does the customer FEEL?
-- Testimonials: Sound REAL and specific, not generic praise.
-- Use power words: esclusivo, rivoluzionario, straordinario, autentico, artigianale
-- Vary sentence rhythm: mix short punchy lines with longer flowing ones.
-- Every text should make the reader FEEL something.
+=== ABSOLUTE BANNED PHRASES (using ANY of these = failure) ===
+- "Benvenuti" / "Benvenuto" (in any form)
+- "Siamo un'azienda" / "Siamo un team" / "Siamo leader"
+- "I nostri servizi" / "Cosa offriamo" / "I nostri prodotti"
+- "Qualita e professionalita" / "Eccellenza e innovazione"
+- "Contattaci per maggiori informazioni"
+- "Il nostro team di esperti"
+- "Soluzioni su misura" / "Soluzioni personalizzate"
+- "A 360 gradi" / "Chiavi in mano"
+- "Da anni nel settore"
+- "Non esitare a contattarci"
+- Any text that could appear on ANY other business website. Be SPECIFIC to THIS business.
+
+=== HEADLINE RULES ===
+- Hero headline: MAX 6 words. Must be UNFORGETTABLE. Use metaphors, contrasts, provocations.
+  GREAT EXAMPLES (adapt the style, don't copy):
+  - Restaurant: "Il Futuro del Gusto" / "Dove il Tempo si Ferma" / "Sapori che Raccontano Storie"
+  - SaaS: "Meno Caos. Piu' Risultati." / "La Velocita Cambia Tutto" / "Il Tuo Prossimo Livello"
+  - Portfolio: "Creo Mondi Visivi" / "Design Senza Compromessi" / "Ogni Pixel Ha un Perche"
+  - Business: "Costruiamo il Domani" / "Oltre le Aspettative" / "Dove Nasce il Cambiamento"
+  TERRIBLE EXAMPLES (NEVER write like this):
+  - "Benvenuti nel Nostro Sito" / "La Nostra Azienda" / "Servizi Professionali" / "Chi Siamo"
+- Section headings: NEVER generic ("I Nostri Servizi"). Instead, be SPECIFIC and evocative ("Ogni Progetto, Una Rivoluzione" / "Il Metodo Dietro la Magia")
+
+=== COPYWRITING CRAFT ===
+- Subtitles: Poetic but clear, 1-2 sentences max. Create CURIOSITY and DESIRE. Make the reader NEED to scroll down.
+- Service/feature descriptions: Lead with the BENEFIT, not the feature. What does the customer FEEL, GAIN, BECOME? Use sensory language. Each description must be UNIQUE in tone (don't repeat the same sentence structure).
+- Testimonials: Sound like REAL humans — include specific details, emotions, a before/after story. "Mi hanno salvato 20 ore a settimana" not "Ottimo servizio, consigliato."
+- Stats/numbers: Use IMPRESSIVE, SPECIFIC numbers (not round). "847" is more believable than "800". "99.2%" is more credible than "100%".
+- Use POWER WORDS strategically: rivoluzionario, straordinario, autentico, artigianale, esclusivo, fulminante, impeccabile, visionario.
+- Vary rhythm: alternate short punchy phrases with longer flowing descriptions. Create MUSIC in the text.
+- CTA buttons: action verbs + urgency. "Inizia la Trasformazione" / "Scopri il Metodo" / "Prenota il Tuo Posto" — NOT "Contattaci" / "Scopri di Piu"
+
+=== ICON RULES ===
+- Each service/feature MUST have a UNIQUE, RELEVANT emoji icon
+- NEVER repeat the same emoji twice in a section
+- Choose MODERN, SPECIFIC emojis that match the content (not generic like checkmarks or stars)
+- Examples: for speed use thunderbolt, for security use shield, for analytics use chart, for design use palette
 
 Return this JSON (include only the sections listed above):
 {{
@@ -502,17 +556,16 @@ Return this JSON (include only the sections listed above):
   }}
 }}
 
-IMPORTANT:
+FINAL CHECKLIST (every point is mandatory):
 - ALL text MUST be in Italian
-- Be WILDLY creative and hyper-specific to this business (ZERO generic text)
-- Hero title: MAX 6 words, powerful and memorable (think Nike, Apple-level copy)
-- Subtitles: evocative, create curiosity and desire
-- Service/feature descriptions: benefit-focused, emotional, specific
-- Use relevant emojis for service/feature icons (modern, not cliche)
-- TESTIMONIAL_INITIAL = first letter of author name
-- Testimonials must sound like REAL people with specific details
+- Be WILDLY creative and hyper-specific to THIS business — if you replaced the business name, the text should NOT work for any other company
+- Hero title: MAX 6 words, think Nike/Apple-level copywriting
+- ZERO generic text anywhere. Read every line and ask: "Could this appear on a random corporate site?" If yes, REWRITE IT.
+- Each service/feature icon: UNIQUE emoji, never repeated in the same section
+- TESTIMONIAL_INITIAL = first letter of TESTIMONIAL_AUTHOR name
+- Testimonials: real names, specific details, emotional stories (NOT "Ottimo servizio" or "Molto professionali")
 - Generate ONLY the sections listed in SECTIONS NEEDED
-- Avoid these BANNED generic phrases: "benvenuti", "siamo un'azienda", "offriamo servizi", "il nostro team", "qualita e professionalita"
+- Double-check: NO banned phrases from the list above appear ANYWHERE in your output
 - Return ONLY the JSON object"""
 
         result = await self.kimi.call(
@@ -725,6 +778,7 @@ Return ONLY the JSON object."""
         theme_task = self._generate_theme(
             business_name, business_description,
             style_preferences, reference_image_url,
+            creative_context=creative_context,
         )
         texts_task = self._generate_texts(
             business_name, business_description,
@@ -1001,13 +1055,70 @@ Return ONLY the JSON object."""
         """Transform AI-generated flat data into the array/repeat format templates expect.
 
         Key transformations:
+        - services: normalize SERVICES array from various AI output formats + fallback
+        - features: normalize FEATURES array from various AI output formats + fallback
+        - testimonials: normalize TESTIMONIALS array + fallback
+        - gallery: normalize GALLERY_ITEMS array + fallback
+        - team: normalize TEAM_MEMBERS array
         - about: ABOUT_HIGHLIGHT_NUM_1/2/3 + ABOUT_HIGHLIGHT_1/2/3 -> ABOUT_STATS array
         - about: ensure ABOUT_IMAGE_URL/ABOUT_IMAGE_ALT have fallback values
         - contact: copy CONTACT_* to BUSINESS_* and vice versa for template compatibility
+        - pricing: convert comma-separated PLAN_FEATURES to array
+        - faq/stats/logos/process/timeline: normalize repeat arrays
         """
         data = dict(data)  # shallow copy to avoid mutating original
 
-        if section == "about":
+        if section == "services":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="SERVICES",
+                alt_keys=["SERVICE_ITEMS", "SERVICES_ITEMS", "SERVICE_LIST", "SERVICES_LIST", "items", "services"],
+                item_fields=["SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION"],
+                flat_prefix="SERVICE",
+                fallback_items=self._fallback_services(business_name),
+            )
+
+        elif section == "features":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="FEATURES",
+                alt_keys=["FEATURE_ITEMS", "FEATURES_ITEMS", "FEATURE_LIST", "FEATURES_LIST", "items", "features"],
+                item_fields=["FEATURE_ICON", "FEATURE_TITLE", "FEATURE_DESCRIPTION"],
+                flat_prefix="FEATURE",
+                fallback_items=self._fallback_features(business_name),
+            )
+
+        elif section == "testimonials":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="TESTIMONIALS",
+                alt_keys=["TESTIMONIAL_ITEMS", "TESTIMONIALS_ITEMS", "TESTIMONIAL_LIST", "items", "testimonials"],
+                item_fields=["TESTIMONIAL_TEXT", "TESTIMONIAL_AUTHOR", "TESTIMONIAL_ROLE", "TESTIMONIAL_INITIAL"],
+                flat_prefix="TESTIMONIAL",
+                fallback_items=self._fallback_testimonials(),
+            )
+
+        elif section == "gallery":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="GALLERY_ITEMS",
+                alt_keys=["GALLERY", "GALLERY_LIST", "GALLERY_IMAGES", "items", "gallery"],
+                item_fields=["GALLERY_IMAGE_URL", "GALLERY_IMAGE_ALT", "GALLERY_CAPTION"],
+                flat_prefix="GALLERY",
+                fallback_items=self._fallback_gallery(),
+            )
+
+        elif section == "team":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="TEAM_MEMBERS",
+                alt_keys=["TEAM", "TEAM_ITEMS", "TEAM_LIST", "MEMBERS", "items", "team"],
+                item_fields=["MEMBER_NAME", "MEMBER_ROLE", "MEMBER_IMAGE_URL", "MEMBER_BIO"],
+                flat_prefix="MEMBER",
+                fallback_items=None,
+            )
+
+        elif section == "about":
             # Convert flat ABOUT_HIGHLIGHT_* keys to ABOUT_STATS repeat array
             if "ABOUT_STATS" not in data:
                 stats = []
@@ -1043,6 +1154,15 @@ Return ONLY the JSON object."""
                     data[contact_key] = data[business_key]
 
         elif section == "pricing":
+            # Normalize the array first
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="PRICING_PLANS",
+                alt_keys=["PLANS", "PRICING", "PRICING_ITEMS", "items", "pricing"],
+                item_fields=["PLAN_NAME", "PLAN_PRICE", "PLAN_PERIOD"],
+                flat_prefix="PLAN",
+                fallback_items=None,
+            )
             # Convert comma-separated PLAN_FEATURES string into array for nested REPEAT
             plans = data.get("PRICING_PLANS", [])
             if isinstance(plans, list):
@@ -1056,7 +1176,270 @@ Return ONLY the JSON object."""
                                 if f.strip()
                             ]
 
+        elif section == "faq":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="FAQ_ITEMS",
+                alt_keys=["FAQ", "FAQS", "FAQ_LIST", "items", "faq"],
+                item_fields=["FAQ_QUESTION", "FAQ_ANSWER"],
+                flat_prefix="FAQ",
+                fallback_items=None,
+            )
+
+        elif section == "stats":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="STATS_ITEMS",
+                alt_keys=["STATS", "STATS_LIST", "items", "stats"],
+                item_fields=["STAT_NUMBER", "STAT_SUFFIX", "STAT_LABEL"],
+                flat_prefix="STAT",
+                fallback_items=None,
+            )
+
+        elif section == "logos":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="LOGOS_ITEMS",
+                alt_keys=["LOGOS", "LOGOS_LIST", "LOGO_ITEMS", "items", "logos"],
+                item_fields=["LOGO_IMAGE_URL", "LOGO_ALT", "LOGO_NAME"],
+                flat_prefix="LOGO",
+                fallback_items=None,
+            )
+
+        elif section == "process":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="PROCESS_STEPS",
+                alt_keys=["PROCESS", "PROCESS_ITEMS", "PROCESS_LIST", "STEPS", "items", "process"],
+                item_fields=["STEP_NUMBER", "STEP_TITLE", "STEP_DESCRIPTION"],
+                flat_prefix="STEP",
+                fallback_items=None,
+            )
+
+        elif section == "timeline":
+            data = self._normalize_repeat_array(
+                data,
+                canonical_key="TIMELINE_ITEMS",
+                alt_keys=["TIMELINE", "TIMELINE_LIST", "TIMELINE_EVENTS", "items", "timeline"],
+                item_fields=["TIMELINE_YEAR", "TIMELINE_HEADING", "TIMELINE_DESCRIPTION"],
+                flat_prefix="TIMELINE",
+                fallback_items=None,
+            )
+
         return data
+
+    def _normalize_repeat_array(
+        self,
+        data: Dict[str, Any],
+        canonical_key: str,
+        alt_keys: List[str],
+        item_fields: List[str],
+        flat_prefix: str,
+        fallback_items: Optional[List[Dict[str, str]]],
+    ) -> Dict[str, Any]:
+        """Normalize a repeating array in the data dict.
+
+        Handles these common AI output variations:
+        1. Correct key with valid array (SERVICES: [...]) -- no-op
+        2. Alternative key name (SERVICE_ITEMS, items, etc.) -- rename to canonical
+        3. Flat numbered keys (SERVICE_1_TITLE, SERVICE_2_TITLE, etc.) -- collect into array
+        4. Lowercase key versions -- case-insensitive lookup
+        5. Single object instead of array -- wrap in array
+        6. Empty/missing array -- use fallback items if provided
+        """
+        # 1. Check if canonical key already has a valid non-empty array
+        existing = data.get(canonical_key)
+        if isinstance(existing, list) and len(existing) > 0:
+            # Validate items have the expected fields (at least one recognized field)
+            if isinstance(existing[0], dict) and any(f in existing[0] for f in item_fields):
+                return data
+
+        # 2. Check alternative key names (case-insensitive)
+        all_keys_lower = {k.lower(): k for k in data.keys()}
+        for alt_key in alt_keys:
+            # Direct key check
+            if alt_key in data:
+                val = data[alt_key]
+                if isinstance(val, list) and len(val) > 0:
+                    data[canonical_key] = val
+                    logger.info(f"[DataBinding] Normalized {alt_key} -> {canonical_key} ({len(val)} items)")
+                    return data
+                elif isinstance(val, dict):
+                    # Single object wrapped as array
+                    data[canonical_key] = [val]
+                    logger.info(f"[DataBinding] Normalized {alt_key} (single object) -> {canonical_key} array")
+                    return data
+            # Case-insensitive check
+            if alt_key.lower() in all_keys_lower:
+                real_key = all_keys_lower[alt_key.lower()]
+                if real_key != alt_key:  # avoid re-checking the same key
+                    val = data[real_key]
+                    if isinstance(val, list) and len(val) > 0:
+                        data[canonical_key] = val
+                        logger.info(f"[DataBinding] Normalized {real_key} -> {canonical_key} ({len(val)} items)")
+                        return data
+
+        # Also check canonical key with different casing
+        if canonical_key.lower() in all_keys_lower:
+            real_key = all_keys_lower[canonical_key.lower()]
+            if real_key != canonical_key:
+                val = data[real_key]
+                if isinstance(val, list) and len(val) > 0:
+                    data[canonical_key] = val
+                    logger.info(f"[DataBinding] Normalized {real_key} (case) -> {canonical_key} ({len(val)} items)")
+                    return data
+
+        # 3. Check for flat numbered keys (e.g., SERVICE_1_TITLE, SERVICE_2_TITLE, ...)
+        flat_items = self._collect_flat_numbered_items(data, flat_prefix, item_fields)
+        if flat_items:
+            data[canonical_key] = flat_items
+            logger.info(f"[DataBinding] Collected {len(flat_items)} flat {flat_prefix}_* items -> {canonical_key}")
+            return data
+
+        # 4. If canonical key exists but is empty/invalid, or doesn't exist at all
+        if fallback_items:
+            logger.warning(f"[DataBinding] {canonical_key} missing or empty, using {len(fallback_items)} fallback items")
+            data[canonical_key] = fallback_items
+
+        return data
+
+    def _collect_flat_numbered_items(
+        self,
+        data: Dict[str, Any],
+        prefix: str,
+        item_fields: List[str],
+    ) -> List[Dict[str, str]]:
+        """Collect flat numbered keys into a list of dicts.
+
+        Handles patterns like:
+        - SERVICE_1_TITLE, SERVICE_1_DESCRIPTION, SERVICE_2_TITLE, ...
+        - SERVICE_TITLE_1, SERVICE_DESCRIPTION_1, SERVICE_TITLE_2, ...
+        """
+        items: Dict[int, Dict[str, str]] = {}
+        # Extract the field suffixes from item_fields
+        # e.g., item_fields=["SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION"]
+        # field_suffixes = {"ICON": "SERVICE_ICON", "TITLE": "SERVICE_TITLE", ...}
+        field_map: Dict[str, str] = {}
+        for field in item_fields:
+            if field.startswith(prefix + "_"):
+                suffix = field[len(prefix) + 1:]
+                field_map[suffix] = field
+
+        # Pattern 1: PREFIX_N_SUFFIX (e.g., SERVICE_1_TITLE)
+        for key, value in data.items():
+            for suffix, full_field in field_map.items():
+                m = re.match(rf"{prefix}_(\d+)_{suffix}$", key, re.IGNORECASE)
+                if m:
+                    idx = int(m.group(1))
+                    if idx not in items:
+                        items[idx] = {}
+                    items[idx][full_field] = str(value)
+
+        # Pattern 2: PREFIX_SUFFIX_N (e.g., SERVICE_TITLE_1)
+        if not items:
+            for key, value in data.items():
+                for suffix, full_field in field_map.items():
+                    m = re.match(rf"{prefix}_{suffix}_(\d+)$", key, re.IGNORECASE)
+                    if m:
+                        idx = int(m.group(1))
+                        if idx not in items:
+                            items[idx] = {}
+                        items[idx][full_field] = str(value)
+
+        if items:
+            return [items[k] for k in sorted(items.keys())]
+        return []
+
+    # ----- Fallback content generators -----
+
+    def _fallback_services(self, business_name: str) -> List[Dict[str, str]]:
+        """Generate fallback service items when AI returns empty/missing services."""
+        return [
+            {
+                "SERVICE_ICON": "\U0001f3af",
+                "SERVICE_TITLE": "Consulenza Personalizzata",
+                "SERVICE_DESCRIPTION": f"Un approccio su misura per le tue esigenze. {business_name} ti guida passo dopo passo verso i tuoi obiettivi.",
+            },
+            {
+                "SERVICE_ICON": "\U0001f680",
+                "SERVICE_TITLE": "Soluzioni Innovative",
+                "SERVICE_DESCRIPTION": "Tecnologie all'avanguardia e metodologie collaudate per risultati che superano le aspettative.",
+            },
+            {
+                "SERVICE_ICON": "\U0001f91d",
+                "SERVICE_TITLE": "Supporto Dedicato",
+                "SERVICE_DESCRIPTION": "Un team di esperti sempre al tuo fianco. Assistenza continua e comunicazione trasparente.",
+            },
+        ]
+
+    def _fallback_features(self, business_name: str) -> List[Dict[str, str]]:
+        """Generate fallback feature items when AI returns empty/missing features."""
+        return [
+            {
+                "FEATURE_ICON": "\u2728",
+                "FEATURE_TITLE": "Qualita' Superiore",
+                "FEATURE_DESCRIPTION": "Standard elevati in ogni dettaglio, dalla progettazione alla consegna finale.",
+            },
+            {
+                "FEATURE_ICON": "\u26a1",
+                "FEATURE_TITLE": "Velocita' ed Efficienza",
+                "FEATURE_DESCRIPTION": "Processi ottimizzati per garantire tempi di consegna rapidi senza compromessi.",
+            },
+            {
+                "FEATURE_ICON": "\U0001f6e1\ufe0f",
+                "FEATURE_TITLE": "Affidabilita' Garantita",
+                "FEATURE_DESCRIPTION": "La sicurezza di un partner che mantiene le promesse. Risultati concreti e misurabili.",
+            },
+            {
+                "FEATURE_ICON": "\U0001f4a1",
+                "FEATURE_TITLE": "Innovazione Continua",
+                "FEATURE_DESCRIPTION": "Sempre aggiornati con le ultime tendenze e tecnologie del settore.",
+            },
+            {
+                "FEATURE_ICON": "\U0001f310",
+                "FEATURE_TITLE": "Approccio Globale",
+                "FEATURE_DESCRIPTION": "Una visione internazionale con attenzione alle specificita' del mercato locale.",
+            },
+            {
+                "FEATURE_ICON": "\U0001f4b0",
+                "FEATURE_TITLE": "Rapporto Qualita'-Prezzo",
+                "FEATURE_DESCRIPTION": "Investimenti intelligenti con un ritorno tangibile e misurabile nel tempo.",
+            },
+        ]
+
+    def _fallback_testimonials(self) -> List[Dict[str, str]]:
+        """Generate fallback testimonial items."""
+        return [
+            {
+                "TESTIMONIAL_TEXT": "Un'esperienza straordinaria dall'inizio alla fine. Professionalita' e creativita' ai massimi livelli.",
+                "TESTIMONIAL_AUTHOR": "Marco Rossi",
+                "TESTIMONIAL_ROLE": "CEO, TechVenture",
+                "TESTIMONIAL_INITIAL": "M",
+            },
+            {
+                "TESTIMONIAL_TEXT": "Hanno trasformato la nostra visione in realta'. Il risultato ha superato ogni aspettativa.",
+                "TESTIMONIAL_AUTHOR": "Laura Bianchi",
+                "TESTIMONIAL_ROLE": "Direttrice Marketing",
+                "TESTIMONIAL_INITIAL": "L",
+            },
+            {
+                "TESTIMONIAL_TEXT": "Collaborazione impeccabile e risultati tangibili. Li consiglio senza esitazione.",
+                "TESTIMONIAL_AUTHOR": "Andrea Verdi",
+                "TESTIMONIAL_ROLE": "Imprenditore",
+                "TESTIMONIAL_INITIAL": "A",
+            },
+        ]
+
+    def _fallback_gallery(self) -> List[Dict[str, str]]:
+        """Generate fallback gallery items with placeholder images."""
+        items = []
+        for i in range(1, 7):
+            items.append({
+                "GALLERY_IMAGE_URL": f"https://placehold.co/600x400/eee/999?text=Foto+{i}",
+                "GALLERY_IMAGE_ALT": f"Immagine galleria {i}",
+                "GALLERY_CAPTION": f"Progetto {i}",
+            })
+        return items
 
     def _inject_user_photos(self, site_data: Dict[str, Any], photo_urls: List[str]) -> Dict[str, Any]:
         """Replace placehold.co URLs with user-uploaded photos in site_data."""
@@ -1223,22 +1606,22 @@ Return ONLY the JSON object."""
         raise ValueError(f"No JSON found in response: {content[:200]}...")
 
     def _fallback_theme(self, style_preferences=None) -> Dict[str, str]:
-        """Default theme if Kimi theme generation fails."""
-        primary = "#3b82f6"
+        """Default theme if Kimi theme generation fails. Uses a vibrant palette, not boring defaults."""
+        primary = "#7C3AED"  # Vibrant purple
         if style_preferences and style_preferences.get("primary_color"):
             primary = style_preferences["primary_color"]
         return {
             "primary_color": primary,
-            "secondary_color": "#1e40af",
-            "accent_color": "#f59e0b",
-            "bg_color": "#ffffff",
-            "bg_alt_color": "#f8fafc",
-            "text_color": "#0f172a",
-            "text_muted_color": "#64748b",
-            "font_heading": "Inter",
-            "font_heading_url": "Inter:wght@400;600;700;800",
-            "font_body": "Inter",
-            "font_body_url": "Inter:wght@400;500;600",
+            "secondary_color": "#1E3A5F",
+            "accent_color": "#F59E0B",
+            "bg_color": "#FAF7F2",
+            "bg_alt_color": "#F0EDE6",
+            "text_color": "#1A1A2E",
+            "text_muted_color": "#6B7280",
+            "font_heading": "Space Grotesk",
+            "font_heading_url": "Space+Grotesk:wght@400;600;700;800",
+            "font_body": "DM Sans",
+            "font_body_url": "DM+Sans:wght@400;500;600",
         }
 
     def _default_selections(self, sections: List[str], available: Dict[str, List[str]]) -> Dict[str, str]:

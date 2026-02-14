@@ -16,7 +16,8 @@ Fasi:
 import asyncio
 import logging
 import time
-from typing import Dict, Any, Optional, List, Callable
+import re
+from typing import Dict, Any, Optional, List, Callable, Tuple
 
 from app.services.kimi_client import kimi, KimiClient
 from app.services.sanitizer import sanitize_input, sanitize_output, sanitize_refine_input
@@ -535,6 +536,41 @@ IMPORTANT:
         }
 
     # =================================================================
+    # HELPERS: Strip/re-inject GSAP script to reduce token count
+    # =================================================================
+
+    @staticmethod
+    def _strip_gsap_script(html: str) -> Tuple[str, str]:
+        """Strip the large GSAP Universal Animation Engine script from HTML to reduce token count.
+        The inline GSAP script is ~687 lines / ~20KB which adds ~5000+ tokens.
+        Returns (stripped_html, gsap_script_block).
+        """
+        # Match the GSAP Universal Animation Engine script block
+        pattern = r'<script>\s*/\*[\s\S]*?GSAP Universal Animation Engine[\s\S]*?</script>'
+        match = re.search(pattern, html)
+        if match:
+            gsap_block = match.group(0)
+            stripped = html[:match.start()] + '<!-- GSAP_SCRIPT_PLACEHOLDER -->' + html[match.end():]
+            logger.info(f"[Swarm] Stripped GSAP script ({len(gsap_block)} chars) to reduce token count")
+            return stripped, gsap_block
+        return html, ""
+
+    @staticmethod
+    def _reinject_gsap_script(html: str, gsap_block: str) -> str:
+        """Re-inject the GSAP script block into the HTML after AI refinement."""
+        if not gsap_block:
+            return html
+        # Replace placeholder if present
+        if '<!-- GSAP_SCRIPT_PLACEHOLDER -->' in html:
+            return html.replace('<!-- GSAP_SCRIPT_PLACEHOLDER -->', gsap_block)
+        # Otherwise inject before </body>
+        if '</body>' in html.lower():
+            idx = html.lower().rfind('</body>')
+            return html[:idx] + '\n' + gsap_block + '\n' + html[idx:]
+        # Last resort: append
+        return html + '\n' + gsap_block
+
+    # =================================================================
     # REFINE: Modifica via chat (Instant mode, veloce)
     # =================================================================
 
@@ -549,6 +585,10 @@ IMPORTANT:
         Usa streaming per evitare timeout con HTML grandi.
         """
         modification_request = sanitize_refine_input(modification_request)
+
+        # Strip GSAP script to reduce token count (it's ~20KB / ~5000+ tokens)
+        # This prevents exceeding Kimi's 262144 token limit on large sites
+        stripped_html, gsap_block = self._strip_gsap_script(current_html)
 
         # GSAP & design system knowledge for the AI
         design_system = """DESIGN SYSTEM (MUST preserve):
@@ -575,7 +615,7 @@ IMPORTANT:
             prompt = f"""Modify the {section_to_modify} section of this HTML website.
 
 CURRENT HTML:
-{current_html}
+{stripped_html}
 
 MODIFICATION REQUEST:
 {modification_request}
@@ -590,12 +630,13 @@ Instructions:
 5. Preserve and add GSAP data-animate attributes on all elements
 6. Ensure sections have REAL content - never leave empty placeholders
 7. Return ONLY HTML between ```html and ``` tags
-8. Do NOT truncate the output - include the FULL HTML"""
+8. Do NOT truncate the output - include the FULL HTML
+9. Note: The GSAP animation script has been removed for brevity - it will be automatically re-injected. Do NOT add any new <script> blocks for GSAP. Keep the <!-- GSAP_SCRIPT_PLACEHOLDER --> comment intact."""
         else:
             prompt = f"""Modify this HTML website according to the request.
 
 CURRENT HTML:
-{current_html}
+{stripped_html}
 
 MODIFICATION REQUEST:
 {modification_request}
@@ -610,7 +651,8 @@ Instructions:
 5. Ensure sections have REAL content - never leave empty placeholders
 6. Return the COMPLETE modified HTML file
 7. Return ONLY HTML between ```html and ``` tags
-8. Do NOT truncate the output - include the FULL HTML"""
+8. Do NOT truncate the output - include the FULL HTML
+9. Note: The GSAP animation script has been removed for brevity - it will be automatically re-injected. Do NOT add any new <script> blocks for GSAP. Keep the <!-- GSAP_SCRIPT_PLACEHOLDER --> comment intact."""
 
         start_time = time.time()
         # Use streaming with higher max_tokens to handle large HTML sites
@@ -625,6 +667,10 @@ Instructions:
             return result
 
         html_content = self.kimi.extract_html(result["content"])
+
+        # Re-inject the GSAP script that was stripped before sending to AI
+        html_content = self._reinject_gsap_script(html_content, gsap_block)
+
         html_content = sanitize_output(html_content)
 
         # Validate HTML completeness - check for closing tags
