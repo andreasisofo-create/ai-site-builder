@@ -2,9 +2,11 @@
 Routes per testare la connessione con Kimi AI
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from app.core.config import settings
+from app.core.security import get_current_active_user
 from app.services.ai_service import ai_service
+from app.models.user import User
 import logging
 
 logger = logging.getLogger(__name__)
@@ -65,16 +67,18 @@ async def test_kimi_connection():
 
 
 @router.get("/env")
-async def test_env():
+async def test_env(current_user: User = Depends(get_current_active_user)):
     """
     Testa che le variabili ambiente siano caricate.
-    ATTENZIONE: Non mostrare in produzione!
+    Richiede autenticazione per proteggere informazioni sensibili.
     """
+    if not current_user.is_superuser:
+        raise HTTPException(status_code=403, detail="Solo per admin")
     key = settings.active_api_key
     return {
         "api_key_configured": bool(key),
         "api_key_source": "MOONSHOT_API_KEY" if settings.MOONSHOT_API_KEY else ("KIMI_API_KEY" if settings.KIMI_API_KEY else "none"),
-        "api_key_preview": key[:10] + "..." if key else None,
+        "api_key_preview": key[:8] + "..." if key else None,
         "kimi_api_url": settings.KIMI_API_URL,
         "debug": settings.DEBUG,
         "database_url_configured": bool(settings.DATABASE_URL),

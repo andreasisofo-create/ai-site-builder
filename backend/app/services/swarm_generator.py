@@ -238,13 +238,17 @@ TEXTS (use these Italian texts):
 
 RULES:
 - Complete HTML5 document with <!DOCTYPE html>
-- Tailwind CSS via CDN: <script src="https://cdn.tailwindcss.com"></script>
+- Tailwind CSS via CDN (add BOTH scripts): <script>const _w=console.warn;console.warn=(...a)=>{{if(a[0]&&typeof a[0]==='string'&&a[0].includes('cdn.tailwindcss.com'))return;_w.apply(console,a)}};</script><script src="https://cdn.tailwindcss.com"></script>
+- Add GSAP: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+- Use data-animate attributes on elements: fade-up, fade-left, fade-right, scale-in, text-split (on headings), magnetic (on buttons), stagger (on grids with stagger-item children), image-zoom (on images), tilt (on cards)
+- Section headings: data-animate="text-split" data-split-type="words"
+- CTA buttons: data-animate="magnetic"
+- Cards/grid items: parent data-animate="stagger", children class="stagger-item"
 - Responsive (mobile + desktop)
 - Hamburger menu with vanilla JS
 - Contact form with name, email, message fields
 - Footer with copyright
-- All text in Italian
-- Max 150 lines of HTML
+- All text in Italian - RICH, CREATIVE content specific to the business (NEVER leave empty sections)
 - NO explanations, ONLY HTML code between ```html and ``` tags
 {f'- Logo: {logo_hint}' if logo_hint else ''}
 
@@ -546,6 +550,27 @@ IMPORTANT:
         """
         modification_request = sanitize_refine_input(modification_request)
 
+        # GSAP & design system knowledge for the AI
+        design_system = """DESIGN SYSTEM (MUST preserve):
+- CSS Variables: var(--color-primary), var(--color-secondary), var(--color-accent), var(--color-bg), var(--color-bg-alt), var(--color-text), var(--color-text-muted)
+- Font classes: font-heading (for h1-h6), font-body (for body text)
+- Tailwind with custom colors: bg-primary, text-primary, bg-secondary, text-accent, etc.
+- GSAP animations via data-animate attribute. Available effects:
+  Scroll: fade-up, fade-down, fade-left, fade-right, scale-in, scale-up, rotate-in, flip-up, blur-in, slide-up, reveal-left/right/up/down, bounce-in, zoom-out
+  Text: text-split (with data-split-type="words|chars|lines"), text-reveal, typewriter
+  Interactive: tilt, magnetic, card-hover-3d, float, image-zoom
+  Container: stagger (children need class="stagger-item"), stagger-scale
+  Advanced: clip-reveal, blur-slide, rotate-3d, gradient-flow, morph-bg, draw-svg, split-screen
+  Utility: data-counter="NUMBER" (animated counter), marquee, horizontal-scroll, cursor-glow
+  Modifiers: data-delay="0.3", data-duration="0.9", data-ease="power3.out"
+- ALL section headings MUST use data-animate="text-split" data-split-type="words"
+- ALL CTA buttons MUST use data-animate="magnetic"
+- Section containers should use data-animate="fade-up" or similar
+- Cards/grids should use data-animate="stagger" with children having class="stagger-item"
+- Images should use data-animate="image-zoom"
+- NEVER remove data-animate attributes from existing elements
+- ALWAYS add data-animate to new elements you create"""
+
         if section_to_modify:
             prompt = f"""Modify the {section_to_modify} section of this HTML website.
 
@@ -555,13 +580,17 @@ CURRENT HTML:
 MODIFICATION REQUEST:
 {modification_request}
 
+{design_system}
+
 Instructions:
 1. Modify ONLY the {section_to_modify} section
 2. Keep all other sections exactly as they are
 3. Return the COMPLETE HTML file with the modification
-4. Use the same styling approach (Tailwind CSS)
-5. Return ONLY HTML between ```html and ``` tags
-6. Do NOT truncate the output - include the FULL HTML"""
+4. Use Tailwind CSS + CSS variables (var(--color-primary), etc.)
+5. Preserve and add GSAP data-animate attributes on all elements
+6. Ensure sections have REAL content - never leave empty placeholders
+7. Return ONLY HTML between ```html and ``` tags
+8. Do NOT truncate the output - include the FULL HTML"""
         else:
             prompt = f"""Modify this HTML website according to the request.
 
@@ -571,12 +600,17 @@ CURRENT HTML:
 MODIFICATION REQUEST:
 {modification_request}
 
+{design_system}
+
 Instructions:
 1. Apply the requested changes
 2. Keep the overall structure and style consistent
-3. Return the COMPLETE modified HTML file
-4. Return ONLY HTML between ```html and ``` tags
-5. Do NOT truncate the output - include the FULL HTML"""
+3. Use Tailwind CSS + CSS variables (var(--color-primary), etc.)
+4. Preserve and add GSAP data-animate attributes on all elements
+5. Ensure sections have REAL content - never leave empty placeholders
+6. Return the COMPLETE modified HTML file
+7. Return ONLY HTML between ```html and ``` tags
+8. Do NOT truncate the output - include the FULL HTML"""
 
         start_time = time.time()
         # Use streaming with higher max_tokens to handle large HTML sites
@@ -596,10 +630,17 @@ Instructions:
         # Validate HTML completeness - check for closing tags
         if html_content and "</html>" not in html_content.lower():
             logger.warning("[Swarm] Refine returned truncated HTML (missing </html>)")
-            return {
-                "success": False,
-                "error": "La modifica ha prodotto HTML incompleto. Riprova con una richiesta più specifica.",
-            }
+            # Try auto-repair: close open tags
+            if "</body>" not in html_content.lower():
+                html_content += "\n</body>\n</html>"
+                logger.info("[Swarm] Auto-repaired truncated HTML (added </body></html>)")
+            else:
+                html_content += "\n</html>"
+                logger.info("[Swarm] Auto-repaired truncated HTML (added </html>)")
+
+        # Validate CSS variables are preserved (critical for theme consistency)
+        if html_content and "--color-primary" not in html_content:
+            logger.warning("[Swarm] Refine stripped CSS variables - this may break theme styling")
 
         generation_time = int((time.time() - start_time) * 1000)
         cost = self.kimi.calculate_cost(

@@ -164,7 +164,12 @@ class KimiClient:
                 json=payload,
                 timeout=timeout,
             ) as response:
-                response.raise_for_status()
+                # Read the body before raise_for_status so the error handler
+                # can access .text/.json() on the response (httpx requires
+                # streaming responses to be read before content access).
+                if response.status_code >= 400:
+                    await response.aread()
+                    response.raise_for_status()
                 async for line in response.aiter_lines():
                     if not line.startswith("data: "):
                         continue
@@ -247,7 +252,10 @@ class KimiClient:
             body = e.response.json()
             detail = body.get("error", {}).get("message", "")
         except Exception:
-            detail = e.response.text[:200]
+            try:
+                detail = e.response.text[:200]
+            except Exception:
+                detail = f"HTTP {status}"
 
         if status == 401:
             msg = "API Key Kimi non valida o scaduta"

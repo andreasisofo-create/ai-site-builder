@@ -10,13 +10,46 @@
    Respects prefers-reduced-motion
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
+  // Fallback: if GSAP didn't load, show all content immediately
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+    document.querySelectorAll('[data-animate]').forEach(function (el) {
+      el.style.opacity = '1';
+    });
+    console.warn('[GSAP] Library not loaded, showing content without animations');
+    return;
+  }
+
+  // Safety timeout: if animations haven't started after 3s, force-show content
+  var _gsapInitialized = false;
+  setTimeout(function () {
+    if (!_gsapInitialized) {
+      document.querySelectorAll('[data-animate]').forEach(function (el) {
+        if (getComputedStyle(el).opacity === '0') {
+          el.style.opacity = '1';
+        }
+      });
+    }
+  }, 3000);
+
   // Respect prefers-reduced-motion
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.documentElement.classList.add('reduced-motion');
     return; // Skip all animations
   }
 
+  try {
   gsap.registerPlugin(ScrollTrigger);
+  } catch (e) {
+    console.warn('[GSAP] Failed to register plugins:', e);
+    document.querySelectorAll('[data-animate]').forEach(function (el) { el.style.opacity = '1'; });
+    return;
+  }
+  _gsapInitialized = true;
+
+  // Cancel CSS fallback animation since GSAP is working
+  document.querySelectorAll('[data-animate]').forEach(function (el) {
+    el.style.animation = 'none';
+  });
 
   // Mobile detection for reduced animation complexity
   var isMobile = window.innerWidth < 768 || ('ontouchstart' in window);

@@ -88,6 +88,10 @@ export default function Editor() {
   const [htmlHistory, setHtmlHistory] = useState<string[]>([]);
   const [isUndoing, setIsUndoing] = useState(false);
 
+  // Onboarding state
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
+
   useEffect(() => {
     if (siteId) {
       loadSite();
@@ -106,6 +110,65 @@ export default function Editor() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Show onboarding on first visit when site is ready/generated
+  useEffect(() => {
+    if (site && (site.status === "ready" || site.status === "published") && liveHtml) {
+      const seen = localStorage.getItem("editor-onboarding-seen");
+      if (!seen) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [site?.status, liveHtml]);
+
+  const onboardingSteps = [
+    {
+      icon: "sparkles",
+      title: { it: "Il tuo sito e\u0300 pronto!", en: "Your site is ready!" },
+      description: {
+        it: "L'AI ha generato il tuo sito completo. Puoi visualizzarlo nell'anteprima qui al centro. Prova a passare dalla vista desktop a quella mobile usando i controlli in alto.",
+        en: "The AI has generated your complete site. You can view it in the preview area in the center. Try switching between desktop and mobile views using the controls at the top.",
+      },
+    },
+    {
+      icon: "chat",
+      title: { it: "Modifica con l'AI", en: "Edit with AI" },
+      description: {
+        it: "Apri la Chat AI dal pulsante in alto a destra per modificare qualsiasi parte del sito. Basta descrivere cosa vuoi cambiare, ad esempio: \"Cambia il colore principale in blu\" o \"Aggiungi una sezione contatti\".",
+        en: "Open the AI Chat from the button at the top right to modify any part of the site. Just describe what you want to change, for example: \"Change the main color to blue\" or \"Add a contact section\".",
+      },
+    },
+    {
+      icon: "actions",
+      title: { it: "Azioni rapide", en: "Quick actions" },
+      description: {
+        it: "Nella chat troverai azioni rapide predefinite per le modifiche piu\u0300 comuni: cambiare colori, font, aggiungere sezioni e molto altro. Puoi anche rigenerare le immagini con l'AI.",
+        en: "In the chat you'll find predefined quick actions for the most common edits: changing colors, fonts, adding sections and more. You can also regenerate images with AI.",
+      },
+    },
+    {
+      icon: "publish",
+      title: { it: "Pubblica il tuo sito", en: "Publish your site" },
+      description: {
+        it: "Quando sei soddisfatto del risultato, clicca il pulsante \"Pubblica\" in alto a destra per mettere il tuo sito online. Riceverai un link da condividere subito.",
+        en: "When you're happy with the result, click the \"Publish\" button at the top right to put your site online. You'll get a link to share right away.",
+      },
+    },
+  ];
+
+  const handleOnboardingNext = () => {
+    if (onboardingStep < onboardingSteps.length - 1) {
+      setOnboardingStep(onboardingStep + 1);
+    } else {
+      handleOnboardingClose();
+    }
+  };
+
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+    setOnboardingStep(0);
+    localStorage.setItem("editor-onboarding-seen", "true");
+  };
 
   const loadSite = async () => {
     try {
@@ -882,7 +945,7 @@ export default function Editor() {
                 )}
               </div>
 
-              <div className="flex gap-2">
+              <div className="relative">
                 <textarea
                   ref={textareaRef}
                   value={chatInput}
@@ -891,14 +954,14 @@ export default function Editor() {
                   placeholder={language === "en" ? "Describe the edit..." : "Descrivi la modifica..."}
                   disabled={isRefining}
                   rows={2}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pr-12 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
                 />
                 <button
                   onClick={() => handleSendMessage()}
                   disabled={!chatInput.trim() || isRefining}
-                  className="self-end p-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors"
+                  className="absolute right-2 bottom-2 p-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg transition-colors"
                 >
-                  <PaperAirplaneIcon className="w-5 h-5" />
+                  <PaperAirplaneIcon className="w-4 h-4" />
                 </button>
               </div>
               <p className="text-xs text-slate-500 mt-2">
@@ -910,6 +973,80 @@ export default function Editor() {
           </aside>
         )}
       </main>
+
+      {/* Onboarding Overlay */}
+      {showOnboarding && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="w-full max-w-md mx-4 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+            {/* Icon area */}
+            <div className="flex items-center justify-center pt-8 pb-4">
+              <div className="w-16 h-16 rounded-2xl bg-blue-600/20 flex items-center justify-center">
+                {onboardingSteps[onboardingStep].icon === "sparkles" && (
+                  <SparklesIcon className="w-8 h-8 text-blue-400" />
+                )}
+                {onboardingSteps[onboardingStep].icon === "chat" && (
+                  <ChatBubbleLeftRightIcon className="w-8 h-8 text-blue-400" />
+                )}
+                {onboardingSteps[onboardingStep].icon === "actions" && (
+                  <CodeBracketIcon className="w-8 h-8 text-blue-400" />
+                )}
+                {onboardingSteps[onboardingStep].icon === "publish" && (
+                  <PaperAirplaneIcon className="w-8 h-8 text-blue-400" />
+                )}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="px-8 pb-4 text-center">
+              <h2 className="text-xl font-bold text-white mb-3">
+                {onboardingSteps[onboardingStep].title[language as "it" | "en"]}
+              </h2>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                {onboardingSteps[onboardingStep].description[language as "it" | "en"]}
+              </p>
+            </div>
+
+            {/* Step indicators */}
+            <div className="flex items-center justify-center gap-2 py-4">
+              {onboardingSteps.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === onboardingStep
+                      ? "w-6 bg-blue-500"
+                      : i < onboardingStep
+                      ? "w-1.5 bg-blue-500/50"
+                      : "w-1.5 bg-white/20"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Navigation */}
+            <div className="flex items-center justify-between px-8 pb-8">
+              <button
+                onClick={handleOnboardingClose}
+                className="px-4 py-2 text-sm text-slate-400 hover:text-white transition-colors"
+              >
+                {language === "en" ? "Skip" : "Salta"}
+              </button>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-500">
+                  {onboardingStep + 1}/{onboardingSteps.length}
+                </span>
+                <button
+                  onClick={handleOnboardingNext}
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {onboardingStep === onboardingSteps.length - 1
+                    ? (language === "en" ? "Get started" : "Inizia")
+                    : (language === "en" ? "Next" : "Avanti")}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

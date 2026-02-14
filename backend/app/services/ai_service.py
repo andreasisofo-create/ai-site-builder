@@ -459,7 +459,9 @@ Your sites are known for bold design, smooth animations, and unforgettable visua
 
 TECHNICAL RULES:
 1. Semantic HTML5 with Tailwind CSS utility classes
-2. Tailwind CDN: <script src="https://cdn.tailwindcss.com"></script>
+2. Tailwind CDN (add BOTH scripts in this order):
+   <script>const _w=console.warn;console.warn=(...a)=>{if(a[0]&&typeof a[0]==='string'&&a[0].includes('cdn.tailwindcss.com'))return;_w.apply(console,a)};</script>
+   <script src="https://cdn.tailwindcss.com"></script>
 3. GSAP + ScrollTrigger CDN (add BEFORE closing </body>):
    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>

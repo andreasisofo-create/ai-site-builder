@@ -68,19 +68,25 @@ class TemplateAssembler:
         return re.sub(r'\{\{(\w+)\}\}', replacer, template)
 
     def _expand_repeats(self, template: str, data: Dict[str, Any]) -> str:
-        """Expands <!-- REPEAT:KEY -->...<!-- /REPEAT:KEY --> blocks."""
+        """Expands <!-- REPEAT:KEY -->...<!-- /REPEAT:KEY --> blocks.
+
+        Supports nested repeats: outer repeats are expanded first, then inner
+        repeats within each item are expanded recursively using item data.
+        """
         pattern = r'<!-- REPEAT:(\w+) -->(.*?)<!-- /REPEAT:\1 -->'
 
         def expand_block(match):
             key = match.group(1)
             inner_template = match.group(2)
             items = data.get(key, [])
-            if not isinstance(items, list):
+            if not isinstance(items, list) or not items:
                 return ""
             fragments = []
             for item in items:
                 if isinstance(item, dict):
-                    fragment = self._replace_placeholders(inner_template, item)
+                    # Recursively expand nested repeats within this item
+                    fragment = self._expand_repeats(inner_template, item)
+                    fragment = self._replace_placeholders(fragment, item)
                 else:
                     fragment = inner_template
                 fragments.append(fragment)

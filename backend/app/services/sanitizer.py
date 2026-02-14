@@ -6,7 +6,7 @@ Servizio sanitizzazione input/output per protezione AI.
 
 import re
 import logging
-from typing import Tuple
+from typing import List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,8 @@ ALLOWED_DOMAINS = [
     "images.unsplash.com",
     "unpkg.com",
     "cdnjs.cloudflare.com",
+    "fal.media",           # fal.ai generated images
+    "v3.fal.media",        # fal.ai generated images (v3)
 ]
 
 # Tag HTML pericolosi da rimuovere
@@ -63,8 +65,8 @@ MAX_SECTION_NAME_LENGTH = 50
 def sanitize_input(
     business_name: str,
     business_description: str,
-    sections: list[str] | None = None,
-) -> Tuple[str, str, list[str]]:
+    sections: Optional[List[str]] = None,
+) -> Tuple[str, str, List[str]]:
     """
     Sanitizza input utente prima di inviarli all'AI.
     Ritorna (name, description, sections) sanitizzati.

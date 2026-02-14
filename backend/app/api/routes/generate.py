@@ -128,7 +128,7 @@ def _save_version(db: Session, site: Site, html_content: str, description: str):
 async def _run_generation_background(
     request: GenerateRequest,
     user_id: int,
-    site_id: int | None,
+    site_id: Optional[int],
 ):
     """
     Esegue la generazione in background con una sessione DB propria.
@@ -166,7 +166,7 @@ async def _run_generation_background(
         else:
             generator = swarm  # fallback legacy
 
-        # Pass template_style_id for deterministic component selection
+        # Pass template_style_id and photo_urls for databinding generator
         gen_kwargs = dict(
             business_name=request.business_name,
             business_description=request.business_description,
@@ -177,11 +177,13 @@ async def _run_generation_background(
             logo_url=request.logo_url,
             contact_info=request.contact_info,
             on_progress=on_progress,
-            photo_urls=request.photo_urls,
         )
-        # Only databinding_generator supports template_style_id
-        if hasattr(generator, 'generate') and request.template_style_id:
-            gen_kwargs["template_style_id"] = request.template_style_id
+        # Only databinding_generator supports photo_urls and template_style_id
+        if generator is databinding_generator:
+            if request.photo_urls:
+                gen_kwargs["photo_urls"] = request.photo_urls
+            if request.template_style_id:
+                gen_kwargs["template_style_id"] = request.template_style_id
 
         result = await generator.generate(**gen_kwargs)
 

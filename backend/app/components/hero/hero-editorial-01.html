@@ -43,12 +43,12 @@
 
       <!-- Center column: big heading overlapping -->
       <div class="col-span-12 md:col-span-9 lg:col-span-6 pt-4 md:pt-24 relative z-20">
-        <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-normal leading-[0.95] text-[var(--color-text)] tracking-tight" data-animate="reveal-right" style="font-style: italic;">
+        <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-normal leading-[0.95] text-[var(--color-text)] tracking-tight" data-animate="text-split" data-split-type="words" style="font-style: italic;">
           {{HERO_TITLE}}
         </h1>
         <div class="mt-8 flex items-center gap-6" data-animate="fade-up">
           <div class="w-16 h-px bg-[var(--color-primary)]"></div>
-          <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-3 font-body text-xs tracking-[0.3em] uppercase text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors group">
+          <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-flex items-center gap-3 font-body text-xs tracking-[0.3em] uppercase text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors group">
             {{HERO_CTA_TEXT}}
             <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
           </a>

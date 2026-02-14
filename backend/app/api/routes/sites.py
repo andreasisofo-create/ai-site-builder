@@ -142,7 +142,7 @@ async def update_site(
         raise HTTPException(status_code=404, detail="Sito non trovato")
     
     # Aggiorna i campi forniti
-    update_data = data.dict(exclude_unset=True)
+    update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(site, field, value)
     

@@ -204,14 +204,14 @@ function NewProjectContent() {
 
         if (!genStatus.is_generating && genStatus.status === "ready") {
           stopProgressPolling();
-          setGenerationProgress({ step: 3, totalSteps: 3, message: "Completato!", percentage: 100 });
-          toast.success("Sito generato con successo!");
+          setGenerationProgress({ step: 3, totalSteps: 3, message: language === "en" ? "Complete!" : "Completato!", percentage: 100 });
+          toast.success(language === "en" ? "Site generated successfully!" : "Sito generato con successo!");
           setTimeout(() => router.push(`/editor/${siteId}`), 1000);
         }
         if (!genStatus.is_generating && genStatus.status === "draft" && genStatus.message) {
           stopProgressPolling();
           setIsGenerating(false);
-          toast.error(genStatus.message || "Errore nella generazione");
+          toast.error(genStatus.message || (language === "en" ? "Generation error" : "Errore nella generazione"));
         }
       } catch { /* ignore */ }
     }, 3000);
@@ -220,6 +220,11 @@ function NewProjectContent() {
   const stopProgressPolling = () => {
     if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
   };
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => { stopProgressPolling(); };
+  }, []);
 
   // Generate
   const handleGenerate = async () => {
@@ -234,7 +239,7 @@ function NewProjectContent() {
 
     setIsGenerating(true);
     setPreviewData(null);
-    setGenerationProgress({ step: 0, totalSteps: 3, message: "Preparazione...", percentage: 0 });
+    setGenerationProgress({ step: 0, totalSteps: 3, message: language === "en" ? "Preparing..." : "Preparazione...", percentage: 0 });
 
     try {
       const quota = await getQuota();
@@ -244,7 +249,7 @@ function NewProjectContent() {
         return;
       }
 
-      setGenerationProgress({ step: 0, totalSteps: 3, message: "Creazione progetto...", percentage: 5 });
+      setGenerationProgress({ step: 0, totalSteps: 3, message: language === "en" ? "Creating project..." : "Creazione progetto...", percentage: 5 });
       const siteData: CreateSiteData = {
         name: formData.businessName,
         slug: generateSlug(formData.businessName),
@@ -254,7 +259,7 @@ function NewProjectContent() {
       setCreatedSiteId(site.id);
       startProgressPolling(site.id);
 
-      setGenerationProgress({ step: 1, totalSteps: 3, message: "Avvio generazione AI...", percentage: 10 });
+      setGenerationProgress({ step: 1, totalSteps: 3, message: language === "en" ? "Starting AI generation..." : "Avvio generazione AI...", percentage: 10 });
 
       // Build enriched description with all context
       const parts: string[] = [];
@@ -335,19 +340,19 @@ function NewProjectContent() {
         generate_images: formData.generateImages,
       });
 
-      if (!generateResult.success) throw new Error(generateResult.error || "Errore nell'avvio della generazione");
+      if (!generateResult.success) throw new Error(generateResult.error || (language === "en" ? "Error starting generation" : "Errore nell'avvio della generazione"));
 
       await updateSite(site.id, {
         thumbnail: `https://placehold.co/600x400/1a1a1a/666?text=${encodeURIComponent(formData.businessName)}`,
       });
 
-      toast.success("Generazione avviata! Attendere...");
+      toast.success(language === "en" ? "Generation started! Please wait..." : "Generazione avviata! Attendere...");
     } catch (error: any) {
       stopProgressPolling();
       if (error.isQuotaError || error.quota?.upgrade_required) {
         setShowUpgradeModal(true);
       } else {
-        toast.error(error.message || "Errore nella generazione");
+        toast.error(error.message || (language === "en" ? "Generation error" : "Errore nella generazione"));
       }
       setIsGenerating(false);
       setPreviewData(null);
@@ -359,11 +364,11 @@ function NewProjectContent() {
     try {
       setIsUpgrading(true);
       await upgradeToPremium();
-      toast.success("Upgrade completato!");
+      toast.success(language === "en" ? "Upgrade complete!" : "Upgrade completato!");
       setShowUpgradeModal(false);
       handleGenerate();
     } catch (error: any) {
-      toast.error(error.message || "Errore nell'upgrade");
+      toast.error(error.message || (language === "en" ? "Upgrade error" : "Errore nell'upgrade"));
     } finally {
       setIsUpgrading(false);
     }
@@ -506,7 +511,7 @@ function NewProjectContent() {
               <div className="max-w-3xl mx-auto space-y-8">
                 {/* Reference Images */}
                 <div>
-                  <label className="block text-sm font-medium mb-3">Screenshot di riferimento (opzionale)</label>
+                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Reference screenshots (optional)" : "Screenshot di riferimento (opzionale)"}</label>
                   <div className="grid grid-cols-2 gap-4">
                     {[0, 1].map(idx => (
                       <div
@@ -542,12 +547,12 @@ function NewProjectContent() {
                   </div>
                   <input ref={refImageInput1} type="file" accept="image/*" onChange={handleReferenceImageUpload(0)} className="hidden" />
                   <input ref={refImageInput2} type="file" accept="image/*" onChange={handleReferenceImageUpload(1)} className="hidden" />
-                  <p className="text-xs text-slate-500 mt-2">Carica screenshot di siti che ti piacciono come riferimento visivo</p>
+                  <p className="text-xs text-slate-500 mt-2">{language === "en" ? "Upload screenshots of websites you like as visual reference" : "Carica screenshot di siti che ti piacciono come riferimento visivo"}</p>
                 </div>
 
                 {/* Reference URLs */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">URL siti preferiti (opzionale)</label>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Favorite site URLs (optional)" : "URL siti preferiti (opzionale)"}</label>
                   <input
                     type="text"
                     value={formData.referenceUrls}
@@ -559,7 +564,7 @@ function NewProjectContent() {
 
                 {/* Preferred Style */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Stile preferito</label>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Preferred style" : "Stile preferito"}</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {STYLE_OPTIONS.map(style => (
                       <button
@@ -585,8 +590,8 @@ function NewProjectContent() {
                   >
                     <div className="flex items-center gap-3">
                       <PaintBrushIcon className="w-5 h-5 text-violet-400" />
-                      <span className="font-medium">Template avanzato</span>
-                      <span className="text-xs text-slate-500">(opzionale)</span>
+                      <span className="font-medium">{language === "en" ? "Advanced template" : "Template avanzato"}</span>
+                      <span className="text-xs text-slate-500">({language === "en" ? "optional" : "opzionale"})</span>
                     </div>
                     <ChevronRightIcon className={`w-4 h-4 text-slate-400 transition-transform ${showAdvancedTemplate ? "rotate-90" : ""}`} />
                   </button>
@@ -595,7 +600,7 @@ function NewProjectContent() {
                     <div className="px-6 pb-6 space-y-6 border-t border-white/5">
                       {/* Category selector */}
                       <div className="pt-4">
-                        <label className="block text-xs text-slate-400 mb-3">Scegli categoria</label>
+                        <label className="block text-xs text-slate-400 mb-3">{language === "en" ? "Choose category" : "Scegli categoria"}</label>
                         <div className="flex flex-wrap gap-2">
                           {TEMPLATE_CATEGORIES.map(category => (
                             <button
@@ -617,7 +622,7 @@ function NewProjectContent() {
                       {/* Style cards + Preview */}
                       {selectedCategory && (
                         <div className="space-y-4">
-                          <label className="block text-xs text-slate-400">Scegli stile per {selectedCategory.label}</label>
+                          <label className="block text-xs text-slate-400">{language === "en" ? `Choose style for ${selectedCategory.label}` : `Scegli stile per ${selectedCategory.label}`}</label>
                           <div className="flex gap-4 h-[50vh]">
                             {/* Style sidebar */}
                             <div className="w-56 flex-shrink-0 space-y-2 overflow-y-auto pr-2">
@@ -677,7 +682,7 @@ function NewProjectContent() {
                                 </>
                               ) : (
                                 <div className="flex-1 flex items-center justify-center text-slate-500">
-                                  <p className="text-sm">Seleziona uno stile per l&apos;anteprima</p>
+                                  <p className="text-sm">{language === "en" ? "Select a style for preview" : "Seleziona uno stile per l'anteprima"}</p>
                                 </div>
                               )}
                             </div>
@@ -737,8 +742,8 @@ function NewProjectContent() {
                     >
                       <div className="flex items-center gap-3">
                         <DocumentTextIcon className="w-5 h-5 text-emerald-400" />
-                        <span className="font-medium">Testi per sezione</span>
-                        <span className="text-xs text-slate-500">(opzionale)</span>
+                        <span className="font-medium">{language === "en" ? "Section texts" : "Testi per sezione"}</span>
+                        <span className="text-xs text-slate-500">({language === "en" ? "optional" : "opzionale"})</span>
                       </div>
                       <ChevronRightIcon className={`w-4 h-4 text-slate-400 transition-transform ${showSectionTexts ? "rotate-90" : ""}`} />
                     </button>
@@ -814,7 +819,7 @@ function NewProjectContent() {
 
                 {/* --- Social Links --- */}
                 <div>
-                  <label className="block text-sm font-medium mb-3">Social Links (opzionale)</label>
+                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Social Links (optional)" : "Social Links (opzionale)"}</label>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {(["facebook", "instagram", "linkedin", "twitter"] as const).map(social => (
                       <div key={social} className="flex items-center gap-2">
@@ -836,7 +841,7 @@ function NewProjectContent() {
 
                 {/* --- CTA Primaria --- */}
                 <div>
-                  <label className="block text-sm font-medium mb-3">Call-to-Action primaria</label>
+                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Primary Call-to-Action" : "Call-to-Action primaria"}</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {CTA_OPTIONS.map(cta => (
                       <button
@@ -856,7 +861,7 @@ function NewProjectContent() {
 
                 {/* --- Photos --- */}
                 <div className="pt-4 border-t border-white/10">
-                  <label className="block text-sm font-medium mb-3">Foto della tua attivit&agrave; (opzionale, max 8)</label>
+                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Photos of your business (optional, max 8)" : "Foto della tua attivit\u00E0 (opzionale, max 8)"}</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {formData.photos.map(photo => (
                       <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 group">
@@ -875,12 +880,12 @@ function NewProjectContent() {
                         className="aspect-square rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.02] hover:bg-white/[0.04] transition-all flex flex-col items-center justify-center gap-2"
                       >
                         <PlusIcon className="w-8 h-8 text-slate-500" />
-                        <span className="text-xs text-slate-400">Aggiungi</span>
+                        <span className="text-xs text-slate-400">{language === "en" ? "Add" : "Aggiungi"}</span>
                       </button>
                     )}
                   </div>
                   <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
-                  <p className="text-xs text-slate-500 mt-2">Se non carichi foto, l&apos;AI user&agrave; immagini professionali di stock.</p>
+                  <p className="text-xs text-slate-500 mt-2">{language === "en" ? "If you don't upload photos, AI will use professional stock images." : "Se non carichi foto, l'AI user\u00E0 immagini professionali di stock."}</p>
                 </div>
 
                 {/* --- AI Image Generation Toggle --- */}

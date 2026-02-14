@@ -251,7 +251,7 @@ async def admin_update_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    update_data = data.dict(exclude_unset=True)
+    update_data = data.model_dump(exclude_unset=True)
 
     # If plan is being changed, also update limits
     if "plan" in update_data:

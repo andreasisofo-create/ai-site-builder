@@ -460,6 +460,9 @@ export async function chatMessage(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message, history, language: language || "it" }),
   });
+  if (!res.ok) {
+    return { reply: "", error: `Errore ${res.status}` };
+  }
   return res.json();
 }
 

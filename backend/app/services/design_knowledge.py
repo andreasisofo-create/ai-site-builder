@@ -6,7 +6,7 @@ GSAP code snippets, layout patterns, and creative prompts.
 import chromadb
 from chromadb.config import Settings
 import os
-from typing import Optional
+from typing import Dict, List, Optional
 
 # Persistent storage path
 CHROMA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "chroma_db")
@@ -44,7 +44,7 @@ def add_pattern(
     pattern_id: str,
     content: str,
     category: str,
-    tags: list[str] = None,
+    tags: Optional[List[str]] = None,
     complexity: str = "medium",
     impact_score: int = 5,
     code_snippet: str = "",
@@ -70,7 +70,7 @@ def add_pattern(
     )
 
 
-def search_patterns(query: str, n_results: int = 5, category: str = None) -> list[dict]:
+def search_patterns(query: str, n_results: int = 5, category: Optional[str] = None) -> List[Dict]:
     """Search for design patterns relevant to a query."""
     col = get_collection()
     where = {"category": category} if category else None
@@ -94,7 +94,7 @@ def search_patterns(query: str, n_results: int = 5, category: str = None) -> lis
     return patterns
 
 
-def get_patterns_by_category(category: str, limit: int = 20) -> list[dict]:
+def get_patterns_by_category(category: str, limit: int = 20) -> List[Dict]:
     """Get all patterns in a category."""
     col = get_collection()
     results = col.get(
@@ -114,7 +114,7 @@ def get_patterns_by_category(category: str, limit: int = 20) -> list[dict]:
     return patterns
 
 
-def get_creative_context(style_id: str, category_label: str, sections: list[str] = None) -> str:
+def get_creative_context(style_id: str, category_label: str, sections: Optional[List[str]] = None) -> str:
     """
     Build a creative context string for AI generation.
     Queries the knowledge base for relevant patterns based on the template style.

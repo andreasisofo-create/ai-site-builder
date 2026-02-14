@@ -260,6 +260,7 @@ class QualityControlPipeline:
 
     def _check_placeholders(self, html: str) -> List[QCIssue]:
         issues = []
+        # Check for unreplaced {{PLACEHOLDER}} tokens
         placeholders = re.findall(r'\{\{(\w+)\}\}', html)
         for ph in placeholders:
             if ph in ("LOGO_URL",):
@@ -269,6 +270,16 @@ class QualityControlPipeline:
                 element=f"{{{{{ph}}}}}",
                 description=f"Unreplaced placeholder: {{{{{ph}}}}}",
                 auto_fixable=True,
+            ))
+
+        # Check for unexpanded REPEAT blocks (template engine failed to process them)
+        unexpanded = re.findall(r'<!-- REPEAT:(\w+) -->', html)
+        for repeat_key in unexpanded:
+            issues.append(QCIssue(
+                type="structure", severity="warning",
+                element=f"REPEAT:{repeat_key}",
+                description=f"Unexpanded REPEAT block: {repeat_key} (missing data array)",
+                auto_fixable=False,
             ))
         return issues
 

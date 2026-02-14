@@ -534,6 +534,18 @@ IMPORTANT:
     # =========================================================
     # Step 3: Select Components
     # =========================================================
+    # Default variants for section types not in STYLE_VARIANT_MAP.
+    # Used when a user requests sections like faq/pricing/stats that aren't
+    # curated per-style but exist in the component registry.
+    _DEFAULT_SECTION_VARIANTS: Dict[str, str] = {
+        "faq": "faq-accordion-01",
+        "pricing": "pricing-cards-01",
+        "stats": "stats-counters-01",
+        "logos": "logos-marquee-01",
+        "process": "process-steps-01",
+        "timeline": "timeline-vertical-01",
+    }
+
     def _select_components_deterministic(
         self,
         template_style_id: str,
@@ -545,14 +557,22 @@ IMPORTANT:
         selections = {}
 
         for section in sections:
-            # Use curated variant if available for this style
             if section in variant_map:
+                # Use curated variant for this style
                 selections[section] = variant_map[section]
+            elif section in self._DEFAULT_SECTION_VARIANTS:
+                # Use known default for common section types not in the style map
+                selections[section] = self._DEFAULT_SECTION_VARIANTS[section]
             else:
-                # Fallback: pick first available variant for sections not in the map
+                # Fallback: pick first available variant for unknown sections
                 variants = available.get(section, [])
                 if variants:
                     selections[section] = variants[0]
+                else:
+                    logger.warning(
+                        f"[DataBinding] No variant available for section '{section}' "
+                        f"in style '{template_style_id}'"
+                    )
 
         logger.info(f"[DataBinding] Deterministic selection for '{template_style_id}': {selections}")
         return selections
@@ -937,12 +957,20 @@ Return ONLY the JSON object."""
         for section in sections:
             variant_id = selections.get(section)
             if not variant_id:
+                logger.warning(f"[DataBinding] No variant selected for section '{section}', skipping")
                 continue
             section_texts = texts.get(section, {})
+            if isinstance(section_texts, dict):
+                section_texts = self._normalize_section_data(section, section_texts, variant_id, business_name)
             components.append({
                 "variant_id": variant_id,
                 "data": section_texts,
             })
+
+        # Build global data with both BUSINESS_* and CONTACT_* keys for compatibility
+        phone = contact_info.get("phone", "") if contact_info else ""
+        email = contact_info.get("email", "") if contact_info else ""
+        address = contact_info.get("address", "") if contact_info else ""
 
         return {
             "theme": theme,
@@ -956,12 +984,79 @@ Return ONLY the JSON object."""
             "global": {
                 "BUSINESS_NAME": business_name,
                 "LOGO_URL": logo_url or "",
-                "BUSINESS_PHONE": contact_info.get("phone", "") if contact_info else "",
-                "BUSINESS_EMAIL": contact_info.get("email", "") if contact_info else "",
-                "BUSINESS_ADDRESS": contact_info.get("address", "") if contact_info else "",
+                "BUSINESS_PHONE": phone,
+                "BUSINESS_EMAIL": email,
+                "BUSINESS_ADDRESS": address,
+                # Duplicate as CONTACT_* for templates that use that prefix
+                "CONTACT_PHONE": phone,
+                "CONTACT_EMAIL": email,
+                "CONTACT_ADDRESS": address,
                 "CURRENT_YEAR": "2026",
             },
         }
+
+    def _normalize_section_data(
+        self, section: str, data: Dict[str, Any], variant_id: str, business_name: str,
+    ) -> Dict[str, Any]:
+        """Transform AI-generated flat data into the array/repeat format templates expect.
+
+        Key transformations:
+        - about: ABOUT_HIGHLIGHT_NUM_1/2/3 + ABOUT_HIGHLIGHT_1/2/3 -> ABOUT_STATS array
+        - about: ensure ABOUT_IMAGE_URL/ABOUT_IMAGE_ALT have fallback values
+        - contact: copy CONTACT_* to BUSINESS_* and vice versa for template compatibility
+        """
+        data = dict(data)  # shallow copy to avoid mutating original
+
+        if section == "about":
+            # Convert flat ABOUT_HIGHLIGHT_* keys to ABOUT_STATS repeat array
+            if "ABOUT_STATS" not in data:
+                stats = []
+                for i in range(1, 10):  # support up to 9 highlights
+                    num_key = f"ABOUT_HIGHLIGHT_NUM_{i}"
+                    label_key = f"ABOUT_HIGHLIGHT_{i}"
+                    if num_key in data and label_key in data:
+                        stats.append({
+                            "STAT_NUMBER": str(data[num_key]),
+                            "STAT_LABEL": str(data[label_key]),
+                        })
+                if stats:
+                    data["ABOUT_STATS"] = stats
+
+            # Ensure ABOUT_IMAGE_URL has a fallback for templates that need it
+            if "ABOUT_IMAGE_URL" not in data or not data["ABOUT_IMAGE_URL"]:
+                primary = "3b82f6"
+                data["ABOUT_IMAGE_URL"] = f"https://placehold.co/800x600/{primary}/white?text={business_name}"
+            if "ABOUT_IMAGE_ALT" not in data or not data["ABOUT_IMAGE_ALT"]:
+                data["ABOUT_IMAGE_ALT"] = f"Immagine {business_name}"
+
+        elif section == "contact":
+            # Ensure both CONTACT_* and BUSINESS_* prefixes are available
+            contact_map = {
+                "CONTACT_EMAIL": "BUSINESS_EMAIL",
+                "CONTACT_PHONE": "BUSINESS_PHONE",
+                "CONTACT_ADDRESS": "BUSINESS_ADDRESS",
+            }
+            for contact_key, business_key in contact_map.items():
+                if contact_key in data and business_key not in data:
+                    data[business_key] = data[contact_key]
+                elif business_key in data and contact_key not in data:
+                    data[contact_key] = data[business_key]
+
+        elif section == "pricing":
+            # Convert comma-separated PLAN_FEATURES string into array for nested REPEAT
+            plans = data.get("PRICING_PLANS", [])
+            if isinstance(plans, list):
+                for plan in plans:
+                    if isinstance(plan, dict):
+                        features_str = plan.get("PLAN_FEATURES", "")
+                        if isinstance(features_str, str) and features_str:
+                            plan["PLAN_FEATURES"] = [
+                                {"FEATURE_TEXT": f.strip()}
+                                for f in features_str.split(",")
+                                if f.strip()
+                            ]
+
+        return data
 
     def _inject_user_photos(self, site_data: Dict[str, Any], photo_urls: List[str]) -> Dict[str, Any]:
         """Replace placehold.co URLs with user-uploaded photos in site_data."""

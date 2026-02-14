@@ -32,7 +32,7 @@
         <p class="text-xs md:text-sm font-body font-bold uppercase tracking-[0.5em] mb-4 text-[var(--color-text-muted)] border-l-4 border-[var(--color-primary)] pl-3" data-animate="fade-right">
           {{HERO_SUBTITLE}}
         </p>
-        <h1 class="font-heading font-black uppercase leading-[0.85] tracking-tighter text-[var(--color-text)]" style="font-size: clamp(4rem, 12vw, 10rem);" data-animate="text-split">
+        <h1 class="font-heading font-black uppercase leading-[0.85] tracking-tighter text-[var(--color-text)]" style="font-size: clamp(4rem, 12vw, 10rem);" data-animate="text-split" data-split-type="words">
           {{HERO_TITLE}}
         </h1>
       </div>
@@ -61,7 +61,7 @@
           <p class="text-[var(--color-text-muted)] font-body text-sm leading-relaxed mb-6 max-w-xs border-l-2 border-[var(--color-text-muted)] pl-4">
             {{HERO_SUBTITLE}}
           </p>
-          <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-4 bg-[var(--color-text)] text-[var(--color-bg)] px-8 py-4 font-heading font-black text-sm uppercase tracking-[0.2em] hover:bg-[var(--color-primary)] hover:text-white transition-colors group w-fit">
+          <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-flex items-center gap-4 bg-[var(--color-text)] text-[var(--color-bg)] px-8 py-4 font-heading font-black text-sm uppercase tracking-[0.2em] hover:bg-[var(--color-primary)] hover:text-white transition-colors group w-fit">
             {{HERO_CTA_TEXT}}
             <svg class="w-5 h-5 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="square" d="M5 12h14m-6-6l6 6-6 6"/></svg>
           </a>

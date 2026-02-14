@@ -14,6 +14,7 @@ import hashlib
 import hmac
 import json
 import logging
+from typing import Optional
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
@@ -70,7 +71,7 @@ class PaymentStatusResponse(BaseModel):
     plan: str
     plan_label: str
     has_paid: bool
-    revolut_customer_id: str | None
+    revolut_customer_id: Optional[str] = None
 
 
 # ============ WEBHOOK SIGNATURE VERIFICATION ============
@@ -107,7 +108,7 @@ def _verify_revolut_signature(payload: bytes, sig_header: str, timestamp_header:
 
 # ============ REVOLUT API HELPERS ============
 
-async def _revolut_get_order(order_id: str) -> dict | None:
+async def _revolut_get_order(order_id: str) -> Optional[dict]:
     """Recupera un ordine da Revolut per ottenere metadata e stato."""
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:

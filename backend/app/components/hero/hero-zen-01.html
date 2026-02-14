@@ -25,7 +25,7 @@
       <div class="w-px h-12 bg-[var(--color-text)] opacity-15 mx-auto mb-16" data-animate="fade-up"></div>
 
       <!-- Minimal heading -->
-      <h1 class="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-[var(--color-text)] leading-relaxed tracking-wide mb-8" data-animate="fade-up">
+      <h1 class="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-[var(--color-text)] leading-relaxed tracking-wide mb-8" data-animate="text-split" data-split-type="words">
         {{HERO_TITLE}}
       </h1>
 
@@ -39,7 +39,7 @@
 
       <!-- Understated CTA -->
       <div data-animate="fade-up">
-        <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-3 font-body text-xs tracking-[0.3em] uppercase text-[var(--color-text)] opacity-50 hover:opacity-100 transition-opacity border-b border-[var(--color-text)] border-opacity-20 pb-1 hover:border-opacity-50">
+        <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-flex items-center gap-3 font-body text-xs tracking-[0.3em] uppercase text-[var(--color-text)] opacity-50 hover:opacity-100 transition-opacity border-b border-[var(--color-text)] border-opacity-20 pb-1 hover:border-opacity-50">
           {{HERO_CTA_TEXT}}
         </a>
       </div>

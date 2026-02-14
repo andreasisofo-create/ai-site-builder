@@ -36,7 +36,7 @@
           <span class="font-body text-xs tracking-wider uppercase text-[var(--color-text-muted)]">{{BUSINESS_NAME}}</span>
         </div>
 
-        <h1 class="font-heading text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-semibold text-[var(--color-text)] leading-[1.15] mb-6" data-animate="fade-up">
+        <h1 class="font-heading text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-semibold text-[var(--color-text)] leading-[1.15] mb-6" data-animate="text-split" data-split-type="words">
           {{HERO_TITLE}}
         </h1>
 
@@ -46,7 +46,7 @@
 
         <!-- Soft rounded CTA -->
         <div class="flex flex-wrap items-center gap-4" data-animate="fade-up">
-          <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-3 px-8 py-4 rounded-full font-body font-semibold text-sm text-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02]" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); box-shadow: 0 8px 30px -10px var(--color-primary);">
+          <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-flex items-center gap-3 px-8 py-4 rounded-full font-body font-semibold text-sm text-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02]" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); box-shadow: 0 8px 30px -10px var(--color-primary);">
             {{HERO_CTA_TEXT}}
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
           </a>
