@@ -29,6 +29,8 @@ import {
   TEMPLATE_CATEGORIES, TemplateCategory, TemplateStyle,
   SECTION_LABELS, STYLE_OPTIONS, CTA_OPTIONS, ALL_SECTIONS, STYLE_TO_MOOD,
   generateStylePreviewHtml, findStyleById,
+  getSectionLabels, getStyleOptions, getCtaOptions, getAllSections,
+  getCategoryLabel, getStyleLabel, getStyleDescription,
 } from "@/lib/templates";
 import { useLanguage } from "@/lib/i18n";
 
@@ -492,7 +494,7 @@ function NewProjectContent() {
                     type="text"
                     value={formData.tagline}
                     onChange={e => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
-                    placeholder="es. Il vero gusto della tradizione"
+                    placeholder={language === "en" ? "e.g. The true taste of tradition" : "es. Il vero gusto della tradizione"}
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
                   />
                 </div>
@@ -521,7 +523,7 @@ function NewProjectContent() {
                       >
                         {formData.referenceImages[idx] ? (
                           <>
-                            <Image src={formData.referenceImages[idx]!} alt={`Riferimento ${idx + 1}`} fill className="object-cover rounded-xl" />
+                            <Image src={formData.referenceImages[idx]!} alt={language === "en" ? `Reference ${idx + 1}` : `Riferimento ${idx + 1}`} fill className="object-cover rounded-xl" />
                             <button
                               onClick={e => {
                                 e.stopPropagation();
@@ -557,7 +559,7 @@ function NewProjectContent() {
                     type="text"
                     value={formData.referenceUrls}
                     onChange={e => setFormData(prev => ({ ...prev, referenceUrls: e.target.value }))}
-                    placeholder="es. www.esempio1.it, www.esempio2.it"
+                    placeholder={language === "en" ? "e.g. www.example1.com, www.example2.com" : "es. www.esempio1.it, www.esempio2.it"}
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
                   />
                 </div>
@@ -566,7 +568,7 @@ function NewProjectContent() {
                 <div>
                   <label className="block text-sm font-medium mb-2">{language === "en" ? "Preferred style" : "Stile preferito"}</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {STYLE_OPTIONS.map(style => (
+                    {getStyleOptions(language).map(style => (
                       <button
                         key={style.id}
                         onClick={() => setFormData(prev => ({ ...prev, preferredStyle: prev.preferredStyle === style.id ? "" : style.id }))}
@@ -613,7 +615,7 @@ function NewProjectContent() {
                               }`}
                             >
                               <span>{category.icon}</span>
-                              <span>{category.label}</span>
+                              <span>{getCategoryLabel(category, language)}</span>
                             </button>
                           ))}
                         </div>
@@ -622,7 +624,7 @@ function NewProjectContent() {
                       {/* Style cards + Preview */}
                       {selectedCategory && (
                         <div className="space-y-4">
-                          <label className="block text-xs text-slate-400">{language === "en" ? `Choose style for ${selectedCategory.label}` : `Scegli stile per ${selectedCategory.label}`}</label>
+                          <label className="block text-xs text-slate-400">{language === "en" ? `Choose style for ${getCategoryLabel(selectedCategory, language)}` : `Scegli stile per ${getCategoryLabel(selectedCategory, language)}`}</label>
                           <div className="flex gap-4 h-[50vh]">
                             {/* Style sidebar */}
                             <div className="w-56 flex-shrink-0 space-y-2 overflow-y-auto pr-2">
@@ -644,9 +646,9 @@ function NewProjectContent() {
                                     <div className="flex items-center gap-1.5 mb-0.5">
                                       <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: style.primaryColor }} />
                                       <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: style.secondaryColor }} />
-                                      <span className="text-xs font-medium text-white ml-auto">{style.label}</span>
+                                      <span className="text-xs font-medium text-white ml-auto">{getStyleLabel(style, language)}</span>
                                     </div>
-                                    <p className="text-[10px] text-slate-400">{style.description}</p>
+                                    <p className="text-[10px] text-slate-400">{getStyleDescription(style, language)}</p>
                                   </div>
                                   {selectedStyle?.id === style.id && (
                                     <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
@@ -668,7 +670,7 @@ function NewProjectContent() {
                                       <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
                                     </div>
                                     <div className="flex-1 text-center">
-                                      <span className="text-[11px] text-slate-400">{selectedStyle.label}</span>
+                                      <span className="text-[11px] text-slate-400">{getStyleLabel(selectedStyle, language)}</span>
                                     </div>
                                   </div>
                                   <div className="flex-1 overflow-hidden">
@@ -710,7 +712,7 @@ function NewProjectContent() {
                 <div>
                   <label className="block text-sm font-medium mb-3">{language === "en" ? "Site sections" : "Sezioni del sito"} <span className="text-red-400">*</span></label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {ALL_SECTIONS.map(section => (
+                    {getAllSections(language).map(section => (
                       <button
                         key={section.id}
                         onClick={() => toggleSection(section.id)}
@@ -750,17 +752,19 @@ function NewProjectContent() {
 
                     {showSectionTexts && (
                       <div className="px-6 pb-6 space-y-4 border-t border-white/5 pt-4">
-                        {formData.selectedSections.map(sectionId => (
+                        {formData.selectedSections.map(sectionId => {
+                          const sectionLabel = getSectionLabels(language)[sectionId] || sectionId;
+                          return (
                           <div key={sectionId}>
                             <div className="flex items-center justify-between mb-1.5">
-                              <label className="text-sm text-slate-300">{SECTION_LABELS[sectionId] || sectionId}</label>
+                              <label className="text-sm text-slate-300">{sectionLabel}</label>
                               <button
                                 className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 opacity-50 cursor-not-allowed"
-                                title="Disponibile prossimamente"
+                                title={language === "en" ? "Coming soon" : "Disponibile prossimamente"}
                                 disabled
                               >
                                 <SparklesIcon className="w-3 h-3" />
-                                Genera testo AI
+                                {language === "en" ? "Generate AI text" : "Genera testo AI"}
                               </button>
                             </div>
                             <textarea
@@ -769,12 +773,13 @@ function NewProjectContent() {
                                 ...prev,
                                 sectionTexts: { ...prev.sectionTexts, [sectionId]: e.target.value }
                               }))}
-                              placeholder={`Testo per la sezione ${SECTION_LABELS[sectionId] || sectionId}...`}
+                              placeholder={language === "en" ? `Text for the ${sectionLabel} section...` : `Testo per la sezione ${sectionLabel}...`}
                               rows={2}
                               className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all resize-none"
                             />
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -788,7 +793,7 @@ function NewProjectContent() {
                       type="text"
                       value={formData.contactInfo.address}
                       onChange={e => setFormData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, address: e.target.value } }))}
-                      placeholder="Indirizzo: Via Roma 123, 00100 Roma"
+                      placeholder={language === "en" ? "Address: 123 Main Street, New York" : "Indirizzo: Via Roma 123, 00100 Roma"}
                       className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
                     />
                     <div className="grid sm:grid-cols-2 gap-3">
@@ -796,7 +801,7 @@ function NewProjectContent() {
                         type="tel"
                         value={formData.contactInfo.phone}
                         onChange={e => setFormData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, phone: e.target.value } }))}
-                        placeholder="Telefono"
+                        placeholder={language === "en" ? "Phone" : "Telefono"}
                         className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
                       />
                       <input
@@ -811,7 +816,7 @@ function NewProjectContent() {
                       type="text"
                       value={formData.contactInfo.hours}
                       onChange={e => setFormData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, hours: e.target.value } }))}
-                      placeholder="Orari apertura: es. Lun-Ven 9:00-18:00, Sab 9:00-13:00"
+                      placeholder={language === "en" ? "Opening hours: e.g. Mon-Fri 9:00-18:00, Sat 9:00-13:00" : "Orari apertura: es. Lun-Ven 9:00-18:00, Sab 9:00-13:00"}
                       className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
                     />
                   </div>
@@ -843,7 +848,7 @@ function NewProjectContent() {
                 <div>
                   <label className="block text-sm font-medium mb-3">{language === "en" ? "Primary Call-to-Action" : "Call-to-Action primaria"}</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {CTA_OPTIONS.map(cta => (
+                    {getCtaOptions(language).map(cta => (
                       <button
                         key={cta.id}
                         onClick={() => setFormData(prev => ({ ...prev, primaryCta: cta.id }))}
@@ -935,34 +940,34 @@ function NewProjectContent() {
                     </div>
                     {formData.tagline && (
                       <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                        <span className="text-slate-500">Slogan:</span>{" "}
+                        <span className="text-slate-500">{language === "en" ? "Tagline:" : "Slogan:"}</span>{" "}
                         <span className="text-white">{formData.tagline}</span>
                       </div>
                     )}
                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500">Sezioni:</span>{" "}
+                      <span className="text-slate-500">{language === "en" ? "Sections:" : "Sezioni:"}</span>{" "}
                       <span className="text-white">{formData.selectedSections.length}</span>
                     </div>
                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
                       <span className="text-slate-500">CTA:</span>{" "}
-                      <span className="text-white">{CTA_OPTIONS.find(c => c.id === formData.primaryCta)?.label}</span>
+                      <span className="text-white">{getCtaOptions(language).find(c => c.id === formData.primaryCta)?.label}</span>
                     </div>
                     {selectedStyle && (
                       <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2">
                         <span className="text-slate-500">Template:</span>
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedStyle.primaryColor }} />
-                        <span className="text-white">{selectedStyle.label}</span>
+                        <span className="text-white">{getStyleLabel(selectedStyle, language)}</span>
                       </div>
                     )}
                     {formData.preferredStyle && !selectedStyle && (
                       <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                        <span className="text-slate-500">Stile:</span>{" "}
-                        <span className="text-white">{STYLE_OPTIONS.find(s => s.id === formData.preferredStyle)?.label}</span>
+                        <span className="text-slate-500">{language === "en" ? "Style:" : "Stile:"}</span>{" "}
+                        <span className="text-white">{getStyleOptions(language).find(s => s.id === formData.preferredStyle)?.label}</span>
                       </div>
                     )}
                     {formData.photos.length > 0 && (
                       <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                        <span className="text-slate-500">Foto:</span>{" "}
+                        <span className="text-slate-500">{language === "en" ? "Photos:" : "Foto:"}</span>{" "}
                         <span className="text-white">{formData.photos.length}</span>
                       </div>
                     )}
@@ -1070,7 +1075,7 @@ function NewProjectContent() {
                         {language === "en" ? "Later" : "Piu' tardi"}
                       </button>
                       <button onClick={handleUpgrade} disabled={isUpgrading} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 rounded-lg font-medium transition-all disabled:opacity-50">
-                        {isUpgrading ? (language === "en" ? "Activating..." : "Attivazione...") : "Upgrade (DEMO)"}
+                        {isUpgrading ? (language === "en" ? "Activating..." : "Attivazione...") : (language === "en" ? "Upgrade (DEMO)" : "Upgrade (DEMO)")}
                       </button>
                     </div>
                   </div>

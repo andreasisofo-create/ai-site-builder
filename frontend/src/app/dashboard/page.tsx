@@ -487,7 +487,7 @@ function Dashboard() {
                       {isCheckingOut === "base" ? (
                         <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                       ) : null}
-                      {language === "en" ? "Site Creation - 200" : "Creazione Sito - 200"}
+                      {language === "en" ? "Site Creation - \u20AC200" : "Creazione Sito - 200\u20AC"}
                     </button>
                     <button
                       onClick={() => handleUpgrade("premium")}
@@ -497,7 +497,7 @@ function Dashboard() {
                       {isCheckingOut === "premium" ? (
                         <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                       ) : null}
-                      Premium - 500
+                      {language === "en" ? "Premium - \u20AC500" : "Premium - 500\u20AC"}
                     </button>
                   </div>
                 </div>
@@ -588,7 +588,11 @@ function Dashboard() {
                       </div>
                       <div className="absolute top-3 left-3 px-2 py-1 bg-black/80 backdrop-blur-md rounded-md border border-white/10 flex items-center gap-2">
                         {getStatusIcon(site.status)}
-                        <span className="text-xs font-medium text-slate-200 capitalize">{site.status}</span>
+                        <span className="text-xs font-medium text-slate-200 capitalize">{
+                          language === "en"
+                            ? { ready: "Ready", published: "Published", generating: "Generating", draft: "Draft", error: "Error" }[site.status] || site.status
+                            : { ready: "Pronto", published: "Pubblicato", generating: "In generazione", draft: "Bozza", error: "Errore" }[site.status] || site.status
+                        }</span>
                       </div>
                     </div>
                     <div className="p-4">

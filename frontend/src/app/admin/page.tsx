@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, Fragment } from "react";
 import { API_BASE } from "@/lib/api";
+import { useLanguage } from "@/lib/i18n";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -88,20 +89,20 @@ async function adminFetch(path: string, options: RequestInit = {}) {
 // Utility helpers
 // ---------------------------------------------------------------------------
 
-function formatDate(iso: string | null): string {
+function formatDate(iso: string | null, lang: string = "it"): string {
   if (!iso) return "---";
   const d = new Date(iso);
-  return d.toLocaleDateString("it-IT", {
+  return d.toLocaleDateString(lang === "en" ? "en-US" : "it-IT", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
 }
 
-function formatDateTime(iso: string | null): string {
+function formatDateTime(iso: string | null, lang: string = "it"): string {
   if (!iso) return "---";
   const d = new Date(iso);
-  return d.toLocaleDateString("it-IT", {
+  return d.toLocaleDateString(lang === "en" ? "en-US" : "it-IT", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -110,18 +111,18 @@ function formatDateTime(iso: string | null): string {
   });
 }
 
-function timeAgo(iso: string | null): string {
-  if (!iso) return "mai";
+function timeAgo(iso: string | null, lang: string = "it"): string {
+  if (!iso) return lang === "en" ? "never" : "mai";
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "adesso";
-  if (mins < 60) return `${mins}m fa`;
+  if (mins < 1) return lang === "en" ? "now" : "adesso";
+  if (mins < 60) return lang === "en" ? `${mins}m ago` : `${mins}m fa`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h fa`;
+  if (hrs < 24) return lang === "en" ? `${hrs}h ago` : `${hrs}h fa`;
   const days = Math.floor(hrs / 24);
-  if (days < 30) return `${days}g fa`;
+  if (days < 30) return lang === "en" ? `${days}d ago` : `${days}g fa`;
   const months = Math.floor(days / 30);
-  return `${months}mo fa`;
+  return lang === "en" ? `${months}mo ago` : `${months}mo fa`;
 }
 
 function classNames(...classes: (string | false | undefined | null)[]): string {
@@ -173,7 +174,9 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function BoolBadge({ value, trueLabel = "Si", falseLabel = "No" }: { value: boolean; trueLabel?: string; falseLabel?: string }) {
+function BoolBadge({ value, trueLabel, falseLabel, lang = "it" }: { value: boolean; trueLabel?: string; falseLabel?: string; lang?: string }) {
+  const yes = trueLabel || (lang === "en" ? "Yes" : "Si");
+  const no = falseLabel || (lang === "en" ? "No" : "No");
   return (
     <span
       className={classNames(
@@ -183,7 +186,7 @@ function BoolBadge({ value, trueLabel = "Si", falseLabel = "No" }: { value: bool
           : "bg-gray-800 text-gray-500"
       )}
     >
-      {value ? trueLabel : falseLabel}
+      {value ? yes : no}
     </span>
   );
 }
@@ -261,18 +264,22 @@ function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = "Elimina",
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   onCancel,
   loading = false,
+  lang = "it",
 }: {
   open: boolean;
   title: string;
   message: string;
   confirmLabel?: string;
+  cancelLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
+  lang?: string;
 }) {
   if (!open) return null;
   return (
@@ -286,7 +293,7 @@ function ConfirmDialog({
             disabled={loading}
             className="px-4 py-2 text-sm rounded-lg bg-[#2a2a2a] text-gray-300 hover:bg-[#333] transition-colors disabled:opacity-50"
           >
-            Annulla
+            {cancelLabel || (lang === "en" ? "Cancel" : "Annulla")}
           </button>
           <button
             onClick={onConfirm}
@@ -294,7 +301,7 @@ function ConfirmDialog({
             className="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {loading && <Spinner size="sm" />}
-            {confirmLabel}
+            {confirmLabel || (lang === "en" ? "Delete" : "Elimina")}
           </button>
         </div>
       </div>
@@ -306,10 +313,12 @@ function Pagination({
   page,
   pages,
   onPage,
+  lang = "it",
 }: {
   page: number;
   pages: number;
   onPage: (p: number) => void;
+  lang?: string;
 }) {
   if (pages <= 1) return null;
   const range: number[] = [];
@@ -324,7 +333,7 @@ function Pagination({
         onClick={() => onPage(page - 1)}
         className="px-3 py-1.5 text-xs rounded-lg bg-[#2a2a2a] text-gray-400 hover:bg-[#333] disabled:opacity-30 transition-colors"
       >
-        Prec
+        {lang === "en" ? "Prev" : "Prec"}
       </button>
       {start > 1 && (
         <>
@@ -367,7 +376,7 @@ function Pagination({
         onClick={() => onPage(page + 1)}
         className="px-3 py-1.5 text-xs rounded-lg bg-[#2a2a2a] text-gray-400 hover:bg-[#333] disabled:opacity-30 transition-colors"
       >
-        Succ
+        {lang === "en" ? "Next" : "Succ"}
       </button>
     </div>
   );
@@ -378,6 +387,7 @@ function Pagination({
 // ---------------------------------------------------------------------------
 
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
+  const { language } = useLanguage();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -395,13 +405,13 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
-        throw new Error(body?.detail || "Credenziali non valide");
+        throw new Error(body?.detail || (language === "en" ? "Invalid credentials" : "Credenziali non valide"));
       }
       const data = await res.json();
       sessionStorage.setItem("admin_token", data.access_token);
       onLogin();
     } catch (err: any) {
-      setError(err.message || "Errore di connessione");
+      setError(err.message || (language === "en" ? "Connection error" : "Errore di connessione"));
     } finally {
       setLoading(false);
     }
@@ -428,7 +438,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white">E-quipe Admin</h1>
-          <p className="text-sm text-gray-500 mt-1">Pannello di Amministrazione</p>
+          <p className="text-sm text-gray-500 mt-1">{language === "en" ? "Administration Panel" : "Pannello di Amministrazione"}</p>
         </div>
 
         {/* Form */}
@@ -445,7 +455,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                 required
                 autoFocus
                 className="w-full px-3 py-2.5 rounded-lg bg-[#0a0a0a] border border-[#2a2a2a] text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
-                placeholder="Inserisci username"
+                placeholder={language === "en" ? "Enter username" : "Inserisci username"}
               />
             </div>
             <div>
@@ -458,7 +468,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full px-3 py-2.5 rounded-lg bg-[#0a0a0a] border border-[#2a2a2a] text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
-                placeholder="Inserisci password"
+                placeholder={language === "en" ? "Enter password" : "Inserisci password"}
               />
             </div>
 
@@ -474,13 +484,13 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
               className="w-full py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#1a1a1a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading && <Spinner size="sm" />}
-              {loading ? "Accesso in corso..." : "Accedi"}
+              {loading ? (language === "en" ? "Signing in..." : "Accesso in corso...") : (language === "en" ? "Sign In" : "Accedi")}
             </button>
           </form>
         </Card>
 
         <p className="text-center text-xs text-gray-700 mt-6">
-          Area riservata &middot; Accesso non autorizzato vietato
+          {language === "en" ? "Restricted area \u00B7 Unauthorized access prohibited" : "Area riservata \u00B7 Accesso non autorizzato vietato"}
         </p>
       </div>
     </div>
@@ -492,6 +502,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 // ---------------------------------------------------------------------------
 
 function OverviewTab() {
+  const { language } = useLanguage();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -524,12 +535,12 @@ function OverviewTab() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-400 mb-4">Errore: {error}</p>
+        <p className="text-red-400 mb-4">{language === "en" ? "Error" : "Errore"}: {error}</p>
         <button
           onClick={load}
           className="px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
         >
-          Riprova
+          {language === "en" ? "Retry" : "Riprova"}
         </button>
       </div>
     );
@@ -563,16 +574,16 @@ function OverviewTab() {
     <div className="space-y-6">
       {/* Stats cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Utenti Totali" value={stats.users.total} sub={`${stats.users.recent_30d} ultimi 30g`} />
-        <StatCard label="Utenti Premium" value={stats.users.premium} sub={`${stats.users.active} attivi`} accent />
-        <StatCard label="Siti Totali" value={stats.sites.total} sub={`${stats.sites.published} pubblicati`} />
-        <StatCard label="Generazioni" value={stats.generations_total} sub={`${stats.sites.generating} in corso`} accent />
+        <StatCard label={language === "en" ? "Total Users" : "Utenti Totali"} value={stats.users.total} sub={language === "en" ? `${stats.users.recent_30d} last 30d` : `${stats.users.recent_30d} ultimi 30g`} />
+        <StatCard label={language === "en" ? "Premium Users" : "Utenti Premium"} value={stats.users.premium} sub={language === "en" ? `${stats.users.active} active` : `${stats.users.active} attivi`} accent />
+        <StatCard label={language === "en" ? "Total Sites" : "Siti Totali"} value={stats.sites.total} sub={language === "en" ? `${stats.sites.published} published` : `${stats.sites.published} pubblicati`} />
+        <StatCard label={language === "en" ? "Generations" : "Generazioni"} value={stats.generations_total} sub={language === "en" ? `${stats.sites.generating} in progress` : `${stats.sites.generating} in corso`} accent />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Plan distribution */}
         <Card className="p-5">
-          <h3 className="text-sm font-semibold text-gray-300 mb-4">Distribuzione Piani</h3>
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">{language === "en" ? "Plan Distribution" : "Distribuzione Piani"}</h3>
           <div className="space-y-3">
             {planData.map((p) => (
               <div key={p.label}>
@@ -595,14 +606,14 @@ function OverviewTab() {
 
         {/* Sites breakdown */}
         <Card className="p-5">
-          <h3 className="text-sm font-semibold text-gray-300 mb-4">Stato Siti</h3>
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">{language === "en" ? "Sites Status" : "Stato Siti"}</h3>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { label: "Pronti", value: stats.sites.ready, dot: "bg-green-400" },
-              { label: "In generazione", value: stats.sites.generating, dot: "bg-yellow-400" },
-              { label: "Pubblicati", value: stats.sites.published, dot: "bg-blue-400" },
+              { label: language === "en" ? "Ready" : "Pronti", value: stats.sites.ready, dot: "bg-green-400" },
+              { label: language === "en" ? "Generating" : "In generazione", value: stats.sites.generating, dot: "bg-yellow-400" },
+              { label: language === "en" ? "Published" : "Pubblicati", value: stats.sites.published, dot: "bg-blue-400" },
               {
-                label: "Bozza / Altro",
+                label: language === "en" ? "Draft / Other" : "Bozza / Altro",
                 value: Math.max(
                   0,
                   stats.sites.total -
@@ -630,7 +641,7 @@ function OverviewTab() {
 
       {/* Quick metrics */}
       <Card className="p-5">
-        <h3 className="text-sm font-semibold text-gray-300 mb-4">Metriche Rapide</h3>
+        <h3 className="text-sm font-semibold text-gray-300 mb-4">{language === "en" ? "Quick Metrics" : "Metriche Rapide"}</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
             <p className="text-2xl font-bold text-white">
@@ -638,7 +649,7 @@ function OverviewTab() {
                 ? (stats.sites.total / stats.users.total).toFixed(1)
                 : "0"}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Siti / Utente</p>
+            <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Sites / User" : "Siti / Utente"}</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-white">
@@ -647,7 +658,7 @@ function OverviewTab() {
                 : "0"}
               %
             </p>
-            <p className="text-xs text-gray-500 mt-1">Conversione Premium</p>
+            <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Premium Conversion" : "Conversione Premium"}</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-white">
@@ -656,7 +667,7 @@ function OverviewTab() {
                 : "0"}
               %
             </p>
-            <p className="text-xs text-gray-500 mt-1">Tasso Pubblicazione</p>
+            <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Publish Rate" : "Tasso Pubblicazione"}</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-white">
@@ -664,7 +675,7 @@ function OverviewTab() {
                 ? (stats.generations_total / stats.users.total).toFixed(1)
                 : "0"}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Gen. / Utente</p>
+            <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Gen. / User" : "Gen. / Utente"}</p>
           </div>
         </div>
       </Card>
@@ -677,6 +688,7 @@ function OverviewTab() {
 // ---------------------------------------------------------------------------
 
 function UsersTab() {
+  const { language } = useLanguage();
   const [data, setData] = useState<PaginatedUsers | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -764,7 +776,7 @@ function UsersTab() {
       setEditUser(null);
       load();
     } catch (err: any) {
-      alert("Errore salvataggio: " + err.message);
+      alert((language === "en" ? "Save error: " : "Errore salvataggio: ") + err.message);
     } finally {
       setSaving(false);
     }
@@ -782,7 +794,7 @@ function UsersTab() {
       }
       load();
     } catch (err: any) {
-      alert("Errore eliminazione: " + err.message);
+      alert((language === "en" ? "Delete error: " : "Errore eliminazione: ") + err.message);
     } finally {
       setDeleting(false);
     }
@@ -797,14 +809,14 @@ function UsersTab() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Cerca per email o nome..."
+            placeholder={language === "en" ? "Search by email or name..." : "Cerca per email o nome..."}
             className="flex-1 px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition-colors"
           />
           <button
             type="submit"
             className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 transition-colors"
           >
-            Cerca
+            {language === "en" ? "Search" : "Cerca"}
           </button>
         </form>
         <select
@@ -815,7 +827,7 @@ function UsersTab() {
           }}
           className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
         >
-          <option value="">Tutti i piani</option>
+          <option value="">{language === "en" ? "All plans" : "Tutti i piani"}</option>
           <option value="free">Free</option>
           <option value="base">Base</option>
           <option value="premium">Premium</option>
@@ -831,12 +843,12 @@ function UsersTab() {
         <div className="text-center py-12">
           <p className="text-red-400 mb-4">{error}</p>
           <button onClick={load} className="text-sm text-indigo-400 hover:underline">
-            Riprova
+            {language === "en" ? "Retry" : "Riprova"}
           </button>
         </div>
       ) : !data || data.users.length === 0 ? (
         <Card className="p-8 text-center">
-          <p className="text-gray-500">Nessun utente trovato</p>
+          <p className="text-gray-500">{language === "en" ? "No users found" : "Nessun utente trovato"}</p>
         </Card>
       ) : (
         <>
@@ -846,12 +858,12 @@ function UsersTab() {
                 <thead>
                   <tr className="border-b border-[#2a2a2a] text-left">
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Nome</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Piano</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">{language === "en" ? "Name" : "Nome"}</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{language === "en" ? "Plan" : "Piano"}</th>
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Premium</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Siti</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Registrato</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Azioni</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">{language === "en" ? "Sites" : "Siti"}</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">{language === "en" ? "Registered" : "Registrato"}</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">{language === "en" ? "Actions" : "Azioni"}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#2a2a2a]">
@@ -867,7 +879,7 @@ function UsersTab() {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             {!u.is_active && (
-                              <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" title="Disattivato" />
+                              <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" title={language === "en" ? "Disabled" : "Disattivato"} />
                             )}
                             <span className="text-white truncate max-w-[200px]">{u.email}</span>
                           </div>
@@ -877,10 +889,10 @@ function UsersTab() {
                           <PlanBadge plan={u.plan} />
                         </td>
                         <td className="px-4 py-3 hidden sm:table-cell">
-                          <BoolBadge value={u.is_premium} />
+                          <BoolBadge value={u.is_premium} lang={language} />
                         </td>
                         <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{u.sites_count}</td>
-                        <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">{formatDate(u.created_at)}</td>
+                        <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">{formatDate(u.created_at, language)}</td>
                         <td className="px-4 py-3 text-right">
                           <button
                             onClick={(e) => {
@@ -888,7 +900,7 @@ function UsersTab() {
                               setDeleteTarget(u);
                             }}
                             className="text-gray-600 hover:text-red-400 transition-colors p-1"
-                            title="Elimina utente"
+                            title={language === "en" ? "Delete user" : "Elimina utente"}
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -904,7 +916,7 @@ function UsersTab() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               {/* Left: user info */}
                               <div className="space-y-3">
-                                <h4 className="text-sm font-semibold text-white">Dettagli Utente</h4>
+                                <h4 className="text-sm font-semibold text-white">{language === "en" ? "User Details" : "Dettagli Utente"}</h4>
                                 <div className="grid grid-cols-2 gap-2 text-xs">
                                   <div>
                                     <span className="text-gray-500">ID:</span>{" "}
@@ -915,31 +927,31 @@ function UsersTab() {
                                     <span className="text-gray-300">{u.email}</span>
                                   </div>
                                   <div>
-                                    <span className="text-gray-500">Generazioni:</span>{" "}
+                                    <span className="text-gray-500">{language === "en" ? "Generations:" : "Generazioni:"}</span>{" "}
                                     <span className="text-gray-300">{u.generations_used}</span>
                                   </div>
                                   <div>
-                                    <span className="text-gray-500">Ultimo login:</span>{" "}
-                                    <span className="text-gray-300">{timeAgo(u.last_login)}</span>
+                                    <span className="text-gray-500">{language === "en" ? "Last login:" : "Ultimo login:"}</span>{" "}
+                                    <span className="text-gray-300">{timeAgo(u.last_login, language)}</span>
                                   </div>
                                   <div>
-                                    <span className="text-gray-500">Registrato:</span>{" "}
-                                    <span className="text-gray-300">{formatDateTime(u.created_at)}</span>
+                                    <span className="text-gray-500">{language === "en" ? "Registered:" : "Registrato:"}</span>{" "}
+                                    <span className="text-gray-300">{formatDateTime(u.created_at, language)}</span>
                                   </div>
                                   <div>
-                                    <span className="text-gray-500">Attivo:</span>{" "}
-                                    <BoolBadge value={u.is_active} />
+                                    <span className="text-gray-500">{language === "en" ? "Active:" : "Attivo:"}</span>{" "}
+                                    <BoolBadge value={u.is_active} lang={language} />
                                   </div>
                                 </div>
                                 {/* User sites */}
                                 {loadingDetail ? (
                                   <div className="flex items-center gap-2 text-xs text-gray-500">
-                                    <Spinner size="sm" /> Caricamento siti...
+                                    <Spinner size="sm" /> {language === "en" ? "Loading sites..." : "Caricamento siti..."}
                                   </div>
                                 ) : userDetail?.sites && userDetail.sites.length > 0 ? (
                                   <div>
                                     <p className="text-xs text-gray-500 mb-1">
-                                      Siti ({userDetail.sites.length}):
+                                      {language === "en" ? "Sites" : "Siti"} ({userDetail.sites.length}):
                                     </p>
                                     <div className="space-y-1">
                                       {userDetail.sites.map((s) => (
@@ -957,15 +969,15 @@ function UsersTab() {
                                     </div>
                                   </div>
                                 ) : (
-                                  <p className="text-xs text-gray-600">Nessun sito creato</p>
+                                  <p className="text-xs text-gray-600">{language === "en" ? "No sites created" : "Nessun sito creato"}</p>
                                 )}
                               </div>
 
                               {/* Right: edit form */}
                               <div className="space-y-3">
-                                <h4 className="text-sm font-semibold text-white">Modifica Utente</h4>
+                                <h4 className="text-sm font-semibold text-white">{language === "en" ? "Edit User" : "Modifica Utente"}</h4>
                                 <div>
-                                  <label className="block text-xs text-gray-500 mb-1">Piano</label>
+                                  <label className="block text-xs text-gray-500 mb-1">{language === "en" ? "Plan" : "Piano"}</label>
                                   <select
                                     value={editPlan}
                                     onChange={(e) => setEditPlan(e.target.value)}
@@ -977,7 +989,7 @@ function UsersTab() {
                                   </select>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-gray-400">Premium</span>
+                                  <span className="text-xs text-gray-400">{language === "en" ? "Premium" : "Premium"}</span>
                                   <button
                                     onClick={() => setEditPremium(!editPremium)}
                                     className={classNames(
@@ -994,7 +1006,7 @@ function UsersTab() {
                                   </button>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-gray-400">Attivo</span>
+                                  <span className="text-xs text-gray-400">{language === "en" ? "Active" : "Attivo"}</span>
                                   <button
                                     onClick={() => setEditActive(!editActive)}
                                     className={classNames(
@@ -1017,7 +1029,7 @@ function UsersTab() {
                                     className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                   >
                                     {saving && <Spinner size="sm" />}
-                                    Salva
+                                    {language === "en" ? "Save" : "Salva"}
                                   </button>
                                   <button
                                     onClick={() => {
@@ -1026,7 +1038,7 @@ function UsersTab() {
                                     }}
                                     className="px-4 py-2 rounded-lg bg-[#2a2a2a] text-gray-300 text-sm hover:bg-[#333] transition-colors"
                                   >
-                                    Chiudi
+                                    {language === "en" ? "Close" : "Chiudi"}
                                   </button>
                                 </div>
                               </div>
@@ -1043,9 +1055,9 @@ function UsersTab() {
 
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-600">
-              {data.total} utenti totali &middot; Pagina {data.page} di {data.pages}
+              {data.total} {language === "en" ? "total users" : "utenti totali"} &middot; {language === "en" ? "Page" : "Pagina"} {data.page} {language === "en" ? "of" : "di"} {data.pages}
             </p>
-            <Pagination page={data.page} pages={data.pages} onPage={setPage} />
+            <Pagination page={data.page} pages={data.pages} onPage={setPage} lang={language} />
           </div>
         </>
       )}
@@ -1053,11 +1065,14 @@ function UsersTab() {
       {/* Delete confirmation */}
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Elimina Utente"
-        message={`Sei sicuro di voler eliminare l'utente "${deleteTarget?.email}"? Questa azione non puo essere annullata. Tutti i siti associati verranno rimossi.`}
+        title={language === "en" ? "Delete User" : "Elimina Utente"}
+        message={language === "en"
+          ? `Are you sure you want to delete user "${deleteTarget?.email}"? This action cannot be undone. All associated sites will be removed.`
+          : `Sei sicuro di voler eliminare l'utente "${deleteTarget?.email}"? Questa azione non puo essere annullata. Tutti i siti associati verranno rimossi.`}
         onConfirm={handleDeleteUser}
         onCancel={() => setDeleteTarget(null)}
         loading={deleting}
+        lang={language}
       />
     </div>
   );
@@ -1068,6 +1083,7 @@ function UsersTab() {
 // ---------------------------------------------------------------------------
 
 function SitesTab() {
+  const { language } = useLanguage();
   const [data, setData] = useState<PaginatedSites | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -1117,9 +1133,9 @@ function SitesTab() {
     setPreviewHtml("");
     try {
       const detail = await adminFetch(`/api/admin/sites/${site.id}`);
-      setPreviewHtml(detail.html_content || "<p style='color:#999;text-align:center;padding:2rem;'>Nessun contenuto HTML disponibile</p>");
+      setPreviewHtml(detail.html_content || `<p style='color:#999;text-align:center;padding:2rem;'>${language === "en" ? "No HTML content available" : "Nessun contenuto HTML disponibile"}</p>`);
     } catch {
-      setPreviewHtml("<p style='color:red;text-align:center;padding:2rem;'>Errore nel caricamento</p>");
+      setPreviewHtml(`<p style='color:red;text-align:center;padding:2rem;'>${language === "en" ? "Loading error" : "Errore nel caricamento"}</p>`);
     } finally {
       setLoadingPreview(false);
     }
@@ -1133,7 +1149,7 @@ function SitesTab() {
       setDeleteTarget(null);
       load();
     } catch (err: any) {
-      alert("Errore eliminazione: " + err.message);
+      alert((language === "en" ? "Delete error: " : "Errore eliminazione: ") + err.message);
     } finally {
       setDeleting(false);
     }
@@ -1148,14 +1164,14 @@ function SitesTab() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Cerca siti per nome o proprietario..."
+            placeholder={language === "en" ? "Search sites by name or owner..." : "Cerca siti per nome o proprietario..."}
             className="flex-1 px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition-colors"
           />
           <button
             type="submit"
             className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 transition-colors"
           >
-            Cerca
+            {language === "en" ? "Search" : "Cerca"}
           </button>
         </form>
         <select
@@ -1166,12 +1182,12 @@ function SitesTab() {
           }}
           className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
         >
-          <option value="">Tutti gli stati</option>
-          <option value="ready">Pronti</option>
-          <option value="generating">In generazione</option>
-          <option value="published">Pubblicati</option>
-          <option value="draft">Bozza</option>
-          <option value="error">Errore</option>
+          <option value="">{language === "en" ? "All statuses" : "Tutti gli stati"}</option>
+          <option value="ready">{language === "en" ? "Ready" : "Pronti"}</option>
+          <option value="generating">{language === "en" ? "Generating" : "In generazione"}</option>
+          <option value="published">{language === "en" ? "Published" : "Pubblicati"}</option>
+          <option value="draft">{language === "en" ? "Draft" : "Bozza"}</option>
+          <option value="error">{language === "en" ? "Error" : "Errore"}</option>
         </select>
       </div>
 
@@ -1184,12 +1200,12 @@ function SitesTab() {
         <div className="text-center py-12">
           <p className="text-red-400 mb-4">{error}</p>
           <button onClick={load} className="text-sm text-indigo-400 hover:underline">
-            Riprova
+            {language === "en" ? "Retry" : "Riprova"}
           </button>
         </div>
       ) : !data || data.sites.length === 0 ? (
         <Card className="p-8 text-center">
-          <p className="text-gray-500">Nessun sito trovato</p>
+          <p className="text-gray-500">{language === "en" ? "No sites found" : "Nessun sito trovato"}</p>
         </Card>
       ) : (
         <>
@@ -1198,13 +1214,13 @@ function SitesTab() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[#2a2a2a] text-left">
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Proprietario</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Stato</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Pubblicato</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{language === "en" ? "Name" : "Nome"}</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">{language === "en" ? "Owner" : "Proprietario"}</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{language === "en" ? "Status" : "Stato"}</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">{language === "en" ? "Published" : "Pubblicato"}</th>
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Template</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Creato</th>
-                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Azioni</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">{language === "en" ? "Created" : "Creato"}</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">{language === "en" ? "Actions" : "Azioni"}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#2a2a2a]">
@@ -1220,20 +1236,20 @@ function SitesTab() {
                         <StatusBadge status={s.status} />
                       </td>
                       <td className="px-4 py-3 hidden sm:table-cell">
-                        <BoolBadge value={s.is_published} />
+                        <BoolBadge value={s.is_published} lang={language} />
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">
                         {s.template_category
                           ? `${s.template_category}${s.template_style ? ` / ${s.template_style}` : ""}`
                           : "---"}
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">{formatDate(s.created_at)}</td>
+                      <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">{formatDate(s.created_at, language)}</td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => openPreview(s)}
                             className="text-gray-600 hover:text-indigo-400 transition-colors p-1"
-                            title="Anteprima HTML"
+                            title={language === "en" ? "HTML Preview" : "Anteprima HTML"}
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -1246,7 +1262,7 @@ function SitesTab() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-gray-600 hover:text-blue-400 transition-colors p-1"
-                              title="Apri sito pubblicato"
+                              title={language === "en" ? "Open published site" : "Apri sito pubblicato"}
                             >
                               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
@@ -1256,7 +1272,7 @@ function SitesTab() {
                           <button
                             onClick={() => setDeleteTarget(s)}
                             className="text-gray-600 hover:text-red-400 transition-colors p-1"
-                            title="Elimina sito"
+                            title={language === "en" ? "Delete site" : "Elimina sito"}
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -1273,9 +1289,9 @@ function SitesTab() {
 
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-600">
-              {data.total} siti totali &middot; Pagina {data.page} di {data.pages}
+              {data.total} {language === "en" ? "total sites" : "siti totali"} &middot; {language === "en" ? "Page" : "Pagina"} {data.page} {language === "en" ? "of" : "di"} {data.pages}
             </p>
-            <Pagination page={data.page} pages={data.pages} onPage={setPage} />
+            <Pagination page={data.page} pages={data.pages} onPage={setPage} lang={language} />
           </div>
         </>
       )}
@@ -1315,7 +1331,7 @@ function SitesTab() {
                   srcDoc={previewHtml}
                   className="w-full h-full border-0"
                   sandbox="allow-scripts allow-same-origin"
-                  title="Anteprima sito"
+                  title={language === "en" ? "Site preview" : "Anteprima sito"}
                 />
               )}
             </div>
@@ -1326,11 +1342,14 @@ function SitesTab() {
       {/* Delete confirmation */}
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Elimina Sito"
-        message={`Sei sicuro di voler eliminare il sito "${deleteTarget?.name}"? Questa azione non puo essere annullata.`}
+        title={language === "en" ? "Delete Site" : "Elimina Sito"}
+        message={language === "en"
+          ? `Are you sure you want to delete site "${deleteTarget?.name}"? This action cannot be undone.`
+          : `Sei sicuro di voler eliminare il sito "${deleteTarget?.name}"? Questa azione non puo essere annullata.`}
         onConfirm={handleDeleteSite}
         onCancel={() => setDeleteTarget(null)}
         loading={deleting}
+        lang={language}
       />
     </div>
   );
@@ -1341,6 +1360,7 @@ function SitesTab() {
 // ---------------------------------------------------------------------------
 
 function SettingsTab() {
+  const { language } = useLanguage();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -1362,30 +1382,23 @@ function SettingsTab() {
   const planConfigs = [
     {
       name: "Free",
-      features: ["1 sito", "Template base", "3 generazioni AI", "Sottodominio incluso"],
+      features: language === "en"
+        ? ["1 site", "Basic templates", "3 AI generations", "Subdomain included"]
+        : ["1 sito", "Template base", "3 generazioni AI", "Sottodominio incluso"],
       color: "border-gray-700",
     },
     {
       name: "Base",
-      features: [
-        "5 siti",
-        "Tutti i template",
-        "20 generazioni AI",
-        "Dominio personalizzato",
-        "Rimozione watermark",
-      ],
+      features: language === "en"
+        ? ["5 sites", "All templates", "20 AI generations", "Custom domain", "Watermark removal"]
+        : ["5 siti", "Tutti i template", "20 generazioni AI", "Dominio personalizzato", "Rimozione watermark"],
       color: "border-blue-800",
     },
     {
       name: "Premium",
-      features: [
-        "Siti illimitati",
-        "Tutti i template + priority",
-        "Generazioni illimitate",
-        "Dominio personalizzato",
-        "Supporto prioritario",
-        "API access",
-      ],
+      features: language === "en"
+        ? ["Unlimited sites", "All templates + priority", "Unlimited generations", "Custom domain", "Priority support", "API access"]
+        : ["Siti illimitati", "Tutti i template + priority", "Generazioni illimitate", "Dominio personalizzato", "Supporto prioritario", "API access"],
       color: "border-purple-800",
     },
   ];
@@ -1394,11 +1407,11 @@ function SettingsTab() {
     <div className="space-y-6">
       {/* System Info */}
       <Card className="p-5">
-        <h3 className="text-sm font-semibold text-gray-300 mb-4">Informazioni Sistema</h3>
+        <h3 className="text-sm font-semibold text-gray-300 mb-4">{language === "en" ? "System Information" : "Informazioni Sistema"}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             { label: "API URL", value: API_URL },
-            { label: "Versione", value: "1.0.0" },
+            { label: language === "en" ? "Version" : "Versione", value: "1.0.0" },
             { label: "Frontend", value: "Next.js 14 + React 18" },
             { label: "Backend", value: "FastAPI (Python)" },
             { label: "Database", value: "PostgreSQL" },
@@ -1415,23 +1428,23 @@ function SettingsTab() {
       {/* Database stats summary */}
       {stats && (
         <Card className="p-5">
-          <h3 className="text-sm font-semibold text-gray-300 mb-4">Riepilogo Database</h3>
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">{language === "en" ? "Database Summary" : "Riepilogo Database"}</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a] text-center">
               <p className="text-2xl font-bold text-white">{stats.users.total}</p>
-              <p className="text-xs text-gray-500 mt-1">Utenti</p>
+              <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Users" : "Utenti"}</p>
             </div>
             <div className="bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a] text-center">
               <p className="text-2xl font-bold text-white">{stats.sites.total}</p>
-              <p className="text-xs text-gray-500 mt-1">Siti</p>
+              <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Sites" : "Siti"}</p>
             </div>
             <div className="bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a] text-center">
               <p className="text-2xl font-bold text-white">{stats.generations_total}</p>
-              <p className="text-xs text-gray-500 mt-1">Generazioni</p>
+              <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Generations" : "Generazioni"}</p>
             </div>
             <div className="bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a] text-center">
               <p className="text-2xl font-bold text-white">{stats.users.active}</p>
-              <p className="text-xs text-gray-500 mt-1">Utenti Attivi</p>
+              <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Active Users" : "Utenti Attivi"}</p>
             </div>
           </div>
         </Card>
@@ -1439,7 +1452,7 @@ function SettingsTab() {
 
       {/* Plan configs */}
       <Card className="p-5">
-        <h3 className="text-sm font-semibold text-gray-300 mb-4">Configurazione Piani</h3>
+        <h3 className="text-sm font-semibold text-gray-300 mb-4">{language === "en" ? "Plan Configuration" : "Configurazione Piani"}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {planConfigs.map((plan) => (
             <div
@@ -1463,7 +1476,7 @@ function SettingsTab() {
               {stats && (
                 <div className="mt-3 pt-3 border-t border-[#2a2a2a]">
                   <p className="text-xs text-gray-500">
-                    Utenti:{" "}
+                    {language === "en" ? "Users:" : "Utenti:"}{" "}
                     <span className="text-white font-medium">
                       {plan.name === "Free"
                         ? stats.plans.free
@@ -1481,11 +1494,11 @@ function SettingsTab() {
 
       {/* Admin session */}
       <Card className="p-5">
-        <h3 className="text-sm font-semibold text-gray-300 mb-4">Sessione Admin</h3>
+        <h3 className="text-sm font-semibold text-gray-300 mb-4">{language === "en" ? "Admin Session" : "Sessione Admin"}</h3>
         <div className="flex items-center justify-between">
           <div className="text-xs text-gray-500">
-            <p>Token salvato in sessionStorage</p>
-            <p className="mt-1">La sessione scade alla chiusura del browser</p>
+            <p>{language === "en" ? "Token saved in sessionStorage" : "Token salvato in sessionStorage"}</p>
+            <p className="mt-1">{language === "en" ? "Session expires when browser is closed" : "La sessione scade alla chiusura del browser"}</p>
           </div>
           <button
             onClick={() => {
@@ -1508,49 +1521,44 @@ function SettingsTab() {
 
 type TabKey = "overview" | "users" | "sites" | "settings";
 
-const TABS: { key: TabKey; label: string; icon: JSX.Element }[] = [
-  {
-    key: "overview",
-    label: "Panoramica",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-      </svg>
-    ),
-  },
-  {
-    key: "users",
-    label: "Utenti",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-      </svg>
-    ),
-  },
-  {
-    key: "sites",
-    label: "Siti",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-      </svg>
-    ),
-  },
-  {
-    key: "settings",
-    label: "Impostazioni",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
-];
+const TAB_ICONS = {
+  overview: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+    </svg>
+  ),
+  users: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+    </svg>
+  ),
+  sites: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+    </svg>
+  ),
+  settings: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  ),
+};
+
+function getTabs(lang: string): { key: TabKey; label: string; icon: JSX.Element }[] {
+  return [
+    { key: "overview", label: lang === "en" ? "Overview" : "Panoramica", icon: TAB_ICONS.overview },
+    { key: "users", label: lang === "en" ? "Users" : "Utenti", icon: TAB_ICONS.users },
+    { key: "sites", label: lang === "en" ? "Sites" : "Siti", icon: TAB_ICONS.sites },
+    { key: "settings", label: lang === "en" ? "Settings" : "Impostazioni", icon: TAB_ICONS.settings },
+  ];
+}
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
+  const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const TABS = getTabs(language);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -1609,7 +1617,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   setTimeout(() => setActiveTab(current), 0);
                 }}
                 className="text-gray-600 hover:text-gray-300 transition-colors p-2"
-                title="Ricarica dati"
+                title={language === "en" ? "Reload data" : "Ricarica dati"}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />

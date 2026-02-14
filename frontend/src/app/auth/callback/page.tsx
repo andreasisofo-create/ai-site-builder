@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { API_BASE } from "@/lib/api";
+import { useLanguage } from "@/lib/i18n";
 
 /** Decodifica JWT in modo sicuro, restituisce user minimo o null */
 function decodeJwtUser(token: string): { id: number; email: string; full_name: string } | null {
@@ -25,6 +26,7 @@ function AuthCallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const { language } = useLanguage();
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -33,7 +35,7 @@ function AuthCallbackContent() {
     console.log("AuthCallback loaded", { token: !!token, error: errorParam });
 
     if (errorParam) {
-      setError("Autenticazione fallita. Riprova.");
+      setError(language === "en" ? "Authentication failed. Please try again." : "Autenticazione fallita. Riprova.");
       setTimeout(() => router.push("/auth"), 3000);
       return;
     }
@@ -71,13 +73,15 @@ function AuthCallbackContent() {
     } else {
       setTimeout(() => router.push("/auth"), 1000);
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, language]);
 
   if (error) {
     return (
       <div className="text-center">
         <div className="text-red-400 text-xl mb-4">{error}</div>
-        <p className="text-slate-400">Reindirizzamento...</p>
+        <p className="text-slate-400">
+          {language === "en" ? "Redirecting..." : "Reindirizzamento..."}
+        </p>
       </div>
     );
   }
@@ -85,7 +89,9 @@ function AuthCallbackContent() {
   return (
     <div className="text-center">
       <div className="w-12 h-12 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
-      <p className="text-slate-400">Completamento autenticazione...</p>
+      <p className="text-slate-400">
+        {language === "en" ? "Completing authentication..." : "Completamento autenticazione..."}
+      </p>
     </div>
   );
 }
@@ -93,7 +99,7 @@ function AuthCallbackContent() {
 export default function AuthCallbackPage() {
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-      <Suspense fallback={<div className="text-slate-400">Caricamento...</div>}>
+      <Suspense fallback={<div className="text-slate-400">Loading...</div>}>
         <AuthCallbackContent />
       </Suspense>
     </div>

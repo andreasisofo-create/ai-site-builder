@@ -9,6 +9,7 @@ import {
   CheckIcon,
   PhotoIcon,
 } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/lib/i18n";
 
 // Preview data structure from the backend
 export interface PreviewData {
@@ -37,13 +38,47 @@ interface GenerationExperienceProps {
   previewData: PreviewData | null;
 }
 
-const STEP_CONFIG = [
-  { icon: SparklesIcon, label: "Analisi stile e testi", color: "blue" },
-  { icon: PaintBrushIcon, label: "Palette e componenti", color: "violet" },
-  { icon: DocumentTextIcon, label: "Contenuti e layout", color: "emerald" },
-  { icon: PhotoIcon, label: "Generazione immagini", color: "pink" },
-  { icon: CubeIcon, label: "Assemblaggio finale", color: "amber" },
-];
+const STEP_CONFIG = {
+  it: [
+    { icon: SparklesIcon, label: "Analisi stile e testi", color: "blue" },
+    { icon: PaintBrushIcon, label: "Palette e componenti", color: "violet" },
+    { icon: DocumentTextIcon, label: "Contenuti e layout", color: "emerald" },
+    { icon: PhotoIcon, label: "Generazione immagini", color: "pink" },
+    { icon: CubeIcon, label: "Assemblaggio finale", color: "amber" },
+  ],
+  en: [
+    { icon: SparklesIcon, label: "Style & text analysis", color: "blue" },
+    { icon: PaintBrushIcon, label: "Palette & components", color: "violet" },
+    { icon: DocumentTextIcon, label: "Content & layout", color: "emerald" },
+    { icon: PhotoIcon, label: "Image generation", color: "pink" },
+    { icon: CubeIcon, label: "Final assembly", color: "amber" },
+  ],
+};
+
+const UI_TEXT = {
+  it: {
+    stepLabel: "Step",
+    processing: "Elaborazione...",
+    analyzing: "L'AI sta analizzando il tuo business e creando contenuti unici...",
+    paletteTitle: "Palette colori selezionata",
+    fontHeading: "Font titoli",
+    fontBody: "Font corpo",
+    contentPreview: "Anteprima contenuti",
+    siteReady: "Il tuo sito e' pronto!",
+    redirecting: "Reindirizzamento all'editor...",
+  },
+  en: {
+    stepLabel: "Step",
+    processing: "Processing...",
+    analyzing: "AI is analyzing your business and creating unique content...",
+    paletteTitle: "Selected color palette",
+    fontHeading: "Heading font",
+    fontBody: "Body font",
+    contentPreview: "Content preview",
+    siteReady: "Your site is ready!",
+    redirecting: "Redirecting to editor...",
+  },
+};
 
 export default function GenerationExperience({
   step,
@@ -52,6 +87,11 @@ export default function GenerationExperience({
   percentage,
   previewData,
 }: GenerationExperienceProps) {
+  const { language } = useLanguage();
+  const lang = language as "it" | "en";
+  const text = UI_TEXT[lang];
+  const steps = STEP_CONFIG[lang];
+
   const [animatedPercentage, setAnimatedPercentage] = useState(0);
   const [showContent, setShowContent] = useState(false);
 
@@ -105,20 +145,20 @@ export default function GenerationExperience({
           {/* Center content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-2xl font-bold">{Math.round(animatedPercentage)}%</span>
-            <span className="text-xs text-slate-500">Step {step}/{totalSteps}</span>
+            <span className="text-xs text-slate-500">{text.stepLabel} {step}/{totalSteps}</span>
           </div>
         </div>
 
         {/* Status message */}
         <div className="flex items-center gap-2 text-slate-300">
           <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-          <span className="text-sm">{message || "Elaborazione..."}</span>
+          <span className="text-sm">{message || text.processing}</span>
         </div>
       </div>
 
       {/* Step indicators */}
       <div className="grid grid-cols-5 gap-2">
-        {STEP_CONFIG.map((cfg, idx) => {
+        {steps.map((cfg, idx) => {
           const stepNum = idx + 1;
           const Icon = cfg.icon;
           const isActive = step === stepNum;
@@ -164,7 +204,7 @@ export default function GenerationExperience({
               <SparklesIcon className="w-8 h-8 text-blue-400 absolute inset-0 m-auto" />
             </div>
             <p className="text-sm text-slate-400 text-center">
-              L&apos;AI sta analizzando il tuo business e creando contenuti unici...
+              {text.analyzing}
             </p>
           </div>
         )}
@@ -174,7 +214,7 @@ export default function GenerationExperience({
           <div className={`p-6 space-y-4 transition-all duration-700 ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
             <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
               <PaintBrushIcon className="w-4 h-4 text-violet-400" />
-              Palette colori selezionata
+              {text.paletteTitle}
             </h4>
             <div className="flex gap-3">
               {Object.entries(previewData.colors).map(([name, hex]) => (
@@ -190,10 +230,10 @@ export default function GenerationExperience({
             {previewData.font_heading && (
               <div className="flex items-center gap-4 pt-2 border-t border-white/5">
                 <div className="text-xs text-slate-500">
-                  Font titoli: <span className="text-slate-300">{previewData.font_heading}</span>
+                  {text.fontHeading}: <span className="text-slate-300">{previewData.font_heading}</span>
                 </div>
                 <div className="text-xs text-slate-500">
-                  Font corpo: <span className="text-slate-300">{previewData.font_body}</span>
+                  {text.fontBody}: <span className="text-slate-300">{previewData.font_body}</span>
                 </div>
               </div>
             )}
@@ -207,7 +247,7 @@ export default function GenerationExperience({
             <div className="p-6 space-y-4">
               <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
                 <DocumentTextIcon className="w-4 h-4 text-emerald-400" />
-                Anteprima contenuti
+                {text.contentPreview}
               </h4>
 
               {/* Hero preview */}
@@ -276,8 +316,8 @@ export default function GenerationExperience({
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center">
               <CheckIcon className="w-8 h-8 text-emerald-400" />
             </div>
-            <p className="text-sm font-medium text-emerald-400">Il tuo sito e&apos; pronto!</p>
-            <p className="text-xs text-slate-500">Reindirizzamento all&apos;editor...</p>
+            <p className="text-sm font-medium text-emerald-400">{text.siteReady}</p>
+            <p className="text-xs text-slate-500">{text.redirecting}</p>
           </div>
         )}
       </div>

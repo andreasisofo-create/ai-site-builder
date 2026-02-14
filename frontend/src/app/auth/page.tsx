@@ -214,7 +214,7 @@ export default function AuthPage() {
                         value={forgotEmail}
                         onChange={(e) => setForgotEmail(e.target.value)}
                         className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                        placeholder="tu@email.com"
+                        placeholder={language === "en" ? "you@email.com" : "tu@email.com"}
                       />
                     </div>
                   </div>
@@ -257,7 +257,7 @@ export default function AuthPage() {
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                        placeholder="Mario Rossi"
+                        placeholder={language === "en" ? "John Smith" : "Mario Rossi"}
                       />
                     </div>
                   </div>
@@ -275,7 +275,7 @@ export default function AuthPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                      placeholder="tu@email.com"
+                      placeholder={language === "en" ? "you@email.com" : "tu@email.com"}
                     />
                   </div>
                 </div>

@@ -300,6 +300,23 @@ export const SECTION_LABELS: Record<string, string> = {
   footer: "Footer completo",
 };
 
+export const SECTION_LABELS_EN: Record<string, string> = {
+  hero: "Hero (Main Header)",
+  about: "About Us",
+  services: "Services / Products",
+  gallery: "Gallery",
+  testimonials: "Testimonials",
+  team: "Team",
+  features: "Features",
+  cta: "Call to Action",
+  contact: "Contact / Form",
+  footer: "Full Footer",
+};
+
+export function getSectionLabels(lang: string): Record<string, string> {
+  return lang === "en" ? SECTION_LABELS_EN : SECTION_LABELS;
+}
+
 export const STYLE_OPTIONS = [
   { id: "modern-minimal", label: "Moderno / Minimal" },
   { id: "classic-elegant", label: "Classico / Elegante" },
@@ -308,12 +325,35 @@ export const STYLE_OPTIONS = [
   { id: "playful", label: "Vivo / Giocoso" },
 ];
 
+export const STYLE_OPTIONS_EN = [
+  { id: "modern-minimal", label: "Modern / Minimal" },
+  { id: "classic-elegant", label: "Classic / Elegant" },
+  { id: "bold-creative", label: "Bold / Creative" },
+  { id: "corporate", label: "Corporate" },
+  { id: "playful", label: "Vibrant / Playful" },
+];
+
+export function getStyleOptions(lang: string) {
+  return lang === "en" ? STYLE_OPTIONS_EN : STYLE_OPTIONS;
+}
+
 export const CTA_OPTIONS = [
   { id: "contact", label: "Contattaci" },
   { id: "book", label: "Prenota" },
   { id: "quote", label: "Richiedi preventivo" },
   { id: "buy", label: "Acquista ora" },
 ];
+
+export const CTA_OPTIONS_EN = [
+  { id: "contact", label: "Contact Us" },
+  { id: "book", label: "Book Now" },
+  { id: "quote", label: "Request a Quote" },
+  { id: "buy", label: "Buy Now" },
+];
+
+export function getCtaOptions(lang: string) {
+  return lang === "en" ? CTA_OPTIONS_EN : CTA_OPTIONS;
+}
 
 export const ALL_SECTIONS = [
   { id: "hero", label: "Hero (Header principale)", default: true },
@@ -325,6 +365,81 @@ export const ALL_SECTIONS = [
   { id: "contact", label: "Contatti / Form", default: true },
   { id: "footer", label: "Footer completo", default: true },
 ];
+
+export const ALL_SECTIONS_EN = [
+  { id: "hero", label: "Hero (Main Header)", default: true },
+  { id: "about", label: "About Us", default: true },
+  { id: "services", label: "Services / Products", default: true },
+  { id: "gallery", label: "Gallery", default: false },
+  { id: "team", label: "Team", default: false },
+  { id: "testimonials", label: "Testimonials", default: false },
+  { id: "contact", label: "Contact / Form", default: true },
+  { id: "footer", label: "Full Footer", default: true },
+];
+
+export function getAllSections(lang: string) {
+  return lang === "en" ? ALL_SECTIONS_EN : ALL_SECTIONS;
+}
+
+export function getCategoryLabel(category: TemplateCategory, lang: string): string {
+  const labels: Record<string, string> = {
+    "restaurant": lang === "en" ? "Restaurant & Food" : "Ristorante & Food",
+    "saas": "SaaS / Landing Page",
+    "portfolio": lang === "en" ? "Portfolio / Creative" : "Portfolio / Creativo",
+    "ecommerce": "E-commerce / Shop",
+    "business": "Business / Corporate",
+    "blog": "Blog / Magazine",
+    "event": lang === "en" ? "Event / Community" : "Evento / Community",
+    "custom": lang === "en" ? "Custom" : "Personalizzato",
+  };
+  return labels[category.id] || category.label;
+}
+
+export function getCategoryDescription(category: TemplateCategory, lang: string): string {
+  const descriptions: Record<string, string> = {
+    "restaurant": lang === "en" ? "Restaurants, bars, pizzerias, bakeries" : "Ristoranti, bar, pizzerie, pasticcerie",
+    "saas": lang === "en" ? "Startups, SaaS, digital products" : "Startup, SaaS, prodotti digitali",
+    "portfolio": lang === "en" ? "Photographers, designers, artists, freelancers" : "Fotografi, designer, artisti, freelancer",
+    "ecommerce": lang === "en" ? "Online shops, product showcases" : "Negozi online, vetrine prodotti",
+    "business": lang === "en" ? "Companies, professional firms, consulting" : "Aziende, studi professionali, consulenze",
+    "blog": lang === "en" ? "Personal blogs, online magazines" : "Blog personali, riviste online, magazine",
+    "event": lang === "en" ? "Events, conferences, meetups, communities" : "Eventi, conferenze, meetup, community",
+    "custom": lang === "en" ? "Fully custom design" : "Design completamente personalizzato",
+  };
+  return descriptions[category.id] || category.description;
+}
+
+const STYLE_LABELS_EN: Record<string, { label: string; description: string }> = {
+  "restaurant-elegant": { label: "Elegant & Refined", description: "Sophisticated atmosphere for fine dining" },
+  "restaurant-cozy": { label: "Cozy & Traditional", description: "Warmth and tradition for trattorias and taverns" },
+  "restaurant-modern": { label: "Modern & Minimal", description: "Clean, contemporary design for trendy venues" },
+  "saas-gradient": { label: "Gradient & Bold", description: "Bold gradients for impactful landing pages" },
+  "saas-clean": { label: "Clean & Professional", description: "Clear, professional layout for B2B SaaS" },
+  "saas-dark": { label: "Dark & Tech", description: "GitHub dark style for developer products" },
+  "portfolio-gallery": { label: "Editorial Gallery", description: "Dark editorial layout for photographers and artists" },
+  "portfolio-minimal": { label: "Ultra Minimal", description: "Ultra-clean design for designers and creatives" },
+  "portfolio-creative": { label: "Brutalist & Creative", description: "Brutalist style for bold creatives" },
+  "ecommerce-modern": { label: "Modern Shop", description: "Modern layout for e-commerce and showcases" },
+  "ecommerce-luxury": { label: "Luxury & Premium", description: "Luxurious design for premium brands" },
+  "business-corporate": { label: "Classic Corporate", description: "Professional style for structured companies" },
+  "business-trust": { label: "Authoritative & Trustworthy", description: "Authoritative design for professional firms" },
+  "business-fresh": { label: "Fresh & Innovative", description: "Fresh, modern look for startups and SMBs" },
+  "blog-editorial": { label: "Classic Editorial", description: "Clean editorial layout for blogs and magazines" },
+  "blog-dark": { label: "Dark Magazine", description: "Dark magazine with neon accents" },
+  "event-vibrant": { label: "Vibrant & Energetic", description: "Vibrant design for events and festivals" },
+  "event-minimal": { label: "Minimal & Clean", description: "Clean layout for conferences and meetups" },
+  "custom-free": { label: "Free Design", description: "Start from scratch with a custom design" },
+};
+
+export function getStyleLabel(style: TemplateStyle, lang: string): string {
+  if (lang === "en" && STYLE_LABELS_EN[style.id]) return STYLE_LABELS_EN[style.id].label;
+  return style.label;
+}
+
+export function getStyleDescription(style: TemplateStyle, lang: string): string {
+  if (lang === "en" && STYLE_LABELS_EN[style.id]) return STYLE_LABELS_EN[style.id].description;
+  return style.description;
+}
 
 export const STYLE_TO_MOOD: Record<string, { mood: string; primaryColor: string; secondaryColor: string }> = {
   "modern-minimal": { mood: "modern", primaryColor: "#2d3436", secondaryColor: "#00b894" },

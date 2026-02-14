@@ -128,7 +128,7 @@ function ResetPasswordForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Almeno 6 caratteri"
+                  placeholder={language === "en" ? "At least 6 characters" : "Almeno 6 caratteri"}
                 />
                 <button
                   type="button"
@@ -153,7 +153,7 @@ function ResetPasswordForm() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Ripeti la password"
+                  placeholder={language === "en" ? "Repeat password" : "Ripeti la password"}
                 />
               </div>
             </div>
