@@ -23,6 +23,7 @@ Pipeline:
 import asyncio
 import json
 import logging
+import random
 import re
 import time
 from typing import Dict, Any, Optional, List, Callable
@@ -55,6 +56,13 @@ try:
     _has_reference_sites = True
 except Exception:
     _has_reference_sites = False
+
+# URL analyzer for reference websites
+try:
+    from app.services.url_analyzer import analyze_reference_url, format_analysis_for_prompt
+    _has_url_analyzer = True
+except Exception:
+    _has_url_analyzer = False
 
 logger = logging.getLogger(__name__)
 
@@ -234,6 +242,191 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
     },
 }
 
+# =========================================================
+# Randomized variant pools for variety.
+# Each style maps to a POOL of 2-3 compatible variants per section.
+# At generation time, one variant is randomly chosen from the pool.
+# STYLE_VARIANT_MAP above is kept as deterministic fallback.
+# =========================================================
+STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
+    # --- Restaurant ---
+    "restaurant-elegant": {
+        "hero": ["hero-classic-01", "hero-editorial-01", "hero-typewriter-01"],
+        "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01"],
+        "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01"],
+        "gallery": ["gallery-spotlight-01", "gallery-lightbox-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01"],
+        "contact": ["contact-minimal-01", "contact-form-01", "contact-minimal-02"],
+        "footer": ["footer-centered-01", "footer-minimal-02", "footer-sitemap-01"],
+    },
+    "restaurant-cozy": {
+        "hero": ["hero-organic-01", "hero-typewriter-01", "hero-classic-01"],
+        "about": ["about-split-scroll-01", "about-image-showcase-01", "about-magazine-01"],
+        "services": ["services-icon-list-01", "services-minimal-list-01", "services-alternating-rows-01"],
+        "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
+        "testimonials": ["testimonials-card-stack-01", "testimonials-spotlight-01", "testimonials-carousel-01"],
+        "contact": ["contact-card-01", "contact-minimal-01", "contact-form-01"],
+        "footer": ["footer-multi-col-01", "footer-centered-01", "footer-minimal-02"],
+    },
+    "restaurant-modern": {
+        "hero": ["hero-zen-01", "hero-parallax-01", "hero-glassmorphism-01"],
+        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01"],
+        "services": ["services-tabs-01", "services-hover-reveal-01", "services-bento-02"],
+        "gallery": ["gallery-filmstrip-01", "gallery-masonry-01"],
+        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01"],
+        "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01"],
+        "footer": ["footer-minimal-02", "footer-gradient-01", "footer-multi-col-01"],
+    },
+    # --- SaaS / Landing Page ---
+    "saas-gradient": {
+        "hero": ["hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01"],
+        "about": ["about-timeline-02", "about-bento-01", "about-split-cards-01"],
+        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01"],
+        "features": ["features-bento-grid-01", "features-hover-cards-01", "features-tabs-01"],
+        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-carousel-01"],
+        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01"],
+        "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01"],
+        "footer": ["footer-gradient-01", "footer-mega-01", "footer-multi-col-01"],
+    },
+    "saas-clean": {
+        "hero": ["hero-centered-02", "hero-split-01", "hero-glassmorphism-01"],
+        "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02"],
+        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01"],
+        "features": ["features-icons-grid-01", "features-alternating-01", "features-icon-showcase-01"],
+        "testimonials": ["testimonials-grid-01", "testimonials-carousel-01", "testimonials-spotlight-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01"],
+        "contact": ["contact-form-01", "contact-modern-form-01", "contact-minimal-01"],
+        "footer": ["footer-sitemap-01", "footer-multi-col-01", "footer-centered-01"],
+    },
+    "saas-dark": {
+        "hero": ["hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01"],
+        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01"],
+        "services": ["services-bento-02", "services-hover-expand-01", "services-hover-reveal-01"],
+        "features": ["features-hover-cards-01", "features-bento-grid-01", "features-tabs-01"],
+        "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01"],
+        "contact": ["contact-minimal-02", "contact-modern-form-01", "contact-card-01"],
+        "footer": ["footer-mega-01", "footer-gradient-01", "footer-sitemap-01"],
+    },
+    # --- Portfolio ---
+    "portfolio-gallery": {
+        "hero": ["hero-editorial-01", "hero-zen-01", "hero-typewriter-01"],
+        "about": ["about-image-showcase-01", "about-magazine-01", "about-split-scroll-01"],
+        "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
+        "services": ["services-minimal-list-01", "services-alternating-rows-01", "services-icon-list-01"],
+        "testimonials": ["testimonials-grid-01", "testimonials-spotlight-01", "testimonials-carousel-01"],
+        "contact": ["contact-minimal-01", "contact-minimal-02", "contact-form-01"],
+        "footer": ["footer-minimal-02", "footer-centered-01"],
+    },
+    "portfolio-minimal": {
+        "hero": ["hero-zen-01", "hero-typewriter-01", "hero-editorial-01"],
+        "about": ["about-alternating-01", "about-split-scroll-01", "about-image-showcase-01"],
+        "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01"],
+        "contact": ["contact-minimal-02", "contact-minimal-01", "contact-form-01"],
+        "footer": ["footer-centered-01", "footer-minimal-02"],
+    },
+    "portfolio-creative": {
+        "hero": ["hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01"],
+        "about": ["about-bento-01", "about-split-cards-01", "about-timeline-02"],
+        "gallery": ["gallery-spotlight-01", "gallery-filmstrip-01", "gallery-masonry-01"],
+        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02"],
+        "contact": ["contact-card-01", "contact-modern-form-01", "contact-split-map-01"],
+        "footer": ["footer-gradient-01", "footer-mega-01", "footer-multi-col-01"],
+    },
+    # --- E-commerce / Shop ---
+    "ecommerce-modern": {
+        "hero": ["hero-split-01", "hero-parallax-01", "hero-glassmorphism-01"],
+        "about": ["about-image-showcase-01", "about-bento-01", "about-alternating-01"],
+        "services": ["services-cards-grid-01", "services-hover-reveal-01", "services-tabs-01"],
+        "gallery": ["gallery-masonry-01", "gallery-filmstrip-01", "gallery-lightbox-01"],
+        "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-marquee-01"],
+        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01"],
+        "footer": ["footer-multi-col-01", "footer-mega-01", "footer-sitemap-01"],
+    },
+    "ecommerce-luxury": {
+        "hero": ["hero-classic-01", "hero-editorial-01", "hero-video-bg-01"],
+        "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01"],
+        "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01"],
+        "gallery": ["gallery-spotlight-01", "gallery-lightbox-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01"],
+        "contact": ["contact-minimal-01", "contact-form-01", "contact-minimal-02"],
+        "footer": ["footer-centered-01", "footer-minimal-02", "footer-sitemap-01"],
+    },
+    # --- Business ---
+    "business-corporate": {
+        "hero": ["hero-split-01", "hero-classic-01", "hero-video-bg-01"],
+        "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02"],
+        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01"],
+        "features": ["features-comparison-01", "features-icons-grid-01", "features-alternating-01"],
+        "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-spotlight-01"],
+        "contact": ["contact-form-01", "contact-split-map-01", "contact-modern-form-01"],
+        "footer": ["footer-mega-01", "footer-sitemap-01", "footer-multi-col-01"],
+    },
+    "business-trust": {
+        "hero": ["hero-classic-01", "hero-editorial-01", "hero-split-01"],
+        "about": ["about-timeline-01", "about-magazine-01", "about-image-showcase-01"],
+        "services": ["services-process-steps-01", "services-alternating-rows-01", "services-cards-grid-01"],
+        "team": ["team-grid-01", "team-carousel-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01"],
+        "contact": ["contact-split-map-01", "contact-form-01", "contact-modern-form-01"],
+        "footer": ["footer-sitemap-01", "footer-mega-01", "footer-multi-col-01"],
+    },
+    "business-fresh": {
+        "hero": ["hero-gradient-03", "hero-animated-shapes-01", "hero-glassmorphism-01"],
+        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-02"],
+        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02"],
+        "features": ["features-alternating-01", "features-bento-grid-01", "features-hover-cards-01"],
+        "testimonials": ["testimonials-carousel-01", "testimonials-marquee-01", "testimonials-masonry-01"],
+        "cta": ["cta-split-image-01", "cta-gradient-animated-01", "cta-floating-card-01"],
+        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01"],
+        "footer": ["footer-multi-col-01", "footer-gradient-01", "footer-mega-01"],
+    },
+    # --- Blog / Magazine ---
+    "blog-editorial": {
+        "hero": ["hero-editorial-01", "hero-typewriter-01", "hero-zen-01"],
+        "about": ["about-alternating-01", "about-magazine-01", "about-split-scroll-01"],
+        "services": ["services-minimal-list-01", "services-icon-list-01", "services-alternating-rows-01"],
+        "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01"],
+        "contact": ["contact-card-01", "contact-minimal-01", "contact-form-01"],
+        "footer": ["footer-sitemap-01", "footer-centered-01", "footer-multi-col-01"],
+    },
+    "blog-dark": {
+        "hero": ["hero-neon-01", "hero-dark-bold-01", "hero-brutalist-01"],
+        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01"],
+        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01"],
+        "gallery": ["gallery-filmstrip-01", "gallery-masonry-01"],
+        "contact": ["contact-minimal-02", "contact-card-01", "contact-modern-form-01"],
+        "footer": ["footer-gradient-01", "footer-mega-01", "footer-multi-col-01"],
+    },
+    # --- Evento / Community ---
+    "event-vibrant": {
+        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01"],
+        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01"],
+        "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02"],
+        "team": ["team-carousel-01", "team-grid-01"],
+        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01"],
+        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01"],
+        "footer": ["footer-gradient-01", "footer-mega-01", "footer-multi-col-01"],
+    },
+    "event-minimal": {
+        "hero": ["hero-centered-02", "hero-typewriter-01", "hero-zen-01"],
+        "about": ["about-timeline-01", "about-alternating-01", "about-split-scroll-01"],
+        "services": ["services-process-steps-01", "services-cards-grid-01", "services-icon-list-01"],
+        "team": ["team-grid-01", "team-carousel-01"],
+        "contact": ["contact-form-01", "contact-minimal-01", "contact-minimal-02"],
+        "footer": ["footer-minimal-02", "footer-centered-01", "footer-sitemap-01"],
+    },
+}
+
+# Randomized pools for default section types (faq, pricing, stats, etc.)
+_DEFAULT_SECTION_VARIANT_POOLS: Dict[str, List[str]] = {
+    "faq": ["faq-accordion-01", "faq-accordion-02", "faq-two-column-01", "faq-search-01"],
+    "pricing": ["pricing-cards-01", "pricing-toggle-01", "pricing-toggle-02", "pricing-comparison-01", "pricing-minimal-01"],
+    "stats": ["stats-counters-01"],
+    "logos": ["logos-marquee-01"],
+    "process": ["process-steps-01", "process-horizontal-01", "process-cards-01"],
+    "timeline": ["timeline-vertical-01"],
+}
+
 
 class DataBindingGenerator:
     def __init__(self):
@@ -250,6 +443,7 @@ class DataBindingGenerator:
         style_preferences: Optional[Dict[str, Any]] = None,
         reference_image_url: Optional[str] = None,
         creative_context: str = "",
+        reference_url_context: str = "",
     ) -> Dict[str, Any]:
         """Kimi returns JSON with color palette and fonts."""
         style_hint = ""
@@ -264,6 +458,10 @@ class DataBindingGenerator:
         if creative_context:
             # Extract just the palette/font recommendations (first ~500 chars of blueprint)
             palette_hint = f"\nPROFESSIONAL DESIGN REFERENCE:\n{creative_context[:500]}\n"
+
+        # Inject reference URL analysis (colors and fonts from a real site)
+        if reference_url_context:
+            palette_hint += f"\n{reference_url_context}\nMatch these colors and fonts closely.\n"
 
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
@@ -315,6 +513,13 @@ PROFESSIONAL: "Epilogue" (heading) + "Source Sans 3" (body)
 - font_heading_url format: "FontName:wght@400;600;700;800" (replace spaces with +)
 - font_body_url format: "FontName:wght@400;500;600"
 
+=== UNIQUENESS DIRECTIVE (CRITICAL) ===
+IMPORTANT: Generate a UNIQUE palette. Do NOT repeat common web palettes.
+Use the business personality to pick unexpected but fitting color combinations.
+Each generation must feel fresh and different from the previous ones.
+Randomization seed: {random.randint(1000, 9999)}
+Pick a font pairing you haven't used recently. Surprise the viewer.
+
 Return ONLY the JSON object"""
 
         if reference_image_url:
@@ -350,6 +555,7 @@ Return ONLY the JSON object"""
         sections: List[str],
         contact_info: Optional[Dict[str, str]] = None,
         creative_context: str = "",
+        reference_url_context: str = "",
     ) -> Dict[str, Any]:
         """Kimi returns JSON with all text content for every section."""
         contact_str = ""
@@ -362,6 +568,10 @@ Return ONLY the JSON object"""
         knowledge_hint = ""
         if creative_context:
             knowledge_hint = f"\n\nDESIGN KNOWLEDGE (follow these professional guidelines closely):\n{creative_context[:2500]}\n"
+
+        # Inject reference URL analysis (tone and content structure from a real site)
+        if reference_url_context:
+            knowledge_hint += f"\n{reference_url_context}\nMatch this site's tone and content structure.\n"
 
         # Inject reference HTML so AI can see the quality level expected
         reference_hint = ""
@@ -431,6 +641,13 @@ SECTIONS NEEDED: {sections_str}
 - NEVER repeat the same emoji twice in a section
 - Choose MODERN, SPECIFIC emojis that match the content (not generic like checkmarks or stars)
 - Examples: for speed use thunderbolt, for security use shield, for analytics use chart, for design use palette
+
+=== UNIQUENESS DIRECTIVE (CRITICAL) ===
+IMPORTANT: Every generation must produce UNIQUE, FRESH content.
+Never reuse the same headline structure. Surprise the reader.
+Creative direction seed: {random.choice(["provocative", "poetic", "minimal", "bold", "storytelling", "data-driven", "emotional", "visionary"])}
+Use this creative direction to shape ALL your copy. It should influence tone, rhythm, word choice, and structure.
+If the direction is "poetic", write like a poet. If "data-driven", lead with numbers and proof. If "provocative", challenge assumptions.
 
 Return this JSON (include only the sections listed above):
 {{
@@ -642,20 +859,33 @@ FINAL CHECKLIST (every point is mandatory):
         template_style_id: str,
         sections: List[str],
     ) -> Dict[str, str]:
-        """Use curated STYLE_VARIANT_MAP for deterministic component selection."""
-        variant_map = STYLE_VARIANT_MAP.get(template_style_id, {})
+        """Select component variants with randomization from curated pools.
+
+        For each section, randomly picks from the STYLE_VARIANT_POOL if available.
+        Falls back to the fixed STYLE_VARIANT_MAP, then to _DEFAULT_SECTION_VARIANTS.
+        This ensures every generated site looks different even for the same template style.
+        """
+        pool_map = STYLE_VARIANT_POOL.get(template_style_id, {})
+        fixed_map = STYLE_VARIANT_MAP.get(template_style_id, {})
         available = self.assembler.get_variant_ids()
         selections = {}
 
         for section in sections:
-            if section in variant_map:
-                # Use curated variant for this style
-                selections[section] = variant_map[section]
+            # Priority 1: Randomized pool for this style + section
+            pool = pool_map.get(section, [])
+            if pool:
+                selections[section] = random.choice(pool)
+            # Priority 2: Fixed deterministic map (fallback)
+            elif section in fixed_map:
+                selections[section] = fixed_map[section]
+            # Priority 3: Randomized pool for default section types (faq, pricing, etc.)
+            elif section in _DEFAULT_SECTION_VARIANT_POOLS:
+                selections[section] = random.choice(_DEFAULT_SECTION_VARIANT_POOLS[section])
+            # Priority 4: Fixed default for known section types
             elif section in self._DEFAULT_SECTION_VARIANTS:
-                # Use known default for common section types not in the style map
                 selections[section] = self._DEFAULT_SECTION_VARIANTS[section]
             else:
-                # Fallback: pick first available variant for unknown sections
+                # Last resort: pick first available variant for unknown sections
                 variants = available.get(section, [])
                 if variants:
                     selections[section] = variants[0]
@@ -665,7 +895,7 @@ FINAL CHECKLIST (every point is mandatory):
                         f"in style '{template_style_id}'"
                     )
 
-        logger.info(f"[DataBinding] Deterministic selection for '{template_style_id}': {selections}")
+        logger.info(f"[DataBinding] Randomized selection for '{template_style_id}': {selections}")
         return selections
 
     async def _select_components(
@@ -807,6 +1037,21 @@ Return ONLY the JSON object."""
             except Exception as e:
                 logger.warning(f"[DataBinding] Design knowledge query failed: {e}")
 
+        # === ANALYZE REFERENCE URL (if provided) ===
+        reference_url_context = ""
+        if _has_url_analyzer:
+            # Extract URL from business_description (format: "Siti di riferimento: https://...")
+            url_match = re.search(r'Siti di riferimento:\s*(https?://\S+)', business_description)
+            if url_match:
+                ref_url = url_match.group(1).strip()
+                try:
+                    analysis = await analyze_reference_url(ref_url)
+                    if analysis:
+                        reference_url_context = format_analysis_for_prompt(analysis)
+                        logger.info(f"[DataBinding] Analyzed reference URL: {ref_url}")
+                except Exception as e:
+                    logger.warning(f"[DataBinding] URL analysis failed: {e}")
+
         # === STEP 1+2 PARALLEL: Theme + Texts ===
         if on_progress:
             on_progress(1, "Analisi stile e generazione testi...", {
@@ -817,11 +1062,13 @@ Return ONLY the JSON object."""
             business_name, business_description,
             style_preferences, reference_image_url,
             creative_context=creative_context,
+            reference_url_context=reference_url_context,
         )
         texts_task = self._generate_texts(
             business_name, business_description,
             sections, contact_info,
             creative_context=creative_context,
+            reference_url_context=reference_url_context,
         )
         theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
 
