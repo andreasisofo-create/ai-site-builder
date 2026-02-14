@@ -3,7 +3,7 @@
   <div class="max-w-7xl mx-auto px-6">
     <div class="text-center mb-16" data-animate="fade-up">
       <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4 font-body">Contattaci</p>
-      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-3">{{CONTACT_TITLE}}</h2>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-3" data-animate="text-split" data-split-type="words">{{CONTACT_TITLE}}</h2>
       <p class="text-[var(--color-text-muted)] max-w-xl mx-auto font-body">{{CONTACT_SUBTITLE}}</p>
     </div>
     <!-- Contact Cards -->
@@ -49,9 +49,9 @@
     <!-- Compact Form -->
     <div class="max-w-3xl mx-auto" data-animate="fade-up">
       <form class="flex flex-col sm:flex-row gap-3" onsubmit="event.preventDefault(); alert('Messaggio inviato!');">
-        <input type="email" required placeholder="La tua email" class="flex-1 px-5 py-4 rounded-xl border border-[var(--color-text)]/10 bg-[var(--color-bg)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30 transition-all font-body">
-        <input type="text" required placeholder="Il tuo messaggio" class="flex-[2] px-5 py-4 rounded-xl border border-[var(--color-text)]/10 bg-[var(--color-bg)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30 transition-all font-body">
-        <button type="submit" class="px-8 py-4 rounded-xl font-bold font-heading text-white hover:opacity-90 hover:shadow-lg transition-all whitespace-nowrap" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+        <input type="email" required placeholder="La tua email" aria-label="Email" class="flex-1 px-5 py-4 rounded-xl border border-[var(--color-text)]/10 bg-[var(--color-bg)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30 transition-all font-body">
+        <input type="text" required placeholder="Il tuo messaggio" aria-label="Messaggio" class="flex-[2] px-5 py-4 rounded-xl border border-[var(--color-text)]/10 bg-[var(--color-bg)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30 transition-all font-body">
+        <button type="submit" data-animate="magnetic" class="px-8 py-4 rounded-xl font-bold font-heading text-white hover:opacity-90 hover:shadow-lg transition-all whitespace-nowrap" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
           Invia
         </button>
       </form>

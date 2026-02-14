@@ -56,5 +56,24 @@
     [data-animate] { opacity: 0; }
     img[src=""] { display: none !important; }
     img:not([src]) { display: none !important; }
+    /* Image loading shimmer placeholder */
+    img[loading="lazy"] {
+      background: linear-gradient(90deg, var(--color-bg-alt) 25%, var(--color-bg) 50%, var(--color-bg-alt) 75%);
+      background-size: 200% 100%;
+      animation: imgShimmer 1.5s infinite;
+    }
+    img[loading="lazy"][src]:not([src=""]) { animation: none; }
+    @keyframes imgShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    /* Reduced motion: show all elements immediately */
+    .reduced-motion [data-animate] { opacity: 1 !important; }
+    .reduced-motion * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    /* Scroll bounce animation for hero indicators */
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateY(0); opacity: 0.4; }
+      50% { transform: translateY(6px); opacity: 1; }
+    }
   </style>
 </head>

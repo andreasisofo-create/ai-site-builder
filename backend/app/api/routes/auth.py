@@ -1,14 +1,17 @@
 """Routes per autenticazione"""
 
+import logging
 import secrets
 import base64
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy.orm import Session
 from typing import Optional
 import httpx
+
+logger = logging.getLogger(__name__)
 
 from datetime import datetime, timezone
 
@@ -27,9 +30,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 # ============= SCHEMAS =============
 
 class RegisterRequest(BaseModel):
-    email: str
+    email: EmailStr
     password: str
     full_name: str = ""
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        if len(v) < 6:
+            raise ValueError("La password deve avere almeno 6 caratteri")
+        return v
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -289,9 +299,9 @@ async def google_oauth_callback(
         else:
             redirect_uri = "http://localhost:8000/api/auth/oauth/callback"
 
-        print(f"OAuth callback - redirect_uri: {redirect_uri}")
-        print(f"OAuth callback - client_id: {settings.GOOGLE_CLIENT_ID[:20]}...")
-        print(f"OAuth callback - client_secret set: {bool(settings.GOOGLE_CLIENT_SECRET)}")
+        logger.info(f"OAuth callback - redirect_uri: {redirect_uri}")
+        logger.debug(f"OAuth callback - client_id: {settings.GOOGLE_CLIENT_ID[:20]}...")
+        logger.debug(f"OAuth callback - client_secret set: {bool(settings.GOOGLE_CLIENT_SECRET)}")
 
         # Scambia il codice con un token
         async with httpx.AsyncClient() as client:
@@ -308,7 +318,7 @@ async def google_oauth_callback(
 
             if token_response.status_code != 200:
                 error_detail = token_response.text
-                print(f"Token exchange failed ({token_response.status_code}): {error_detail}")
+                logger.error(f"Token exchange failed ({token_response.status_code}): {error_detail}")
                 # Includi dettaglio errore nel redirect per debug
                 from urllib.parse import quote
                 return RedirectResponse(
@@ -380,7 +390,7 @@ async def google_oauth_callback(
         return RedirectResponse(url=f"{final_redirect}?token={jwt_token}")
 
     except Exception as e:
-        print(f"Errore OAuth callback: {e}")
+        logger.exception(f"Errore OAuth callback: {e}")
         from urllib.parse import quote
         return RedirectResponse(url=f"{frontend_auth}?error=server_error&detail={quote(str(e)[:200])}")
 
@@ -451,7 +461,7 @@ async def microsoft_oauth_callback(
 
             if token_response.status_code != 200:
                 error_detail = token_response.text
-                print(f"Microsoft token exchange failed: {error_detail}")
+                logger.error(f"Microsoft token exchange failed: {error_detail}")
                 from urllib.parse import quote
                 return RedirectResponse(
                     url=f"{frontend_auth}?error=token_exchange_failed&detail={quote(error_detail[:200])}"
@@ -509,7 +519,7 @@ async def microsoft_oauth_callback(
         return RedirectResponse(url=f"{final_redirect}?token={jwt_token}")
 
     except Exception as e:
-        print(f"Errore Microsoft OAuth callback: {e}")
+        logger.exception(f"Errore Microsoft OAuth callback: {e}")
         from urllib.parse import quote
         return RedirectResponse(url=f"{frontend_auth}?error=server_error&detail={quote(str(e)[:200])}")
 
@@ -521,7 +531,13 @@ async def me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db))
     if not payload:
         raise HTTPException(status_code=401, detail="Token non valido")
     
-    user_id = int(payload.get("sub"))
+    user_id_raw = payload.get("sub")
+    if user_id_raw is None:
+        raise HTTPException(status_code=401, detail="Token non valido")
+    try:
+        user_id = int(user_id_raw)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=401, detail="Token non valido")
     user = db.query(User).filter(User.id == user_id).first()
     
     if not user:
@@ -606,7 +622,7 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest, db: Ses
 
         if not email_sent:
             # In sviluppo senza Resend, logga il link
-            print(f"[DEBUG] Password reset link: {reset_url}")
+            logger.info(f"[DEBUG] Password reset link: {reset_url}")
 
     # Rispondi sempre con successo per non rivelare se l'email esiste
     return {
@@ -702,8 +718,10 @@ async def verify_email(token: str, db: Session = Depends(get_db)):
 
 
 @router.get("/debug-oauth")
-async def debug_oauth():
-    """Debug: mostra configurazione OAuth (senza segreti)"""
+async def debug_oauth(current_user: User = Depends(get_current_active_user)):
+    """Debug: mostra configurazione OAuth (solo utenti autenticati)"""
+    if not current_user.is_superuser:
+        raise HTTPException(status_code=403, detail="Solo per admin")
     return {
         "google_client_id_set": bool(settings.GOOGLE_CLIENT_ID),
         "google_client_id_prefix": settings.GOOGLE_CLIENT_ID[:20] + "..." if settings.GOOGLE_CLIENT_ID else "NOT SET",
@@ -743,11 +761,14 @@ async def set_password(data: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/migrate-db")
-async def migrate_db(db: Session = Depends(get_db)):
+async def migrate_db(current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     """
     Endpoint admin per migrare il database.
     Aggiunge colonne mancanti alla tabella users.
+    Richiede autenticazione come superuser.
     """
+    if not current_user.is_superuser:
+        raise HTTPException(status_code=403, detail="Solo per admin")
     from sqlalchemy import text, inspect
     from app.core.database import engine
     

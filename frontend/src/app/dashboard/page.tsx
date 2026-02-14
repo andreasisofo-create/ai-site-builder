@@ -248,10 +248,10 @@ function Dashboard() {
                 }`}
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
-              {sidebarOpen && (
+              {(sidebarOpen || mobileSidebarOpen) && (
                 <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
               )}
-              {!sidebarOpen && (
+              {!sidebarOpen && !mobileSidebarOpen && (
                 <div className="absolute left-16 bg-white text-black px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
                   {item.label}
                 </div>
@@ -262,7 +262,7 @@ function Dashboard() {
 
         {/* Bottom Actions */}
         <div className="p-4 border-t border-white/5 space-y-4">
-          {sidebarOpen ? (
+          {(sidebarOpen || mobileSidebarOpen) ? (
             <GenerationCounter />
           ) : (
             <div className="w-8 h-8 mx-auto rounded-full border-2 border-blue-500/30 flex items-center justify-center">
@@ -273,7 +273,7 @@ function Dashboard() {
           {/* Admin link - subtle */}
           <a href="/admin" className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-colors text-xs" title="Admin Panel">
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            {sidebarOpen && <span>Admin</span>}
+            {(sidebarOpen || mobileSidebarOpen) && <span>Admin</span>}
           </a>
 
           <button
@@ -287,10 +287,10 @@ function Dashboard() {
             }}
             className="w-full flex items-center justify-center p-2 text-slate-500 hover:text-white transition-colors"
           >
-            {sidebarOpen ? (
+            {(sidebarOpen || mobileSidebarOpen) ? (
               <div className="flex items-center gap-2 text-xs uppercase tracking-wider">
                 <ChevronDownIcon className="w-3 h-3 rotate-90" />
-                <span>Chiudi menu</span>
+                <span>{language === "en" ? "Close menu" : "Chiudi menu"}</span>
               </div>
             ) : (
               <ChevronDownIcon className="w-4 h-4 -rotate-90" />
@@ -298,7 +298,7 @@ function Dashboard() {
           </button>
 
           {/* Language Switcher */}
-          {sidebarOpen && (
+          {(sidebarOpen || mobileSidebarOpen) && (
             <div className="px-4 pb-2 flex justify-center">
               <LanguageSwitcher />
             </div>

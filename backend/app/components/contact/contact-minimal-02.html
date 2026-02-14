@@ -3,7 +3,7 @@
   <div class="max-w-2xl mx-auto px-6">
     <!-- Header -->
     <div class="text-center mb-16" data-animate="fade-up">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)] mb-3">{{CONTACT_TITLE}}</h2>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)] mb-3" data-animate="text-split" data-split-type="words">{{CONTACT_TITLE}}</h2>
       <p class="text-[var(--color-text-muted)] font-body">{{CONTACT_SUBTITLE}}</p>
     </div>
     <!-- Contact Details with dividers -->
@@ -37,12 +37,12 @@
       </div>
       <form class="space-y-5" onsubmit="event.preventDefault(); alert('Messaggio inviato!');">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <input type="email" required placeholder="Email" class="w-full px-0 py-3 bg-transparent border-b border-[var(--color-text)]/15 text-[var(--color-text)] placeholder-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-colors font-body">
-          <input type="text" required placeholder="Nome" class="w-full px-0 py-3 bg-transparent border-b border-[var(--color-text)]/15 text-[var(--color-text)] placeholder-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-colors font-body">
+          <input type="email" required placeholder="Email" aria-label="Email" class="w-full px-0 py-3 bg-transparent border-b border-[var(--color-text)]/15 text-[var(--color-text)] placeholder-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-colors font-body">
+          <input type="text" required placeholder="Nome" aria-label="Nome" class="w-full px-0 py-3 bg-transparent border-b border-[var(--color-text)]/15 text-[var(--color-text)] placeholder-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-colors font-body">
         </div>
-        <textarea rows="4" required placeholder="Il tuo messaggio..." class="w-full px-0 py-3 bg-transparent border-b border-[var(--color-text)]/15 text-[var(--color-text)] placeholder-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none font-body"></textarea>
+        <textarea rows="4" required placeholder="Il tuo messaggio..." aria-label="Messaggio" class="w-full px-0 py-3 bg-transparent border-b border-[var(--color-text)]/15 text-[var(--color-text)] placeholder-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none font-body"></textarea>
         <div class="text-center pt-4">
-          <button type="submit" class="group inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold font-heading text-white text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+          <button type="submit" data-animate="magnetic" class="group inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold font-heading text-white text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
             Invia Messaggio
             <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>

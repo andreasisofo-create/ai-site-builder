@@ -21,7 +21,7 @@ import {
   ArrowUturnLeftIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import { getSite, updateSite, refineWebsite, deploySite, Site } from "@/lib/api";
+import { getSite, updateSite, refineWebsite, deploySite, regenerateImages, Site } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/i18n";
 import EquipePromo from "@/components/EquipePromo";
@@ -238,6 +238,59 @@ export default function Editor() {
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, undoMsg]);
+  };
+
+  // Image regeneration
+  const [isRegeneratingImages, setIsRegeneratingImages] = useState(false);
+  const [imageRegenSection, setImageRegenSection] = useState<string | null>(null);
+
+  const SECTION_TYPES = ["hero", "about", "gallery", "services", "portfolio", "team", "contact"];
+
+  const handleRegenerateImages = async (sectionType: string) => {
+    if (!site || isRegeneratingImages) return;
+    setIsRegeneratingImages(true);
+    setImageRegenSection(sectionType);
+
+    const loadingMsg: ChatMessage = {
+      id: Date.now().toString(),
+      role: "assistant",
+      content: language === "en"
+        ? `Generating new images for "${sectionType}" section...`
+        : `Generazione nuove immagini per la sezione "${sectionType}"...`,
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, loadingMsg]);
+
+    try {
+      const result = await regenerateImages({
+        site_id: site.id,
+        section_type: sectionType,
+      });
+
+      const successMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: language === "en"
+          ? `Generated ${result.count} new image(s) for "${sectionType}". Use the chat to insert them into specific sections, e.g.: "Replace the ${sectionType} image with ${result.images[0]}"`
+          : `Generate ${result.count} nuove immagini per "${sectionType}". Usa la chat per inserirle nelle sezioni, es: "Sostituisci l'immagine ${sectionType} con ${result.images[0]}"`,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, successMsg]);
+    } catch (error: any) {
+      const errorMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: language === "en"
+          ? `Error generating images: ${error.message}`
+          : `Errore nella generazione immagini: ${error.message}`,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMsg]);
+      toast.error(language === "en" ? "Error generating images" : "Errore generazione immagini");
+    } finally {
+      setIsRegeneratingImages(false);
+      setImageRegenSection(null);
+    }
   };
 
   const validateVideoUrl = (url: string): boolean => {
@@ -542,7 +595,7 @@ export default function Editor() {
 
         {/* Chat Panel (Right Sidebar) */}
         {chatOpen && (
-          <aside className="w-[380px] bg-[#111] border-l border-white/5 flex flex-col flex-shrink-0">
+          <aside className="w-full sm:w-[380px] fixed sm:relative inset-0 sm:inset-auto z-50 sm:z-auto bg-[#111] border-l border-white/5 flex flex-col flex-shrink-0">
             {/* Chat Header */}
             <div className="p-4 border-b border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -593,6 +646,37 @@ export default function Editor() {
                         {action}
                       </button>
                     ))}
+                  </div>
+
+                  {/* Image Regeneration */}
+                  <div className="mt-6 pt-4 border-t border-white/5">
+                    <p className="text-xs text-slate-500 mb-2 flex items-center gap-1.5">
+                      <PhotoIcon className="w-3.5 h-3.5" />
+                      {language === "en" ? "Regenerate section images" : "Rigenera immagini sezione"}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SECTION_TYPES.map((section) => (
+                        <button
+                          key={section}
+                          onClick={() => handleRegenerateImages(section)}
+                          disabled={isRegeneratingImages || isRefining}
+                          className={`px-2.5 py-1.5 text-xs rounded-lg border transition-colors disabled:opacity-50 ${
+                            imageRegenSection === section
+                              ? "bg-violet-500/20 border-violet-500/40 text-violet-300"
+                              : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20"
+                          }`}
+                        >
+                          {imageRegenSection === section ? (
+                            <span className="flex items-center gap-1">
+                              <ArrowPathIcon className="w-3 h-3 animate-spin" />
+                              {section}
+                            </span>
+                          ) : (
+                            section
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

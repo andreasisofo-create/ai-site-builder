@@ -103,6 +103,9 @@ class Settings(BaseSettings):
     REVOLUT_WEBHOOK_SECRET: str = ""    # Signing secret per verificare webhook
     REVOLUT_SANDBOX: bool = True        # True = sandbox, False = produzione
 
+    # fal.ai (Flux image generation) - $0.025/img schnell, $0.04/img pro
+    FAL_API_KEY: str = ""  # fal.ai API key (get from https://fal.ai/dashboard/keys)
+
     # Generation Pipeline
     GENERATION_PIPELINE: str = "databinding"  # "databinding" | "swarm" | "n8n"
     N8N_WEBHOOK_URL: str = ""  # n8n webhook URL for external generation

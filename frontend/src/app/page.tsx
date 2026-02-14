@@ -137,7 +137,7 @@ export default function LandingPage() {
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
-              <LanguageSwitcher />
+              <LanguageSwitcher variant="light" />
               <Link
                 href="/auth"
                 className="px-5 py-2.5 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:opacity-90 shadow-md shadow-indigo-500/25"
@@ -208,7 +208,7 @@ export default function LandingPage() {
                 </a>
                 <hr className="border-slate-200" />
                 <div className="flex justify-center">
-                  <LanguageSwitcher />
+                  <LanguageSwitcher variant="light" />
                 </div>
                 <hr className="border-slate-200" />
                 <Link

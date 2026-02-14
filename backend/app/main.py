@@ -55,13 +55,21 @@ class CORSMiddlewareCustom(BaseHTTPMiddleware):
         # Leggi origin dalla richiesta (necessario per CORS con credentials)
         origin = request.headers.get("origin", "")
 
+        # Verifica se l'origin e' nella whitelist
+        allowed = origin and (
+            origin in settings.CORS_ORIGINS
+            or settings.CORS_ALLOW_ALL
+        )
+        cors_origin = origin if allowed else ""
+
         # Gestione preflight OPTIONS
         if request.method == "OPTIONS":
             response = JSONResponse(content={})
-            response.headers["Access-Control-Allow-Origin"] = origin or "*"
+            if cors_origin:
+                response.headers["Access-Control-Allow-Origin"] = cors_origin
+                response.headers["Access-Control-Allow-Credentials"] = "true"
             response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
             response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
-            response.headers["Access-Control-Allow-Credentials"] = "true"
             response.headers["Access-Control-Max-Age"] = "3600"
             return response
 
@@ -72,14 +80,14 @@ class CORSMiddlewareCustom(BaseHTTPMiddleware):
             logger.error(f"Errore durante richiesta: {exc}")
             response = JSONResponse(
                 status_code=500,
-                content={"detail": "Errore interno", "error": str(exc)}
+                content={"detail": "Errore interno del server"}
             )
 
-        # Aggiungi header CORS a TUTTE le risposte
-        response.headers["Access-Control-Allow-Origin"] = origin or "*"
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
-        if origin:
+        # Aggiungi header CORS solo per origini consentite
+        if cors_origin:
+            response.headers["Access-Control-Allow-Origin"] = cors_origin
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
             response.headers["Access-Control-Allow-Credentials"] = "true"
 
         return response
@@ -159,12 +167,7 @@ app.add_middleware(CORSMiddlewareCustom)
 # Anche il CORS standard di FastAPI (doppia protezione)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "https://site-generator-v2.vercel.app",
-    ],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -177,10 +180,11 @@ logger.info("CORS configurato")
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Errore globale: {exc}", exc_info=True)
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Errore interno del server", "error": str(exc)}
-    )
+    # Don't leak internal error details to clients in production
+    content = {"detail": "Errore interno del server"}
+    if settings.DEBUG:
+        content["error"] = str(exc)
+    return JSONResponse(status_code=500, content=content)
 
 # Import e registrazione routes
 logger.info("Registrazione routes...")
@@ -241,6 +245,14 @@ except Exception as e:
     logger.error(traceback.format_exc())
 
 try:
+    from app.api.routes import images
+    app.include_router(images.router, prefix="/api/images", tags=["images"])
+    logger.info("Route images registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route images: {e}")
+    logger.error(traceback.format_exc())
+
+try:
     from app.api.routes.chat import router as chat_router
     app.include_router(chat_router)
     logger.info("Route chat registrate")
@@ -274,14 +286,17 @@ async def root():
 async def health_check():
     """Health check endpoint"""
     db_status = "unknown"
-    try:
-        from sqlalchemy import text
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        db_status = "connected"
-    except Exception as e:
-        logger.error(f"Health check DB fallito: {e}")
-        db_status = f"error: {str(e)}"
+    if engine is None:
+        db_status = "not configured"
+    else:
+        try:
+            from sqlalchemy import text
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            db_status = "connected"
+        except Exception as e:
+            logger.error(f"Health check DB fallito: {e}")
+            db_status = f"error: {str(e)}"
     
     return {
         "status": "ok",
@@ -295,7 +310,9 @@ async def ping():
 
 @app.get("/debug/imports")
 async def debug_imports():
-    """Diagnostica: prova a importare ogni modulo e riporta errori."""
+    """Diagnostica: prova a importare ogni modulo e riporta errori. Solo in debug mode."""
+    if not settings.DEBUG:
+        return JSONResponse(status_code=403, content={"detail": "Debug endpoint disabled in production"})
     results = {}
     modules = [
         "app.services.sanitizer",

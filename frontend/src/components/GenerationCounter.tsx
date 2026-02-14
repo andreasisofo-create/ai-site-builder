@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { getQuota, UserQuota } from "@/lib/api";
+import { useLanguage } from "@/lib/i18n";
 
 export default function GenerationCounter() {
   const [quota, setQuota] = useState<UserQuota | null>(null);
+  const { language } = useLanguage();
 
   useEffect(() => {
     getQuota()
@@ -27,7 +29,9 @@ export default function GenerationCounter() {
           <SparklesIcon className="w-4 h-4" />
           Premium
         </div>
-        <p className="text-[11px] text-slate-400 mt-1">Generazioni illimitate</p>
+        <p className="text-[11px] text-slate-400 mt-1">
+          {language === "en" ? "Unlimited generations" : "Generazioni illimitate"}
+        </p>
       </div>
     );
   }
@@ -37,7 +41,9 @@ export default function GenerationCounter() {
   return (
     <div className="px-3 py-2 rounded-lg bg-white/5 border border-white/10">
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-xs text-slate-400">Generazioni</span>
+        <span className="text-xs text-slate-400">
+          {language === "en" ? "Generations" : "Generazioni"}
+        </span>
         <span className="text-xs font-semibold text-white">
           {used}/{limit}
         </span>
@@ -51,7 +57,9 @@ export default function GenerationCounter() {
         />
       </div>
       {remaining === 0 && (
-        <p className="text-[11px] text-red-400 mt-1.5">Limite raggiunto</p>
+        <p className="text-[11px] text-red-400 mt-1.5">
+          {language === "en" ? "Limit reached" : "Limite raggiunto"}
+        </p>
       )}
     </div>
   );

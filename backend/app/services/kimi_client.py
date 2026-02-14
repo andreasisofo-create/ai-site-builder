@@ -5,6 +5,7 @@ Usa httpx.AsyncClient persistente per evitare overhead di connessione.
 Supporta streaming SSE per chiamate lunghe (evita timeout).
 """
 
+import asyncio
 import httpx
 import json
 import logging
@@ -51,9 +52,10 @@ class KimiClient:
         max_tokens: int = 8000,
         thinking: bool = True,
         timeout: float = 180.0,
+        _retries: int = 2,
     ) -> Dict[str, Any]:
         """
-        Chiamata base a Kimi API.
+        Chiamata base a Kimi API con retry su 429 rate limit.
 
         Args:
             messages: Lista messaggi OpenAI-format
@@ -61,6 +63,7 @@ class KimiClient:
             thinking: True = Thinking mode (temp 1.0, deep reasoning),
                       False = Instant mode (temp 0.6, faster)
             timeout: Timeout in secondi
+            _retries: Numero di retry su 429 (default 2)
 
         Returns:
             {"success": True, "content": str, "tokens_input": int, "tokens_output": int}
@@ -79,37 +82,47 @@ class KimiClient:
         if not thinking:
             payload["thinking"] = {"type": "disabled"}
 
-        try:
-            client = await self._get_client()
-            response = await client.post(
-                f"{self.api_url}/chat/completions",
-                json=payload,
-                timeout=timeout,
-            )
-            response.raise_for_status()
-            data = response.json()
+        last_error = ""
+        for attempt in range(_retries + 1):
+            try:
+                client = await self._get_client()
+                response = await client.post(
+                    f"{self.api_url}/chat/completions",
+                    json=payload,
+                    timeout=timeout,
+                )
+                response.raise_for_status()
+                data = response.json()
 
-            content = data["choices"][0]["message"]["content"]
-            usage = data.get("usage", {})
-            tokens_in = usage.get("prompt_tokens", 0)
-            tokens_out = usage.get("completion_tokens", 0)
+                content = data["choices"][0]["message"]["content"]
+                usage = data.get("usage", {})
+                tokens_in = usage.get("prompt_tokens", 0)
+                tokens_out = usage.get("completion_tokens", 0)
 
-            return {
-                "success": True,
-                "content": content,
-                "tokens_input": tokens_in,
-                "tokens_output": tokens_out,
-            }
+                return {
+                    "success": True,
+                    "content": content,
+                    "tokens_input": tokens_in,
+                    "tokens_output": tokens_out,
+                }
 
-        except httpx.HTTPStatusError as e:
-            error_msg = self._handle_http_error(e)
-            return {"success": False, "error": error_msg}
-        except httpx.TimeoutException:
-            logger.error("Timeout calling Kimi API")
-            return {"success": False, "error": "Timeout: la richiesta ha impiegato troppo tempo"}
-        except Exception as e:
-            logger.exception("Errore chiamata Kimi API")
-            return {"success": False, "error": str(e)}
+            except httpx.HTTPStatusError as e:
+                last_error = self._handle_http_error(e)
+                # Retry on 429 rate limit
+                if e.response.status_code == 429 and attempt < _retries:
+                    wait = 2 ** attempt + 1  # 2s, 3s
+                    logger.warning(f"Kimi 429 rate limit, retrying in {wait}s (attempt {attempt + 1}/{_retries})")
+                    await asyncio.sleep(wait)
+                    continue
+                return {"success": False, "error": last_error}
+            except httpx.TimeoutException:
+                logger.error("Timeout calling Kimi API")
+                return {"success": False, "error": "Timeout: la richiesta ha impiegato troppo tempo"}
+            except Exception as e:
+                logger.exception("Errore chiamata Kimi API")
+                return {"success": False, "error": str(e)}
+
+        return {"success": False, "error": last_error}
 
     async def call_stream(
         self,

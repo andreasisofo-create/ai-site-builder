@@ -49,6 +49,7 @@ class GenerateRequest(BaseModel):
     site_id: Optional[int] = None  # Se fornito, salva direttamente sul sito
     photo_urls: Optional[List[str]] = None  # List of base64 data URLs from user uploads
     template_style_id: Optional[str] = None  # Frontend template style ID for deterministic variant selection
+    generate_images: bool = False  # If True, generate AI images via Flux/fal.ai
 
 
 class RefineRequest(BaseModel):
@@ -568,25 +569,28 @@ async def upgrade_plan(
 
 
 @router.post("/upgrade-demo")
-async def upgrade_demo_user(plan: str = "premium", db: Session = Depends(get_db)):
-    """Endpoint DEMO per testare l'upgrade senza pagamento."""
-    user = db.query(User).order_by(User.id.desc()).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Nessun utente trovato")
+async def upgrade_demo_user(
+    plan: str = "premium",
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Endpoint DEMO per testare l'upgrade senza pagamento. Solo per superuser."""
+    if not current_user.is_superuser:
+        raise HTTPException(status_code=403, detail="Solo per admin")
 
     try:
-        user.activate_plan(plan)
+        current_user.activate_plan(plan)
     except ValueError:
-        user.is_premium = True
+        current_user.is_premium = True
     db.commit()
 
     return {
-        "message": f"Utente {user.email} upgradato a piano '{user.plan}' (DEMO)",
-        "user_id": user.id,
-        "plan": user.plan,
-        "generations_limit": user.generations_limit,
-        "refines_limit": user.refines_limit,
-        "pages_limit": user.pages_limit,
+        "message": f"Utente {current_user.email} upgradato a piano '{current_user.plan}' (DEMO)",
+        "user_id": current_user.id,
+        "plan": current_user.plan,
+        "generations_limit": current_user.generations_limit,
+        "refines_limit": current_user.refines_limit,
+        "pages_limit": current_user.pages_limit,
     }
 
 

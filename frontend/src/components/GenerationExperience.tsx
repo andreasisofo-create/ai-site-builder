@@ -7,6 +7,7 @@ import {
   DocumentTextIcon,
   CubeIcon,
   CheckIcon,
+  PhotoIcon,
 } from "@heroicons/react/24/outline";
 
 // Preview data structure from the backend
@@ -40,6 +41,7 @@ const STEP_CONFIG = [
   { icon: SparklesIcon, label: "Analisi stile e testi", color: "blue" },
   { icon: PaintBrushIcon, label: "Palette e componenti", color: "violet" },
   { icon: DocumentTextIcon, label: "Contenuti e layout", color: "emerald" },
+  { icon: PhotoIcon, label: "Generazione immagini", color: "pink" },
   { icon: CubeIcon, label: "Assemblaggio finale", color: "amber" },
 ];
 
@@ -115,7 +117,7 @@ export default function GenerationExperience({
       </div>
 
       {/* Step indicators */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-5 gap-2">
         {STEP_CONFIG.map((cfg, idx) => {
           const stepNum = idx + 1;
           const Icon = cfg.icon;

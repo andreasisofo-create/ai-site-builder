@@ -1,6 +1,6 @@
 """Admin Panel API Routes"""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -46,7 +46,7 @@ class UserUpdateRequest(BaseModel):
 
 def create_admin_token():
     """Create a JWT token for admin with role=admin claim."""
-    expire = datetime.utcnow() + timedelta(hours=24)
+    expire = datetime.now(timezone.utc) + timedelta(hours=24)
     data = {"sub": "admin", "role": "admin", "exp": expire}
     return jwt.encode(data, settings.SECRET_KEY, algorithm=ALGORITHM)
 
@@ -110,7 +110,7 @@ async def admin_stats(
     plan_dist["free"] = plan_dist.get("free", 0) + null_plan
 
     # Recent registrations (last 30 days)
-    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
     recent_users = db.query(func.count(User.id)).filter(
         User.created_at >= thirty_days_ago
     ).scalar() or 0
@@ -285,8 +285,8 @@ async def admin_reset_password(
     from app.core.security import get_password_hash
 
     new_password = data.get("password")
-    if not new_password or len(new_password) < 4:
-        raise HTTPException(status_code=400, detail="Password must be at least 4 characters")
+    if not new_password or len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:

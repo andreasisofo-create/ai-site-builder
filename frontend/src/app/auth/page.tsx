@@ -381,7 +381,9 @@ export default function AuthPage() {
         <div className="relative z-10 flex flex-col justify-center items-center p-12 text-center">
           <div className="max-w-md">
             <blockquote className="text-2xl font-medium text-white mb-6">
-              &ldquo;E-quipe ha trasformato la nostra presenza online in modo incredibile. Il sito è professionale e perfetto per il nostro business.&rdquo;
+              {language === "en"
+                ? "\u201CE-quipe transformed our online presence incredibly. The site is professional and perfect for our business.\u201D"
+                : "\u201CE-quipe ha trasformato la nostra presenza online in modo incredibile. Il sito \u00E8 professionale e perfetto per il nostro business.\u201D"}
             </blockquote>
             <div className="flex items-center justify-center gap-3">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold">

@@ -172,6 +172,7 @@ export interface GenerateRequest {
   contact_info?: Record<string, string>;
   site_id?: number;
   template_style_id?: string;
+  generate_images?: boolean;
 }
 
 export interface GenerateResponse {
@@ -214,6 +215,7 @@ export interface RefineRequest {
 export interface RefineResponse {
   success: boolean;
   html_content?: string;
+  error?: string;
   model_used?: string;
   generation_time_ms?: number;
 }
@@ -255,6 +257,30 @@ export async function getGenerationStatus(siteId: number): Promise<GenerationSta
   const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/generate/status/${siteId}`, { headers });
   return handleResponse<GenerationStatus>(res);
+}
+
+// ============ IMAGE GENERATION ============
+
+export interface RegenerateImagesRequest {
+  site_id: number;
+  section_type: string;
+  resolution?: string;
+}
+
+export interface ImagesResponse {
+  images: string[];
+  section_type: string;
+  count: number;
+}
+
+export async function regenerateImages(data: RegenerateImagesRequest): Promise<ImagesResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/images/regenerate`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<ImagesResponse>(res);
 }
 
 // ============ EXPORT ============

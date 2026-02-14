@@ -13,10 +13,11 @@ Benefits:
 - Diversified designs (multiple template variants)
 
 Pipeline:
-  Step 1 (parallel): Kimi → JSON {colors, fonts, mood}
-  Step 2 (parallel): Kimi → JSON {texts for all sections}
-  Step 3: Kimi → JSON {component variant selection}
-  Step 4: TemplateAssembler → complete HTML
+  Step 1+2 (parallel): Kimi → JSON {colors, fonts, mood} + JSON {texts for all sections}
+  Step 3+Images (parallel): Component variant selection + AI image generation (Flux/fal.ai)
+  Step 4: Replace placeholder URLs with generated image URLs
+  Step 5: TemplateAssembler → complete HTML
+  Step 6: Quality Control
 """
 
 import asyncio
@@ -30,6 +31,16 @@ from app.services.kimi_client import kimi
 from app.services.template_assembler import assembler as template_assembler
 from app.services.sanitizer import sanitize_input, sanitize_output
 from app.services.quality_control import qc_pipeline
+
+# AI Image generation (Flux/fal.ai) - graceful fallback if not available
+try:
+    from app.services.image_generator import generate_all_site_images, _has_api_key as _has_image_api_key
+    _has_image_generation = True
+except Exception:
+    _has_image_generation = False
+
+    def _has_image_api_key() -> bool:
+        return False
 
 # Design knowledge (ChromaDB) - graceful fallback if not available
 try:
@@ -733,17 +744,68 @@ Return ONLY the JSON object."""
                 "font_body": theme.get("font_body", "Inter"),
             })
 
-        # === STEP 3: Component Selection ===
+        # === STEP 3 + IMAGES (parallel): Component Selection + Image Generation ===
         mood = ""
         if style_preferences:
             mood = style_preferences.get("mood", "modern")
         if not mood:
             mood = "modern"
 
-        selection_result = await self._select_components(
-            business_description, sections, mood,
-            template_style_id=template_style_id,
+        # Determine if we should generate AI images
+        should_generate_images = (
+            _has_image_generation
+            and _has_image_api_key()
         )
+
+        if should_generate_images:
+            if on_progress:
+                on_progress(3, "Selezione layout e generazione immagini AI...", {
+                    "phase": "images_and_layout",
+                })
+
+            # Detect style mood from template_style_id for image prompts
+            image_style_mood = mood
+            if template_style_id:
+                # Extract mood hint from style ID (e.g. "restaurant-elegant" -> "elegant")
+                parts = template_style_id.split("-")
+                if len(parts) >= 2:
+                    image_style_mood = parts[-1]
+
+            # Run component selection and image generation in parallel
+            selection_coro = self._select_components(
+                business_description, sections, mood,
+                template_style_id=template_style_id,
+            )
+            images_coro = generate_all_site_images(
+                business_name=business_name,
+                business_description=business_description,
+                sections=sections,
+                style_mood=image_style_mood,
+                color_palette=theme,
+                user_photos=photo_urls,
+                quality="fast",
+            )
+            selection_result, generated_images = await asyncio.gather(
+                selection_coro, images_coro,
+            )
+
+            # Replace placeholder URLs in texts with generated images
+            total_ai_images = sum(
+                1 for urls in generated_images.values()
+                for u in urls if "placehold.co" not in u
+            )
+            if total_ai_images > 0:
+                texts = self._inject_ai_images(texts, generated_images)
+                logger.info(f"[DataBinding] Injected {total_ai_images} AI-generated images")
+            else:
+                logger.info("[DataBinding] No AI images generated, keeping placeholders")
+        else:
+            # No image generation: just run component selection
+            selection_result = await self._select_components(
+                business_description, sections, mood,
+                template_style_id=template_style_id,
+            )
+
         selections = selection_result.get("parsed", self._default_selections(
             sections, self.assembler.get_variant_ids()
         ))
@@ -756,7 +818,8 @@ Return ONLY the JSON object."""
         hero_texts = texts.get("hero", {})
         services_texts = texts.get("services", {})
         if on_progress:
-            on_progress(3, "Contenuti e layout pronti", {
+            progress_msg = "Contenuti, layout e immagini pronti" if should_generate_images else "Contenuti e layout pronti"
+            on_progress(4 if should_generate_images else 3, progress_msg, {
                 "phase": "content_complete",
                 "sections": sections,
                 "hero_title": hero_texts.get("HERO_TITLE", ""),
@@ -765,6 +828,7 @@ Return ONLY the JSON object."""
                 "services_titles": [
                     s.get("SERVICE_TITLE", "") for s in services_texts.get("SERVICES", [])
                 ] if isinstance(services_texts.get("SERVICES"), list) else [],
+                "ai_images_generated": should_generate_images,
             })
 
         site_data = self._build_site_data(
@@ -789,11 +853,11 @@ Return ONLY the JSON object."""
             return {"success": False, "error": f"Errore assemblaggio: {str(e)}"}
 
         if on_progress:
-            on_progress(4, "Sito assemblato, controllo qualita'...", {
+            on_progress(5, "Sito assemblato, controllo qualita'...", {
                 "phase": "assembled",
             })
 
-        # === STEP 5: Quality Control ===
+        # === Quality Control ===
         qc_report_data = None
         try:
             qc_report = await qc_pipeline.run_full_qc(
@@ -814,7 +878,7 @@ Return ONLY the JSON object."""
 
             if on_progress:
                 status_msg = "Sito approvato!" if qc_report.passed else "Sito pronto (revisione consigliata)"
-                on_progress(5, status_msg, {
+                on_progress(6, status_msg, {
                     "phase": "complete",
                     "qc_score": qc_report.final_score,
                     "qc_passed": qc_report.passed,
@@ -823,7 +887,7 @@ Return ONLY the JSON object."""
             logger.warning(f"[DataBinding] QC pipeline failed (non-blocking): {e}")
             # QC failure is non-blocking: return the original HTML
             if on_progress:
-                on_progress(5, "Il tuo sito e' pronto!", {
+                on_progress(6, "Il tuo sito e' pronto!", {
                     "phase": "complete",
                 })
 
@@ -843,7 +907,8 @@ Return ONLY the JSON object."""
             "tokens_output": total_tokens_out,
             "cost_usd": cost,
             "generation_time_ms": generation_time,
-            "pipeline_steps": 5,
+            "pipeline_steps": 6,
+            "ai_images_generated": should_generate_images if _has_image_generation else False,
             "site_data": site_data,
             "qc_report": qc_report_data,
         }
@@ -947,6 +1012,106 @@ Return ONLY the JSON object."""
                             member["MEMBER_IMAGE_URL"] = photo
 
         return site_data
+
+    def _inject_ai_images(
+        self,
+        texts: Dict[str, Any],
+        generated_images: Dict[str, List[str]],
+    ) -> Dict[str, Any]:
+        """Replace placehold.co URLs in texts dict with AI-generated image URLs.
+
+        Only replaces URLs that contain 'placehold.co' so user-uploaded photos
+        (injected later via _inject_user_photos) are not affected here.
+        """
+        def _is_placeholder(url: str) -> bool:
+            return isinstance(url, str) and "placehold.co" in url
+
+        def _get_image(section: str, index: int) -> Optional[str]:
+            urls = generated_images.get(section, [])
+            if index < len(urls):
+                return urls[index]
+            return None
+
+        # Hero image
+        hero = texts.get("hero", {})
+        if isinstance(hero, dict) and _is_placeholder(hero.get("HERO_IMAGE_URL", "")):
+            img = _get_image("hero", 0)
+            if img:
+                hero["HERO_IMAGE_URL"] = img
+
+        # About image
+        about = texts.get("about", {})
+        if isinstance(about, dict) and _is_placeholder(about.get("ABOUT_IMAGE_URL", "")):
+            img = _get_image("about", 0)
+            if img:
+                about["ABOUT_IMAGE_URL"] = img
+
+        # Gallery images
+        gallery = texts.get("gallery", {})
+        if isinstance(gallery, dict):
+            items = gallery.get("GALLERY_ITEMS", [])
+            if isinstance(items, list):
+                for i, item in enumerate(items):
+                    if isinstance(item, dict) and _is_placeholder(item.get("GALLERY_IMAGE_URL", "")):
+                        img = _get_image("gallery", i)
+                        if img:
+                            item["GALLERY_IMAGE_URL"] = img
+
+        # Team member images
+        team = texts.get("team", {})
+        if isinstance(team, dict):
+            members = team.get("TEAM_MEMBERS", [])
+            if isinstance(members, list):
+                for i, member in enumerate(members):
+                    if isinstance(member, dict) and _is_placeholder(member.get("MEMBER_IMAGE_URL", "")):
+                        img = _get_image("team", i)
+                        if img:
+                            member["MEMBER_IMAGE_URL"] = img
+
+        # Services images (if present)
+        services = texts.get("services", {})
+        if isinstance(services, dict):
+            svc_list = services.get("SERVICES", [])
+            if isinstance(svc_list, list):
+                for i, svc in enumerate(svc_list):
+                    if isinstance(svc, dict) and _is_placeholder(svc.get("SERVICE_IMAGE_URL", "")):
+                        img = _get_image("services", i)
+                        if img:
+                            svc["SERVICE_IMAGE_URL"] = img
+
+        # Features image (if present)
+        features = texts.get("features", {})
+        if isinstance(features, dict) and _is_placeholder(features.get("FEATURES_IMAGE_URL", "")):
+            img = _get_image("features", 0)
+            if img:
+                features["FEATURES_IMAGE_URL"] = img
+
+        # CTA image (if present)
+        cta = texts.get("cta", {})
+        if isinstance(cta, dict) and _is_placeholder(cta.get("CTA_IMAGE_URL", "")):
+            img = _get_image("cta", 0)
+            if img:
+                cta["CTA_IMAGE_URL"] = img
+
+        # Contact image (if present)
+        contact = texts.get("contact", {})
+        if isinstance(contact, dict) and _is_placeholder(contact.get("CONTACT_IMAGE_URL", "")):
+            img = _get_image("contact", 0)
+            if img:
+                contact["CONTACT_IMAGE_URL"] = img
+
+        # Logos images
+        logos = texts.get("logos", {})
+        if isinstance(logos, dict):
+            logo_items = logos.get("LOGOS_ITEMS", [])
+            if isinstance(logo_items, list):
+                for i, logo in enumerate(logo_items):
+                    if isinstance(logo, dict) and _is_placeholder(logo.get("LOGO_IMAGE_URL", "")):
+                        img = _get_image("logos", i)
+                        if img:
+                            logo["LOGO_IMAGE_URL"] = img
+
+        return texts
 
     def _extract_json(self, content: str) -> dict:
         """Extracts JSON from Kimi response (handles markdown code blocks)."""

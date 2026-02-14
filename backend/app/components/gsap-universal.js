@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   gsap.registerPlugin(ScrollTrigger);
 
+  // Mobile detection for reduced animation complexity
+  var isMobile = window.innerWidth < 768 || ('ontouchstart' in window);
+
   /* ----------------------------------------------------------
      1. CORE SCROLL ANIMATIONS (data-animate="...")
      ---------------------------------------------------------- */
@@ -42,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('[data-animate]').forEach(function (el) {
     var type = el.getAttribute('data-animate');
-    if (['stagger', 'parallax', 'text-split', 'typewriter', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'count-up', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen'].indexOf(type) !== -1) return;
+    if (['stagger', 'parallax', 'text-split', 'typewriter', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen'].indexOf(type) !== -1) return;
     var config = animations[type];
     if (!config) { el.style.opacity = 1; return; }
 
@@ -180,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ----------------------------------------------------------
      6. FLOATING ELEMENTS (data-animate="float")
-     Continuous gentle floating motion
+     Continuous gentle floating motion (reduced on mobile)
      ---------------------------------------------------------- */
   document.querySelectorAll('[data-animate="float"]').forEach(function (el) {
     el.style.opacity = 1;
@@ -188,14 +191,18 @@ document.addEventListener('DOMContentLoaded', function () {
     var dur = parseFloat(el.getAttribute('data-duration') || el.getAttribute('data-float-speed') || 3);
     var baseDelay = parseFloat(el.getAttribute('data-delay') || 0);
     var easing = el.getAttribute('data-ease') || 'sine.inOut';
+    // Reduce float range and skip horizontal axis on mobile for performance
+    var mobileRange = isMobile ? range * 0.5 : range;
     gsap.to(el, {
-      y: -range, duration: dur, ease: easing, repeat: -1, yoyo: true,
+      y: -mobileRange, duration: dur, ease: easing, repeat: -1, yoyo: true,
       delay: baseDelay + Math.random() * 2
     });
-    gsap.to(el, {
-      x: range * 0.4, duration: dur * 1.3, ease: easing, repeat: -1, yoyo: true,
-      delay: baseDelay + Math.random() * 2
-    });
+    if (!isMobile) {
+      gsap.to(el, {
+        x: range * 0.4, duration: dur * 1.3, ease: easing, repeat: -1, yoyo: true,
+        delay: baseDelay + Math.random() * 2
+      });
+    }
   });
 
   /* ----------------------------------------------------------
@@ -238,9 +245,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ----------------------------------------------------------
      9. 3D TILT ON HOVER (data-animate="tilt")
+     Skipped on mobile (no mousemove)
      ---------------------------------------------------------- */
   document.querySelectorAll('[data-animate="tilt"]').forEach(function (el) {
     el.style.opacity = 1;
+    if (isMobile) return; // Skip tilt on touch devices
     el.style.transformStyle = 'preserve-3d';
     el.style.perspective = '800px';
     var maxTilt = parseFloat(el.getAttribute('data-tilt-max') || 12);
@@ -436,9 +445,11 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ----------------------------------------------------------
      19. CARD HOVER 3D (data-animate="card-hover-3d")
      3D perspective tilt on mousemove with light reflection
+     Skipped on mobile (no mousemove)
      ---------------------------------------------------------- */
   document.querySelectorAll('[data-animate="card-hover-3d"]').forEach(function (el) {
     el.style.opacity = 1;
+    if (isMobile) return; // Skip 3D hover on touch devices
     el.style.transformStyle = 'preserve-3d';
     el.style.perspective = '800px';
     el.style.position = el.style.position || 'relative';
@@ -568,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ----------------------------------------------------------
      25. CURSOR GLOW EFFECT (auto if body has data-cursor-glow)
      ---------------------------------------------------------- */
-  if (document.body.hasAttribute('data-cursor-glow')) {
+  if (document.body.hasAttribute('data-cursor-glow') && !isMobile) {
     var glow = document.createElement('div');
     glow.className = 'cursor-glow';
     glow.style.cssText = 'position:fixed;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:9999;mix-blend-mode:screen;background:radial-gradient(circle,rgba(var(--color-primary-rgb,59,130,246),0.15),transparent 70%);transform:translate(-50%,-50%);transition:opacity 0.3s;opacity:0;';

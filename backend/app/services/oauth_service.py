@@ -1,8 +1,11 @@
 """Servizio per gestire OAuth (Google, etc.)"""
 
+import logging
 import httpx
 from typing import Optional, Dict, Any
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 GOOGLE_TOKEN_INFO_URL = "https://oauth2.googleapis.com/tokeninfo"
@@ -57,7 +60,7 @@ class OAuthService:
                 }
                 
         except Exception as e:
-            print(f"Errore verifica Google token: {e}")
+            logger.error(f"Errore verifica Google token: {e}")
             return None
     
     @staticmethod
@@ -97,7 +100,7 @@ class OAuthService:
                 }
                 
         except Exception as e:
-            print(f"Errore verifica Google ID token: {e}")
+            logger.error(f"Errore verifica Google ID token: {e}")
             return None
 
 
@@ -112,7 +115,7 @@ class OAuthService:
                 )
 
                 if response.status_code != 200:
-                    print(f"Microsoft userinfo failed: {response.text}")
+                    logger.error(f"Microsoft userinfo failed: {response.text}")
                     return None
 
                 data = response.json()
@@ -126,7 +129,7 @@ class OAuthService:
                 }
 
         except Exception as e:
-            print(f"Errore verifica Microsoft token: {e}")
+            logger.error(f"Errore verifica Microsoft token: {e}")
             return None
 
 

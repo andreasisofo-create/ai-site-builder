@@ -8,7 +8,7 @@ from typing import List, Optional
 import time
 import logging
 
-from app.services.kimi_client import KimiClient
+from app.services.kimi_client import kimi
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/chat", tags=["chat"])
@@ -111,6 +111,11 @@ def _check_rate_limit(ip: str) -> bool:
     if len(_rate_limits[ip]) >= RATE_LIMIT_MAX:
         return False
     _rate_limits[ip].append(now)
+    # Periodically clean up stale IPs to prevent memory leak
+    if len(_rate_limits) > 1000:
+        stale_ips = [k for k, v in _rate_limits.items() if not v or now - v[-1] > RATE_LIMIT_WINDOW]
+        for ip_key in stale_ips:
+            del _rate_limits[ip_key]
     return True
 
 
@@ -129,7 +134,6 @@ async def chat(req: ChatRequest, request: Request):
         )
 
     try:
-        kimi = KimiClient()
         system_prompt = SYSTEM_PROMPT_EN if req.language == "en" else SYSTEM_PROMPT
         messages = [{"role": "system", "content": system_prompt}]
 

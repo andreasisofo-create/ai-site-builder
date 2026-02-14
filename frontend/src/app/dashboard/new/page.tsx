@@ -30,12 +30,14 @@ import {
   SECTION_LABELS, STYLE_OPTIONS, CTA_OPTIONS, ALL_SECTIONS, STYLE_TO_MOOD,
   generateStylePreviewHtml, findStyleById,
 } from "@/lib/templates";
+import { useLanguage } from "@/lib/i18n";
 
 // ============ COMPONENT ============
 
 function NewProjectContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { language } = useLanguage();
   const templateParam = searchParams.get("template");
   const styleParam = searchParams.get("style");
 
@@ -75,6 +77,7 @@ function NewProjectContent() {
     selectedSections: ALL_SECTIONS.filter(s => s.default).map(s => s.id),
     sectionTexts: {} as Record<string, string>,
     primaryCta: "contact",
+    generateImages: true,
     socialLinks: {
       facebook: "",
       instagram: "",
@@ -95,8 +98,8 @@ function NewProjectContent() {
   // Steps definition - 3 step wizard
   const WIZARD_STEPS = [
     { id: 0, title: "Brand & Info", icon: BuildingStorefrontIcon },
-    { id: 1, title: "Ispirazione", icon: PaintBrushIcon },
-    { id: 2, title: "Contenuti", icon: DocumentTextIcon },
+    { id: 1, title: language === "en" ? "Inspiration" : "Ispirazione", icon: PaintBrushIcon },
+    { id: 2, title: language === "en" ? "Content" : "Contenuti", icon: DocumentTextIcon },
   ];
 
   // Logo upload
@@ -144,7 +147,7 @@ function NewProjectContent() {
 
     Array.from(files).forEach(file => {
       if (formData.photos.length >= 8) {
-        toast.error("Massimo 8 foto");
+        toast.error(language === "en" ? "Maximum 8 photos" : "Massimo 8 foto");
         return;
       }
       const reader = new FileReader();
@@ -221,11 +224,11 @@ function NewProjectContent() {
   // Generate
   const handleGenerate = async () => {
     if (!formData.businessName.trim()) {
-      toast.error("Inserisci il nome del business");
+      toast.error(language === "en" ? "Enter the business name" : "Inserisci il nome del business");
       return;
     }
     if (formData.selectedSections.length === 0) {
-      toast.error("Seleziona almeno una sezione");
+      toast.error(language === "en" ? "Select at least one section" : "Seleziona almeno una sezione");
       return;
     }
 
@@ -329,6 +332,7 @@ function NewProjectContent() {
         contact_info: Object.keys(contactInfo).length > 0 ? contactInfo : undefined,
         site_id: site.id,
         template_style_id: selectedStyle?.id,
+        generate_images: formData.generateImages,
       });
 
       if (!generateResult.success) throw new Error(generateResult.error || "Errore nell'avvio della generazione");
@@ -387,7 +391,7 @@ function NewProjectContent() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center">
                 <SparklesIcon className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold">Nuovo Progetto</span>
+              <span className="font-semibold">{language === "en" ? "New Project" : "Nuovo Progetto"}</span>
             </div>
           </div>
 
@@ -423,27 +427,27 @@ function NewProjectContent() {
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-12">
                 <h1 className="text-3xl font-bold mb-3">Brand & Info</h1>
-                <p className="text-slate-400">Raccontaci del tuo business per personalizzare il sito</p>
+                <p className="text-slate-400">{language === "en" ? "Tell us about your business to personalize the site" : "Raccontaci del tuo business per personalizzare il sito"}</p>
               </div>
 
               <div className="max-w-2xl mx-auto space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Nome del Business <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Business Name" : "Nome del Business"} <span className="text-red-400">*</span></label>
                   <input
                     type="text"
                     value={formData.businessName}
                     onChange={e => setFormData(prev => ({ ...prev, businessName: e.target.value }))}
-                    placeholder="es. Ristorante Da Mario"
+                    placeholder={language === "en" ? "e.g. Mario's Restaurant" : "es. Ristorante Da Mario"}
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Descrizione dell&apos;attivit&agrave; <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Business description" : "Descrizione dell'attivita'"} <span className="text-red-400">*</span></label>
                   <textarea
                     value={formData.description}
                     onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Descrivi cosa fai, i tuoi servizi, la tua storia... Piu' dettagli fornisci, migliore sara' il risultato."
+                    placeholder={language === "en" ? "Describe what you do, your services, your story... The more details you provide, the better the result." : "Descrivi cosa fai, i tuoi servizi, la tua storia... Piu' dettagli fornisci, migliore sara' il risultato."}
                     rows={5}
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all resize-none"
                   />
@@ -451,7 +455,7 @@ function NewProjectContent() {
 
                 {/* Logo Upload */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Logo (opzionale)</label>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Logo (optional)" : "Logo (opzionale)"}</label>
                   <div
                     onClick={() => logoInputRef.current?.click()}
                     className="relative aspect-video max-w-xs rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer flex flex-col items-center justify-center gap-3"
@@ -469,8 +473,8 @@ function NewProjectContent() {
                     ) : (
                       <>
                         <CloudArrowUpIcon className="w-10 h-10 text-slate-500" />
-                        <p className="text-sm text-slate-400">Clicca per caricare il logo</p>
-                        <p className="text-xs text-slate-600">PNG, JPG o SVG (max 2MB)</p>
+                        <p className="text-sm text-slate-400">{language === "en" ? "Click to upload logo" : "Clicca per caricare il logo"}</p>
+                        <p className="text-xs text-slate-600">PNG, JPG, SVG (max 2MB)</p>
                       </>
                     )}
                   </div>
@@ -478,7 +482,7 @@ function NewProjectContent() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Slogan / Tagline (opzionale)</label>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Slogan / Tagline (optional)" : "Slogan / Tagline (opzionale)"}</label>
                   <input
                     type="text"
                     value={formData.tagline}
@@ -495,8 +499,8 @@ function NewProjectContent() {
           {currentStep === 1 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-12">
-                <h1 className="text-3xl font-bold mb-3">Ispirazione</h1>
-                <p className="text-slate-400">Aiutaci a capire il look che desideri (tutto opzionale)</p>
+                <h1 className="text-3xl font-bold mb-3">{language === "en" ? "Inspiration" : "Ispirazione"}</h1>
+                <p className="text-slate-400">{language === "en" ? "Help us understand the look you want (all optional)" : "Aiutaci a capire il look che desideri (tutto opzionale)"}</p>
               </div>
 
               <div className="max-w-3xl mx-auto space-y-8">
@@ -691,15 +695,15 @@ function NewProjectContent() {
           {currentStep === 2 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold mb-3">Contenuti & Genera</h1>
-                <p className="text-slate-400">Personalizza le sezioni, i contatti e genera il tuo sito</p>
+                <h1 className="text-3xl font-bold mb-3">{language === "en" ? "Content & Generate" : "Contenuti & Genera"}</h1>
+                <p className="text-slate-400">{language === "en" ? "Customize sections, contacts, and generate your site" : "Personalizza le sezioni, i contatti e genera il tuo sito"}</p>
               </div>
 
               <div className="max-w-3xl mx-auto space-y-8">
 
                 {/* --- Sections Checkbox Grid --- */}
                 <div>
-                  <label className="block text-sm font-medium mb-3">Sezioni del sito <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Site sections" : "Sezioni del sito"} <span className="text-red-400">*</span></label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {ALL_SECTIONS.map(section => (
                       <button
@@ -773,7 +777,7 @@ function NewProjectContent() {
 
                 {/* --- Contact Info --- */}
                 <div className="pt-4 border-t border-white/10">
-                  <label className="block text-sm font-medium mb-4">Informazioni di contatto</label>
+                  <label className="block text-sm font-medium mb-4">{language === "en" ? "Contact information" : "Informazioni di contatto"}</label>
                   <div className="space-y-3">
                     <input
                       type="text"
@@ -879,11 +883,45 @@ function NewProjectContent() {
                   <p className="text-xs text-slate-500 mt-2">Se non carichi foto, l&apos;AI user&agrave; immagini professionali di stock.</p>
                 </div>
 
+                {/* --- AI Image Generation Toggle --- */}
+                <div className="pt-4 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, generateImages: !prev.generateImages }))}
+                    className="w-full flex items-center justify-between px-5 py-4 rounded-2xl border border-white/10 hover:border-white/20 bg-white/[0.02] transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                        formData.generateImages ? "bg-violet-500/20" : "bg-white/5"
+                      }`}>
+                        <PhotoIcon className={`w-5 h-5 ${formData.generateImages ? "text-violet-400" : "text-slate-500"}`} />
+                      </div>
+                      <div className="text-left">
+                        <span className="block text-sm font-medium text-white">
+                          {language === "en" ? "Generate AI images" : "Genera immagini AI"}
+                        </span>
+                        <span className="block text-xs text-slate-500">
+                          {language === "en"
+                            ? "Create professional images that match your brand"
+                            : "Crea immagini professionali che si abbinano al tuo brand"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={`w-11 h-6 rounded-full transition-colors relative ${
+                      formData.generateImages ? "bg-violet-500" : "bg-white/10"
+                    }`}>
+                      <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
+                        formData.generateImages ? "translate-x-[22px]" : "translate-x-0.5"
+                      }`} />
+                    </div>
+                  </button>
+                </div>
+
                 {/* --- Review Compatto + Genera --- */}
                 <div className="pt-6 border-t border-white/10 space-y-4">
                   <h3 className="font-medium text-lg flex items-center gap-2">
                     <CheckIcon className="w-5 h-5 text-emerald-400" />
-                    Riepilogo
+                    {language === "en" ? "Summary" : "Riepilogo"}
                   </h3>
                   <div className="grid sm:grid-cols-2 gap-3 text-sm">
                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
@@ -929,6 +967,12 @@ function NewProjectContent() {
                         <div className="w-6 h-6 rounded overflow-hidden relative"><Image src={formData.logo} alt="Logo" fill className="object-contain" /></div>
                       </div>
                     )}
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2">
+                      <span className="text-slate-500">{language === "en" ? "AI Images:" : "Immagini AI:"}</span>
+                      <span className={formData.generateImages ? "text-violet-400" : "text-slate-400"}>
+                        {formData.generateImages ? (language === "en" ? "Yes" : "Si") : "No"}
+                      </span>
+                    </div>
                   </div>
 
                   {isGenerating ? (
@@ -949,10 +993,10 @@ function NewProjectContent() {
                         className="w-full py-4 bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl font-semibold text-lg hover:opacity-90 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <SparklesIcon className="w-5 h-5" />
-                        Genera il Mio Sito
+                        {language === "en" ? "Generate My Site" : "Genera il Mio Sito"}
                       </button>
                       <p className="text-center text-sm text-slate-500">
-                        Pipeline AI a 4 step &mdash; Tempo stimato: 40-60 secondi
+                        {language === "en" ? "4-step AI pipeline — Estimated time: 40-60 seconds" : "Pipeline AI a 4 step — Tempo stimato: 40-60 secondi"}
                       </p>
                     </>
                   )}
@@ -972,11 +1016,11 @@ function NewProjectContent() {
             className="flex items-center gap-2 px-6 py-2.5 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <ArrowLeftIcon className="w-4 h-4" />
-            Indietro
+            {language === "en" ? "Back" : "Indietro"}
           </button>
 
           <div className="md:hidden text-sm text-slate-400">
-            Passo {currentStep + 1} di {WIZARD_STEPS.length}
+            {language === "en" ? `Step ${currentStep + 1} of ${WIZARD_STEPS.length}` : `Passo ${currentStep + 1} di ${WIZARD_STEPS.length}`}
           </div>
 
           <button
@@ -990,7 +1034,7 @@ function NewProjectContent() {
             disabled={!canProceed() || isGenerating}
             className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-medium transition-all"
           >
-            {currentStep === 2 ? "Genera" : "Avanti"}
+            {currentStep === 2 ? (language === "en" ? "Generate" : "Genera") : (language === "en" ? "Next" : "Avanti")}
             <ArrowRightIcon className="w-4 h-4" />
           </button>
         </div>
@@ -1010,14 +1054,18 @@ function NewProjectContent() {
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                       <SparklesIcon className="w-8 h-8 text-white" />
                     </div>
-                    <Dialog.Title as="h3" className="text-xl font-semibold mb-2">Hai esaurito le generazioni gratuite</Dialog.Title>
-                    <p className="text-slate-400 mb-6">Passa a un piano a pagamento per pi&ugrave; generazioni.</p>
+                    <Dialog.Title as="h3" className="text-xl font-semibold mb-2">
+                      {language === "en" ? "Free generations exhausted" : "Hai esaurito le generazioni gratuite"}
+                    </Dialog.Title>
+                    <p className="text-slate-400 mb-6">
+                      {language === "en" ? "Upgrade to a paid plan for more generations." : "Passa a un piano a pagamento per piu' generazioni."}
+                    </p>
                     <div className="flex gap-3">
                       <button onClick={() => setShowUpgradeModal(false)} className="flex-1 px-4 py-2.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
-                        Pi&ugrave; tardi
+                        {language === "en" ? "Later" : "Piu' tardi"}
                       </button>
                       <button onClick={handleUpgrade} disabled={isUpgrading} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 rounded-lg font-medium transition-all disabled:opacity-50">
-                        {isUpgrading ? "Attivazione..." : "Upgrade (DEMO)"}
+                        {isUpgrading ? (language === "en" ? "Activating..." : "Attivazione...") : "Upgrade (DEMO)"}
                       </button>
                     </div>
                   </div>
