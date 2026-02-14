@@ -350,6 +350,9 @@ function NewProjectContent() {
 
       toast.success(language === "en" ? "Generation started! Please wait..." : "Generazione avviata! Attendere...");
 
+      // Re-enable the button before navigating so it's not stuck disabled if user navigates back
+      setIsGenerating(false);
+
       // Navigate to the immersive generation experience page
       router.push(`/generate/${site.id}`);
     } catch (error: any) {

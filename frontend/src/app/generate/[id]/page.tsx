@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { Suspense, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   SparklesIcon,
   PaintBrushIcon,
@@ -10,6 +11,7 @@ import {
   CubeIcon,
   CheckIcon,
   ArrowLeftIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { getGenerationStatus } from "@/lib/api";
 import { useLanguage } from "@/lib/i18n";
@@ -214,6 +216,7 @@ interface PreviewData {
 
 const TEXT = {
   it: {
+    generating: "Generazione in corso...",
     title: "Generazione in corso...",
     steps: [
       { label: "Analisi stile e testi" },
@@ -233,8 +236,11 @@ const TEXT = {
     backToDashboard: "Torna al Dashboard",
     errorTitle: "Errore durante la generazione",
     step: "Step",
+    cancel: "Annulla",
+    redirectCountdown: "Redirect tra",
   },
   en: {
+    generating: "Generating...",
     title: "Generation in progress...",
     steps: [
       { label: "Style & text analysis" },
@@ -254,21 +260,68 @@ const TEXT = {
     backToDashboard: "Back to Dashboard",
     errorTitle: "Error during generation",
     step: "Step",
+    cancel: "Cancel",
+    redirectCountdown: "Redirect in",
   },
 };
 
 const STEP_ICONS = [SparklesIcon, PaintBrushIcon, DocumentTextIcon, PhotoIcon, CubeIcon];
 
-// ============ COMPONENT ============
+// ============ CONFETTI PARTICLES ============
 
-export default function GeneratePage() {
+function ConfettiParticles() {
+  const particles = useMemo(() => {
+    const colors = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#ec4899"];
+    return Array.from({ length: 40 }, (_, i) => ({
+      id: i,
+      left: `${(i * 2.5) % 100}%`,
+      color: colors[i % colors.length],
+      delay: `${(i * 0.08) % 3}s`,
+      duration: `${2 + (i % 3)}s`,
+      size: `${3 + (i % 4)}px`,
+    }));
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="absolute rounded-full opacity-0"
+          style={{
+            left: p.left,
+            bottom: "-10px",
+            width: p.size,
+            height: p.size,
+            backgroundColor: p.color,
+            animationDelay: p.delay,
+            animationDuration: p.duration,
+            animationName: "confettiRise",
+            animationTimingFunction: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            animationIterationCount: "infinite",
+            animationFillMode: "both",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ============ INNER COMPONENT ============
+
+function GeneratePageContent() {
   const params = useParams();
   const router = useRouter();
   const { language } = useLanguage();
   const lang = (language === "en" ? "en" : "it") as "it" | "en";
   const t = TEXT[lang];
 
-  const siteId = Number(params.id);
+  // Safely parse site ID from params
+  const rawId = params?.id;
+  const siteId = rawId ? Number(rawId) : NaN;
+
+  // Mounted state: delay code animation and polling until after hydration
+  const [mounted, setMounted] = useState(false);
 
   // Code animation state
   const [visibleLines, setVisibleLines] = useState<string[]>([]);
@@ -284,6 +337,14 @@ export default function GeneratePage() {
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
+  const [siteName, setSiteName] = useState<string>("");
+
+  // Countdown state for redirect
+  const [countdown, setCountdown] = useState(3);
+
+  // Milestone scale animation
+  const [milestoneHit, setMilestoneHit] = useState(false);
+  const lastMilestoneRef = useRef(0);
 
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -291,13 +352,50 @@ export default function GeneratePage() {
   // Animated percentage for smooth transitions
   const [animatedPercentage, setAnimatedPercentage] = useState(0);
 
+  // Set mounted after first render
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => setAnimatedPercentage(percentage), 100);
     return () => clearTimeout(timer);
   }, [percentage]);
 
-  // ---- Code typing animation ----
+  // Check for milestone hits (25%, 50%, 75%, 100%)
   useEffect(() => {
+    const milestones = [25, 50, 75, 100];
+    const currentMilestone = milestones.find(
+      (m) => animatedPercentage >= m && lastMilestoneRef.current < m
+    );
+    if (currentMilestone) {
+      lastMilestoneRef.current = currentMilestone;
+      setMilestoneHit(true);
+      const timer = setTimeout(() => setMilestoneHit(false), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [animatedPercentage]);
+
+  // Countdown timer when complete
+  useEffect(() => {
+    if (!isComplete) return;
+    setCountdown(3);
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isComplete]);
+
+  // ---- Code typing animation (only after mount) ----
+  useEffect(() => {
+    if (!mounted) return;
+
     const interval = setInterval(() => {
       if (lineIndexRef.current < CODE_SNIPPETS.length) {
         const idx = lineIndexRef.current;
@@ -311,7 +409,7 @@ export default function GeneratePage() {
     }, 150);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [mounted]);
 
   // Auto-scroll code panel
   useEffect(() => {
@@ -329,6 +427,8 @@ export default function GeneratePage() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+
     if (!siteId || isNaN(siteId)) {
       setError(lang === "it" ? "ID sito non valido" : "Invalid site ID");
       return;
@@ -342,6 +442,12 @@ export default function GeneratePage() {
         setPercentage(genStatus.percentage);
         setMessage(genStatus.message);
         setStatus(genStatus.status);
+
+        // Try to extract site name from response (may not exist in type but backend could send it)
+        const statusAny = genStatus as unknown as Record<string, unknown>;
+        if (statusAny.site_name && typeof statusAny.site_name === "string") {
+          setSiteName(statusAny.site_name);
+        }
 
         if (genStatus.preview_data) {
           setPreviewData(genStatus.preview_data);
@@ -378,7 +484,7 @@ export default function GeneratePage() {
       stopPolling();
       if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
     };
-  }, [siteId, stopPolling, router, lang]);
+  }, [mounted, siteId, stopPolling, router, lang]);
 
   // ---- Derive phase ----
   const phase = previewData?.phase || "analyzing";
@@ -395,22 +501,37 @@ export default function GeneratePage() {
   // ============ ERROR STATE ============
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="max-w-md text-center space-y-6 p-8">
-          <div className="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
-            <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold text-white">{t.errorTitle}</h2>
-          <p className="text-slate-400">{error}</p>
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-medium transition-colors"
+      <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
+        {/* Header bar */}
+        <header className="bg-[#0a0a0f] border-b border-white/5 h-14 px-4 md:px-6 flex items-center shrink-0">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
           >
             <ArrowLeftIcon className="w-4 h-4" />
-            {t.backToDashboard}
-          </button>
+            <span className="text-sm font-semibold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+              Site Builder
+            </span>
+          </Link>
+        </header>
+
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="max-w-md text-center space-y-6 p-8">
+            <div className="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+              <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-white">{t.errorTitle}</h2>
+            <p className="text-slate-400">{error}</p>
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-medium transition-colors"
+            >
+              <ArrowLeftIcon className="w-4 h-4" />
+              {t.backToDashboard}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -418,295 +539,473 @@ export default function GeneratePage() {
 
   // ============ MAIN RENDER ============
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex">
-      {/* ===== LEFT SIDE: Code Terminal (60%) ===== */}
-      <div className="w-[60%] relative flex flex-col border-r border-white/5">
-        {/* Grid background pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
+    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
+      {/* Confetti keyframes */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes confettiRise {
+          0% { opacity: 0; transform: translateY(0) rotate(0deg) scale(1); }
+          10% { opacity: 1; }
+          50% { opacity: 0.8; transform: translateY(-50vh) rotate(180deg) scale(1.2); }
+          100% { opacity: 0; transform: translateY(-100vh) rotate(360deg) scale(0.5); }
+        }
+      `}} />
 
-        {/* Terminal header */}
-        <div className="relative z-10 flex items-center gap-3 px-5 py-3 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-sm">
-          <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-red-500/60" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-            <div className="w-3 h-3 rounded-full bg-green-500/60" />
-          </div>
-          <span className="text-xs text-slate-500 font-mono ml-2">index.html — AI Site Builder</span>
-        </div>
-
-        {/* Code content */}
-        <div
-          ref={codeContainerRef}
-          className="relative z-10 flex-1 overflow-y-auto p-0 font-mono text-[13px] leading-6 scrollbar-thin"
-          style={{ scrollbarWidth: "thin", scrollbarColor: "#1e293b #0a0a0f" }}
+      {/* ===== TOP HEADER BAR ===== */}
+      <header className="bg-[#0a0a0f] border-b border-white/5 h-14 px-4 md:px-6 flex items-center shrink-0 z-30">
+        {/* Left: Back arrow + logo */}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors shrink-0"
         >
-          {highlightedLines.map((html, i) => (
-            <div key={i} className="flex hover:bg-white/[0.02] transition-colors">
-              {/* Line number */}
-              <span className="inline-block w-12 flex-shrink-0 text-right pr-4 text-slate-600 select-none border-r border-white/5 bg-[#0a0a0f]">
-                {i + 1}
-              </span>
-              {/* Code */}
-              <span
-                className="pl-4 text-slate-300 whitespace-pre"
-                dangerouslySetInnerHTML={{ __html: html || "&nbsp;" }}
-              />
-            </div>
-          ))}
-          {/* Blinking cursor at the end */}
-          <div className="flex">
-            <span className="inline-block w-12 flex-shrink-0 text-right pr-4 text-slate-600 select-none border-r border-white/5 bg-[#0a0a0f]">
-              {highlightedLines.length + 1}
-            </span>
-            <span className="pl-4">
-              <span className="inline-block w-2 h-5 bg-blue-500 animate-pulse" />
-            </span>
-          </div>
-        </div>
-      </div>
+          <ArrowLeftIcon className="w-4 h-4" />
+          <span className="text-sm font-semibold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent hidden sm:inline">
+            Site Builder
+          </span>
+        </Link>
 
-      {/* ===== RIGHT SIDE: Progress + Preview (40%) ===== */}
-      <div className="w-[40%] flex flex-col overflow-y-auto">
-        <div className="flex-1 p-8 flex flex-col items-center gap-8">
-
-          {/* Title */}
-          <div className="text-center pt-8">
-            <h1 className="text-2xl font-bold text-white mb-2">
-              {isComplete ? t.siteReady : t.title}
-            </h1>
-            {message && !isComplete && (
-              <p className="text-sm text-slate-400">{message}</p>
+        {/* Center: Current status message */}
+        <div className="flex-1 flex justify-center min-w-0 px-2">
+          <div className="flex items-center gap-2 max-w-xs md:max-w-md truncate">
+            {!isComplete ? (
+              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
+            ) : (
+              <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+            )}
+            <span className="text-xs text-slate-400 truncate">
+              {isComplete ? t.siteReady : (message || t.title)}
+            </span>
+            {!isComplete && (
+              <span className="text-xs text-slate-600 font-mono shrink-0">{Math.round(animatedPercentage)}%</span>
             )}
           </div>
+        </div>
 
-          {/* Circular Progress */}
-          <div className="relative w-36 h-36">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-              <circle
-                cx="60" cy="60" r="56"
-                fill="none"
-                stroke="rgba(255,255,255,0.05)"
-                strokeWidth="6"
-              />
-              <circle
-                cx="60" cy="60" r="56"
-                fill="none"
-                stroke="url(#genProgressGradient)"
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                className="transition-all duration-1000 ease-out"
-              />
-              <defs>
-                <linearGradient id="genProgressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#3b82f6" />
-                  <stop offset="50%" stopColor="#8b5cf6" />
-                  <stop offset="100%" stopColor="#06b6d4" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              {isComplete ? (
-                <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center animate-in zoom-in duration-500">
-                  <CheckIcon className="w-6 h-6 text-emerald-400" />
-                </div>
-              ) : (
-                <>
-                  <span className="text-3xl font-bold text-white">{Math.round(animatedPercentage)}%</span>
-                  <span className="text-xs text-slate-500">
-                    {t.step} {step}/{totalSteps}
-                  </span>
-                </>
+        {/* Right: Cancel */}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors shrink-0"
+        >
+          <XMarkIcon className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">{t.cancel}</span>
+        </Link>
+      </header>
+
+      {/* ===== MAIN CONTENT ===== */}
+      <div className="flex-1 flex flex-col md:flex-row min-h-0">
+        {/* ===== LEFT SIDE: Code Terminal ===== */}
+        <div className="w-full md:w-[60%] relative flex flex-col border-b md:border-b-0 md:border-r border-white/5 max-h-[40vh] md:max-h-none">
+          {/* Grid background pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+              backgroundSize: "40px 40px",
+            }}
+          />
+
+          {/* File tabs bar (VS Code style) */}
+          <div className="relative z-10 flex items-stretch border-b border-white/5 bg-[#0c0c14]">
+            {/* Active tab */}
+            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-[#0a0a0f] border-r border-white/5 border-b-2 border-b-blue-500">
+              <svg className="w-3.5 h-3.5 text-orange-400 shrink-0" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1.5 0h13l.5.5v15l-.5.5h-13l-.5-.5V.5L1.5 0zM2 1v14h12V1H2z"/>
+                <path d="M4 4h8v1H4V4zm0 3h8v1H4V7zm0 3h5v1H4v-1z"/>
+              </svg>
+              <span className="text-xs text-slate-300 font-mono">index.html</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            </div>
+            {/* Inactive tab */}
+            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-[#0c0c14] border-r border-white/5 opacity-40 hidden sm:flex">
+              <svg className="w-3.5 h-3.5 text-blue-400 shrink-0" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1.5 0h13l.5.5v15l-.5.5h-13l-.5-.5V.5L1.5 0zM2 1v14h12V1H2z"/>
+              </svg>
+              <span className="text-xs text-slate-500 font-mono">styles.css</span>
+            </div>
+            {/* Inactive tab */}
+            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-[#0c0c14] opacity-40 hidden md:flex">
+              <svg className="w-3.5 h-3.5 text-yellow-400 shrink-0" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1.5 0h13l.5.5v15l-.5.5h-13l-.5-.5V.5L1.5 0zM2 1v14h12V1H2z"/>
+              </svg>
+              <span className="text-xs text-slate-500 font-mono">gsap-universal.js</span>
+            </div>
+            {/* Spacer */}
+            <div className="flex-1 bg-[#0c0c14]" />
+            {/* Traffic lights */}
+            <div className="flex items-center gap-1.5 px-3 md:px-4 bg-[#0c0c14]">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
+            </div>
+          </div>
+
+          {/* Code content */}
+          <div
+            ref={codeContainerRef}
+            className="relative z-10 flex-1 overflow-y-auto p-0 font-mono text-[12px] md:text-[13px] leading-6 scrollbar-thin"
+            style={{ scrollbarWidth: "thin", scrollbarColor: "#1e293b #0a0a0f" }}
+          >
+            {highlightedLines.map((html, i) => (
+              <div key={i} className="flex hover:bg-white/[0.02] transition-colors group">
+                {/* Line number */}
+                <span className="inline-block w-10 md:w-14 flex-shrink-0 text-right pr-3 md:pr-5 py-0 text-slate-700 group-hover:text-slate-500 select-none border-r border-white/[0.04] bg-[#08080d] font-mono tabular-nums transition-colors text-[11px] md:text-[12px]">
+                  {i + 1}
+                </span>
+                {/* Code */}
+                <span
+                  className="pl-4 text-slate-300 whitespace-pre"
+                  dangerouslySetInnerHTML={{ __html: html || "&nbsp;" }}
+                />
+              </div>
+            ))}
+            {/* Blinking cursor at the end */}
+            <div className="flex">
+              <span className="inline-block w-10 md:w-14 flex-shrink-0 text-right pr-3 md:pr-5 text-slate-700 select-none border-r border-white/[0.04] bg-[#08080d] font-mono tabular-nums text-[11px] md:text-[12px]">
+                {highlightedLines.length + 1}
+              </span>
+              <span className="pl-4">
+                <span className="inline-block w-2 h-5 bg-blue-500 animate-pulse" />
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom glow where new code appears */}
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-blue-500/[0.06] to-transparent pointer-events-none z-20" />
+          {/* Scanline effect */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none z-20 opacity-30"
+            style={{
+              background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(59,130,246,0.03) 2px, rgba(59,130,246,0.03) 4px)",
+            }}
+          />
+        </div>
+
+        {/* ===== RIGHT SIDE: Progress + Preview ===== */}
+        <div className="w-full md:w-[40%] flex flex-col overflow-y-auto">
+          <div className="flex-1 p-4 md:p-8 flex flex-col items-center gap-5 md:gap-8">
+
+            {/* Title */}
+            <div className="text-center pt-2 md:pt-8">
+              <h1 className="text-xl md:text-2xl font-bold text-white mb-2">
+                {isComplete ? t.siteReady : t.title}
+              </h1>
+              {message && !isComplete && (
+                <p className="text-xs md:text-sm text-slate-400">{message}</p>
               )}
             </div>
-          </div>
 
-          {/* 5 Step Indicators */}
-          <div className="w-full grid grid-cols-5 gap-1.5">
-            {STEP_ICONS.map((Icon, idx) => {
-              const stepNum = idx + 1;
-              const isActive = step === stepNum;
-              const isDone = step > stepNum || isComplete;
-              const stepLabel = t.steps[idx]?.label || "";
+            {/* Circular Progress with glow */}
+            <div className="relative w-36 h-36 md:w-40 md:h-40">
+              {/* Pulsing glow behind the circle */}
+              <div
+                className="absolute -inset-3 rounded-full blur-2xl opacity-25 animate-pulse"
+                style={{
+                  background: "conic-gradient(from 0deg, #3b82f6, #8b5cf6, #06b6d4, #3b82f6)",
+                }}
+              />
+              <svg
+                className={`w-full h-full -rotate-90 relative z-10 transition-transform duration-500 ease-out ${
+                  milestoneHit ? "scale-110" : "scale-100"
+                }`}
+                viewBox="0 0 120 120"
+              >
+                <circle
+                  cx="60" cy="60" r="56"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.05)"
+                  strokeWidth="5"
+                />
+                <circle
+                  cx="60" cy="60" r="56"
+                  fill="none"
+                  stroke="url(#genProgressGradient)"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  className="transition-all duration-1000 ease-out"
+                  style={{
+                    filter: "drop-shadow(0 0 6px rgba(139, 92, 246, 0.5))",
+                  }}
+                />
+                <defs>
+                  <linearGradient id="genProgressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="50%" stopColor="#8b5cf6" />
+                    <stop offset="100%" stopColor="#06b6d4" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                {isComplete ? (
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-emerald-500/20 flex items-center justify-center animate-in zoom-in duration-500">
+                    <CheckIcon className="w-6 h-6 md:w-7 md:h-7 text-emerald-400" />
+                  </div>
+                ) : (
+                  <>
+                    <span className="text-3xl md:text-4xl font-bold text-white">{Math.round(animatedPercentage)}%</span>
+                    <span className="text-[10px] md:text-xs text-slate-500">
+                      {t.step} {step}/{totalSteps}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
 
-              return (
+            {/* 5 Step Indicators with connecting lines */}
+            <div className="w-full">
+              <div className="flex items-start justify-between relative">
+                {/* Background connecting line */}
+                <div className="absolute top-[14px] left-[10%] right-[10%] h-[2px] bg-white/5 z-0" />
+                {/* Active connecting line (colored) */}
                 <div
-                  key={idx}
-                  className={`flex flex-col items-center gap-1.5 p-2 rounded-xl text-center transition-all duration-500 ${
-                    isActive
-                      ? "bg-blue-500/10 border border-blue-500/30 text-blue-400"
-                      : isDone
-                      ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-                      : "bg-white/[0.02] border border-white/5 text-slate-600"
-                  }`}
-                >
-                  <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
-                      isActive
-                        ? "bg-blue-500/20"
-                        : isDone
-                        ? "bg-emerald-500/20"
-                        : "bg-white/5"
-                    }`}
-                  >
-                    {isDone ? (
-                      <CheckIcon className="w-3.5 h-3.5" />
-                    ) : (
-                      <Icon className="w-3.5 h-3.5" />
-                    )}
-                  </div>
-                  <span className="text-[10px] leading-tight">{stepLabel}</span>
-                </div>
-              );
-            })}
-          </div>
+                  className="absolute top-[14px] left-[10%] h-[2px] z-[1] transition-all duration-700 ease-out"
+                  style={{
+                    width: `${Math.min(100, Math.max(0, ((step - 1) / (totalSteps - 1)) * 80))}%`,
+                    background: "linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4)",
+                  }}
+                />
 
-          {/* Progressive Preview Section */}
-          <div className="w-full rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
+                {STEP_ICONS.map((Icon, idx) => {
+                  const stepNum = idx + 1;
+                  const isActive = step === stepNum;
+                  const isDone = step > stepNum || isComplete;
+                  const stepLabel = t.steps[idx]?.label || "";
 
-            {/* Phase: analyzing - Pulsing orb */}
-            {phase === "analyzing" && !isComplete && (
-              <div className="p-8 flex flex-col items-center gap-4 animate-in fade-in duration-500">
-                <div className="relative">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 animate-pulse" />
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/10 to-violet-500/10 animate-ping absolute inset-0" />
-                  <SparklesIcon className="w-8 h-8 text-blue-400 absolute inset-0 m-auto" />
-                </div>
-                <p className="text-sm text-slate-400 text-center">{t.analyzing}</p>
-              </div>
-            )}
-
-            {/* Phase: theme_complete - Color palette + fonts */}
-            {phase === "theme_complete" && previewData?.colors && (
-              <div className="p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
-                <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <PaintBrushIcon className="w-4 h-4 text-violet-400" />
-                  {t.paletteTitle}
-                </h4>
-                <div className="flex gap-3">
-                  {Object.entries(previewData.colors).map(([name, hex]) => (
-                    <div key={name} className="flex flex-col items-center gap-1.5">
-                      <div
-                        className="w-12 h-12 rounded-xl shadow-lg transition-transform hover:scale-110"
-                        style={{ backgroundColor: hex }}
-                      />
-                      <span className="text-[10px] text-slate-500 capitalize">{name}</span>
-                    </div>
-                  ))}
-                </div>
-                {previewData.font_heading && (
-                  <div className="flex items-center gap-4 pt-2 border-t border-white/5">
-                    <div className="text-xs text-slate-500">
-                      {t.fontHeading}: <span className="text-slate-300">{previewData.font_heading}</span>
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      {t.fontBody}: <span className="text-slate-300">{previewData.font_body}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Phase: content_complete - Hero title, subtitle, services */}
-            {phase === "content_complete" && (
-              <div className="p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
-                <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <DocumentTextIcon className="w-4 h-4 text-emerald-400" />
-                  {t.contentPreview}
-                </h4>
-
-                {previewData?.hero_title && (
-                  <div
-                    className="p-4 rounded-xl border border-white/10"
-                    style={{
-                      background: previewData?.colors
-                        ? `linear-gradient(135deg, ${previewData.colors.primary}15, ${previewData.colors.secondary}15)`
-                        : "rgba(255,255,255,0.02)",
-                    }}
-                  >
-                    <p
-                      className="text-lg font-bold mb-1"
-                      style={{ color: previewData?.colors?.primary || "#3b82f6" }}
+                  return (
+                    <div
+                      key={idx}
+                      className="flex flex-col items-center gap-1.5 relative z-10"
+                      style={{ width: `${100 / totalSteps}%` }}
                     >
-                      {previewData.hero_title}
-                    </p>
-                    {previewData.hero_subtitle && (
-                      <p className="text-sm text-slate-400 mb-2">{previewData.hero_subtitle}</p>
-                    )}
-                    {previewData.hero_cta && (
-                      <span
-                        className="inline-block px-3 py-1 rounded-lg text-xs text-white"
-                        style={{ backgroundColor: previewData?.colors?.primary || "#3b82f6" }}
-                      >
-                        {previewData.hero_cta}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {previewData?.services_titles && previewData.services_titles.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2">
-                    {previewData.services_titles.slice(0, 3).map((title, i) => (
                       <div
-                        key={i}
-                        className="p-3 rounded-lg bg-white/[0.03] border border-white/5 text-center"
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 ${
+                          isActive
+                            ? "bg-blue-500/30 ring-2 ring-blue-500/50 text-blue-400 scale-110"
+                            : isDone
+                            ? "bg-emerald-500/20 text-emerald-400"
+                            : "bg-[#0e0e16] border border-white/10 text-slate-600"
+                        }`}
                       >
-                        <p className="text-xs text-slate-300 truncate">{title}</p>
+                        {isDone ? (
+                          <CheckIcon className="w-3.5 h-3.5" />
+                        ) : (
+                          <Icon className="w-3.5 h-3.5" />
+                        )}
+                      </div>
+                      <span
+                        className={`text-[8px] md:text-[10px] leading-tight text-center transition-colors duration-500 max-w-[60px] md:max-w-none ${
+                          isActive
+                            ? "text-blue-400"
+                            : isDone
+                            ? "text-emerald-400"
+                            : "text-slate-600"
+                        }`}
+                      >
+                        {stepLabel}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Progressive Preview Section */}
+            <div className="w-full rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
+
+              {/* Phase: analyzing - Pulsing orb */}
+              {phase === "analyzing" && !isComplete && (
+                <div className="p-6 md:p-8 flex flex-col items-center gap-4 animate-in fade-in duration-500">
+                  <div className="relative">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 animate-pulse" />
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/10 to-violet-500/10 animate-ping absolute inset-0" />
+                    <SparklesIcon className="w-8 h-8 text-blue-400 absolute inset-0 m-auto" />
+                  </div>
+                  <p className="text-xs md:text-sm text-slate-400 text-center">{t.analyzing}</p>
+                </div>
+              )}
+
+              {/* Phase: theme_complete - Color palette + fonts */}
+              {phase === "theme_complete" && previewData?.colors && (
+                <div className="p-4 md:p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                  <h4 className="text-xs md:text-sm font-medium text-slate-300 flex items-center gap-2">
+                    <PaintBrushIcon className="w-4 h-4 text-violet-400" />
+                    {t.paletteTitle}
+                  </h4>
+                  <div className="flex gap-2 md:gap-3 flex-wrap">
+                    {Object.entries(previewData.colors).map(([name, hex]) => (
+                      <div key={name} className="flex flex-col items-center gap-1.5">
+                        <div
+                          className="w-10 h-10 md:w-12 md:h-12 rounded-xl shadow-lg transition-transform hover:scale-110"
+                          style={{ backgroundColor: hex }}
+                        />
+                        <span className="text-[9px] md:text-[10px] text-slate-500 capitalize">{name}</span>
                       </div>
                     ))}
                   </div>
-                )}
-
-                {previewData?.sections && (
-                  <div className="flex flex-wrap gap-1.5 pt-2">
-                    {previewData.sections.map((s) => (
-                      <span
-                        key={s}
-                        className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-slate-500 capitalize"
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Phase: complete - Checkmark + button */}
-            {(phase === "complete" || isComplete) && (
-              <div className="p-8 flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                  <CheckIcon className="w-8 h-8 text-emerald-400" />
+                  {previewData.font_heading && (
+                    <div className="flex items-center gap-3 md:gap-4 pt-2 border-t border-white/5 flex-wrap">
+                      <div className="text-[10px] md:text-xs text-slate-500">
+                        {t.fontHeading}: <span className="text-slate-300">{previewData.font_heading}</span>
+                      </div>
+                      <div className="text-[10px] md:text-xs text-slate-500">
+                        {t.fontBody}: <span className="text-slate-300">{previewData.font_body}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <p className="text-lg font-semibold text-emerald-400">{t.siteReady}</p>
-                <button
-                  onClick={() => router.push(`/editor/${siteId}`)}
-                  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:opacity-90 rounded-xl font-semibold text-white transition-all flex items-center gap-2"
-                >
-                  <CubeIcon className="w-5 h-5" />
-                  {t.goToEditor}
-                </button>
-                <p className="text-xs text-slate-500">{t.redirecting}</p>
+              )}
+
+              {/* Phase: content_complete - Hero title, subtitle, services */}
+              {phase === "content_complete" && (
+                <div className="p-4 md:p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                  <h4 className="text-xs md:text-sm font-medium text-slate-300 flex items-center gap-2">
+                    <DocumentTextIcon className="w-4 h-4 text-emerald-400" />
+                    {t.contentPreview}
+                  </h4>
+
+                  {previewData?.hero_title && (
+                    <div
+                      className="p-3 md:p-4 rounded-xl border border-white/10"
+                      style={{
+                        background: previewData?.colors
+                          ? `linear-gradient(135deg, ${previewData.colors.primary}15, ${previewData.colors.secondary}15)`
+                          : "rgba(255,255,255,0.02)",
+                      }}
+                    >
+                      <p
+                        className="text-base md:text-lg font-bold mb-1"
+                        style={{ color: previewData?.colors?.primary || "#3b82f6" }}
+                      >
+                        {previewData.hero_title}
+                      </p>
+                      {previewData.hero_subtitle && (
+                        <p className="text-xs md:text-sm text-slate-400 mb-2">{previewData.hero_subtitle}</p>
+                      )}
+                      {previewData.hero_cta && (
+                        <span
+                          className="inline-block px-3 py-1 rounded-lg text-xs text-white"
+                          style={{ backgroundColor: previewData?.colors?.primary || "#3b82f6" }}
+                        >
+                          {previewData.hero_cta}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {previewData?.services_titles && previewData.services_titles.length > 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {previewData.services_titles.slice(0, 3).map((title, i) => (
+                        <div
+                          key={i}
+                          className="p-2 md:p-3 rounded-lg bg-white/[0.03] border border-white/5 text-center"
+                        >
+                          <p className="text-[10px] md:text-xs text-slate-300 truncate">{title}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {previewData?.sections && (
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      {previewData.sections.map((s) => (
+                        <span
+                          key={s}
+                          className="px-2 py-0.5 rounded-full bg-white/5 text-[9px] md:text-[10px] text-slate-500 capitalize"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Phase: complete - Celebration */}
+              {(phase === "complete" || isComplete) && (
+                <div className="relative p-6 md:p-8 flex flex-col items-center gap-5 animate-in fade-in zoom-in duration-500 overflow-hidden">
+                  {/* Confetti particles */}
+                  <ConfettiParticles />
+
+                  {/* Mini preview thumbnail */}
+                  {previewData?.colors && (
+                    <div
+                      className="relative z-10 w-full max-w-[220px] md:max-w-[260px] h-28 md:h-36 rounded-xl border border-white/10 overflow-hidden shadow-2xl"
+                      style={{
+                        background: previewData.colors.bg || "#faf7f2",
+                      }}
+                    >
+                      {/* Mini site wireframe */}
+                      <div className="p-3">
+                        <div
+                          className="h-3 rounded-sm w-3/4 mb-1.5"
+                          style={{ backgroundColor: previewData.colors.primary }}
+                        />
+                        <div className="h-1.5 rounded-sm w-1/2 mb-3 opacity-40" style={{ backgroundColor: previewData.colors.text || "#333" }} />
+                        <div
+                          className="h-4 rounded-sm w-16 mb-3"
+                          style={{ backgroundColor: previewData.colors.accent || previewData.colors.primary }}
+                        />
+                        <div className="flex gap-1.5">
+                          <div className="flex-1 h-8 rounded-sm" style={{ backgroundColor: `${previewData.colors.secondary}20` }} />
+                          <div className="flex-1 h-8 rounded-sm" style={{ backgroundColor: `${previewData.colors.primary}20` }} />
+                          <div className="flex-1 h-8 rounded-sm" style={{ backgroundColor: `${previewData.colors.accent || previewData.colors.secondary}20` }} />
+                        </div>
+                      </div>
+                      {/* Gloss overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                    </div>
+                  )}
+
+                  {/* Check icon */}
+                  <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                    <CheckIcon className="w-7 h-7 md:w-8 md:h-8 text-emerald-400" />
+                  </div>
+
+                  <p className="relative z-10 text-base md:text-lg font-semibold text-emerald-400">{t.siteReady}</p>
+
+                  {/* Prominent "Go to Editor" button */}
+                  <button
+                    onClick={() => router.push(`/editor/${siteId}`)}
+                    className="relative z-10 group px-8 py-3.5 bg-gradient-to-r from-blue-600 via-violet-600 to-cyan-600 rounded-xl font-semibold text-white transition-all flex items-center gap-2 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:scale-[1.03] active:scale-[0.98]"
+                  >
+                    {/* Pulse ring behind button */}
+                    <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 via-violet-600 to-cyan-600 animate-ping opacity-20 pointer-events-none" />
+                    <CubeIcon className="w-5 h-5 relative" />
+                    <span className="relative">{t.goToEditor}</span>
+                  </button>
+
+                  {/* Countdown */}
+                  <p className="relative z-10 text-xs text-slate-500">
+                    {t.redirectCountdown} {countdown}...
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Spinner for non-complete state */}
+            {!isComplete && (
+              <div className="flex items-center gap-2 text-slate-500">
+                <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                <span className="text-[10px] md:text-xs">{message || (lang === "it" ? "Elaborazione..." : "Processing...")}</span>
               </div>
             )}
           </div>
-
-          {/* Spinner for non-complete state */}
-          {!isComplete && (
-            <div className="flex items-center gap-2 text-slate-500">
-              <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-              <span className="text-xs">{message || (lang === "it" ? "Elaborazione..." : "Processing...")}</span>
-            </div>
-          )}
         </div>
       </div>
     </div>
+  );
+}
+
+// ============ EXPORTED PAGE WITH SUSPENSE BOUNDARY ============
+
+export default function GeneratePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+      </div>
+    }>
+      <GeneratePageContent />
+    </Suspense>
   );
 }
