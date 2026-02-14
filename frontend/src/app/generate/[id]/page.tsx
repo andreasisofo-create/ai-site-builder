@@ -126,6 +126,7 @@ const CODE_SNIPPETS = [
 // ============ SYNTAX HIGHLIGHTING ============
 
 function highlightLine(line: string): string {
+  if (line == null) return '';
   if (!line.trim()) return line;
 
   // HTML comments: <!-- ... -->
@@ -299,8 +300,9 @@ export default function GeneratePage() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (lineIndexRef.current < CODE_SNIPPETS.length) {
-        setVisibleLines(prev => [...prev, CODE_SNIPPETS[lineIndexRef.current]]);
-        lineIndexRef.current += 1;
+        const idx = lineIndexRef.current;
+        setVisibleLines(prev => [...prev, CODE_SNIPPETS[idx] ?? '']);
+        lineIndexRef.current = idx + 1;
       } else {
         // Loop back from beginning
         lineIndexRef.current = 0;
@@ -387,7 +389,7 @@ export default function GeneratePage() {
 
   // Highlighted lines (memoized)
   const highlightedLines = useMemo(() => {
-    return visibleLines.map(line => highlightLine(line));
+    return visibleLines.map(line => highlightLine(line ?? ''));
   }, [visibleLines]);
 
   // ============ ERROR STATE ============
