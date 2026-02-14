@@ -76,15 +76,30 @@ class TemplateAssembler:
         Auto-injects INDEX (1-based) and INDEX_PADDED (zero-padded, e.g. "01")
         into each item so templates like services-tabs-01 and services-minimal-list-01
         can reference {{INDEX}} and {{INDEX_PADDED}}.
+
+        Includes case-insensitive key lookup as a safety net for data normalization.
         """
         pattern = r'<!-- REPEAT:(\w+) -->(.*?)<!-- /REPEAT:\1 -->'
+
+        # Build a case-insensitive lookup map for the data keys
+        key_lookup = {k.upper(): k for k in data.keys() if isinstance(data[k], list)}
 
         def expand_block(match):
             key = match.group(1)
             inner_template = match.group(2)
-            items = data.get(key, [])
+
+            # Try exact key first, then case-insensitive lookup
+            items = data.get(key)
+            if items is None:
+                real_key = key_lookup.get(key.upper())
+                if real_key:
+                    items = data[real_key]
+                    logger.info(f"[Assembler] REPEAT:{key} resolved via case-insensitive lookup to '{real_key}'")
+
             if not isinstance(items, list) or not items:
+                logger.warning(f"[Assembler] REPEAT:{key} has no items (key missing or empty array)")
                 return ""
+
             fragments = []
             for idx, item in enumerate(items):
                 if isinstance(item, dict):

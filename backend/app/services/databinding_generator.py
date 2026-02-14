@@ -584,6 +584,15 @@ Return this JSON (include only the sections listed above):
   }}
 }}
 
+=== CRITICAL JSON STRUCTURE RULES (violating these = BROKEN website) ===
+1. The "SERVICES" key MUST be an array [...] of objects, each with EXACTLY these keys: "SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION". NOT "ICON"/"TITLE"/"DESCRIPTION". NOT "service_icon". EXACTLY "SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION". Include at LEAST 3 items.
+2. The "FEATURES" key MUST be an array [...] of objects, each with EXACTLY: "FEATURE_ICON", "FEATURE_TITLE", "FEATURE_DESCRIPTION". At LEAST 4 items.
+3. The "TESTIMONIALS" key MUST be an array [...] of objects, each with EXACTLY: "TESTIMONIAL_TEXT", "TESTIMONIAL_AUTHOR", "TESTIMONIAL_ROLE", "TESTIMONIAL_INITIAL". At LEAST 3 items.
+4. The "GALLERY_ITEMS" key MUST be an array [...] of objects, each with EXACTLY: "GALLERY_IMAGE_URL", "GALLERY_IMAGE_ALT", "GALLERY_CAPTION". At LEAST 4 items.
+5. The "TEAM_MEMBERS" key MUST be an array of objects with EXACTLY: "MEMBER_NAME", "MEMBER_ROLE", "MEMBER_IMAGE_URL", "MEMBER_BIO". At LEAST 3 items.
+6. EVERY array must contain REAL, SUBSTANTIAL content. NO empty strings. Each description must be at least 15 words.
+7. DO NOT use short key names like "ICON", "TITLE", "DESCRIPTION" — always use the FULL prefixed key name as shown above.
+
 FINAL CHECKLIST (every point is mandatory):
 - ALL text MUST be in Italian
 - Be WILDLY creative and hyper-specific to THIS business — if you replaced the business name, the text should NOT work for any other company
@@ -594,6 +603,7 @@ FINAL CHECKLIST (every point is mandatory):
 - Testimonials: real names, specific details, emotional stories (NOT "Ottimo servizio" or "Molto professionali")
 - Generate ONLY the sections listed in SECTIONS NEEDED
 - Double-check: NO banned phrases from the list above appear ANYWHERE in your output
+- VERIFY: every SERVICES/FEATURES/TESTIMONIALS/GALLERY_ITEMS/TEAM_MEMBERS array has 3+ items with FULL key names (SERVICE_ICON not ICON)
 - Return ONLY the JSON object"""
 
         result = await self.kimi.call(
@@ -950,6 +960,8 @@ Return ONLY the JSON object."""
         try:
             html_content = self.assembler.assemble(site_data)
             html_content = sanitize_output(html_content)
+            # Post-process: remove empty sections (better no section than blank space)
+            html_content = self._post_process_html(html_content)
         except Exception as e:
             logger.exception("[DataBinding] Assembly failed")
             return {"success": False, "error": f"Errore assemblaggio: {str(e)}"}
@@ -1148,9 +1160,12 @@ Return ONLY the JSON object."""
 
         elif section == "about":
             # Convert flat ABOUT_HIGHLIGHT_* keys to ABOUT_STATS repeat array
+            # This is needed for templates like about-magazine-01, about-bento-01
+            # which use <!-- REPEAT:ABOUT_STATS --> blocks
             if "ABOUT_STATS" not in data:
                 stats = []
                 for i in range(1, 10):  # support up to 9 highlights
+                    # Try standard format: ABOUT_HIGHLIGHT_NUM_1 + ABOUT_HIGHLIGHT_1
                     num_key = f"ABOUT_HIGHLIGHT_NUM_{i}"
                     label_key = f"ABOUT_HIGHLIGHT_{i}"
                     if num_key in data and label_key in data:
@@ -1158,8 +1173,57 @@ Return ONLY the JSON object."""
                             "STAT_NUMBER": str(data[num_key]),
                             "STAT_LABEL": str(data[label_key]),
                         })
+                        continue
+                    # Try alternative formats Kimi might use
+                    for nk in [f"ABOUT_STAT_NUM_{i}", f"ABOUT_NUM_{i}", f"STAT_NUMBER_{i}", f"HIGHLIGHT_NUM_{i}"]:
+                        if nk in data:
+                            for lk in [f"ABOUT_STAT_{i}", f"ABOUT_LABEL_{i}", f"STAT_LABEL_{i}", f"HIGHLIGHT_{i}", label_key]:
+                                if lk in data:
+                                    stats.append({
+                                        "STAT_NUMBER": str(data[nk]),
+                                        "STAT_LABEL": str(data[lk]),
+                                    })
+                                    break
+                            break
                 if stats:
                     data["ABOUT_STATS"] = stats
+
+                # Also check if Kimi returned ABOUT_STATS as an array directly
+                # with different key names (e.g., ABOUT_HIGHLIGHTS, HIGHLIGHTS, etc.)
+                if not stats:
+                    for alt_key in ["ABOUT_HIGHLIGHTS", "HIGHLIGHTS", "ABOUT_NUMBERS", "about_stats"]:
+                        val = data.get(alt_key)
+                        if isinstance(val, list) and len(val) > 0:
+                            normalized_stats = []
+                            for item in val:
+                                if isinstance(item, dict):
+                                    num = item.get("STAT_NUMBER", item.get("NUMBER", item.get("NUM", item.get("number", ""))))
+                                    label = item.get("STAT_LABEL", item.get("LABEL", item.get("label", "")))
+                                    if num and label:
+                                        normalized_stats.append({
+                                            "STAT_NUMBER": str(num),
+                                            "STAT_LABEL": str(label),
+                                        })
+                            if normalized_stats:
+                                data["ABOUT_STATS"] = normalized_stats
+                                logger.info(f"[DataBinding] Normalized {alt_key} -> ABOUT_STATS ({len(normalized_stats)} items)")
+                                break
+
+            # Fallback: if no stats at all, generate sensible defaults
+            if "ABOUT_STATS" not in data or not data["ABOUT_STATS"]:
+                data["ABOUT_STATS"] = [
+                    {"STAT_NUMBER": "10", "STAT_LABEL": "Anni di Esperienza"},
+                    {"STAT_NUMBER": "500", "STAT_LABEL": "Clienti Soddisfatti"},
+                    {"STAT_NUMBER": "98", "STAT_LABEL": "% Soddisfazione"},
+                ]
+                # Also set the flat keys for templates that use them directly
+                if "ABOUT_HIGHLIGHT_NUM_1" not in data:
+                    data["ABOUT_HIGHLIGHT_NUM_1"] = "10"
+                    data["ABOUT_HIGHLIGHT_1"] = "Anni di Esperienza"
+                    data["ABOUT_HIGHLIGHT_NUM_2"] = "500"
+                    data["ABOUT_HIGHLIGHT_2"] = "Clienti Soddisfatti"
+                    data["ABOUT_HIGHLIGHT_NUM_3"] = "98"
+                    data["ABOUT_HIGHLIGHT_3"] = "% Soddisfazione"
 
             # Ensure ABOUT_IMAGE_URL has a fallback for templates that need it
             if "ABOUT_IMAGE_URL" not in data or not data["ABOUT_IMAGE_URL"]:
@@ -1256,6 +1320,57 @@ Return ONLY the JSON object."""
 
         return data
 
+    def _normalize_item_keys(
+        self,
+        items: List[Dict[str, Any]],
+        item_fields: List[str],
+        flat_prefix: str,
+    ) -> List[Dict[str, str]]:
+        """Normalize item dict keys to match expected template placeholders.
+
+        Handles common AI variations where Kimi returns short keys:
+        - {"ICON": "x", "TITLE": "y"} -> {"SERVICE_ICON": "x", "SERVICE_TITLE": "y"}
+        - {"icon": "x", "title": "y"} -> {"SERVICE_ICON": "x", "SERVICE_TITLE": "y"}
+        - {"service_icon": "x"} -> {"SERVICE_ICON": "x"}  (already correct, just uppercased)
+
+        Also preserves any extra keys the item might have (e.g., SERVICE_IMAGE_URL).
+        """
+        if not items or not isinstance(items, list):
+            return items
+
+        # Build a mapping: suffix -> full_field (e.g., "ICON" -> "SERVICE_ICON")
+        suffix_map: Dict[str, str] = {}
+        for field in item_fields:
+            if field.startswith(flat_prefix + "_"):
+                suffix = field[len(flat_prefix) + 1:]
+                suffix_map[suffix.upper()] = field
+
+        normalized = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            new_item = {}
+            for key, value in item.items():
+                key_upper = key.upper()
+                str_value = str(value) if value is not None else ""
+                # Already has the full prefix (e.g., SERVICE_ICON) - keep as-is
+                if key_upper.startswith(flat_prefix.upper() + "_"):
+                    new_item[key_upper] = str_value
+                # Short key matching a known suffix (e.g., ICON, TITLE, DESCRIPTION)
+                elif key_upper in suffix_map:
+                    new_item[suffix_map[key_upper]] = str_value
+                else:
+                    # Preserve unknown keys as-is (e.g., extra fields)
+                    new_item[key_upper] = str_value
+
+            # Ensure all expected fields exist (even if empty) to prevent template breakage
+            for field in item_fields:
+                if field not in new_item:
+                    new_item[field] = ""
+
+            normalized.append(new_item)
+        return normalized
+
     def _normalize_repeat_array(
         self,
         data: Dict[str, Any],
@@ -1268,63 +1383,99 @@ Return ONLY the JSON object."""
         """Normalize a repeating array in the data dict.
 
         Handles these common AI output variations:
-        1. Correct key with valid array (SERVICES: [...]) -- no-op
-        2. Alternative key name (SERVICE_ITEMS, items, etc.) -- rename to canonical
+        1. Correct key with valid array (SERVICES: [...]) -- normalize item keys
+        2. Alternative key name (SERVICE_ITEMS, items, etc.) -- rename + normalize
         3. Flat numbered keys (SERVICE_1_TITLE, SERVICE_2_TITLE, etc.) -- collect into array
         4. Lowercase key versions -- case-insensitive lookup
         5. Single object instead of array -- wrap in array
-        6. Empty/missing array -- use fallback items if provided
+        6. Any key containing a list of dicts -- heuristic discovery
+        7. Empty/missing array -- use fallback items if provided
         """
+        found_items = None
+        found_source = None
+
         # 1. Check if canonical key already has a valid non-empty array
         existing = data.get(canonical_key)
-        if isinstance(existing, list) and len(existing) > 0:
-            # Validate items have the expected fields (at least one recognized field)
-            if isinstance(existing[0], dict) and any(f in existing[0] for f in item_fields):
-                return data
+        if isinstance(existing, list) and len(existing) > 0 and isinstance(existing[0], dict):
+            found_items = existing
+            found_source = canonical_key
 
         # 2. Check alternative key names (case-insensitive)
-        all_keys_lower = {k.lower(): k for k in data.keys()}
-        for alt_key in alt_keys:
-            # Direct key check
-            if alt_key in data:
-                val = data[alt_key]
-                if isinstance(val, list) and len(val) > 0:
-                    data[canonical_key] = val
-                    logger.info(f"[DataBinding] Normalized {alt_key} -> {canonical_key} ({len(val)} items)")
-                    return data
-                elif isinstance(val, dict):
-                    # Single object wrapped as array
-                    data[canonical_key] = [val]
-                    logger.info(f"[DataBinding] Normalized {alt_key} (single object) -> {canonical_key} array")
-                    return data
-            # Case-insensitive check
-            if alt_key.lower() in all_keys_lower:
-                real_key = all_keys_lower[alt_key.lower()]
-                if real_key != alt_key:  # avoid re-checking the same key
+        if found_items is None:
+            all_keys_lower = {k.lower(): k for k in data.keys()}
+            for alt_key in alt_keys:
+                # Direct key check
+                if alt_key in data:
+                    val = data[alt_key]
+                    if isinstance(val, list) and len(val) > 0:
+                        found_items = val
+                        found_source = alt_key
+                        break
+                    elif isinstance(val, dict):
+                        found_items = [val]
+                        found_source = f"{alt_key} (single object)"
+                        break
+                # Case-insensitive check
+                if alt_key.lower() in all_keys_lower:
+                    real_key = all_keys_lower[alt_key.lower()]
                     val = data[real_key]
                     if isinstance(val, list) and len(val) > 0:
-                        data[canonical_key] = val
-                        logger.info(f"[DataBinding] Normalized {real_key} -> {canonical_key} ({len(val)} items)")
-                        return data
+                        found_items = val
+                        found_source = real_key
+                        break
 
-        # Also check canonical key with different casing
-        if canonical_key.lower() in all_keys_lower:
-            real_key = all_keys_lower[canonical_key.lower()]
-            if real_key != canonical_key:
-                val = data[real_key]
-                if isinstance(val, list) and len(val) > 0:
-                    data[canonical_key] = val
-                    logger.info(f"[DataBinding] Normalized {real_key} (case) -> {canonical_key} ({len(val)} items)")
-                    return data
+            # Also check canonical key with different casing
+            if found_items is None and canonical_key.lower() in all_keys_lower:
+                real_key = all_keys_lower[canonical_key.lower()]
+                if real_key != canonical_key:
+                    val = data[real_key]
+                    if isinstance(val, list) and len(val) > 0:
+                        found_items = val
+                        found_source = f"{real_key} (case-insensitive)"
 
         # 3. Check for flat numbered keys (e.g., SERVICE_1_TITLE, SERVICE_2_TITLE, ...)
-        flat_items = self._collect_flat_numbered_items(data, flat_prefix, item_fields)
-        if flat_items:
-            data[canonical_key] = flat_items
-            logger.info(f"[DataBinding] Collected {len(flat_items)} flat {flat_prefix}_* items -> {canonical_key}")
-            return data
+        if found_items is None:
+            flat_items = self._collect_flat_numbered_items(data, flat_prefix, item_fields)
+            if flat_items:
+                found_items = flat_items
+                found_source = f"flat {flat_prefix}_N_* keys"
 
-        # 4. If canonical key exists but is empty/invalid, or doesn't exist at all
+        # 4. Heuristic: scan ALL keys for any list of dicts that looks like the right data
+        if found_items is None:
+            # Build suffix set for matching (e.g., {"icon", "title", "description"})
+            suffix_set = set()
+            for field in item_fields:
+                if field.startswith(flat_prefix + "_"):
+                    suffix_set.add(field[len(flat_prefix) + 1:].lower())
+                suffix_set.add(field.lower())
+
+            best_match = None
+            best_score = 0
+            for key, val in data.items():
+                if not isinstance(val, list) or len(val) == 0:
+                    continue
+                if not isinstance(val[0], dict):
+                    continue
+                # Score: how many item keys match expected suffixes
+                item_keys_lower = {k.lower() for k in val[0].keys()}
+                score = len(item_keys_lower & suffix_set)
+                if score > best_score:
+                    best_score = score
+                    best_match = (key, val)
+
+            if best_match and best_score >= 1:
+                found_items = best_match[1]
+                found_source = f"heuristic match on key '{best_match[0]}' (score={best_score})"
+
+        # 5. If we found items, normalize their keys and store under canonical key
+        if found_items is not None and len(found_items) > 0:
+            normalized = self._normalize_item_keys(found_items, item_fields, flat_prefix)
+            if normalized:
+                data[canonical_key] = normalized
+                logger.info(f"[DataBinding] Normalized {found_source} -> {canonical_key} ({len(normalized)} items)")
+                return data
+
+        # 6. If canonical key exists but is empty/invalid, or doesn't exist at all -> fallback
         if fallback_items:
             logger.warning(f"[DataBinding] {canonical_key} missing or empty, using {len(fallback_items)} fallback items")
             data[canonical_key] = fallback_items
@@ -1377,6 +1528,156 @@ Return ONLY the JSON object."""
         if items:
             return [items[k] for k in sorted(items.keys())]
         return []
+
+    # ----- Post-processing: remove empty sections -----
+
+    def _post_process_html(self, html: str) -> str:
+        """Scan assembled HTML for empty sections and remove them entirely.
+
+        A section is considered 'empty' if it has a heading element but the
+        container that should hold repeated content (cards, items, etc.) is
+        effectively empty -- meaning the REPEAT block produced no output.
+
+        This catches cases where:
+        - REPEAT block was empty (data array missing or with wrong keys)
+        - Section has only a title + subtitle but no actual content items
+
+        Better to show NO section than an empty section with a big blank space.
+        """
+        # Find all <section ...>...</section> blocks (including nested divs)
+        # Use a balanced approach: find section tags and track nesting
+        result_parts = []
+        pos = 0
+        section_pattern = re.compile(r'<section\b[^>]*>', re.IGNORECASE)
+
+        while pos < len(html):
+            match = section_pattern.search(html, pos)
+            if not match:
+                # No more sections - append rest of html
+                result_parts.append(html[pos:])
+                break
+
+            # Append content before this section
+            result_parts.append(html[pos:match.start()])
+
+            # Find the matching </section> (handle nesting)
+            section_start = match.start()
+            depth = 1
+            search_pos = match.end()
+            while depth > 0 and search_pos < len(html):
+                open_tag = html.find('<section', search_pos)
+                close_tag = html.find('</section>', search_pos)
+
+                if close_tag == -1:
+                    # No closing tag found - broken HTML, keep everything
+                    search_pos = len(html)
+                    break
+
+                if open_tag != -1 and open_tag < close_tag:
+                    depth += 1
+                    search_pos = open_tag + 8  # len('<section')
+                else:
+                    depth -= 1
+                    if depth == 0:
+                        section_end = close_tag + len('</section>')
+                        break
+                    search_pos = close_tag + len('</section>')
+            else:
+                section_end = len(html)
+
+            section_html = html[section_start:section_end]
+
+            # Check if this section is empty (has heading but no real content)
+            if self._is_section_empty(section_html):
+                # Extract section id for logging
+                id_match = re.search(r'id=["\']([^"\']+)["\']', section_html)
+                section_id = id_match.group(1) if id_match else "unknown"
+                logger.info(f"[DataBinding] Post-process: removing empty section '{section_id}'")
+                # Skip this section (don't add to result)
+            else:
+                result_parts.append(section_html)
+
+            pos = section_end
+
+        return "".join(result_parts)
+
+    def _is_section_empty(self, section_html: str) -> bool:
+        """Determine if a section is empty (has heading but no meaningful content).
+
+        Returns True if the section should be removed.
+
+        Strategy:
+        1. Never remove hero, footer, contact, or CTA sections
+        2. Check if the section has very little visible text (broken template)
+        3. Check if key content containers (grid, stagger, space-y) are empty
+           which means the REPEAT block rendered nothing
+        """
+        # Don't remove hero, footer, contact, or CTA sections
+        section_lower = section_html.lower()
+        if re.search(r'id=["\']hero["\']', section_html):
+            return False
+        if '<footer' in section_lower or re.search(r'id=["\']footer["\']', section_html):
+            return False
+        if re.search(r'id=["\']contact["\']', section_html):
+            return False
+        if re.search(r'id=["\']cta["\']', section_html):
+            return False
+
+        # Strip HTML tags to get visible text content
+        text_only = re.sub(r'<style[^>]*>.*?</style>', '', section_html, flags=re.DOTALL)
+        text_only = re.sub(r'<script[^>]*>.*?</script>', '', text_only, flags=re.DOTALL)
+        text_only = re.sub(r'<[^>]+>', ' ', text_only)
+        text_only = re.sub(r'\s+', ' ', text_only).strip()
+
+        # If very little visible text (less than 30 chars), it's likely empty
+        if len(text_only) < 30:
+            return True
+
+        # Check for empty content containers that SHOULD have repeated items
+        # These patterns catch the case where a REPEAT block rendered "" (no items)
+
+        # Pattern 1: Empty grid containers - <div class="grid ...">  \n  </div>
+        # The REPEAT block would have been between the open and close div.
+        # We need to check if there are any child elements in the grid.
+        empty_grid = re.compile(
+            r'<div[^>]*class="[^"]*\bgrid\b[^"]*"[^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_grid.search(section_html):
+            return True
+
+        # Pattern 2: Empty stagger containers
+        empty_stagger = re.compile(
+            r'data-animate=["\']stagger["\'][^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_stagger.search(section_html):
+            return True
+
+        # Pattern 3: Empty space-y containers
+        empty_space = re.compile(
+            r'<div[^>]*class="[^"]*\bspace-y-\d+\b[^"]*"[^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_space.search(section_html):
+            return True
+
+        # Pattern 4: Empty svc-tab-panels (tabs template)
+        empty_tabs = re.compile(
+            r'<div[^>]*class="[^"]*svc-tab-panels[^"]*"[^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_tabs.search(section_html):
+            return True
+
+        # Pattern 5: Section with heading but the grid/stagger has no .stagger-item children
+        # Count how many "stagger-item" classes appear in the section
+        if 'data-animate="stagger"' in section_html or "data-animate='stagger'" in section_html:
+            stagger_items_count = section_html.count('stagger-item')
+            if stagger_items_count == 0:
+                return True
+
+        return False
 
     # ----- Fallback content generators -----
 

@@ -1,40 +1,56 @@
-<!-- About: testo + immagine + stats (Awwwards quality) -->
-<section id="about" class="py-32" style="background: var(--color-bg-alt)">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-      <!-- Text -->
-      <div data-animate="fade-right">
-        <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="fade-up">Chi Siamo</p>
-        <h2 class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-6" data-animate="text-split" data-split-type="words">
+<!-- About: split layout with image + content + stats, Awwwards quality -->
+<section class="relative py-24 md:py-32 overflow-hidden" style="background: var(--color-bg)" id="about">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-[0.04]" style="background: var(--color-primary)"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-6 md:px-12">
+    <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+      <!-- Image -->
+      <div class="relative" data-animate="fade-right">
+        <!-- Rotated background shape -->
+        <div class="absolute -inset-6 rounded-3xl rotate-2 opacity-10" style="background: var(--color-primary)"></div>
+        <!-- Glow -->
+        <div class="absolute -inset-3 rounded-3xl opacity-15 blur-2xl" style="background: var(--color-primary)"></div>
+        <!-- Main image -->
+        <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="relative rounded-3xl shadow-2xl w-full aspect-[4/3] object-cover" data-animate="scale-in" />
+        <!-- Floating accent -->
+        <div class="absolute -bottom-3 -right-3 w-6 h-6 rounded-full shadow-lg" style="background: var(--color-accent, var(--color-primary));" data-animate="float" data-speed="0.5"></div>
+      </div>
+
+      <!-- Content -->
+      <div class="space-y-6" data-animate="fade-left">
+        <p class="text-sm font-semibold tracking-widest uppercase" style="color: var(--color-primary)" data-animate="fade-up">Chi Siamo</p>
+
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-heading font-bold leading-tight" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">
           {{ABOUT_TITLE}}
         </h2>
-        <p class="text-lg text-[var(--color-text-muted)] leading-relaxed mb-4" data-animate="fade-up" data-delay="0.2">
+
+        <div class="w-12 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));" data-animate="fade-up" data-delay="0.1"></div>
+
+        <p class="text-lg leading-relaxed" style="color: var(--color-text-muted)" data-animate="fade-up" data-delay="0.2">
           {{ABOUT_SUBTITLE}}
         </p>
-        <p class="text-[var(--color-text-muted)] leading-relaxed mb-8" data-animate="fade-up" data-delay="0.4">
+        <p class="leading-relaxed" style="color: var(--color-text-muted)" data-animate="fade-up" data-delay="0.3">
           {{ABOUT_TEXT}}
         </p>
-        <!-- Stats -->
-        <div class="flex items-center gap-12 pt-8 border-t border-[var(--color-text)]/10" data-animate="stagger">
-          <div class="stagger-item">
-            <div class="text-3xl font-bold font-heading text-[var(--color-primary)]" data-counter="{{ABOUT_HIGHLIGHT_NUM_1}}">0</div>
-            <p class="text-sm text-[var(--color-text-muted)] mt-1">{{ABOUT_HIGHLIGHT_1}}</p>
+
+        <!-- Stats row -->
+        <div class="flex items-center gap-10 pt-8" data-animate="stagger">
+          <div class="stagger-item" style="border-top: 1px solid rgba(var(--color-primary-rgb, 99,102,241), 0.15); padding-top: 1.5rem;">
+            <div class="text-3xl md:text-4xl font-bold font-heading" style="color: var(--color-primary)" data-counter="{{ABOUT_HIGHLIGHT_NUM_1}}">0</div>
+            <div class="text-sm mt-1" style="color: var(--color-text-muted)">{{ABOUT_HIGHLIGHT_1}}</div>
           </div>
-          <div class="stagger-item">
-            <div class="text-3xl font-bold font-heading text-[var(--color-primary)]" data-counter="{{ABOUT_HIGHLIGHT_NUM_2}}">0</div>
-            <p class="text-sm text-[var(--color-text-muted)] mt-1">{{ABOUT_HIGHLIGHT_2}}</p>
+          <div class="stagger-item" style="border-top: 1px solid rgba(var(--color-primary-rgb, 99,102,241), 0.15); padding-top: 1.5rem;">
+            <div class="text-3xl md:text-4xl font-bold font-heading" style="color: var(--color-primary)" data-counter="{{ABOUT_HIGHLIGHT_NUM_2}}">0</div>
+            <div class="text-sm mt-1" style="color: var(--color-text-muted)">{{ABOUT_HIGHLIGHT_2}}</div>
           </div>
-          <div class="stagger-item">
-            <div class="text-3xl font-bold font-heading text-[var(--color-primary)]" data-counter="{{ABOUT_HIGHLIGHT_NUM_3}}">0</div>
-            <p class="text-sm text-[var(--color-text-muted)] mt-1">{{ABOUT_HIGHLIGHT_3}}</p>
+          <div class="stagger-item" style="border-top: 1px solid rgba(var(--color-primary-rgb, 99,102,241), 0.15); padding-top: 1.5rem;">
+            <div class="text-3xl md:text-4xl font-bold font-heading" style="color: var(--color-primary)" data-counter="{{ABOUT_HIGHLIGHT_NUM_3}}">0</div>
+            <div class="text-sm mt-1" style="color: var(--color-text-muted)">{{ABOUT_HIGHLIGHT_3}}</div>
           </div>
         </div>
-      </div>
-      <!-- Image -->
-      <div class="relative" data-animate="fade-left">
-        <div class="absolute -inset-8 rounded-3xl rotate-3 opacity-10" style="background: var(--color-primary)"></div>
-        <div class="absolute -inset-4 rounded-3xl opacity-20 blur-3xl" style="background: var(--color-primary)"></div>
-        <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="relative rounded-3xl shadow-2xl w-full aspect-[4/3] object-cover" data-animate="scale-in" />
       </div>
     </div>
   </div>

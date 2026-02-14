@@ -16,182 +16,6 @@ import {
 import { getGenerationStatus } from "@/lib/api";
 import { useLanguage } from "@/lib/i18n";
 
-// ============ CODE SNIPPETS POOL ============
-
-const CODE_SNIPPETS = [
-  '<!DOCTYPE html>',
-  '<html lang="it">',
-  '<head>',
-  '  <meta charset="UTF-8">',
-  '  <meta name="viewport" content="width=device-width, initial-scale=1.0">',
-  '  <title>{{SITE_TITLE}}</title>',
-  '  <style>',
-  '    :root {',
-  '      --color-primary: #7C3AED;',
-  '      --color-secondary: #1E40AF;',
-  '      --color-accent: #F59E0B;',
-  '      --color-bg: #FAF7F2;',
-  '    }',
-  '    * { margin: 0; padding: 0; box-sizing: border-box; }',
-  '    body { font-family: "DM Sans", sans-serif; }',
-  '  </style>',
-  '</head>',
-  '<body>',
-  '',
-  '<!-- Hero Section -->',
-  '<section class="hero" data-animate="fade-up">',
-  '  <div class="hero-container">',
-  '    <h1 data-animate="text-split">',
-  '      {{HERO_TITLE}}',
-  '    </h1>',
-  '    <p data-animate="fade-up" data-delay="0.3">',
-  '      {{HERO_SUBTITLE}}',
-  '    </p>',
-  '    <a href="#contact" class="cta-btn" data-animate="magnetic">',
-  '      {{CTA_TEXT}}',
-  '    </a>',
-  '  </div>',
-  '  <div class="hero-image" data-animate="scale-in">',
-  '    <img src="hero.webp" alt="Hero" />',
-  '  </div>',
-  '</section>',
-  '',
-  '<!-- Services Section -->',
-  '<section class="services py-24" data-animate="fade-up">',
-  '  <div class="max-w-7xl mx-auto px-6">',
-  '    <h2 data-animate="text-split">{{SERVICES_TITLE}}</h2>',
-  '    <div class="grid grid-cols-3 gap-8 mt-16">',
-  '      <div class="service-card" data-animate="tilt">',
-  '        <span class="icon">{{SERVICE_ICON}}</span>',
-  '        <h3>{{SERVICE_TITLE}}</h3>',
-  '        <p>{{SERVICE_DESCRIPTION}}</p>',
-  '      </div>',
-  '    </div>',
-  '  </div>',
-  '</section>',
-  '',
-  '<!-- About Section -->',
-  '<section class="about bg-alt py-24">',
-  '  <div class="flex items-center gap-16">',
-  '    <div class="w-1/2" data-animate="fade-right">',
-  '      <img src="about.webp" class="rounded-2xl shadow-xl" />',
-  '    </div>',
-  '    <div class="w-1/2" data-animate="fade-left">',
-  '      <h2 data-animate="text-split">{{ABOUT_TITLE}}</h2>',
-  '      <p class="mt-4">{{ABOUT_TEXT}}</p>',
-  '    </div>',
-  '  </div>',
-  '</section>',
-  '',
-  '<!-- Testimonials -->',
-  '<section class="testimonials py-24">',
-  '  <h2 class="text-center" data-animate="text-split">',
-  '    {{TESTIMONIALS_TITLE}}',
-  '  </h2>',
-  '  <div class="testimonial-grid mt-16">',
-  '    <div class="card" data-animate="fade-up">',
-  '      <p>"{{TESTIMONIAL_TEXT}}"</p>',
-  '      <span>{{TESTIMONIAL_AUTHOR}}</span>',
-  '    </div>',
-  '  </div>',
-  '</section>',
-  '',
-  '<!-- Contact -->',
-  '<section class="contact py-24" id="contact">',
-  '  <h2 data-animate="text-split">{{CONTACT_TITLE}}</h2>',
-  '  <form class="mt-12 grid grid-cols-2 gap-6">',
-  '    <input type="text" placeholder="Nome" />',
-  '    <input type="email" placeholder="Email" />',
-  '    <textarea placeholder="Messaggio" class="col-span-2">',
-  '    </textarea>',
-  '    <button type="submit" data-animate="magnetic">',
-  '      Invia Messaggio',
-  '    </button>',
-  '  </form>',
-  '</section>',
-  '',
-  '<!-- Footer -->',
-  '<footer class="py-16 bg-dark">',
-  '  <div class="max-w-7xl mx-auto grid grid-cols-4 gap-8">',
-  '    <div>',
-  '      <img src="logo.svg" class="h-8" />',
-  '      <p class="mt-4 text-muted">{{FOOTER_TEXT}}</p>',
-  '    </div>',
-  '  </div>',
-  '</footer>',
-  '',
-  '<script src="gsap-universal.js"></script>',
-  '</body>',
-  '</html>',
-];
-
-// ============ SYNTAX HIGHLIGHTING ============
-
-function highlightLine(line: string): string {
-  if (line == null) return '';
-  if (!line.trim()) return line;
-
-  // HTML comments: <!-- ... -->
-  if (/^\s*<!--/.test(line)) {
-    return line.replace(/(<!--[\s\S]*?-->)/g, '<span style="color:#64748b">$1</span>');
-  }
-
-  // {{...}} placeholders -> cyan
-  let result = line.replace(/(\{\{[^}]+\}\})/g, '<span style="color:#22d3ee">$1</span>');
-
-  // CSS lines (property: value pattern inside style blocks)
-  if (/^\s+--[\w-]+:/.test(result) || /^\s+[\w-]+\s*:\s*[^{]*[;]?\s*$/.test(result)) {
-    // CSS custom properties and regular properties
-    result = result.replace(
-      /^(\s*)([\w-]+)(\s*:\s*)([^;]*)(;?\s*)$/,
-      (_, indent, prop, colon, val, semi) => {
-        // Don't re-color if already contains span (from placeholder replacement)
-        const coloredVal = val.includes('<span') ? val : `<span style="color:#fb923c">${val}</span>`;
-        return `${indent}<span style="color:#60a5fa">${prop}</span>${colon}${coloredVal}${semi}`;
-      }
-    );
-    return result;
-  }
-
-  // CSS selectors (lines ending with { or containing * or :root)
-  if (/^\s*[\w.*:[\]#,\s-]+\s*\{/.test(result)) {
-    result = result.replace(
-      /^(\s*)([\w.*:[\]#,\s-]+)(\s*\{)/,
-      (_, indent, sel, brace) => `${indent}<span style="color:#c084fc">${sel}</span>${brace}`
-    );
-    return result;
-  }
-
-  // Lines that are just closing braces/tags
-  if (/^\s*[}\]<]/.test(result) === false && /^\s*\w/.test(result) && !/</.test(result)) {
-    return result;
-  }
-
-  // HTML attribute values in quotes -> orange (must be done before attribute names)
-  result = result.replace(
-    /=("(?:[^"]*)")/g,
-    (_, val) => {
-      // Don't double-color placeholders
-      if (val.includes('<span')) return `=${val}`;
-      return `=<span style="color:#fb923c">${val}</span>`;
-    }
-  );
-
-  // HTML attribute names -> green
-  result = result.replace(
-    /\s([\w-]+)=/g,
-    (match, attr) => ` <span style="color:#4ade80">${attr}</span>=`
-  );
-
-  // HTML tags (opening and closing) -> purple
-  result = result.replace(
-    /(&lt;|<)(\/?)([\w-]+)/g,
-    (_, bracket, slash, tag) => `${bracket}${slash}<span style="color:#c084fc">${tag}</span>`
-  );
-
-  return result;
-}
-
 // ============ TYPES ============
 
 interface PreviewData {
@@ -267,6 +91,86 @@ const TEXT = {
 
 const STEP_ICONS = [SparklesIcon, PaintBrushIcon, DocumentTextIcon, PhotoIcon, CubeIcon];
 
+// ============ MATRIX RAIN CANVAS ============
+
+function MatrixRain() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationWidth = canvas.offsetWidth;
+    let animationHeight = canvas.offsetHeight;
+
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      animationWidth = canvas.offsetWidth;
+      animationHeight = canvas.offsetHeight;
+      canvas.width = animationWidth * dpr;
+      canvas.height = animationHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const chars =
+      "</> {} () = ; : class div section html css style color font animation data-animate gsap scroll fade transform opacity gradient shadow hover flex grid px py mx my rounded border bg text h1 h2 h3 p a img src alt href #7C3AED #F59E0B #3B82F6 var tailwind responsive design modern beautiful".split(
+        " "
+      );
+
+    const fontSize = 14;
+    const columns = Math.floor(animationWidth / fontSize);
+    const drops: number[] = Array(columns)
+      .fill(0)
+      .map(() => Math.random() * -100);
+
+    const colors = ["#22d3ee", "#4ade80", "#a78bfa", "#60a5fa", "#818cf8"];
+
+    const draw = () => {
+      ctx.fillStyle = "rgba(10, 10, 15, 0.05)";
+      ctx.fillRect(0, 0, animationWidth, animationHeight);
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        ctx.fillStyle = color;
+        ctx.font = `${fontSize}px "JetBrains Mono", "Fira Code", monospace`;
+        ctx.globalAlpha = 0.3 + Math.random() * 0.7;
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        ctx.globalAlpha = 1;
+
+        if (drops[i] * fontSize > animationHeight && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i] += 0.5 + Math.random() * 0.5;
+      }
+    };
+
+    const interval = setInterval(draw, 50);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <div className="relative w-full h-full">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full"
+        style={{ background: "#0a0a0f" }}
+      />
+      {/* Gradient overlays to soften edges */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#0a0a0f] via-transparent to-transparent opacity-80" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0a0a0f] via-transparent to-[#0a0a0f] opacity-40" />
+    </div>
+  );
+}
+
 // ============ CONFETTI PARTICLES ============
 
 function ConfettiParticles() {
@@ -320,13 +224,8 @@ function GeneratePageContent() {
   const rawId = params?.id;
   const siteId = rawId ? Number(rawId) : NaN;
 
-  // Mounted state: delay code animation and polling until after hydration
+  // Mounted state: delay polling until after hydration
   const [mounted, setMounted] = useState(false);
-
-  // Code animation state
-  const [visibleLines, setVisibleLines] = useState<string[]>([]);
-  const codeContainerRef = useRef<HTMLDivElement>(null);
-  const lineIndexRef = useRef(0);
 
   // Generation status
   const [status, setStatus] = useState<string>("generating");
@@ -391,32 +290,6 @@ function GeneratePageContent() {
     }, 1000);
     return () => clearInterval(interval);
   }, [isComplete]);
-
-  // ---- Code typing animation (only after mount) ----
-  useEffect(() => {
-    if (!mounted) return;
-
-    const interval = setInterval(() => {
-      if (lineIndexRef.current < CODE_SNIPPETS.length) {
-        const idx = lineIndexRef.current;
-        setVisibleLines(prev => [...prev, CODE_SNIPPETS[idx] ?? '']);
-        lineIndexRef.current = idx + 1;
-      } else {
-        // Loop back from beginning
-        lineIndexRef.current = 0;
-        setVisibleLines(prev => [...prev, '', '/* ... rebuilding ... */', '']);
-      }
-    }, 150);
-
-    return () => clearInterval(interval);
-  }, [mounted]);
-
-  // Auto-scroll code panel
-  useEffect(() => {
-    if (codeContainerRef.current) {
-      codeContainerRef.current.scrollTop = codeContainerRef.current.scrollHeight;
-    }
-  }, [visibleLines]);
 
   // ---- Status polling ----
   const stopPolling = useCallback(() => {
@@ -492,11 +365,6 @@ function GeneratePageContent() {
   // ---- SVG progress ----
   const circumference = 2 * Math.PI * 56;
   const strokeDashoffset = circumference * (1 - animatedPercentage / 100);
-
-  // Highlighted lines (memoized)
-  const highlightedLines = useMemo(() => {
-    return visibleLines.map(line => highlightLine(line ?? ''));
-  }, [visibleLines]);
 
   // ============ ERROR STATE ============
   if (error) {
@@ -592,95 +460,8 @@ function GeneratePageContent() {
 
       {/* ===== MAIN CONTENT ===== */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0">
-        {/* ===== LEFT SIDE: Code Terminal ===== */}
-        <div className="w-full md:w-[60%] relative flex flex-col border-b md:border-b-0 md:border-r border-white/5 max-h-[40vh] md:max-h-none">
-          {/* Grid background pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-              backgroundSize: "40px 40px",
-            }}
-          />
-
-          {/* File tabs bar (VS Code style) */}
-          <div className="relative z-10 flex items-stretch border-b border-white/5 bg-[#0c0c14]">
-            {/* Active tab */}
-            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-[#0a0a0f] border-r border-white/5 border-b-2 border-b-blue-500">
-              <svg className="w-3.5 h-3.5 text-orange-400 shrink-0" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M1.5 0h13l.5.5v15l-.5.5h-13l-.5-.5V.5L1.5 0zM2 1v14h12V1H2z"/>
-                <path d="M4 4h8v1H4V4zm0 3h8v1H4V7zm0 3h5v1H4v-1z"/>
-              </svg>
-              <span className="text-xs text-slate-300 font-mono">index.html</span>
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            </div>
-            {/* Inactive tab */}
-            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-[#0c0c14] border-r border-white/5 opacity-40 hidden sm:flex">
-              <svg className="w-3.5 h-3.5 text-blue-400 shrink-0" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M1.5 0h13l.5.5v15l-.5.5h-13l-.5-.5V.5L1.5 0zM2 1v14h12V1H2z"/>
-              </svg>
-              <span className="text-xs text-slate-500 font-mono">styles.css</span>
-            </div>
-            {/* Inactive tab */}
-            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-[#0c0c14] opacity-40 hidden md:flex">
-              <svg className="w-3.5 h-3.5 text-yellow-400 shrink-0" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M1.5 0h13l.5.5v15l-.5.5h-13l-.5-.5V.5L1.5 0zM2 1v14h12V1H2z"/>
-              </svg>
-              <span className="text-xs text-slate-500 font-mono">gsap-universal.js</span>
-            </div>
-            {/* Spacer */}
-            <div className="flex-1 bg-[#0c0c14]" />
-            {/* Traffic lights */}
-            <div className="flex items-center gap-1.5 px-3 md:px-4 bg-[#0c0c14]">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
-            </div>
-          </div>
-
-          {/* Code content */}
-          <div
-            ref={codeContainerRef}
-            className="relative z-10 flex-1 overflow-y-auto p-0 font-mono text-[12px] md:text-[13px] leading-6 scrollbar-thin"
-            style={{ scrollbarWidth: "thin", scrollbarColor: "#1e293b #0a0a0f" }}
-          >
-            {highlightedLines.map((html, i) => (
-              <div key={i} className="flex hover:bg-white/[0.02] transition-colors group">
-                {/* Line number */}
-                <span className="inline-block w-10 md:w-14 flex-shrink-0 text-right pr-3 md:pr-5 py-0 text-slate-700 group-hover:text-slate-500 select-none border-r border-white/[0.04] bg-[#08080d] font-mono tabular-nums transition-colors text-[11px] md:text-[12px]">
-                  {i + 1}
-                </span>
-                {/* Code */}
-                <span
-                  className="pl-4 text-slate-300 whitespace-pre"
-                  dangerouslySetInnerHTML={{ __html: html || "&nbsp;" }}
-                />
-              </div>
-            ))}
-            {/* Blinking cursor at the end */}
-            <div className="flex">
-              <span className="inline-block w-10 md:w-14 flex-shrink-0 text-right pr-3 md:pr-5 text-slate-700 select-none border-r border-white/[0.04] bg-[#08080d] font-mono tabular-nums text-[11px] md:text-[12px]">
-                {highlightedLines.length + 1}
-              </span>
-              <span className="pl-4">
-                <span className="inline-block w-2 h-5 bg-blue-500 animate-pulse" />
-              </span>
-            </div>
-          </div>
-
-          {/* Bottom glow where new code appears */}
-          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-blue-500/[0.06] to-transparent pointer-events-none z-20" />
-          {/* Scanline effect */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none z-20 opacity-30"
-            style={{
-              background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(59,130,246,0.03) 2px, rgba(59,130,246,0.03) 4px)",
-            }}
-          />
-        </div>
-
-        {/* ===== RIGHT SIDE: Progress + Preview ===== */}
-        <div className="w-full md:w-[40%] flex flex-col overflow-y-auto">
+        {/* ===== LEFT SIDE: Progress + Preview (55%) ===== */}
+        <div className="w-full md:w-[55%] flex flex-col overflow-y-auto">
           <div className="flex-1 p-4 md:p-8 flex flex-col items-center gap-5 md:gap-8">
 
             {/* Title */}
@@ -694,7 +475,7 @@ function GeneratePageContent() {
             </div>
 
             {/* Circular Progress with glow */}
-            <div className="relative w-36 h-36 md:w-40 md:h-40">
+            <div className="relative w-36 h-36 md:w-44 md:h-44">
               {/* Pulsing glow behind the circle */}
               <div
                 className="absolute -inset-3 rounded-full blur-2xl opacity-25 animate-pulse"
@@ -752,7 +533,7 @@ function GeneratePageContent() {
             </div>
 
             {/* 5 Step Indicators with connecting lines */}
-            <div className="w-full">
+            <div className="w-full max-w-lg">
               <div className="flex items-start justify-between relative">
                 {/* Background connecting line */}
                 <div className="absolute top-[14px] left-[10%] right-[10%] h-[2px] bg-white/5 z-0" />
@@ -810,7 +591,7 @@ function GeneratePageContent() {
             </div>
 
             {/* Progressive Preview Section */}
-            <div className="w-full rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
+            <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
 
               {/* Phase: analyzing - Pulsing orb */}
               {phase === "analyzing" && !isComplete && (
@@ -990,6 +771,11 @@ function GeneratePageContent() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* ===== RIGHT SIDE: Matrix Rain Effect (45%) ===== */}
+        <div className="w-full md:w-[45%] h-[30vh] md:h-auto relative border-t md:border-t-0 md:border-l border-white/5">
+          <MatrixRain />
         </div>
       </div>
     </div>

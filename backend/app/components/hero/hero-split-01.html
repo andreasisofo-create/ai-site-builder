@@ -1,53 +1,58 @@
-<!-- Hero Split: testo sx + immagine dx con profondita' visiva -->
-<section id="hero" class="min-h-screen flex items-center bg-[var(--color-bg)] overflow-hidden relative">
-
-  <!-- Decorative background elements -->
-  <div class="absolute inset-0 pointer-events-none overflow-hidden">
-    <!-- Gradient orb top-right -->
-    <div class="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full" style="background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%); opacity: 0.07;"></div>
-    <!-- Gradient orb bottom-left -->
-    <div class="absolute -bottom-24 -left-24 w-[350px] h-[350px] rounded-full" style="background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%); opacity: 0.06;"></div>
-    <!-- Subtle grid pattern -->
-    <div class="absolute inset-0" style="background-image: radial-gradient(var(--color-primary) 0.5px, transparent 0.5px); background-size: 48px 48px; opacity: 0.03;"></div>
+<!-- Hero Split: content left + image right with Awwwards-quality depth and polish -->
+<section class="relative min-h-screen flex items-center overflow-hidden" style="background: var(--color-bg)" id="hero">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 -left-20 w-96 h-96 rounded-full blur-3xl opacity-[0.07]" style="background: var(--color-primary)"></div>
+    <div class="absolute bottom-20 right-10 w-80 h-80 rounded-full blur-3xl opacity-[0.05]" style="background: var(--color-accent, var(--color-secondary))"></div>
+    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 32px 32px;"></div>
   </div>
 
-  <div class="relative max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-    <!-- Text -->
-    <div data-animate="fade-right">
-      <div class="mb-6 flex items-center gap-3">
-        <img src="{{LOGO_URL}}" alt="" class="h-10 w-auto object-contain">
-        <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)]">{{BUSINESS_NAME}}</p>
+  <div class="relative max-w-7xl mx-auto px-6 md:px-12 w-full">
+    <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center min-h-screen py-24 md:py-0">
+      <!-- Content -->
+      <div class="space-y-8" data-animate="fade-right">
+        <!-- Brand badge -->
+        <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full" style="background: linear-gradient(135deg, rgba(var(--color-primary-rgb, 99,102,241), 0.08), rgba(var(--color-primary-rgb, 99,102,241), 0.03)); border: 1px solid rgba(var(--color-primary-rgb, 99,102,241), 0.12);" data-animate="fade-up">
+          <img src="{{LOGO_URL}}" alt="" class="h-6 w-auto object-contain">
+          <span class="text-xs font-semibold tracking-widest uppercase" style="color: var(--color-primary)">{{BUSINESS_NAME}}</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold leading-[1.05] tracking-tight" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">
+          {{HERO_TITLE}}
+        </h1>
+
+        <!-- Accent bar -->
+        <div class="w-16 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));" data-animate="fade-right" data-delay="0.15"></div>
+
+        <p class="text-lg md:text-xl leading-relaxed max-w-xl" style="color: var(--color-text-muted)" data-animate="fade-up" data-delay="0.2">
+          {{HERO_SUBTITLE}}
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4 pt-2" data-animate="fade-up" data-delay="0.4">
+          <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));" data-animate="magnetic">
+            {{HERO_CTA_TEXT}} <span class="ml-1">&rarr;</span>
+          </a>
+          <a href="#about" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 border-2" style="color: var(--color-text); border-color: rgba(var(--color-primary-rgb, 99,102,241), 0.2);" onmouseover="this.style.borderColor='var(--color-primary)';this.style.color='var(--color-primary)'" onmouseout="this.style.borderColor='rgba(var(--color-primary-rgb, 99,102,241), 0.2)';this.style.color='var(--color-text)'">
+            Scopri di pi&ugrave;
+          </a>
+        </div>
       </div>
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] leading-tight mb-6" data-animate="text-split" data-split-type="words">
-        {{HERO_TITLE}}
-      </h1>
-      <!-- Accent bar under heading -->
-      <div class="w-16 h-1 rounded-full mb-6" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent));" data-animate="fade-right" data-delay="0.2"></div>
-      <p class="text-lg text-[var(--color-text-muted)] leading-relaxed mb-8 max-w-lg" data-animate="fade-up" data-delay="0.3">
-        {{HERO_SUBTITLE}}
-      </p>
-      <div class="flex flex-wrap gap-4" data-animate="fade-up" data-delay="0.5">
-        <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-block px-8 py-4 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
-          {{HERO_CTA_TEXT}}
-        </a>
-        <a href="#about" class="inline-block px-8 py-4 border-2 border-[var(--color-text)]/20 text-[var(--color-text)] font-semibold rounded-xl hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors">
-          Scopri di pi&ugrave;
-        </a>
+
+      <!-- Image -->
+      <div class="relative" data-animate="fade-left" data-delay="0.3">
+        <!-- Glow behind image -->
+        <div class="absolute -inset-4 rounded-3xl opacity-20 blur-2xl" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent, var(--color-secondary)))"></div>
+        <!-- Decorative offset frame -->
+        <div class="absolute -top-3 -right-3 w-full h-full rounded-3xl border-2 opacity-[0.12]" style="border-color: var(--color-primary)"></div>
+        <!-- Main image -->
+        <div class="relative rounded-3xl overflow-hidden" data-animate="image-zoom">
+          <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="relative rounded-3xl shadow-2xl w-full aspect-[4/5] md:aspect-[3/4] object-cover" loading="eager" />
+          <!-- Subtle gradient overlay at bottom -->
+          <div class="absolute inset-0 rounded-3xl" style="background: linear-gradient(to top, var(--color-bg) 0%, transparent 30%); opacity: 0.25;"></div>
+        </div>
+        <!-- Floating accent dot -->
+        <div class="absolute -bottom-3 -left-3 w-6 h-6 rounded-full shadow-lg" style="background: var(--color-accent, var(--color-primary));" data-animate="float" data-speed="0.5"></div>
       </div>
-    </div>
-    <!-- Image -->
-    <div data-animate="fade-left" class="relative">
-      <!-- Decorative offset frame behind image -->
-      <div class="absolute -top-4 -right-4 w-full h-full rounded-2xl border-2 border-[var(--color-primary)]/15"></div>
-      <!-- Glow behind image -->
-      <div class="absolute -inset-6 rounded-3xl blur-3xl" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); opacity: 0.08;"></div>
-      <div data-animate="image-zoom" class="relative rounded-2xl overflow-hidden">
-        <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="relative w-full rounded-2xl shadow-2xl object-cover aspect-[4/3]" loading="eager">
-        <!-- Subtle gradient overlay on image bottom -->
-        <div class="absolute inset-0 rounded-2xl" style="background: linear-gradient(to top, var(--color-bg) 0%, transparent 30%); opacity: 0.3;"></div>
-      </div>
-      <!-- Floating accent dot -->
-      <div class="absolute -bottom-3 -left-3 w-6 h-6 rounded-full" style="background: var(--color-accent);" data-animate="float" data-speed="0.5"></div>
     </div>
   </div>
 </section>
