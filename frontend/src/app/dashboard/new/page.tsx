@@ -349,6 +349,9 @@ function NewProjectContent() {
       });
 
       toast.success(language === "en" ? "Generation started! Please wait..." : "Generazione avviata! Attendere...");
+
+      // Navigate to the immersive generation experience page
+      router.push(`/generate/${site.id}`);
     } catch (error: any) {
       stopProgressPolling();
       if (error.isQuotaError || error.quota?.upgrade_required) {

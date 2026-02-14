@@ -19,6 +19,7 @@ import {
   VideoCameraIcon,
   CodeBracketIcon,
   ArrowUturnLeftIcon,
+  QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { getSite, updateSite, refineWebsite, deploySite, regenerateImages, Site } from "@/lib/api";
@@ -49,6 +50,61 @@ const QUICK_ACTIONS = {
     "Improve mobile design",
     "Change the site font",
     "Add animations",
+  ],
+};
+
+const GUIDE_SUGGESTIONS = {
+  it: [
+    {
+      icon: "\uD83C\uDFA8",
+      title: "Migliora i colori",
+      description: "Cambia la palette colori per dare un look piu' professionale",
+      chatMessage: "Cambia la palette colori con colori piu' vivaci e professionali, usa un design da Awwwards",
+    },
+    {
+      icon: "\u270D\uFE0F",
+      title: "Riscrivi i testi",
+      description: "Rendi i testi piu' accattivanti e persuasivi",
+      chatMessage: "Riscrivi tutti i testi del sito con un tono piu' professionale e accattivante, evita frasi generiche",
+    },
+    {
+      icon: "\u2795",
+      title: "Aggiungi sezioni",
+      description: "Aggiungi testimonials, gallery, FAQ e altro",
+      chatMessage: "Aggiungi una sezione testimonials con 3 recensioni e una sezione FAQ con 5 domande frequenti",
+    },
+    {
+      icon: "\u2728",
+      title: "Perfeziona il design",
+      description: "Migliora layout, spaziature e animazioni",
+      chatMessage: "Migliora il design generale: aggiungi piu' spaziatura tra le sezioni, hover effects sulle card, e gradient di sfondo",
+    },
+  ],
+  en: [
+    {
+      icon: "\uD83C\uDFA8",
+      title: "Improve colors",
+      description: "Change the color palette for a more professional look",
+      chatMessage: "Change the color palette with more vibrant and professional colors, use an Awwwards-level design",
+    },
+    {
+      icon: "\u270D\uFE0F",
+      title: "Rewrite texts",
+      description: "Make texts more engaging and persuasive",
+      chatMessage: "Rewrite all site texts with a more professional and engaging tone, avoid generic phrases",
+    },
+    {
+      icon: "\u2795",
+      title: "Add sections",
+      description: "Add testimonials, gallery, FAQ and more",
+      chatMessage: "Add a testimonials section with 3 reviews and a FAQ section with 5 frequently asked questions",
+    },
+    {
+      icon: "\u2728",
+      title: "Perfect the design",
+      description: "Improve layout, spacing and animations",
+      chatMessage: "Improve the overall design: add more spacing between sections, hover effects on cards, and background gradients",
+    },
   ],
 };
 
@@ -88,9 +144,8 @@ export default function Editor() {
   const [htmlHistory, setHtmlHistory] = useState<string[]>([]);
   const [isUndoing, setIsUndoing] = useState(false);
 
-  // Onboarding state
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [onboardingStep, setOnboardingStep] = useState(0);
+  // Guide panel state
+  const [showGuidePanel, setShowGuidePanel] = useState(false);
 
   useEffect(() => {
     if (siteId) {
@@ -111,63 +166,31 @@ export default function Editor() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Show onboarding on first visit when site is ready/generated
+  // Show guide panel on first visit when site is ready/generated
   useEffect(() => {
     if (site && (site.status === "ready" || site.status === "published") && liveHtml) {
-      const seen = localStorage.getItem("editor-onboarding-seen");
+      const seen = localStorage.getItem("editor-guide-seen");
       if (!seen) {
-        setShowOnboarding(true);
+        setShowGuidePanel(true);
       }
     }
   }, [site?.status, liveHtml]);
 
-  const onboardingSteps = [
-    {
-      icon: "sparkles",
-      title: { it: "Il tuo sito e\u0300 pronto!", en: "Your site is ready!" },
-      description: {
-        it: "L'AI ha generato il tuo sito completo. Puoi visualizzarlo nell'anteprima qui al centro. Prova a passare dalla vista desktop a quella mobile usando i controlli in alto.",
-        en: "The AI has generated your complete site. You can view it in the preview area in the center. Try switching between desktop and mobile views using the controls at the top.",
-      },
-    },
-    {
-      icon: "chat",
-      title: { it: "Modifica con l'AI", en: "Edit with AI" },
-      description: {
-        it: "Apri la Chat AI dal pulsante in alto a destra per modificare qualsiasi parte del sito. Basta descrivere cosa vuoi cambiare, ad esempio: \"Cambia il colore principale in blu\" o \"Aggiungi una sezione contatti\".",
-        en: "Open the AI Chat from the button at the top right to modify any part of the site. Just describe what you want to change, for example: \"Change the main color to blue\" or \"Add a contact section\".",
-      },
-    },
-    {
-      icon: "actions",
-      title: { it: "Azioni rapide", en: "Quick actions" },
-      description: {
-        it: "Nella chat troverai azioni rapide predefinite per le modifiche piu\u0300 comuni: cambiare colori, font, aggiungere sezioni e molto altro. Puoi anche rigenerare le immagini con l'AI.",
-        en: "In the chat you'll find predefined quick actions for the most common edits: changing colors, fonts, adding sections and more. You can also regenerate images with AI.",
-      },
-    },
-    {
-      icon: "publish",
-      title: { it: "Pubblica il tuo sito", en: "Publish your site" },
-      description: {
-        it: "Quando sei soddisfatto del risultato, clicca il pulsante \"Pubblica\" in alto a destra per mettere il tuo sito online. Riceverai un link da condividere subito.",
-        en: "When you're happy with the result, click the \"Publish\" button at the top right to put your site online. You'll get a link to share right away.",
-      },
-    },
-  ];
-
-  const handleOnboardingNext = () => {
-    if (onboardingStep < onboardingSteps.length - 1) {
-      setOnboardingStep(onboardingStep + 1);
-    } else {
-      handleOnboardingClose();
-    }
+  const handleGuideDismiss = () => {
+    setShowGuidePanel(false);
+    setChatOpen(true);
+    localStorage.setItem("editor-guide-seen", "true");
   };
 
-  const handleOnboardingClose = () => {
-    setShowOnboarding(false);
-    setOnboardingStep(0);
-    localStorage.setItem("editor-onboarding-seen", "true");
+  const handleGuideSuggestionClick = (chatMessage: string) => {
+    setShowGuidePanel(false);
+    setChatOpen(true);
+    localStorage.setItem("editor-guide-seen", "true");
+    setChatInput(chatMessage);
+    // Focus the textarea after a short delay to allow render
+    setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 100);
   };
 
   const loadSite = async () => {
@@ -528,11 +551,25 @@ export default function Editor() {
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
+            {/* Guide Help Button */}
+            <button
+              onClick={() => setShowGuidePanel(true)}
+              className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+              title={language === "en" ? "Guide" : "Guida"}
+            >
+              <QuestionMarkCircleIcon className="w-5 h-5" />
+            </button>
+
             {/* Chat Toggle */}
             <button
-              onClick={() => setChatOpen(!chatOpen)}
+              onClick={() => {
+                if (showGuidePanel) {
+                  setShowGuidePanel(false);
+                }
+                setChatOpen(!chatOpen);
+              }}
               className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                chatOpen
+                chatOpen && !showGuidePanel
                   ? "bg-blue-600 text-white"
                   : "text-slate-300 hover:text-white hover:bg-white/5"
               }`}
@@ -656,9 +693,78 @@ export default function Editor() {
           )}
         </div>
 
-        {/* Chat Panel (Right Sidebar) */}
-        {chatOpen && (
-          <aside className="w-full sm:w-[380px] fixed sm:relative inset-0 sm:inset-auto z-50 sm:z-auto bg-[#111] border-l border-white/5 flex flex-col flex-shrink-0">
+        {/* Right Sidebar: Guide Panel or Chat Panel */}
+        {(chatOpen || showGuidePanel) && (
+          <aside className="w-full sm:w-[380px] fixed sm:relative inset-0 sm:inset-auto z-50 sm:z-auto bg-[#0d0d12] border-l border-white/10 flex flex-col flex-shrink-0">
+            {showGuidePanel ? (
+              <>
+                {/* Guide Panel Header */}
+                <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <SparklesIcon className="w-5 h-5 text-blue-400" />
+                    <h3 className="font-semibold">{language === "en" ? "Guide" : "Guida"}</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowGuidePanel(false)}
+                    className="p-1 hover:bg-white/5 rounded-lg transition-colors"
+                  >
+                    <XMarkIcon className="w-5 h-5 text-slate-400" />
+                  </button>
+                </div>
+
+                {/* Guide Panel Content */}
+                <div className="flex-1 overflow-y-auto p-5 flex flex-col">
+                  {/* Title Section */}
+                  <div className="text-center mb-6">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-4">
+                      <SparklesIcon className="w-7 h-7 text-blue-400" />
+                    </div>
+                    <h2 className="text-xl font-bold text-white mb-2">
+                      {language === "en" ? "Your site is ready!" : "Il tuo sito e' pronto!"}
+                    </h2>
+                    <p className="text-sm text-slate-400">
+                      {language === "en"
+                        ? "Use AI Chat to customize every aspect"
+                        : "Usa la Chat AI per personalizzare ogni aspetto"}
+                    </p>
+                  </div>
+
+                  {/* Suggestion Cards */}
+                  <div className="space-y-3 flex-1">
+                    {GUIDE_SUGGESTIONS[language as "it" | "en"].map((suggestion, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleGuideSuggestionClick(suggestion.chatMessage)}
+                        className="w-full text-left rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 p-4 transition-all group"
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="text-2xl flex-shrink-0 mt-0.5">{suggestion.icon}</span>
+                          <div>
+                            <h4 className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
+                              {suggestion.title}
+                            </h4>
+                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                              {suggestion.description}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Bottom CTA Button */}
+                  <div className="mt-6 pt-4 border-t border-white/10">
+                    <button
+                      onClick={handleGuideDismiss}
+                      className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl transition-all"
+                    >
+                      {language === "en" ? "Got it, let's start!" : "Ho capito, inizia!"}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
             {/* Chat Header */}
             <div className="p-4 border-b border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -970,83 +1076,11 @@ export default function Editor() {
                   : "Invio per inviare, Shift+Invio per nuova riga"}
               </p>
             </div>
+              </>
+            )}
           </aside>
         )}
       </main>
-
-      {/* Onboarding Overlay */}
-      {showOnboarding && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-md mx-4 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-            {/* Icon area */}
-            <div className="flex items-center justify-center pt-8 pb-4">
-              <div className="w-16 h-16 rounded-2xl bg-blue-600/20 flex items-center justify-center">
-                {onboardingSteps[onboardingStep].icon === "sparkles" && (
-                  <SparklesIcon className="w-8 h-8 text-blue-400" />
-                )}
-                {onboardingSteps[onboardingStep].icon === "chat" && (
-                  <ChatBubbleLeftRightIcon className="w-8 h-8 text-blue-400" />
-                )}
-                {onboardingSteps[onboardingStep].icon === "actions" && (
-                  <CodeBracketIcon className="w-8 h-8 text-blue-400" />
-                )}
-                {onboardingSteps[onboardingStep].icon === "publish" && (
-                  <PaperAirplaneIcon className="w-8 h-8 text-blue-400" />
-                )}
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="px-8 pb-4 text-center">
-              <h2 className="text-xl font-bold text-white mb-3">
-                {onboardingSteps[onboardingStep].title[language as "it" | "en"]}
-              </h2>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                {onboardingSteps[onboardingStep].description[language as "it" | "en"]}
-              </p>
-            </div>
-
-            {/* Step indicators */}
-            <div className="flex items-center justify-center gap-2 py-4">
-              {onboardingSteps.map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-1.5 rounded-full transition-all ${
-                    i === onboardingStep
-                      ? "w-6 bg-blue-500"
-                      : i < onboardingStep
-                      ? "w-1.5 bg-blue-500/50"
-                      : "w-1.5 bg-white/20"
-                  }`}
-                />
-              ))}
-            </div>
-
-            {/* Navigation */}
-            <div className="flex items-center justify-between px-8 pb-8">
-              <button
-                onClick={handleOnboardingClose}
-                className="px-4 py-2 text-sm text-slate-400 hover:text-white transition-colors"
-              >
-                {language === "en" ? "Skip" : "Salta"}
-              </button>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-500">
-                  {onboardingStep + 1}/{onboardingSteps.length}
-                </span>
-                <button
-                  onClick={handleOnboardingNext}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  {onboardingStep === onboardingSteps.length - 1
-                    ? (language === "en" ? "Get started" : "Inizia")
-                    : (language === "en" ? "Next" : "Avanti")}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

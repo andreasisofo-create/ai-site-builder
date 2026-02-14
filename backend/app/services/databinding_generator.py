@@ -49,6 +49,13 @@ try:
 except Exception:
     _has_design_knowledge = False
 
+# Reference HTML sites for quality injection
+try:
+    from app.services.reference_sites import get_reference_for_category
+    _has_reference_sites = True
+except Exception:
+    _has_reference_sites = False
+
 logger = logging.getLogger(__name__)
 
 ProgressCallback = Optional[Callable[[int, str, Optional[Dict[str, Any]]], None]]
@@ -356,7 +363,28 @@ Return ONLY the JSON object"""
         if creative_context:
             knowledge_hint = f"\n\nDESIGN KNOWLEDGE (follow these professional guidelines closely):\n{creative_context[:2500]}\n"
 
-        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.{knowledge_hint}
+        # Inject reference HTML so AI can see the quality level expected
+        reference_hint = ""
+        if _has_reference_sites:
+            try:
+                category_label = ""
+                if business_description:
+                    # Extract category from first line of description (e.g., "Template: Restaurant - Stile: elegant")
+                    first_line = business_description.split("\n")[0].lower()
+                    for cat in ["restaurant", "ristorante", "saas", "tech", "portfolio", "creative", "business", "corporate", "ecommerce", "shop", "blog", "event"]:
+                        if cat in first_line:
+                            category_label = cat
+                            break
+                if not category_label:
+                    category_label = "business"
+                ref_html = get_reference_for_category(category_label)
+                if ref_html:
+                    # Truncate to keep token count reasonable
+                    reference_hint = f"\n\n=== REFERENCE QUALITY LEVEL (your output must match this design sophistication) ===\nStudy this professional HTML carefully. Notice: gradient backgrounds, generous spacing (py-32), hover effects, decorative elements, specific compelling copy, emoji icons, shadow effects. YOUR generated content must achieve THIS level of design polish.\n{ref_html[:3000]}\n=== END REFERENCE ===\n"
+            except Exception:
+                pass
+
+        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.{knowledge_hint}{reference_hint}
 Your copy must be SHARP, EVOCATIVE, and EMOTIONALLY MAGNETIC. Every word earns its place. Zero filler, zero corporate jargon.
 Return ONLY valid JSON, no markdown.
 
