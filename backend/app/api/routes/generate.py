@@ -222,9 +222,7 @@ async def _run_generation_background(
                 db.commit()
             return
 
-        # Incrementa contatore generazioni
-        if not user.is_premium and not user.is_superuser:
-            user.generations_used += 1
+        # NOTE: generations_used already incremented in request handler (before bg task)
 
         # Salva HTML, versione, site_data e QC report
         if site and result.get("html_content"):
@@ -321,6 +319,10 @@ async def generate_website(
             detail="Il sistema ha raggiunto il limite giornaliero di generazioni. Riprova domani.",
         )
 
+    # Incrementa contatore generazioni PRIMA del background task (previene race condition)
+    if not current_user.is_premium and not current_user.is_superuser:
+        current_user.generations_used += 1
+
     # Imposta sito in stato "generating" subito
     site = None
     if data.site_id:
@@ -332,7 +334,7 @@ async def generate_website(
             site.status = "generating"
             site.generation_step = 0
             site.generation_message = "Avvio generazione..."
-            db.commit()
+    db.commit()
 
     # Lancia generazione in background (hold ref to prevent GC)
     task = asyncio.create_task(
@@ -526,7 +528,11 @@ async def get_qc_report(
 
 @router.post("/analyze-image")
 @limiter.limit("10/hour")
-async def analyze_image(request: Request, data: ImageAnalysisRequest):
+async def analyze_image(
+    request: Request,
+    data: ImageAnalysisRequest,
+    current_user: User = Depends(get_current_active_user),
+):
     """Analizza un'immagine di riferimento per estrarre stile."""
     if not _validate_image_url(data.image_url):
         raise HTTPException(status_code=400, detail="URL immagine non valido")
