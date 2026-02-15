@@ -30,6 +30,9 @@ import json
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/generate", tags=["generation"])
 
+# Hold references to background tasks to prevent GC
+_background_tasks: set = set()
+
 # Import limiter dal modulo dedicato (evita import circolare con main.py)
 from app.core.rate_limiter import limiter
 
@@ -64,28 +67,51 @@ class ImageAnalysisRequest(BaseModel):
     image_url: str
 
 
+def _validate_image_url(url: str) -> bool:
+    """Validate image URL to prevent SSRF. Allow data: URIs and public HTTPS URLs."""
+    if url.startswith("data:image/"):
+        return True
+    from urllib.parse import urlparse
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        return False
+    host = parsed.hostname or ""
+    # Block internal/private IPs
+    blocked = ("localhost", "127.0.0.1", "0.0.0.0", "169.254.", "10.", "172.16.", "192.168.", "[::1]")
+    for b in blocked:
+        if host.startswith(b) or host == b:
+            return False
+    return True
+
+
 # ============ HELPER: Spending Cap ============
 
 MAX_DAILY_GENERATIONS = 200  # ~$7/giorno massimo di spesa AI
 
 def _check_and_increment_spending_cap(db: Session):
     """Verifica e incrementa il contatore globale giornaliero.
-    Incrementa PRIMA della generazione per prevenire race condition.
+    Uses atomic SQL UPDATE ... WHERE to prevent TOCTOU race condition.
     Ritorna True se ok, False se cap raggiunto."""
+    from sqlalchemy import text as sql_text
     today = date.today()
-    counter = db.query(GlobalCounter).filter(GlobalCounter.date == today).first()
 
+    # Ensure counter row exists (upsert)
+    counter = db.query(GlobalCounter).filter(GlobalCounter.date == today).first()
     if not counter:
         counter = GlobalCounter(date=today, daily_generations=0)
         db.add(counter)
         db.flush()
 
-    if counter.daily_generations >= MAX_DAILY_GENERATIONS:
-        return False
-
-    counter.daily_generations += 1
+    # Atomic increment: only succeeds if count < MAX
+    result = db.execute(
+        sql_text(
+            "UPDATE global_counters SET daily_generations = daily_generations + 1 "
+            "WHERE date = :today AND daily_generations < :max_gen"
+        ),
+        {"today": today, "max_gen": MAX_DAILY_GENERATIONS},
+    )
     db.flush()
-    return True
+    return result.rowcount > 0
 
 
 # ============ HELPER: Save Version ============
@@ -304,10 +330,12 @@ async def generate_website(
             site.generation_message = "Avvio generazione..."
             db.commit()
 
-    # Lancia generazione in background
-    asyncio.create_task(
+    # Lancia generazione in background (hold ref to prevent GC)
+    task = asyncio.create_task(
         _run_generation_background(data, current_user.id, data.site_id)
     )
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
 
     return {
         "success": True,
@@ -496,6 +524,8 @@ async def get_qc_report(
 @limiter.limit("10/hour")
 async def analyze_image(request: Request, data: ImageAnalysisRequest):
     """Analizza un'immagine di riferimento per estrarre stile."""
+    if not _validate_image_url(data.image_url):
+        raise HTTPException(status_code=400, detail="URL immagine non valido")
     from app.services.kimi_client import kimi
 
     prompt = """Analyze this website screenshot and describe:

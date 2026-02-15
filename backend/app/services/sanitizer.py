@@ -110,10 +110,28 @@ def _sanitize_scripts(html: str) -> str:
     """
     Filtra script tag selettivamente:
     - Mantieni <script src="..."> da CDN whitelistate
-    - Mantieni <script>...</script> inline (vanilla JS per menu toggle, smooth scroll)
+    - Mantieni <script>...</script> inline solo se non contengono pattern pericolosi
     - Rimuovi script con src da domini non consentiti
     """
     import re as _re
+
+    # Patterns that indicate malicious or dangerous inline JS
+    _DANGEROUS_JS_PATTERNS = [
+        r'document\.cookie',
+        r'localStorage',
+        r'sessionStorage',
+        r'XMLHttpRequest',
+        r'\bfetch\s*\(',
+        r'eval\s*\(',
+        r'Function\s*\(',
+        r'window\.location\s*=',
+        r'document\.write',
+        r'\.innerHTML\s*=',
+        r'importScripts',
+        r'navigator\.sendBeacon',
+        r'WebSocket',
+        r'postMessage',
+    ]
 
     def _check_script(match):
         tag = match.group(0)
@@ -121,13 +139,17 @@ def _sanitize_scripts(html: str) -> str:
         src_match = _re.search(r'src\s*=\s*["\']([^"\']+)["\']', tag)
         if src_match:
             src_url = src_match.group(1)
-            # Controlla se il dominio e' nella whitelist
             for allowed in ALLOWED_SCRIPT_SRCS:
                 if allowed in src_url:
-                    return tag  # Mantieni
+                    return tag
             logger.warning(f"Blocked script src: {src_url}")
-            return ""  # Rimuovi
-        # Script inline (senza src) - mantieni per vanilla JS
+            return ""
+        # Inline script: check for dangerous patterns
+        content = _re.sub(r'<script[^>]*>|</script>', '', tag, flags=_re.IGNORECASE)
+        for pattern in _DANGEROUS_JS_PATTERNS:
+            if _re.search(pattern, content, _re.IGNORECASE):
+                logger.warning(f"Blocked inline script with dangerous pattern: {pattern}")
+                return ""
         return tag
 
     html = _re.sub(
