@@ -560,19 +560,35 @@ class UpgradeRequest(BaseModel):
     plan: str  # "base" o "premium"
 
 
+class UpgradePaymentRequest(BaseModel):
+    plan: str
+    payment_id: str = ""  # Revolut payment ID for verification
+
+
 @router.post("/upgrade")
 async def upgrade_plan(
     data: UpgradeRequest,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Attiva un piano dopo il pagamento. Accetta 'base' o 'premium'."""
+    """Attiva un piano dopo il pagamento. Richiede verifica pagamento Revolut o admin."""
     from app.models.user import PLAN_CONFIG
     if data.plan not in PLAN_CONFIG or data.plan == "free":
         raise HTTPException(
             status_code=400,
             detail=f"Piano '{data.plan}' non valido. Scegli 'base' o 'premium'.",
         )
+
+    # Security: only allow upgrade if user is admin or superuser
+    # TODO: Add Revolut payment verification when payment system is active
+    if not current_user.is_superuser:
+        # Check if user is in admin emails list
+        admin_emails = settings.admin_emails_list
+        if not admin_emails or current_user.email.lower() not in admin_emails:
+            raise HTTPException(
+                status_code=403,
+                detail="Upgrade richiede un pagamento valido. Contatta il supporto.",
+            )
 
     try:
         current_user.activate_plan(data.plan)

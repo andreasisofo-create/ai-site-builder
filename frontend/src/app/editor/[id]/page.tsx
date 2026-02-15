@@ -113,7 +113,8 @@ export default function Editor() {
   const router = useRouter();
   const { user } = useAuth();
   const { language } = useLanguage();
-  const siteId = params.id as string;
+  const rawId = params?.id;
+  const siteId = Array.isArray(rawId) ? rawId[0] : (rawId as string);
 
   const [site, setSite] = useState<Site | null>(null);
   const [loading, setLoading] = useState(true);

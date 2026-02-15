@@ -146,6 +146,16 @@ async def lifespan(app: FastAPI):
 
     yield
 
+    # Cleanup: close AI client connections
+    try:
+        from app.services.kimi_client import kimi, kimi_refine
+        await kimi.close()
+        if kimi_refine is not kimi:
+            await kimi_refine.close()
+        logger.info("AI client connections closed")
+    except Exception as e:
+        logger.warning(f"Error closing AI clients: {e}")
+
     logger.info("Server spento")
 
 # Creazione app

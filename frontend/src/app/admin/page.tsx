@@ -1389,7 +1389,7 @@ function SitesTab() {
                 <iframe
                   srcDoc={previewHtml}
                   className="w-full h-full border-0"
-                  sandbox="allow-scripts allow-same-origin"
+                  sandbox="allow-scripts"
                   title={language === "en" ? "Site preview" : "Anteprima sito"}
                 />
               )}

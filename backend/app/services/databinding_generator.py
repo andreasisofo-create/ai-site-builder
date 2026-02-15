@@ -720,7 +720,7 @@ Return ONLY the JSON object"""
             result = await self.kimi.call(
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=500, thinking=False, timeout=60.0,
-                temperature=0.9, top_p=0.95,
+                temperature=0.9, top_p=0.95, json_mode=True,
             )
 
         if result.get("success"):
@@ -1017,7 +1017,7 @@ FINAL CHECKLIST (every point is mandatory):
         result = await self.kimi.call(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=4000, thinking=False, timeout=120.0,
-            temperature=0.9, top_p=0.95,
+            temperature=0.9, top_p=0.95, json_mode=True,
         )
 
         if result.get("success"):
@@ -1031,7 +1031,7 @@ FINAL CHECKLIST (every point is mandatory):
                 retry_result = await self.kimi.call(
                     messages=[{"role": "user", "content": prompt + "\n\nIMPORTANT: Your previous response had invalid JSON. Return ONLY valid JSON. No comments, no trailing commas, no explanation."}],
                     max_tokens=4000, thinking=False, timeout=120.0,
-                    temperature=0.5,
+                    temperature=0.5, json_mode=True,
                 )
                 if retry_result.get("success"):
                     try:
@@ -1151,6 +1151,7 @@ Return ONLY the JSON object."""
         result = await self.kimi.call(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=600, thinking=False, timeout=45.0,
+            json_mode=True,
         )
 
         if result.get("success"):
@@ -1562,7 +1563,7 @@ Return ONLY the JSON object."""
                 "CONTACT_PHONE": phone,
                 "CONTACT_EMAIL": email,
                 "CONTACT_ADDRESS": address,
-                "CURRENT_YEAR": "2026",
+                "CURRENT_YEAR": str(__import__('datetime').datetime.now().year),
             },
         }
 

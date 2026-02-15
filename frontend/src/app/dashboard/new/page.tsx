@@ -109,6 +109,10 @@ function NewProjectContent() {
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error(language === "en" ? "File too large (max 2MB)" : "File troppo grande (max 2MB)");
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({ ...prev, logo: reader.result as string }));
@@ -121,6 +125,10 @@ function NewProjectContent() {
   const handleReferenceImageUpload = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error(language === "en" ? "File too large (max 2MB)" : "File troppo grande (max 2MB)");
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => {
@@ -149,23 +157,29 @@ function NewProjectContent() {
     if (!files) return;
 
     Array.from(files).forEach(file => {
-      if (formData.photos.length >= 8) {
-        toast.error(language === "en" ? "Maximum 8 photos" : "Massimo 8 foto");
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error(language === "en" ? "File too large (max 2MB)" : "File troppo grande (max 2MB)");
         return;
       }
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData(prev => ({
-          ...prev,
-          photos: [
-            ...prev.photos,
-            {
-              id: `photo-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-              dataUrl: reader.result as string,
-              label: file.name,
-            },
-          ],
-        }));
+        setFormData(prev => {
+          if (prev.photos.length >= 8) {
+            toast.error(language === "en" ? "Maximum 8 photos" : "Massimo 8 foto");
+            return prev;
+          }
+          return {
+            ...prev,
+            photos: [
+              ...prev.photos,
+              {
+                id: `photo-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                dataUrl: reader.result as string,
+                label: file.name,
+              },
+            ],
+          };
+        });
       };
       reader.readAsDataURL(file);
     });
@@ -231,6 +245,7 @@ function NewProjectContent() {
 
   // Generate
   const handleGenerate = async () => {
+    if (isGenerating) return;
     if (!formData.businessName.trim()) {
       toast.error(language === "en" ? "Enter the business name" : "Inserisci il nome del business");
       return;
@@ -353,6 +368,7 @@ function NewProjectContent() {
       // Navigate immediately to the immersive generation experience page.
       // generateWebsite() returns fast (generation runs in background on backend).
       // The /generate page handles progress polling, so no need to wait here.
+      stopProgressPolling();
       router.push(`/generate/${site.id}`);
     } catch (error: any) {
       stopProgressPolling();

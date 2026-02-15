@@ -129,6 +129,7 @@ class KimiClient:
         temperature: Optional[float] = None,
         top_p: Optional[float] = None,
         stream: bool = False,
+        json_mode: bool = False,
     ) -> Dict[str, Any]:
         """Build the request payload, only adding provider-specific fields where needed."""
         if temperature is None:
@@ -147,6 +148,10 @@ class KimiClient:
         if stream:
             payload["stream"] = True
 
+        # JSON mode: force model to output valid JSON (OpenRouter/OpenAI compatible)
+        if json_mode:
+            payload["response_format"] = {"type": "json_object"}
+
         # Kimi-specific: thinking mode toggle
         if self._is_kimi and not thinking:
             payload["thinking"] = {"type": "disabled"}
@@ -162,6 +167,7 @@ class KimiClient:
         _retries: int = 2,
         temperature: Optional[float] = None,
         top_p: Optional[float] = None,
+        json_mode: bool = False,
     ) -> Dict[str, Any]:
         """
         Chiamata base all'AI provider con retry su 429 rate limit.
@@ -174,6 +180,7 @@ class KimiClient:
             _retries: Numero di retry su 429 (default 2)
             temperature: Override temperature
             top_p: Optional top_p for nucleus sampling diversity
+            json_mode: Force JSON output format (OpenRouter/OpenAI compatible)
 
         Returns:
             {"success": True, "content": str, "tokens_input": int, "tokens_output": int}
@@ -185,6 +192,7 @@ class KimiClient:
             thinking=thinking,
             temperature=temperature,
             top_p=top_p,
+            json_mode=json_mode,
         )
 
         last_error = ""
