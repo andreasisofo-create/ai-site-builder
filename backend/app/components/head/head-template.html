@@ -192,6 +192,13 @@
     @media (hover: none), (max-width: 768px) {
       .cursor-glow { display: none !important; }
     }
+    /* Variable Font Weight Transitions - premium micro-interaction */
+    a, button, [role="button"] {
+      transition: color var(--transition-speed, 0.3s) ease, font-weight 0.2s ease, font-variation-settings 0.3s ease;
+    }
+    nav a:hover { font-weight: 600; }
+    /* Smooth image reveal default */
+    img { transition: opacity 0.4s ease, transform 0.4s ease; }
   </style>
   <noscript><style>[data-animate] { opacity: 1 !important; animation: none !important; }</style></noscript>
 </head>

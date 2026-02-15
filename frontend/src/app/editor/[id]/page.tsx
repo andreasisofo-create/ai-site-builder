@@ -45,6 +45,8 @@ const QUICK_ACTIONS = {
     "Migliora il design mobile",
     "Cambia il font del sito",
     "Aggiungi animazioni",
+    "Rigenera la sezione Hero con un design diverso",
+    "Riscrivi tutti i testi con un tono piu' audace",
   ],
   en: [
     "Change the color scheme",
@@ -53,6 +55,8 @@ const QUICK_ACTIONS = {
     "Improve mobile design",
     "Change the site font",
     "Add animations",
+    "Regenerate the Hero section with a different design",
+    "Rewrite all texts with a bolder tone",
   ],
 };
 
