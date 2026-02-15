@@ -2663,18 +2663,18 @@ Return ONLY the JSON object."""
         return [
             {
                 "SERVICE_ICON": "\U0001f3af",
-                "SERVICE_TITLE": "Consulenza Personalizzata",
-                "SERVICE_DESCRIPTION": f"Un approccio su misura per le tue esigenze. {business_name} ti guida passo dopo passo verso i tuoi obiettivi.",
+                "SERVICE_TITLE": "Strategia su Misura",
+                "SERVICE_DESCRIPTION": f"Analizziamo a fondo il tuo contesto per costruire un percorso che rifletta la vera identità di {business_name} e porti risultati misurabili nel tempo.",
             },
             {
                 "SERVICE_ICON": "\U0001f680",
-                "SERVICE_TITLE": "Soluzioni Innovative",
-                "SERVICE_DESCRIPTION": "Tecnologie all'avanguardia e metodologie collaudate per risultati che superano le aspettative.",
+                "SERVICE_TITLE": "Esecuzione Fulminante",
+                "SERVICE_DESCRIPTION": "Dalla visione al lancio in tempi record. Ogni fase del progetto segue un metodo collaudato che elimina gli sprechi e accelera i risultati concreti.",
             },
             {
-                "SERVICE_ICON": "\U0001f91d",
-                "SERVICE_TITLE": "Supporto Dedicato",
-                "SERVICE_DESCRIPTION": "Un team di esperti sempre al tuo fianco. Assistenza continua e comunicazione trasparente.",
+                "SERVICE_ICON": "\U0001f4a1",
+                "SERVICE_TITLE": "Evoluzione Continua",
+                "SERVICE_DESCRIPTION": "Non ci fermiamo al primo traguardo. Monitoriamo, ottimizziamo e iteriamo per garantire che ogni aspetto cresca insieme al tuo business.",
             },
         ]
 
@@ -2683,67 +2683,78 @@ Return ONLY the JSON object."""
         return [
             {
                 "FEATURE_ICON": "\u2728",
-                "FEATURE_TITLE": "Qualita' Superiore",
-                "FEATURE_DESCRIPTION": "Standard elevati in ogni dettaglio, dalla progettazione alla consegna finale.",
+                "FEATURE_TITLE": "Cura Artigianale",
+                "FEATURE_DESCRIPTION": f"Ogni progetto di {business_name} riceve un'attenzione maniacale ai dettagli, perché la differenza si vede nei particolari che altri trascurano.",
             },
             {
                 "FEATURE_ICON": "\u26a1",
-                "FEATURE_TITLE": "Velocita' ed Efficienza",
-                "FEATURE_DESCRIPTION": "Processi ottimizzati per garantire tempi di consegna rapidi senza compromessi.",
+                "FEATURE_TITLE": "Tempi Che Stupiscono",
+                "FEATURE_DESCRIPTION": "Il nostro metodo strutturato ci permette di consegnare in metà del tempo medio del settore, senza sacrificare nemmeno un grammo di qualità.",
             },
             {
                 "FEATURE_ICON": "\U0001f6e1\ufe0f",
-                "FEATURE_TITLE": "Affidabilita' Garantita",
-                "FEATURE_DESCRIPTION": "La sicurezza di un partner che mantiene le promesse. Risultati concreti e misurabili.",
+                "FEATURE_TITLE": "Zero Sorprese",
+                "FEATURE_DESCRIPTION": "Trasparenza totale su costi, tempi e risultati attesi. Report settimanali dettagliati e un canale diretto sempre aperto con il tuo referente.",
             },
             {
-                "FEATURE_ICON": "\U0001f4a1",
-                "FEATURE_TITLE": "Innovazione Continua",
-                "FEATURE_DESCRIPTION": "Sempre aggiornati con le ultime tendenze e tecnologie del settore.",
+                "FEATURE_ICON": "\U0001f9e0",
+                "FEATURE_TITLE": "Pensiero Laterale",
+                "FEATURE_DESCRIPTION": "Portiamo al tavolo idee che non ti aspetti, combiniamo creatività e dati per trovare angoli unici che distinguono il tuo brand dalla massa.",
             },
             {
-                "FEATURE_ICON": "\U0001f310",
-                "FEATURE_TITLE": "Approccio Globale",
-                "FEATURE_DESCRIPTION": "Una visione internazionale con attenzione alle specificita' del mercato locale.",
+                "FEATURE_ICON": "\U0001f4ca",
+                "FEATURE_TITLE": "Risultati Misurabili",
+                "FEATURE_DESCRIPTION": "Ogni azione è tracciata, ogni risultato documentato. Dashboard personalizzata con metriche chiare che raccontano la crescita reale del tuo progetto.",
             },
             {
-                "FEATURE_ICON": "\U0001f4b0",
-                "FEATURE_TITLE": "Rapporto Qualita'-Prezzo",
-                "FEATURE_DESCRIPTION": "Investimenti intelligenti con un ritorno tangibile e misurabile nel tempo.",
+                "FEATURE_ICON": "\U0001f504",
+                "FEATURE_TITLE": "Miglioramento Perpetuo",
+                "FEATURE_DESCRIPTION": "Non esiste il 'buono abbastanza'. Analizziamo continuamente i dati per ottimizzare ogni aspetto e portarti sempre un passo oltre le aspettative.",
             },
         ]
 
     def _fallback_testimonials(self) -> List[Dict[str, str]]:
-        """Generate fallback testimonial items."""
+        """Generate fallback testimonial items with specific, believable stories."""
         return [
             {
-                "TESTIMONIAL_TEXT": "Un'esperienza straordinaria dall'inizio alla fine. Professionalita' e creativita' ai massimi livelli.",
-                "TESTIMONIAL_AUTHOR": "Marco Rossi",
-                "TESTIMONIAL_ROLE": "CEO, TechVenture",
+                "TESTIMONIAL_TEXT": "In tre mesi hanno ribaltato completamente la nostra presenza online. Il traffico organico è salito del 340% e le richieste di preventivo sono triplicate. Non credevo fosse possibile in così poco tempo.",
+                "TESTIMONIAL_AUTHOR": "Marco Ferretti",
+                "TESTIMONIAL_ROLE": "Fondatore, Ferretti & Associati",
                 "TESTIMONIAL_INITIAL": "M",
             },
             {
-                "TESTIMONIAL_TEXT": "Hanno trasformato la nostra visione in realta'. Il risultato ha superato ogni aspettativa.",
-                "TESTIMONIAL_AUTHOR": "Laura Bianchi",
-                "TESTIMONIAL_ROLE": "Direttrice Marketing",
-                "TESTIMONIAL_INITIAL": "L",
+                "TESTIMONIAL_TEXT": "Dopo anni di tentativi con altre realtà, finalmente qualcuno che ascolta davvero. Hanno capito l'anima del nostro brand al primo incontro e l'hanno tradotta in un'esperienza digitale che i nostri clienti adorano.",
+                "TESTIMONIAL_AUTHOR": "Elena Marchetti",
+                "TESTIMONIAL_ROLE": "Direttrice Creativa, Studio Lume",
+                "TESTIMONIAL_INITIAL": "E",
             },
             {
-                "TESTIMONIAL_TEXT": "Collaborazione impeccabile e risultati tangibili. Li consiglio senza esitazione.",
-                "TESTIMONIAL_AUTHOR": "Andrea Verdi",
-                "TESTIMONIAL_ROLE": "Imprenditore",
+                "TESTIMONIAL_TEXT": "Il nostro e-commerce faceva 12 ordini al giorno. Dopo il restyling ne facciamo 47 in media, con uno scontrino medio più alto del 28%. I numeri parlano da soli, ma è la cura nei dettagli che mi ha convinto.",
+                "TESTIMONIAL_AUTHOR": "Alessandro Conti",
+                "TESTIMONIAL_ROLE": "CEO, Bottega Digitale",
                 "TESTIMONIAL_INITIAL": "A",
             },
         ]
 
     def _fallback_gallery(self) -> List[Dict[str, str]]:
-        """Generate fallback gallery items with placeholder images."""
+        """Generate fallback gallery items with Unsplash stock images."""
+        # Use default/business gallery pool for high-quality fallback images
+        gallery_photos = _UNSPLASH_PHOTOS.get("default", {}).get("gallery", [])
+        captions = [
+            "Creatività in ogni dettaglio",
+            "Dove l'idea prende forma",
+            "Precisione e visione",
+            "L'arte del risultato",
+            "Oltre le aspettative",
+            "Il nostro tocco distintivo",
+        ]
         items = []
-        for i in range(1, 7):
+        for i in range(6):
+            url = gallery_photos[i % len(gallery_photos)] if gallery_photos else f"https://placehold.co/600x400/eee/999?text=Foto+{i+1}"
             items.append({
-                "GALLERY_IMAGE_URL": f"https://placehold.co/600x400/eee/999?text=Foto+{i}",
-                "GALLERY_IMAGE_ALT": f"Immagine galleria {i}",
-                "GALLERY_CAPTION": f"Progetto {i}",
+                "GALLERY_IMAGE_URL": url,
+                "GALLERY_IMAGE_ALT": captions[i],
+                "GALLERY_CAPTION": captions[i],
             })
         return items
 
@@ -3039,73 +3050,60 @@ Return ONLY the JSON object."""
         }
         if "hero" in sections:
             texts["hero"] = {
-                "HERO_TITLE": business_name,
-                "HERO_SUBTITLE": f"Scopri {business_name} e tutto quello che possiamo offrirti.",
-                "HERO_CTA_TEXT": "Scopri di più",
+                "HERO_TITLE": f"Il Futuro è {business_name}",
+                "HERO_SUBTITLE": f"Dove la visione incontra l'eccellenza. {business_name} ridefinisce gli standard del settore con un approccio che mette al centro le persone e i risultati concreti.",
+                "HERO_CTA_TEXT": "Inizia la Trasformazione",
                 "HERO_CTA_URL": "#contact",
                 "HERO_IMAGE_URL": f"https://placehold.co/800x600/3b82f6/white?text={business_name}",
-                "HERO_IMAGE_ALT": business_name,
+                "HERO_IMAGE_ALT": f"L'esperienza {business_name}",
             }
         if "about" in sections:
             texts["about"] = {
-                "ABOUT_TITLE": "Chi Siamo",
-                "ABOUT_SUBTITLE": f"La storia di {business_name}",
-                "ABOUT_TEXT": f"{business_name} nasce dalla passione e dalla dedizione. Ogni giorno lavoriamo per offrire il meglio ai nostri clienti.",
-                "ABOUT_HIGHLIGHT_1": "Esperienza consolidata",
-                "ABOUT_HIGHLIGHT_2": "Clienti soddisfatti",
-                "ABOUT_HIGHLIGHT_3": "Qualità garantita",
-                "ABOUT_HIGHLIGHT_NUM_1": "15",
-                "ABOUT_HIGHLIGHT_NUM_2": "500",
-                "ABOUT_HIGHLIGHT_NUM_3": "98",
+                "ABOUT_TITLE": "La Nostra Filosofia",
+                "ABOUT_SUBTITLE": f"Ogni traguardo di {business_name} nasce da un'idea semplice: fare le cose nel modo giusto",
+                "ABOUT_TEXT": f"{business_name} nasce dalla convinzione che il mercato merita di meglio. Non ci accontentiamo della mediocrità e non inseguiamo le scorciatoie. Ogni progetto che affrontiamo diventa una sfida personale, un'opportunità per dimostrare che si può fare di più, meglio e con più cura. La nostra storia è fatta di notti insonni, intuizioni brillanti e la testardaggine di chi crede davvero in quello che fa.",
+                "ABOUT_HIGHLIGHT_1": "Anni di esperienza sul campo",
+                "ABOUT_HIGHLIGHT_2": "Progetti completati con successo",
+                "ABOUT_HIGHLIGHT_3": "Tasso di soddisfazione clienti",
+                "ABOUT_HIGHLIGHT_NUM_1": "12",
+                "ABOUT_HIGHLIGHT_NUM_2": "847",
+                "ABOUT_HIGHLIGHT_NUM_3": "99.2",
             }
         if "services" in sections:
             texts["services"] = {
-                "SERVICES_TITLE": "I Nostri Servizi",
-                "SERVICES_SUBTITLE": f"Cosa offre {business_name}",
-                "SERVICES": [
-                    {"SERVICE_ICON": "⚡", "SERVICE_TITLE": "Servizio Premium", "SERVICE_DESCRIPTION": "Un servizio dedicato pensato per rispondere alle esigenze più specifiche dei nostri clienti."},
-                    {"SERVICE_ICON": "🎯", "SERVICE_TITLE": "Consulenza Dedicata", "SERVICE_DESCRIPTION": "Supporto personalizzato per guidarti nella scelta migliore per il tuo progetto."},
-                    {"SERVICE_ICON": "🚀", "SERVICE_TITLE": "Soluzioni Rapide", "SERVICE_DESCRIPTION": "Risposte veloci e concrete per ogni tipo di necessità, senza compromessi sulla qualità."},
-                ],
+                "SERVICES_TITLE": "Il Metodo Dietro la Magia",
+                "SERVICES_SUBTITLE": f"Tre pilastri che rendono {business_name} il partner che stavi cercando",
+                "SERVICES": self._fallback_services(business_name),
             }
         if "contact" in sections:
             texts["contact"] = {
-                "CONTACT_TITLE": "Contatti",
-                "CONTACT_SUBTITLE": "Parliamo del tuo progetto",
+                "CONTACT_TITLE": "Parliamo del Tuo Prossimo Passo",
+                "CONTACT_SUBTITLE": "Ogni grande progetto inizia con una conversazione. Raccontaci la tua idea e trasformiamola insieme in qualcosa di straordinario.",
                 "CONTACT_ADDRESS": "",
                 "CONTACT_PHONE": "",
                 "CONTACT_EMAIL": "",
             }
         if "footer" in sections:
             texts["footer"] = {
-                "FOOTER_DESCRIPTION": f"{business_name} — Tutti i diritti riservati.",
+                "FOOTER_DESCRIPTION": f"{business_name} — Dove nascono le idee che cambiano le regole del gioco.",
             }
         if "cta" in sections:
             texts["cta"] = {
-                "CTA_TITLE": "Pronto a iniziare?",
-                "CTA_SUBTITLE": "Contattaci oggi stesso per scoprire come possiamo aiutarti.",
-                "CTA_BUTTON_TEXT": "Inizia Ora",
+                "CTA_TITLE": "Il Momento è Adesso",
+                "CTA_SUBTITLE": "Ogni giorno che passa è un'opportunità persa. Fai il primo passo verso risultati che superano le aspettative.",
+                "CTA_BUTTON_TEXT": "Prenota una Consulenza Gratuita",
                 "CTA_BUTTON_URL": "#contact",
             }
         if "features" in sections:
             texts["features"] = {
-                "FEATURES_TITLE": "Perché Sceglierci",
-                "FEATURES_SUBTITLE": f"I punti di forza di {business_name}",
-                "FEATURES": [
-                    {"FEATURE_ICON": "💡", "FEATURE_TITLE": "Innovazione", "FEATURE_DESCRIPTION": "Soluzioni all'avanguardia per restare sempre un passo avanti nel mercato."},
-                    {"FEATURE_ICON": "🤝", "FEATURE_TITLE": "Affidabilità", "FEATURE_DESCRIPTION": "Un partner su cui contare, sempre disponibile e pronto a supportarti."},
-                    {"FEATURE_ICON": "📈", "FEATURE_TITLE": "Crescita", "FEATURE_DESCRIPTION": "Strategie pensate per far crescere il tuo business in modo sostenibile."},
-                    {"FEATURE_ICON": "🔒", "FEATURE_TITLE": "Sicurezza", "FEATURE_DESCRIPTION": "La massima attenzione alla protezione dei tuoi dati e della tua privacy."},
-                ],
+                "FEATURES_TITLE": "Cosa Ci Rende Diversi",
+                "FEATURES_SUBTITLE": f"I dettagli che fanno la differenza tra un risultato ordinario e uno straordinario",
+                "FEATURES": self._fallback_features(business_name),
             }
         if "testimonials" in sections:
             texts["testimonials"] = {
-                "TESTIMONIALS_TITLE": "Cosa Dicono di Noi",
-                "TESTIMONIALS": [
-                    {"TESTIMONIAL_TEXT": "Un'esperienza fantastica, hanno superato ogni aspettativa con professionalità e creatività.", "TESTIMONIAL_AUTHOR": "Marco Rossi", "TESTIMONIAL_ROLE": "Imprenditore", "TESTIMONIAL_INITIAL": "M"},
-                    {"TESTIMONIAL_TEXT": "Collaborare con loro è stato semplice e produttivo. Risultati visibili fin da subito.", "TESTIMONIAL_AUTHOR": "Laura Bianchi", "TESTIMONIAL_ROLE": "Designer", "TESTIMONIAL_INITIAL": "L"},
-                    {"TESTIMONIAL_TEXT": "Finalmente un team che ascolta davvero le esigenze del cliente e le trasforma in realtà.", "TESTIMONIAL_AUTHOR": "Giuseppe Verdi", "TESTIMONIAL_ROLE": "Manager", "TESTIMONIAL_INITIAL": "G"},
-                ],
+                "TESTIMONIALS_TITLE": "Storie di Chi Ha Scelto Noi",
+                "TESTIMONIALS": self._fallback_testimonials(),
             }
         logger.warning(f"[DataBinding] Using fallback texts for {business_name} (sections: {sections})")
         return texts
