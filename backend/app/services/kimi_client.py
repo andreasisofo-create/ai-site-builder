@@ -1,8 +1,14 @@
 """
-Client dedicato per Kimi K2.5 API (Moonshot).
-Supporta Thinking mode e Instant mode.
-Usa httpx.AsyncClient persistente per evitare overhead di connessione.
-Supporta streaming SSE per chiamate lunghe (evita timeout).
+Provider-agnostic AI client for Site Builder.
+
+Supports multiple backends via a single OpenAI-compatible interface:
+  - OpenRouter (unified gateway — recommended, default when key is set)
+  - Kimi K2.5 (Moonshot — legacy)
+  - GLM-5 (Z.ai / Zhipu — direct)
+  - DeepSeek V3 (direct)
+
+The provider is selected via AI_PROVIDER env var or auto-detected from
+available API keys (see config.active_ai_provider).
 """
 
 import asyncio
@@ -16,25 +22,94 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Kimi K2.5 pricing (USD per 1M tokens)
-PRICE_INPUT = 0.60
-PRICE_OUTPUT = 2.50
+# Pricing per provider (USD per 1M tokens)
+# For OpenRouter the price depends on the model — these are approximate defaults.
+PRICING: Dict[str, Dict[str, float]] = {
+    "kimi":       {"input": 0.60, "output": 2.50},
+    "openrouter": {"input": 0.07, "output": 0.30},   # Qwen3 Coder Next default
+    "glm5":       {"input": 0.80, "output": 2.56},
+    "deepseek":   {"input": 0.27, "output": 1.10},
+}
+
+# Pricing for known OpenRouter models (for accurate cost tracking)
+_OPENROUTER_MODEL_PRICING: Dict[str, Dict[str, float]] = {
+    "qwen/qwen3-coder-next":         {"input": 0.07,  "output": 0.30},
+    "deepseek/deepseek-v3.2":        {"input": 0.24,  "output": 0.38},
+    "deepseek/deepseek-chat-v3-0324": {"input": 0.14, "output": 0.28},
+    "anthropic/claude-sonnet-4.5":   {"input": 3.00,  "output": 15.00},
+    "anthropic/claude-haiku-4.5":    {"input": 0.80,  "output": 4.00},
+    "z-ai/glm-5":                    {"input": 0.75,  "output": 2.55},
+}
+
+# Providers that support the Kimi-specific "thinking" parameter
+_THINKING_PROVIDERS = {"kimi"}
+
+
+def _resolve_provider_config() -> Dict[str, str]:
+    """Resolve API URL, model, and API key based on active provider."""
+    provider = settings.active_ai_provider
+
+    if provider == "openrouter":
+        return {
+            "provider": "openrouter",
+            "api_url": settings.OPENROUTER_API_URL or "https://openrouter.ai/api/v1",
+            "model": settings.OPENROUTER_MODEL or "deepseek/deepseek-chat-v3-0324",
+            "api_key": settings.OPENROUTER_API_KEY,
+        }
+    elif provider == "glm5":
+        return {
+            "provider": "glm5",
+            "api_url": settings.GLM5_API_URL or "https://api.z.ai/api/paas/v4",
+            "model": settings.GLM5_MODEL or "glm-5",
+            "api_key": settings.GLM5_API_KEY,
+        }
+    elif provider == "deepseek":
+        return {
+            "provider": "deepseek",
+            "api_url": settings.DEEPSEEK_API_URL or "https://api.deepseek.com",
+            "model": settings.DEEPSEEK_MODEL or "deepseek-chat",
+            "api_key": settings.DEEPSEEK_API_KEY,
+        }
+    else:
+        # Kimi (legacy default)
+        return {
+            "provider": "kimi",
+            "api_url": settings.KIMI_API_URL or "https://api.moonshot.ai/v1",
+            "model": settings.KIMI_MODEL or "kimi-k2.5",
+            "api_key": settings.MOONSHOT_API_KEY or settings.KIMI_API_KEY,
+        }
 
 
 class KimiClient:
-    """Client async per Kimi K2.5 API."""
+    """Provider-agnostic async AI client. Drop-in replacement for the old Kimi-only client."""
 
-    def __init__(self):
-        self.api_url = settings.KIMI_API_URL or "https://api.moonshot.ai/v1"
-        self.model = settings.KIMI_MODEL or "kimi-k2.5"
+    def __init__(self, model_override: Optional[str] = None):
+        cfg = _resolve_provider_config()
+        self.provider = cfg["provider"]
+        self.api_url = cfg["api_url"]
+        self.model = model_override or cfg["model"]
+        self._api_key = cfg["api_key"]
         self._client: Optional[httpx.AsyncClient] = None
+
+        logger.info(
+            f"AI client initialized: provider={self.provider}, "
+            f"model={self.model}, url={self.api_url}"
+        )
+
+    @property
+    def _is_kimi(self) -> bool:
+        return self.provider in _THINKING_PROVIDERS
 
     @property
     def _headers(self) -> Dict[str, str]:
-        return {
-            "Authorization": f"Bearer {settings.active_api_key}",
+        headers = {
+            "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
         }
+        if self.provider == "openrouter":
+            headers["HTTP-Referer"] = "https://e-quipe.app"
+            headers["X-Title"] = "Site Builder"
+        return headers
 
     async def _get_client(self) -> httpx.AsyncClient:
         """Lazy-init del client httpx persistente."""
@@ -46,30 +121,18 @@ class KimiClient:
             )
         return self._client
 
-    async def call(
+    def _build_payload(
         self,
         messages: List[Dict[str, Any]],
-        max_tokens: int = 8000,
-        thinking: bool = True,
-        timeout: float = 180.0,
-        _retries: int = 2,
+        max_tokens: int,
+        thinking: bool,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
+        stream: bool = False,
     ) -> Dict[str, Any]:
-        """
-        Chiamata base a Kimi API con retry su 429 rate limit.
-
-        Args:
-            messages: Lista messaggi OpenAI-format
-            max_tokens: Max token in output
-            thinking: True = Thinking mode (temp 1.0, deep reasoning),
-                      False = Instant mode (temp 0.6, faster)
-            timeout: Timeout in secondi
-            _retries: Numero di retry su 429 (default 2)
-
-        Returns:
-            {"success": True, "content": str, "tokens_input": int, "tokens_output": int}
-            oppure {"success": False, "error": str}
-        """
-        temperature = 1.0 if thinking else 0.6
+        """Build the request payload, only adding provider-specific fields where needed."""
+        if temperature is None:
+            temperature = 1.0 if (thinking and self._is_kimi) else 0.6
 
         payload: Dict[str, Any] = {
             "model": self.model,
@@ -78,9 +141,51 @@ class KimiClient:
             "temperature": temperature,
         }
 
-        # Kimi K2.5: per disabilitare Thinking (Instant mode)
-        if not thinking:
+        if top_p is not None:
+            payload["top_p"] = top_p
+
+        if stream:
+            payload["stream"] = True
+
+        # Kimi-specific: thinking mode toggle
+        if self._is_kimi and not thinking:
             payload["thinking"] = {"type": "disabled"}
+
+        return payload
+
+    async def call(
+        self,
+        messages: List[Dict[str, Any]],
+        max_tokens: int = 8000,
+        thinking: bool = True,
+        timeout: float = 180.0,
+        _retries: int = 2,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """
+        Chiamata base all'AI provider con retry su 429 rate limit.
+
+        Args:
+            messages: Lista messaggi OpenAI-format
+            max_tokens: Max token in output
+            thinking: True = Thinking mode (Kimi only, ignored for other providers)
+            timeout: Timeout in secondi
+            _retries: Numero di retry su 429 (default 2)
+            temperature: Override temperature
+            top_p: Optional top_p for nucleus sampling diversity
+
+        Returns:
+            {"success": True, "content": str, "tokens_input": int, "tokens_output": int}
+            oppure {"success": False, "error": str}
+        """
+        payload = self._build_payload(
+            messages=messages,
+            max_tokens=max_tokens,
+            thinking=thinking,
+            temperature=temperature,
+            top_p=top_p,
+        )
 
         last_error = ""
         for attempt in range(_retries + 1):
@@ -108,18 +213,17 @@ class KimiClient:
 
             except httpx.HTTPStatusError as e:
                 last_error = self._handle_http_error(e)
-                # Retry on 429 rate limit
                 if e.response.status_code == 429 and attempt < _retries:
-                    wait = 2 ** attempt + 1  # 2s, 3s
-                    logger.warning(f"Kimi 429 rate limit, retrying in {wait}s (attempt {attempt + 1}/{_retries})")
+                    wait = 2 ** attempt + 1
+                    logger.warning(f"{self.provider} 429 rate limit, retrying in {wait}s (attempt {attempt + 1}/{_retries})")
                     await asyncio.sleep(wait)
                     continue
                 return {"success": False, "error": last_error}
             except httpx.TimeoutException:
-                logger.error("Timeout calling Kimi API")
+                logger.error(f"Timeout calling {self.provider} API")
                 return {"success": False, "error": "Timeout: la richiesta ha impiegato troppo tempo"}
             except Exception as e:
-                logger.exception("Errore chiamata Kimi API")
+                logger.exception(f"Errore chiamata {self.provider} API")
                 return {"success": False, "error": str(e)}
 
         return {"success": False, "error": last_error}
@@ -133,24 +237,17 @@ class KimiClient:
     ) -> Dict[str, Any]:
         """
         Chiamata con streaming SSE. Evita timeout per generazioni lunghe.
-        I token arrivano incrementalmente, il read timeout si resetta ad ogni chunk.
 
         Returns:
             {"success": True, "content": str, "tokens_input": int, "tokens_output": int}
             oppure {"success": False, "error": str}
         """
-        temperature = 1.0 if thinking else 0.6
-
-        payload: Dict[str, Any] = {
-            "model": self.model,
-            "messages": messages,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-            "stream": True,
-        }
-
-        if not thinking:
-            payload["thinking"] = {"type": "disabled"}
+        payload = self._build_payload(
+            messages=messages,
+            max_tokens=max_tokens,
+            thinking=thinking,
+            stream=True,
+        )
 
         try:
             client = await self._get_client()
@@ -164,16 +261,13 @@ class KimiClient:
                 json=payload,
                 timeout=timeout,
             ) as response:
-                # Read the body before raise_for_status so the error handler
-                # can access .text/.json() on the response (httpx requires
-                # streaming responses to be read before content access).
                 if response.status_code >= 400:
                     await response.aread()
                     response.raise_for_status()
                 async for line in response.aiter_lines():
                     if not line.startswith("data: "):
                         continue
-                    data_str = line[6:]  # Remove "data: " prefix
+                    data_str = line[6:]
                     if data_str.strip() == "[DONE]":
                         break
                     try:
@@ -181,7 +275,6 @@ class KimiClient:
                         delta = chunk.get("choices", [{}])[0].get("delta", {})
                         if delta.get("content"):
                             collected_content.append(delta["content"])
-                        # Usage info in last chunk
                         usage = chunk.get("usage")
                         if usage:
                             tokens_in = usage.get("prompt_tokens", 0)
@@ -204,10 +297,10 @@ class KimiClient:
             error_msg = self._handle_http_error(e)
             return {"success": False, "error": error_msg}
         except httpx.TimeoutException:
-            logger.error("Timeout calling Kimi API (stream)")
+            logger.error(f"Timeout calling {self.provider} API (stream)")
             return {"success": False, "error": "Timeout: la richiesta ha impiegato troppo tempo"}
         except Exception as e:
-            logger.exception("Errore chiamata Kimi API (stream)")
+            logger.exception(f"Errore chiamata {self.provider} API (stream)")
             return {"success": False, "error": str(e)}
 
     async def call_with_image(
@@ -219,14 +312,8 @@ class KimiClient:
         timeout: float = 90.0,
     ) -> Dict[str, Any]:
         """
-        Chiamata a Kimi con immagine (multimodal).
-
-        Args:
-            prompt: Testo della richiesta
-            image_url: URL dell'immagine da analizzare
-            max_tokens: Max token output
-            thinking: Thinking mode on/off
-            timeout: Timeout in secondi
+        Chiamata multimodal con immagine (OpenAI vision format).
+        Works with Kimi, OpenRouter, and any provider supporting vision.
         """
         messages = [
             {
@@ -257,46 +344,49 @@ class KimiClient:
             except Exception:
                 detail = f"HTTP {status}"
 
+        provider_name = self.provider.upper()
         if status == 401:
-            msg = "API Key Kimi non valida o scaduta"
+            msg = f"API Key {provider_name} non valida o scaduta"
         elif status == 429:
-            msg = "Rate limit Kimi raggiunto. Riprova tra qualche secondo."
+            msg = f"Rate limit {provider_name} raggiunto. Riprova tra qualche secondo."
         elif status == 402:
-            msg = "Credito Kimi esaurito. Ricarica il tuo account Moonshot."
+            msg = f"Credito {provider_name} esaurito. Ricarica il tuo account."
+        elif "token limit" in detail.lower() or "exceeded model token limit" in detail.lower():
+            msg = f"Token limit exceeded: {detail}"
         elif status >= 500:
-            msg = "Errore server Kimi. Riprova piu' tardi."
+            msg = f"Errore server {provider_name}. Riprova piu' tardi."
         else:
-            msg = f"Errore Kimi API ({status}): {detail}"
+            msg = f"Errore {provider_name} API ({status}): {detail}"
 
-        logger.error(f"Kimi API HTTP {status}: {detail}")
+        logger.error(f"{provider_name} API HTTP {status}: {detail}")
         return msg
 
     @staticmethod
     def extract_html(content: str) -> str:
-        """Estrae HTML dal markdown se il modello wrappa in code blocks.
-        Gestisce anche output troncato (senza closing ```)."""
-        # Caso 1: code block completo ```html ... ```
+        """Estrae HTML dal markdown se il modello wrappa in code blocks."""
         html_match = re.search(r'```html\n(.*?)\n```', content, re.DOTALL)
         if html_match:
             return html_match.group(1).strip()
 
-        # Caso 2: code block generico completo ``` ... ```
         code_match = re.search(r'```\n(.*?)\n```', content, re.DOTALL)
         if code_match:
             return code_match.group(1).strip()
 
-        # Caso 3: output troncato - code block aperto ma mai chiuso
         truncated_match = re.search(r'```html?\n(.*)', content, re.DOTALL)
         if truncated_match:
             return truncated_match.group(1).strip()
 
         return content.strip()
 
-    @staticmethod
-    def calculate_cost(tokens_input: int, tokens_output: int) -> float:
-        """Calcola costo stimato in USD."""
-        input_cost = (tokens_input / 1_000_000) * PRICE_INPUT
-        output_cost = (tokens_output / 1_000_000) * PRICE_OUTPUT
+    def calculate_cost(self, tokens_input: int, tokens_output: int) -> float:
+        """Calcola costo stimato in USD basato sul provider e modello attivo."""
+        # For OpenRouter, use model-specific pricing if available
+        if self.provider == "openrouter" and self.model in _OPENROUTER_MODEL_PRICING:
+            pricing = _OPENROUTER_MODEL_PRICING[self.model]
+        else:
+            pricing = PRICING.get(self.provider, PRICING["kimi"])
+        input_cost = (tokens_input / 1_000_000) * pricing["input"]
+        output_cost = (tokens_output / 1_000_000) * pricing["output"]
         return round(input_cost + output_cost, 6)
 
     async def close(self):
@@ -305,5 +395,16 @@ class KimiClient:
             await self._client.aclose()
 
 
-# Singleton
+# Singleton — default client (Qwen3 for generation)
 kimi = KimiClient()
+
+# Refine client — uses a separate model (Claude) for higher quality chat refinement.
+# If OPENROUTER_REFINE_MODEL is set and provider is openrouter, creates a dedicated
+# client with Claude. Otherwise falls back to the same default client.
+_refine_model = getattr(settings, "OPENROUTER_REFINE_MODEL", "")
+if _refine_model and settings.active_ai_provider == "openrouter" and _refine_model != kimi.model:
+    kimi_refine = KimiClient(model_override=_refine_model)
+    logger.info(f"Refine client initialized with model: {_refine_model}")
+else:
+    kimi_refine = kimi
+    logger.info("Refine client: using same model as generation")

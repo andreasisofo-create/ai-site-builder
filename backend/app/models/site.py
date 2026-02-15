@@ -46,6 +46,12 @@ class Site(Base):
     qc_score = Column(Float, nullable=True)
     qc_report = Column(JSON, nullable=True)
 
+    # AI Cost tracking
+    generation_cost = Column(Float, nullable=True)   # USD cost of generation
+    tokens_input = Column(Integer, nullable=True)     # Total input tokens used
+    tokens_output = Column(Integer, nullable=True)    # Total output tokens used
+    ai_model = Column(String, nullable=True)          # Model used (e.g. "qwen/qwen3-coder-next")
+
     # Deploy
     vercel_project_id = Column(String)
     domain = Column(String)

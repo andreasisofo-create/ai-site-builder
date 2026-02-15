@@ -222,7 +222,7 @@ class AIService:
                 {"role": "user", "content": user_prompt},
             ],
             max_tokens=8000,
-            temperature=0.6,
+            temperature=0.85,
         )
 
         if not result["success"]:

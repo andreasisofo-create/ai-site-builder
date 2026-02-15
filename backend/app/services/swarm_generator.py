@@ -19,7 +19,7 @@ import time
 import re
 from typing import Dict, Any, Optional, List, Callable, Tuple
 
-from app.services.kimi_client import kimi, KimiClient
+from app.services.kimi_client import kimi, kimi_refine, KimiClient
 from app.services.sanitizer import sanitize_input, sanitize_output, sanitize_refine_input
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,8 @@ class SwarmGenerator:
 
     def __init__(self, client: Optional[KimiClient] = None):
         self.kimi = client or kimi
+        # Hybrid strategy: use a separate (higher quality) client for chat refine
+        self.kimi_refine = kimi_refine
 
     # =================================================================
     # FASE 1 - Sub-agenti PARALLELI
@@ -539,14 +541,20 @@ IMPORTANT:
     # HELPERS: Aggressive strip/re-inject for refine to stay under token limit
     # =================================================================
 
-    # Kimi K2.5 hard limit is 262144 tokens. We target <180K input tokens
-    # to leave room for max_tokens output and safety margin.
-    _MAX_INPUT_CHARS = 600000  # ~150K tokens at ~4 chars/token
+    # Kimi K2.5 hard limit is 262144 tokens total (input + output).
+    # We reserve 16K for output (max_tokens) + 10K safety margin.
+    # Target input: 262144 - 16000 - 10000 = ~236K tokens max input.
+    # At ~3.3 chars/token for HTML, that's ~780K chars.
+    # But to be safe, we use a hard limit of 200K input tokens (~660K chars).
+    _MAX_INPUT_TOKENS = 200000
+    _MAX_INPUT_CHARS = 660000  # ~200K tokens at ~3.3 chars/token
+    _TRUNCATION_THRESHOLD_TOKENS = 180000  # Start truncating at 180K tokens
 
     @staticmethod
     def _estimate_tokens(text: str) -> int:
-        """Rough token estimate: ~4 chars per token for mixed HTML/text."""
-        return len(text) // 4
+        """Token estimate: ~3.3 chars per token for HTML (tags, attributes, short values).
+        HTML is denser than natural text, so we use a lower ratio than the typical 4."""
+        return int(len(text) / 3.3)
 
     @staticmethod
     def _strip_for_refine(html: str) -> Tuple[str, Dict[str, Any]]:
@@ -664,6 +672,43 @@ IMPORTANT:
     # REFINE: Modifica via chat (Instant mode, veloce)
     # =================================================================
 
+    @staticmethod
+    def _extract_section_html(html: str, section_name: str) -> Optional[str]:
+        """Extract a specific section from HTML by looking for id/class/comment markers.
+        Returns the section HTML or None if not found."""
+        section_name_lower = section_name.lower().strip()
+
+        # Try multiple patterns to find the section
+        patterns = [
+            # id="hero", id="about", etc.
+            rf'(<(?:section|div|header|footer)[^>]*\bid\s*=\s*["\'](?:[^"\']*\b)?{re.escape(section_name_lower)}(?:\b[^"\']*)?["\'][^>]*>)',
+            # <!-- HERO SECTION --> or <!-- hero -->
+            rf'(<!--\s*{re.escape(section_name_lower)}[\s\w]*-->)',
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, html, re.IGNORECASE)
+            if match:
+                start_pos = match.start()
+                # Find the end of this section (next section or end of body)
+                # Look for next <section, <footer, <!-- next section -->, or </body>
+                end_patterns = [
+                    r'<(?:section|footer)[^>]*\bid\s*=\s*["\']',
+                    r'<!--\s*(?:end|/)\s',
+                    r'</body>',
+                ]
+                end_pos = len(html)
+                remaining = html[match.end():]
+                for ep in end_patterns:
+                    end_match = re.search(ep, remaining, re.IGNORECASE)
+                    if end_match:
+                        candidate = match.end() + end_match.start()
+                        if candidate < end_pos:
+                            end_pos = candidate
+
+                return html[start_pos:end_pos]
+        return None
+
     async def refine(
         self,
         current_html: str,
@@ -674,6 +719,7 @@ IMPORTANT:
         Modifica un sito esistente via chat.
         Usa streaming per evitare timeout con HTML grandi.
         Aggressively strips GSAP, <style>, SVGs, whitespace to stay under 262144 token limit.
+        When a specific section is targeted and HTML is very large, sends only that section.
         """
         modification_request = sanitize_refine_input(modification_request)
 
@@ -696,7 +742,28 @@ IMPORTANT:
 - Keep all <!-- __*_PLACEHOLDER__ --> and <!-- __STYLE_*__ --> and <!-- __SVG_INNER_*__ --> comments intact - they are auto-restored after your edit.
 - Return ONLY complete HTML between ```html and ``` tags. Do NOT truncate."""
 
-        if section_to_modify:
+        # Strategy: if section is specified AND HTML is large, extract just that section
+        section_only_mode = False
+        if section_to_modify and stripped_tokens > self._TRUNCATION_THRESHOLD_TOKENS:
+            section_html = self._extract_section_html(stripped_html, section_to_modify)
+            if section_html:
+                section_tokens = self._estimate_tokens(section_html)
+                logger.info(
+                    f"[Swarm] Section-only mode: extracted '{section_to_modify}' "
+                    f"({len(section_html)} chars, ~{section_tokens} tokens)"
+                )
+                section_only_mode = True
+
+        if section_only_mode and section_html:
+            prompt = f"""Modify ONLY this {section_to_modify} section HTML. Return ONLY the modified section.
+
+REQUEST: {modification_request}
+
+{design_system}
+
+SECTION HTML:
+{section_html}"""
+        elif section_to_modify:
             prompt = f"""Modify ONLY the {section_to_modify} section. Keep all other sections unchanged.
 
 REQUEST: {modification_request}
@@ -719,21 +786,36 @@ HTML:
         logger.info(f"[Swarm] Refine prompt: ~{prompt_tokens} tokens (limit: 262144)")
 
         # Safety check: if still over limit, apply further truncation
-        if prompt_tokens > 200000:
-            logger.warning(f"[Swarm] Prompt still too large (~{prompt_tokens} tokens), truncating HTML")
-            # Keep first 400K chars of HTML (~100K tokens) - enough for structure
-            max_html_chars = self._MAX_INPUT_CHARS - len(prompt) + len(stripped_html)
-            if max_html_chars < len(stripped_html):
+        if prompt_tokens > self._TRUNCATION_THRESHOLD_TOKENS:
+            logger.warning(f"[Swarm] Prompt too large (~{prompt_tokens} tokens), truncating HTML")
+            # Calculate how many chars of HTML we can keep
+            # prompt_overhead = prompt length minus the HTML part
+            prompt_overhead = len(prompt) - len(stripped_html if not section_only_mode else section_html)
+            overhead_tokens = self._estimate_tokens("x" * prompt_overhead)
+            max_html_tokens = self._MAX_INPUT_TOKENS - overhead_tokens
+            max_html_chars = int(max_html_tokens * 3.3)  # Convert back to chars
+
+            html_to_truncate = stripped_html if not section_only_mode else section_html
+            if max_html_chars < len(html_to_truncate) and max_html_chars > 0:
                 # Truncate from the middle, keeping head and tail for structure
                 keep_head = max_html_chars * 2 // 3
                 keep_tail = max_html_chars // 3
-                stripped_html = (
-                    stripped_html[:keep_head]
+                truncated_html = (
+                    html_to_truncate[:keep_head]
                     + '\n<!-- ... MIDDLE SECTIONS TRUNCATED FOR SIZE ... -->\n'
-                    + stripped_html[-keep_tail:]
+                    + html_to_truncate[-keep_tail:]
                 )
                 # Rebuild prompt with truncated HTML
-                if section_to_modify:
+                if section_only_mode:
+                    prompt = f"""Modify ONLY this {section_to_modify} section HTML. Return ONLY the modified section.
+
+REQUEST: {modification_request}
+
+{design_system}
+
+SECTION HTML:
+{truncated_html}"""
+                elif section_to_modify:
                     prompt = f"""Modify ONLY the {section_to_modify} section. Keep all other sections unchanged.
 
 REQUEST: {modification_request}
@@ -741,7 +823,7 @@ REQUEST: {modification_request}
 {design_system}
 
 HTML:
-{stripped_html}"""
+{truncated_html}"""
                 else:
                     prompt = f"""Modify this HTML website.
 
@@ -750,13 +832,15 @@ REQUEST: {modification_request}
 {design_system}
 
 HTML:
-{stripped_html}"""
+{truncated_html}"""
                 prompt_tokens = self._estimate_tokens(prompt)
                 logger.info(f"[Swarm] After truncation: ~{prompt_tokens} tokens")
 
         start_time = time.time()
-        # Use streaming with higher max_tokens to handle large HTML sites
-        result = await self.kimi.call_stream(
+        # Hybrid strategy: use the refine client (Claude) for chat modifications
+        # This gives higher quality Italian copywriting and better instruction following
+        logger.info(f"[Swarm] Refine using model: {self.kimi_refine.model}")
+        result = await self.kimi_refine.call_stream(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=16000,
             thinking=False,
@@ -764,9 +848,25 @@ HTML:
         )
 
         if not result["success"]:
+            # Check for token limit error and return user-friendly message
+            error_msg = result.get("error", "")
+            if "token limit" in error_msg.lower():
+                return {
+                    "success": False,
+                    "error": "Il sito è troppo grande per essere modificato via chat. Prova a specificare la sezione da modificare (es. 'hero', 'about', 'contact').",
+                    "error_code": "token_limit",
+                }
             return result
 
-        html_content = self.kimi.extract_html(result["content"])
+        html_content = self.kimi_refine.extract_html(result["content"])
+
+        # If we used section-only mode, re-integrate the modified section into the full HTML
+        if section_only_mode and section_to_modify:
+            original_section = self._extract_section_html(stripped_html, section_to_modify)
+            if original_section and original_section in stripped_html:
+                # Replace the old section with the new one in the stripped HTML
+                html_content = stripped_html.replace(original_section, html_content, 1)
+                logger.info(f"[Swarm] Re-integrated modified '{section_to_modify}' section into full HTML")
 
         # Re-inject everything that was stripped: SVGs, <style> blocks, GSAP script
         html_content = self._reinject_after_refine(html_content, stash)
@@ -789,7 +889,7 @@ HTML:
             logger.warning("[Swarm] Refine stripped CSS variables - this may break theme styling")
 
         generation_time = int((time.time() - start_time) * 1000)
-        cost = self.kimi.calculate_cost(
+        cost = self.kimi_refine.calculate_cost(
             result.get("tokens_input", 0),
             result.get("tokens_output", 0),
         )
@@ -799,7 +899,7 @@ HTML:
         return {
             "success": True,
             "html_content": html_content,
-            "model_used": "kimi-k2.5-instant",
+            "model_used": self.kimi_refine.model,
             "tokens_input": result.get("tokens_input", 0),
             "tokens_output": result.get("tokens_output", 0),
             "cost_usd": cost,

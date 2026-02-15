@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     
     # Admin
     ADMIN_EMAILS: str = ""  # Comma-separated list of admin emails for auto-premium
-    ADMIN_USERNAME: str = "E-quipe"
+    ADMIN_USERNAME: str = "E-quipe!"
     ADMIN_PASSWORD: str = "E-quipe!"
 
     # JWT
@@ -53,16 +53,58 @@ class Settings(BaseSettings):
     VERCEL_TOKEN: str = ""
     VERCEL_TEAM_ID: str = ""
     
-    # Kimi / Moonshot API (AI Generation) - Diretta
-    # Accetta sia KIMI_API_KEY che MOONSHOT_API_KEY come env var
+    # AI Provider selection: "openrouter" | "kimi" | "glm5" | "deepseek"
+    # Auto-detected from available API keys if not set explicitly.
+    AI_PROVIDER: str = ""
+
+    # Kimi / Moonshot API (legacy, backward compatible)
     KIMI_API_KEY: str = ""
     MOONSHOT_API_KEY: str = ""
     KIMI_API_URL: str = "https://api.moonshot.ai/v1"
     KIMI_MODEL: str = "kimi-k2.5"
 
+    # OpenRouter (unified gateway — recommended)
+    OPENROUTER_MODEL: str = "qwen/qwen3-coder-next"
+
+    # Hybrid strategy: separate model for chat refine (higher quality)
+    # If empty, uses the same model as OPENROUTER_MODEL
+    OPENROUTER_REFINE_MODEL: str = "anthropic/claude-sonnet-4.5"
+
+    # GLM-5 direct (Z.ai / Zhipu)
+    GLM5_API_KEY: str = ""
+    GLM5_API_URL: str = "https://api.z.ai/api/paas/v4"
+    GLM5_MODEL: str = "glm-5"
+
+    # DeepSeek direct
+    DEEPSEEK_API_KEY: str = ""
+    DEEPSEEK_API_URL: str = "https://api.deepseek.com"
+    DEEPSEEK_MODEL: str = "deepseek-chat"
+
+    @property
+    def active_ai_provider(self) -> str:
+        """Determine the AI provider. Explicit AI_PROVIDER wins, else auto-detect from keys."""
+        if self.AI_PROVIDER:
+            return self.AI_PROVIDER.lower()
+        # Auto-detect: prefer OpenRouter > DeepSeek > GLM5 > Kimi
+        if self.OPENROUTER_API_KEY:
+            return "openrouter"
+        if self.DEEPSEEK_API_KEY:
+            return "deepseek"
+        if self.GLM5_API_KEY:
+            return "glm5"
+        return "kimi"
+
     @property
     def active_api_key(self) -> str:
-        """Ritorna la prima API key disponibile (MOONSHOT > KIMI)."""
+        """Ritorna la API key per il provider attivo."""
+        provider = self.active_ai_provider
+        if provider == "openrouter":
+            return self.OPENROUTER_API_KEY
+        if provider == "deepseek":
+            return self.DEEPSEEK_API_KEY
+        if provider == "glm5":
+            return self.GLM5_API_KEY
+        # Kimi fallback
         return self.MOONSHOT_API_KEY or self.KIMI_API_KEY
 
     @property
@@ -76,7 +118,7 @@ class Settings(BaseSettings):
     AI_MAX_TOKENS: int = 6000
     AI_TEMPERATURE: float = 0.7
     
-    # Fallback OpenRouter (opzionale)
+    # OpenRouter API key (unified gateway for multiple AI providers)
     OPENROUTER_API_KEY: str = ""
     OPENROUTER_API_URL: str = "https://openrouter.ai/api/v1"
     

@@ -110,6 +110,10 @@ async def lifespan(app: FastAPI):
                 "ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token_expires TIMESTAMP WITH TIME ZONE",
                 "ALTER TABLE sites ADD COLUMN IF NOT EXISTS qc_score FLOAT",
                 "ALTER TABLE sites ADD COLUMN IF NOT EXISTS qc_report JSON",
+                "ALTER TABLE sites ADD COLUMN IF NOT EXISTS generation_cost FLOAT",
+                "ALTER TABLE sites ADD COLUMN IF NOT EXISTS tokens_input INTEGER",
+                "ALTER TABLE sites ADD COLUMN IF NOT EXISTS tokens_output INTEGER",
+                "ALTER TABLE sites ADD COLUMN IF NOT EXISTS ai_model VARCHAR",
             ]
             with engine.connect() as conn:
                 for stmt in migrations:

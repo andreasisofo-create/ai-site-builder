@@ -213,6 +213,15 @@ async def _run_generation_background(
             if qc_data:
                 site.qc_score = qc_data.get("final_score")
                 site.qc_report = qc_data
+            # Store AI cost tracking
+            if result.get("cost_usd") is not None:
+                site.generation_cost = result["cost_usd"]
+            if result.get("tokens_input") is not None:
+                site.tokens_input = result["tokens_input"]
+            if result.get("tokens_output") is not None:
+                site.tokens_output = result["tokens_output"]
+            if result.get("model_used"):
+                site.ai_model = result["model_used"]
             _save_version(db, site, result["html_content"], "Generazione iniziale AI")
 
         db.commit()
@@ -356,11 +365,30 @@ async def refine_website(
         )
 
         if not result.get("success"):
-            raise HTTPException(status_code=500, detail=result.get("error", "Errore modifica"))
+            error_msg = result.get("error", "Errore modifica")
+            error_code = result.get("error_code", "")
+            # Token limit errors get a 422 with helpful message, not a 500
+            if error_code == "token_limit" or "token limit" in error_msg.lower():
+                raise HTTPException(
+                    status_code=422,
+                    detail={
+                        "message": "Il sito è troppo grande per essere modificato in una sola richiesta. Prova a specificare la sezione da modificare.",
+                        "error_code": "token_limit",
+                    },
+                )
+            raise HTTPException(status_code=500, detail=error_msg)
 
         # Aggiorna HTML del sito
         site.html_content = result["html_content"]
         site.status = "ready"
+
+        # Accumulate AI cost tracking (add refine cost to existing generation cost)
+        refine_cost = result.get("cost_usd", 0) or 0
+        refine_tokens_in = result.get("tokens_input", 0) or 0
+        refine_tokens_out = result.get("tokens_output", 0) or 0
+        site.generation_cost = (site.generation_cost or 0) + refine_cost
+        site.tokens_input = (site.tokens_input or 0) + refine_tokens_in
+        site.tokens_output = (site.tokens_output or 0) + refine_tokens_out
 
         # Incrementa contatore modifiche chat AI
         if not current_user.is_premium and not current_user.is_superuser:

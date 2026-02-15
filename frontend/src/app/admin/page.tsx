@@ -13,6 +13,13 @@ interface AdminStats {
   sites: { total: number; published: number; ready: number; generating: number };
   plans: { free: number; base: number; premium: number };
   generations_total: number;
+  ai_costs?: {
+    total_usd: number;
+    avg_per_site_usd: number;
+    total_tokens_input: number;
+    total_tokens_output: number;
+    sites_tracked: number;
+  };
 }
 
 interface UserRecord {
@@ -43,6 +50,10 @@ interface SiteRecord {
   user_id?: number;
   html_content?: string;
   published_url?: string | null;
+  generation_cost?: number | null;
+  tokens_input?: number | null;
+  tokens_output?: number | null;
+  ai_model?: string | null;
 }
 
 interface PaginatedUsers {
@@ -573,11 +584,17 @@ function OverviewTab() {
   return (
     <div className="space-y-6">
       {/* Stats cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard label={language === "en" ? "Total Users" : "Utenti Totali"} value={stats.users.total} sub={language === "en" ? `${stats.users.recent_30d} last 30d` : `${stats.users.recent_30d} ultimi 30g`} />
         <StatCard label={language === "en" ? "Premium Users" : "Utenti Premium"} value={stats.users.premium} sub={language === "en" ? `${stats.users.active} active` : `${stats.users.active} attivi`} accent />
         <StatCard label={language === "en" ? "Total Sites" : "Siti Totali"} value={stats.sites.total} sub={language === "en" ? `${stats.sites.published} published` : `${stats.sites.published} pubblicati`} />
         <StatCard label={language === "en" ? "Generations" : "Generazioni"} value={stats.generations_total} sub={language === "en" ? `${stats.sites.generating} in progress` : `${stats.sites.generating} in corso`} accent />
+        <StatCard
+          label={language === "en" ? "AI Cost" : "Costo AI"}
+          value={stats.ai_costs ? `$${stats.ai_costs.total_usd.toFixed(2)}` : "$0.00"}
+          sub={stats.ai_costs ? (language === "en" ? `~$${stats.ai_costs.avg_per_site_usd.toFixed(3)}/site` : `~$${stats.ai_costs.avg_per_site_usd.toFixed(3)}/sito`) : "---"}
+          accent
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -638,6 +655,38 @@ function OverviewTab() {
           </div>
         </Card>
       </div>
+
+      {/* AI Cost breakdown */}
+      {stats.ai_costs && stats.ai_costs.sites_tracked > 0 && (
+        <Card className="p-5">
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">
+            {language === "en" ? "AI Costs" : "Costi AI"}
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a] text-center">
+              <p className="text-2xl font-bold text-emerald-400">${stats.ai_costs.total_usd.toFixed(2)}</p>
+              <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Total Spent" : "Totale Speso"}</p>
+            </div>
+            <div className="bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a] text-center">
+              <p className="text-2xl font-bold text-white">${stats.ai_costs.avg_per_site_usd.toFixed(3)}</p>
+              <p className="text-xs text-gray-500 mt-1">{language === "en" ? "Avg / Site" : "Media / Sito"}</p>
+            </div>
+            <div className="bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a] text-center">
+              <p className="text-2xl font-bold text-white">{(stats.ai_costs.total_tokens_input / 1000).toFixed(0)}K</p>
+              <p className="text-xs text-gray-500 mt-1">Tokens Input</p>
+            </div>
+            <div className="bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a] text-center">
+              <p className="text-2xl font-bold text-white">{(stats.ai_costs.total_tokens_output / 1000).toFixed(0)}K</p>
+              <p className="text-xs text-gray-500 mt-1">Tokens Output</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-600 mt-3">
+            {language === "en"
+              ? `Tracked on ${stats.ai_costs.sites_tracked} of ${stats.sites.total} sites`
+              : `Tracciato su ${stats.ai_costs.sites_tracked} di ${stats.sites.total} siti`}
+          </p>
+        </Card>
+      )}
 
       {/* Quick metrics */}
       <Card className="p-5">
@@ -1219,6 +1268,7 @@ function SitesTab() {
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">{language === "en" ? "Status" : "Stato"}</th>
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">{language === "en" ? "Published" : "Pubblicato"}</th>
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Template</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">{language === "en" ? "AI Cost" : "Costo AI"}</th>
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">{language === "en" ? "Created" : "Creato"}</th>
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">{language === "en" ? "Actions" : "Azioni"}</th>
                   </tr>
@@ -1242,6 +1292,15 @@ function SitesTab() {
                         {s.template_category
                           ? `${s.template_category}${s.template_style ? ` / ${s.template_style}` : ""}`
                           : "---"}
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        {s.generation_cost != null && s.generation_cost > 0 ? (
+                          <span className="text-emerald-400 text-xs font-mono" title={`${s.tokens_input || 0} in / ${s.tokens_output || 0} out${s.ai_model ? ` (${s.ai_model})` : ""}`}>
+                            ${s.generation_cost.toFixed(4)}
+                          </span>
+                        ) : (
+                          <span className="text-gray-600 text-xs">---</span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">{formatDate(s.created_at, language)}</td>
                       <td className="px-4 py-3 text-right">

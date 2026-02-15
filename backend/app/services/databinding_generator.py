@@ -69,6 +69,174 @@ logger = logging.getLogger(__name__)
 ProgressCallback = Optional[Callable[[int, str, Optional[Dict[str, Any]]], None]]
 
 # =========================================================
+# VARIETY ENGINE: Personality, mood, and creative direction pools.
+# Each generation randomly picks from these pools to ensure
+# every site feels unique even for the same template style.
+# =========================================================
+
+# Creative personality archetypes that shape ALL copy tone
+PERSONALITY_POOL = [
+    {
+        "name": "provocative",
+        "directive": "You are PROVOCATIVE. Challenge assumptions. Use contrasts, paradoxes, and unexpected juxtapositions. 'Il Caos che Crea Ordine'. Make the reader stop and think.",
+        "headline_style": "contrasting, paradoxical, thought-provoking",
+    },
+    {
+        "name": "poetic",
+        "directive": "You are POETIC. Write like a modern poet. Use metaphors drawn from nature, art, and human emotion. 'Dove il Vento Incontra la Pietra'. Rhythm matters — alternate short and flowing.",
+        "headline_style": "lyrical, metaphorical, evocative",
+    },
+    {
+        "name": "minimal",
+        "directive": "You are MINIMALIST. Less is everything. Each word is surgical. No adjective without purpose. 'Meno. Meglio.' White space is your friend. Think Dieter Rams meets copywriting.",
+        "headline_style": "ultra-short, punchy, stark",
+    },
+    {
+        "name": "bold",
+        "directive": "You are BOLD and LOUD. Capital energy. Confidence that borders on audacity. 'Noi Non Seguiamo Tendenze. Le Creiamo.' Every sentence should feel like a manifesto.",
+        "headline_style": "declarative, confident, manifesto-like",
+    },
+    {
+        "name": "storytelling",
+        "directive": "You are a STORYTELLER. Every section is a chapter. Create narrative tension — hint at a journey, a transformation, a before/after. 'C era un Vuoto. Poi Siamo Arrivati Noi.' Hook the reader emotionally.",
+        "headline_style": "narrative, hook-driven, emotional arc",
+    },
+    {
+        "name": "data-driven",
+        "directive": "You are DATA-DRIVEN. Lead with proof, numbers, evidence. '847 Progetti. Zero Compromessi.' Use specific numbers, percentages, timeframes. Credibility through precision.",
+        "headline_style": "numbers-first, evidence-based, precise",
+    },
+    {
+        "name": "emotional",
+        "directive": "You are DEEPLY EMOTIONAL. Write from the heart. What does the customer FEEL? Fear of missing out? Joy of discovery? Relief? 'Finalmente, Qualcuno Che Capisce.' Touch nerves.",
+        "headline_style": "empathetic, feelings-first, intimate",
+    },
+    {
+        "name": "visionary",
+        "directive": "You are a VISIONARY. Write from the future. Paint a picture of what could be. 'Il Futuro Non Aspetta. Noi Nemmeno.' Aspirational, forward-looking, transformative.",
+        "headline_style": "future-oriented, aspirational, transformative",
+    },
+    {
+        "name": "irreverent",
+        "directive": "You are IRREVERENT. Break the mold. Use unexpected humor, informal tone, and anti-corporate language. 'Basta Siti Noiosi.' Be the brand that winks at the reader.",
+        "headline_style": "witty, informal, rule-breaking",
+    },
+    {
+        "name": "luxurious",
+        "directive": "You are LUXURIOUS. Every word drips exclusivity. Understated elegance. 'Per Chi Non Si Accontenta.' Use words like esclusivo, raffinato, senza tempo, artigianale. Appeal to taste, not price.",
+        "headline_style": "refined, exclusive, understated elegance",
+    },
+    {
+        "name": "scientific",
+        "directive": "You are SCIENTIFIC. Precision meets clarity. Explain complex things simply. 'La Scienza Dietro Ogni Dettaglio.' Use structured arguments, cause-effect chains, and evidence.",
+        "headline_style": "analytical, precise, clarity-first",
+    },
+    {
+        "name": "warm",
+        "directive": "You are WARM and HUMAN. Write like a trusted friend giving honest advice. 'Ti Meriti di Meglio.' Conversational, genuine, zero corporate veneer. Use 'tu' form naturally.",
+        "headline_style": "conversational, genuine, friendly",
+    },
+]
+
+# Color mood presets — injected into theme prompt to push the AI toward diverse palettes
+COLOR_MOOD_POOL = [
+    {"mood": "Sunset Warmth", "hint": "Think golden hour: amber #F59E0B, terracotta #C2410C, warm cream #FFFBEB, deep mahogany #7C2D12. Warm, inviting, organic."},
+    {"mood": "Ocean Depth", "hint": "Think deep sea: teal #0D9488, navy #0C4A6E, seafoam #CCFBF1, coral accent #FB7185. Cool, professional, trustworthy."},
+    {"mood": "Forest Calm", "hint": "Think ancient forest: emerald #059669, sage #D1FAE5, bark brown #78350F, golden light #FDE68A. Natural, grounded, sustainable."},
+    {"mood": "Electric Night", "hint": "Think neon city: electric purple #A855F7, hot pink #EC4899, dark navy #0F172A, cyan spark #22D3EE. Bold, modern, energetic."},
+    {"mood": "Desert Minimal", "hint": "Think desert sand: sand #D4A574, terracotta #9A3412, bone white #FEF3C7, indigo sky #4338CA. Earthy, warm, Mediterranean."},
+    {"mood": "Nordic Clean", "hint": "Think Scandinavian: slate blue #475569, ice white #F8FAFC, pine green #166534, blush #FECDD3. Clean, crisp, functional."},
+    {"mood": "Art Deco Luxe", "hint": "Think 1920s glamour: gold #D4AF37, black #1C1917, cream #FFFDD0, emerald #047857. Opulent, dramatic, sophisticated."},
+    {"mood": "Candy Pop", "hint": "Think playful: bubblegum #F472B6, lavender #C4B5FD, mint #A7F3D0, sunny yellow #FDE047. Fun, youthful, creative."},
+    {"mood": "Monochrome Power", "hint": "Think high contrast: charcoal #1E293B, silver #CBD5E1, white #FFFFFF, one vivid accent (red #EF4444 OR orange #F97316). Powerful, dramatic, sophisticated."},
+    {"mood": "Terracotta Earth", "hint": "Think Italian countryside: burnt sienna #A0522D, olive #808000, cream #FAF0E6, dusty rose #BC8F8F. Warm, artisanal, authentic."},
+    {"mood": "Cyber Fresh", "hint": "Think tech startup: lime #84CC16, dark slate #1E1B4B, electric blue #3B82F6, white #F5F5F5. Fresh, innovative, dynamic."},
+    {"mood": "Royal Velvet", "hint": "Think regal: deep burgundy #831843, royal purple #581C87, gold #B8860B, ivory #FFFFF0. Rich, prestigious, commanding."},
+]
+
+# Extended font pairings pool — more options to reduce repetition
+FONT_PAIRING_POOL = [
+    {"heading": "Playfair Display", "body": "Inter", "personality": "ELEGANT/LUXURY", "url_h": "Playfair+Display:wght@400;600;700;800", "url_b": "Inter:wght@400;500;600"},
+    {"heading": "Space Grotesk", "body": "DM Sans", "personality": "MODERN TECH/SAAS", "url_h": "Space+Grotesk:wght@400;600;700", "url_b": "DM+Sans:wght@400;500;600"},
+    {"heading": "Sora", "body": "Inter", "personality": "CLEAN STARTUP", "url_h": "Sora:wght@400;600;700;800", "url_b": "Inter:wght@400;500;600"},
+    {"heading": "DM Serif Display", "body": "Plus Jakarta Sans", "personality": "EDITORIAL/BLOG", "url_h": "DM+Serif+Display:wght@400", "url_b": "Plus+Jakarta+Sans:wght@400;500;600;700"},
+    {"heading": "Outfit", "body": "DM Sans", "personality": "GEOMETRIC MODERN", "url_h": "Outfit:wght@400;600;700;800", "url_b": "DM+Sans:wght@400;500;600"},
+    {"heading": "Fraunces", "body": "Nunito Sans", "personality": "WARM ARTISAN", "url_h": "Fraunces:wght@400;600;700;800", "url_b": "Nunito+Sans:wght@400;500;600;700"},
+    {"heading": "Epilogue", "body": "Source Sans 3", "personality": "PROFESSIONAL", "url_h": "Epilogue:wght@400;600;700;800", "url_b": "Source+Sans+3:wght@400;500;600"},
+    {"heading": "Bricolage Grotesque", "body": "Inter", "personality": "PLAYFUL MODERN", "url_h": "Bricolage+Grotesque:wght@400;600;700;800", "url_b": "Inter:wght@400;500;600"},
+    {"heading": "Instrument Serif", "body": "Instrument Sans", "personality": "REFINED EDITORIAL", "url_h": "Instrument+Serif:wght@400", "url_b": "Instrument+Sans:wght@400;500;600;700"},
+    {"heading": "Libre Baskerville", "body": "Karla", "personality": "CLASSIC LITERARY", "url_h": "Libre+Baskerville:wght@400;700", "url_b": "Karla:wght@400;500;600;700"},
+    {"heading": "Unbounded", "body": "Figtree", "personality": "FUTURISTIC BOLD", "url_h": "Unbounded:wght@400;600;700;800;900", "url_b": "Figtree:wght@400;500;600;700"},
+    {"heading": "Cormorant Garamond", "body": "Lato", "personality": "TIMELESS LUXURY", "url_h": "Cormorant+Garamond:wght@400;600;700", "url_b": "Lato:wght@400;700"},
+    {"heading": "Archivo Black", "body": "Work Sans", "personality": "IMPACT INDUSTRIAL", "url_h": "Archivo+Black", "url_b": "Work+Sans:wght@400;500;600"},
+    {"heading": "Josefin Sans", "body": "Mulish", "personality": "SLEEK GEOMETRIC", "url_h": "Josefin+Sans:wght@400;600;700", "url_b": "Mulish:wght@400;500;600;700"},
+    {"heading": "Bitter", "body": "Poppins", "personality": "WARM PROFESSIONAL", "url_h": "Bitter:wght@400;600;700;800", "url_b": "Poppins:wght@400;500;600"},
+    {"heading": "Albert Sans", "body": "IBM Plex Sans", "personality": "SWISS CLEAN", "url_h": "Albert+Sans:wght@400;600;700;800", "url_b": "IBM+Plex+Sans:wght@400;500;600"},
+]
+
+# Fallback theme palettes — used when Kimi fails, each is distinct
+FALLBACK_THEME_POOL = [
+    {
+        "primary_color": "#7C3AED", "secondary_color": "#1E3A5F", "accent_color": "#F59E0B",
+        "bg_color": "#FAF7F2", "bg_alt_color": "#F0EDE6", "text_color": "#1A1A2E", "text_muted_color": "#6B7280",
+        "font_heading": "Space Grotesk", "font_heading_url": "Space+Grotesk:wght@400;600;700;800",
+        "font_body": "DM Sans", "font_body_url": "DM+Sans:wght@400;500;600",
+    },
+    {
+        "primary_color": "#0D9488", "secondary_color": "#0C4A6E", "accent_color": "#FB7185",
+        "bg_color": "#F0FDFA", "bg_alt_color": "#CCFBF1", "text_color": "#0F172A", "text_muted_color": "#64748B",
+        "font_heading": "Sora", "font_heading_url": "Sora:wght@400;600;700;800",
+        "font_body": "Inter", "font_body_url": "Inter:wght@400;500;600",
+    },
+    {
+        "primary_color": "#DC2626", "secondary_color": "#1E293B", "accent_color": "#FBBF24",
+        "bg_color": "#FFFBEB", "bg_alt_color": "#FEF3C7", "text_color": "#1C1917", "text_muted_color": "#78716C",
+        "font_heading": "DM Serif Display", "font_heading_url": "DM+Serif+Display:wght@400",
+        "font_body": "Plus Jakarta Sans", "font_body_url": "Plus+Jakarta+Sans:wght@400;500;600;700",
+    },
+    {
+        "primary_color": "#059669", "secondary_color": "#78350F", "accent_color": "#F472B6",
+        "bg_color": "#ECFDF5", "bg_alt_color": "#D1FAE5", "text_color": "#064E3B", "text_muted_color": "#6B7280",
+        "font_heading": "Fraunces", "font_heading_url": "Fraunces:wght@400;600;700;800",
+        "font_body": "Nunito Sans", "font_body_url": "Nunito+Sans:wght@400;500;600;700",
+    },
+    {
+        "primary_color": "#7C2D12", "secondary_color": "#4338CA", "accent_color": "#22D3EE",
+        "bg_color": "#FEF3C7", "bg_alt_color": "#FDE68A", "text_color": "#1C1917", "text_muted_color": "#92400E",
+        "font_heading": "Playfair Display", "font_heading_url": "Playfair+Display:wght@400;600;700;800",
+        "font_body": "Lato", "font_body_url": "Lato:wght@400;700",
+    },
+    {
+        "primary_color": "#A855F7", "secondary_color": "#EC4899", "accent_color": "#22D3EE",
+        "bg_color": "#0F172A", "bg_alt_color": "#1E293B", "text_color": "#F1F5F9", "text_muted_color": "#94A3B8",
+        "font_heading": "Outfit", "font_heading_url": "Outfit:wght@400;600;700;800",
+        "font_body": "DM Sans", "font_body_url": "DM+Sans:wght@400;500;600",
+    },
+    {
+        "primary_color": "#B8860B", "secondary_color": "#1C1917", "accent_color": "#047857",
+        "bg_color": "#FFFDD0", "bg_alt_color": "#FEF9C3", "text_color": "#1C1917", "text_muted_color": "#78716C",
+        "font_heading": "Cormorant Garamond", "font_heading_url": "Cormorant+Garamond:wght@400;600;700",
+        "font_body": "Lato", "font_body_url": "Lato:wght@400;700",
+    },
+    {
+        "primary_color": "#831843", "secondary_color": "#581C87", "accent_color": "#FBBF24",
+        "bg_color": "#FFFFF0", "bg_alt_color": "#FEF3C7", "text_color": "#1E1B4B", "text_muted_color": "#6B7280",
+        "font_heading": "Libre Baskerville", "font_heading_url": "Libre+Baskerville:wght@400;700",
+        "font_body": "Karla", "font_body_url": "Karla:wght@400;500;600;700",
+    },
+]
+
+
+def _pick_variety_context() -> Dict[str, Any]:
+    """Pick random personality, color mood, and font pairing for this generation."""
+    return {
+        "personality": random.choice(PERSONALITY_POOL),
+        "color_mood": random.choice(COLOR_MOOD_POOL),
+        "font_pairing": random.choice(FONT_PAIRING_POOL),
+    }
+
+
+# =========================================================
 # Deterministic style → component variant mapping.
 # Each frontend template style maps to curated component variants
 # ensuring visually distinct sites for every template choice.
@@ -444,6 +612,7 @@ class DataBindingGenerator:
         reference_image_url: Optional[str] = None,
         creative_context: str = "",
         reference_url_context: str = "",
+        variety_context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Kimi returns JSON with color palette and fonts."""
         style_hint = ""
@@ -463,12 +632,39 @@ class DataBindingGenerator:
         if reference_url_context:
             palette_hint += f"\n{reference_url_context}\nMatch these colors and fonts closely.\n"
 
+        # --- VARIETY: inject random color mood and font suggestion ---
+        variety_hint = ""
+        if variety_context:
+            color_mood = variety_context.get("color_mood", {})
+            font_pair = variety_context.get("font_pairing", {})
+            variety_hint = f"""
+=== COLOR MOOD DIRECTION (follow this closely) ===
+Design mood: "{color_mood.get('mood', 'Modern Bold')}"
+{color_mood.get('hint', '')}
+Adapt this mood to the business, but keep the color FEELING.
+
+=== SUGGESTED FONT PAIRING (use this unless it clashes with the business) ===
+Heading: "{font_pair.get('heading', 'Space Grotesk')}" ({font_pair.get('personality', 'MODERN')})
+Body: "{font_pair.get('body', 'DM Sans')}"
+font_heading_url: "{font_pair.get('url_h', 'Space+Grotesk:wght@400;600;700')}"
+font_body_url: "{font_pair.get('url_b', 'DM+Sans:wght@400;500;600')}"
+"""
+
+        # Build the full font pairings list dynamically from the pool
+        # Shuffle to prevent the AI from always picking the first option
+        shuffled_fonts = random.sample(FONT_PAIRING_POOL, min(8, len(FONT_PAIRING_POOL)))
+        font_list_str = "\n".join(
+            f'{fp["personality"]}: "{fp["heading"]}" (heading) + "{fp["body"]}" (body)'
+            for fp in shuffled_fonts
+        )
+
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
 
 BUSINESS: {business_name} - {business_description[:500]}
 {style_hint}
 {palette_hint}
+{variety_hint}
 Return this exact JSON structure:
 {{
   "primary_color": "#hex",
@@ -497,14 +693,7 @@ Return this exact JSON structure:
 === FONT PAIRING RULES (CRITICAL) ===
 Pick ONE of these curated pairings based on the business personality:
 
-ELEGANT/LUXURY: "Playfair Display" (heading) + "Inter" (body)
-MODERN TECH/SAAS: "Space Grotesk" (heading) + "DM Sans" (body)
-CLEAN STARTUP: "Sora" (heading) + "Inter" (body)
-EDITORIAL/BLOG: "DM Serif Display" (heading) + "Plus Jakarta Sans" (body)
-BOLD CREATIVE: "Cabinet Grotesk" (heading) + "Inter" (body)
-GEOMETRIC MODERN: "Outfit" (heading) + "DM Sans" (body)
-WARM ARTISAN: "Fraunces" (heading) + "Nunito Sans" (body)
-PROFESSIONAL: "Epilogue" (heading) + "Source Sans 3" (body)
+{font_list_str}
 
 - NEVER use the same font for heading and body
 - NEVER use Inter, Roboto, Open Sans, or Arial for headings — they lack personality
@@ -531,6 +720,7 @@ Return ONLY the JSON object"""
             result = await self.kimi.call(
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=500, thinking=False, timeout=60.0,
+                temperature=0.9, top_p=0.95,
             )
 
         if result.get("success"):
@@ -556,6 +746,7 @@ Return ONLY the JSON object"""
         contact_info: Optional[Dict[str, str]] = None,
         creative_context: str = "",
         reference_url_context: str = "",
+        variety_context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Kimi returns JSON with all text content for every section."""
         contact_str = ""
@@ -642,12 +833,12 @@ SECTIONS NEEDED: {sections_str}
 - Choose MODERN, SPECIFIC emojis that match the content (not generic like checkmarks or stars)
 - Examples: for speed use thunderbolt, for security use shield, for analytics use chart, for design use palette
 
-=== UNIQUENESS DIRECTIVE (CRITICAL) ===
-IMPORTANT: Every generation must produce UNIQUE, FRESH content.
-Never reuse the same headline structure. Surprise the reader.
-Creative direction seed: {random.choice(["provocative", "poetic", "minimal", "bold", "storytelling", "data-driven", "emotional", "visionary"])}
-Use this creative direction to shape ALL your copy. It should influence tone, rhythm, word choice, and structure.
-If the direction is "poetic", write like a poet. If "data-driven", lead with numbers and proof. If "provocative", challenge assumptions.
+=== CREATIVE PERSONALITY (CRITICAL — this defines the ENTIRE tone of the site) ===
+{variety_context["personality"]["directive"] if variety_context else random.choice(PERSONALITY_POOL)["directive"]}
+Headline style: {variety_context["personality"]["headline_style"] if variety_context else "varied and surprising"}
+EVERY piece of text — headlines, subtitles, descriptions, CTAs — must reflect this personality.
+Do NOT write generic copy that ignores the personality. The personality is your creative brief.
+Randomization seed: {random.randint(10000, 99999)}
 
 Return this JSON (include only the sections listed above):
 {{
@@ -826,6 +1017,7 @@ FINAL CHECKLIST (every point is mandatory):
         result = await self.kimi.call(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=4000, thinking=False, timeout=120.0,
+            temperature=0.9, top_p=0.95,
         )
 
         if result.get("success"):
@@ -1052,6 +1244,14 @@ Return ONLY the JSON object."""
                 except Exception as e:
                     logger.warning(f"[DataBinding] URL analysis failed: {e}")
 
+        # === PICK VARIETY CONTEXT (random personality, color mood, font pairing) ===
+        variety = _pick_variety_context()
+        logger.info(
+            f"[DataBinding] Variety: personality={variety['personality']['name']}, "
+            f"color_mood={variety['color_mood']['mood']}, "
+            f"font={variety['font_pairing']['heading']}/{variety['font_pairing']['body']}"
+        )
+
         # === STEP 1+2 PARALLEL: Theme + Texts ===
         if on_progress:
             on_progress(1, "Analisi stile e generazione testi...", {
@@ -1063,12 +1263,14 @@ Return ONLY the JSON object."""
             style_preferences, reference_image_url,
             creative_context=creative_context,
             reference_url_context=reference_url_context,
+            variety_context=variety,
         )
         texts_task = self._generate_texts(
             business_name, business_description,
             sections, contact_info,
             creative_context=creative_context,
             reference_url_context=reference_url_context,
+            variety_context=variety,
         )
         theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
 
@@ -1263,7 +1465,7 @@ Return ONLY the JSON object."""
         return {
             "success": True,
             "html_content": html_content,
-            "model_used": "kimi-k2.5-databinding",
+            "model_used": self.kimi.model,
             "tokens_input": total_tokens_in,
             "tokens_output": total_tokens_out,
             "cost_usd": cost,
@@ -1303,6 +1505,16 @@ Return ONLY the JSON object."""
             section_texts = texts.get(section, {})
             if isinstance(section_texts, dict):
                 section_texts = self._normalize_section_data(section, section_texts, variant_id, business_name)
+
+            # Skip sections where the AI returned no real content at all
+            # (empty dict or only empty-string values). Keep hero, footer, contact always.
+            if section not in ("hero", "footer", "contact", "cta"):
+                if not self._section_has_content(section, section_texts):
+                    logger.warning(
+                        f"[DataBinding] Section '{section}' has no real content after normalization, skipping"
+                    )
+                    continue
+
             components.append({
                 "variant_id": variant_id,
                 "data": section_texts,
@@ -1335,6 +1547,61 @@ Return ONLY the JSON object."""
                 "CURRENT_YEAR": "2026",
             },
         }
+
+    def _section_has_content(self, section: str, data: Dict[str, Any]) -> bool:
+        """Check if a section's data dict has any real content.
+
+        Returns False if:
+        - data is empty or not a dict
+        - All string values are empty or only whitespace
+        - List values (repeat arrays) are empty or contain only empty dicts
+        """
+        if not data or not isinstance(data, dict):
+            return False
+
+        # Sections that use REPEAT arrays: check if the array has items
+        repeat_keys = {
+            "services": "SERVICES",
+            "features": "FEATURES",
+            "testimonials": "TESTIMONIALS",
+            "gallery": "GALLERY_ITEMS",
+            "team": "TEAM_MEMBERS",
+            "pricing": "PRICING_PLANS",
+            "faq": "FAQ_ITEMS",
+            "stats": "STATS_ITEMS",
+            "logos": "LOGOS_ITEMS",
+            "process": "PROCESS_STEPS",
+            "timeline": "TIMELINE_ITEMS",
+        }
+
+        repeat_key = repeat_keys.get(section)
+        if repeat_key:
+            items = data.get(repeat_key, [])
+            if not isinstance(items, list) or len(items) == 0:
+                return False
+            # Check that at least one item has a non-empty value
+            for item in items:
+                if isinstance(item, dict):
+                    for v in item.values():
+                        if isinstance(v, str) and v.strip():
+                            return True
+            return False
+
+        # For non-repeat sections (about, etc.), check for any non-empty string values
+        # Exclude the title/subtitle check - a section needs more than just a heading
+        title_keys = {k for k in data.keys() if k.endswith("_TITLE") or k.endswith("_SUBTITLE")}
+        has_non_title_content = False
+        for key, value in data.items():
+            if key in title_keys:
+                continue
+            if isinstance(value, str) and value.strip():
+                has_non_title_content = True
+                break
+            if isinstance(value, list) and len(value) > 0:
+                has_non_title_content = True
+                break
+
+        return has_non_title_content
 
     def _normalize_section_data(
         self, section: str, data: Dict[str, Any], variant_id: str, business_name: str,
@@ -1983,9 +2250,14 @@ Return ONLY the JSON object."""
         This catches cases where:
         - REPEAT block was empty (data array missing or with wrong keys)
         - Section has only a title + subtitle but no actual content items
+        - Unreplaced {{PLACEHOLDER}} strings remain in the HTML
 
         Better to show NO section than an empty section with a big blank space.
         """
+        # Pre-cleanup: remove any leftover unreplaced {{PLACEHOLDER}} strings
+        # that would appear as visible text to the user
+        html = re.sub(r'\{\{[A-Z_]+\}\}', '', html)
+
         # Find all <section ...>...</section> blocks (including nested divs)
         # Use a balanced approach: find section tags and track nesting
         result_parts = []
@@ -2051,8 +2323,9 @@ Return ONLY the JSON object."""
         Strategy:
         1. Never remove hero, footer, contact, or CTA sections
         2. Check if the section has very little visible text (broken template)
-        3. Check if key content containers (grid, stagger, space-y) are empty
+        3. Check if key content containers (grid, stagger, space-y, columns, flex, etc.) are empty
            which means the REPEAT block rendered nothing
+        4. Check for unreplaced placeholders that signal missing data
         """
         # Don't remove hero, footer, contact, or CTA sections
         section_lower = section_html.lower()
@@ -2075,12 +2348,17 @@ Return ONLY the JSON object."""
         if len(text_only) < 30:
             return True
 
+        # Check for unreplaced placeholders: if most visible text is just {{...}}, section is broken
+        placeholder_count = len(re.findall(r'\{\{\w+\}\}', text_only))
+        words_without_placeholders = re.sub(r'\{\{\w+\}\}', '', text_only).strip()
+        if placeholder_count >= 3 and len(words_without_placeholders) < 50:
+            logger.info(f"[PostProcess] Section has {placeholder_count} unreplaced placeholders, removing")
+            return True
+
         # Check for empty content containers that SHOULD have repeated items
         # These patterns catch the case where a REPEAT block rendered "" (no items)
 
         # Pattern 1: Empty grid containers - <div class="grid ...">  \n  </div>
-        # The REPEAT block would have been between the open and close div.
-        # We need to check if there are any child elements in the grid.
         empty_grid = re.compile(
             r'<div[^>]*class="[^"]*\bgrid\b[^"]*"[^>]*>\s*</div>',
             re.DOTALL,
@@ -2113,11 +2391,49 @@ Return ONLY the JSON object."""
             return True
 
         # Pattern 5: Section with heading but the grid/stagger has no .stagger-item children
-        # Count how many "stagger-item" classes appear in the section
         if 'data-animate="stagger"' in section_html or "data-animate='stagger'" in section_html:
             stagger_items_count = section_html.count('stagger-item')
             if stagger_items_count == 0:
                 return True
+
+        # Pattern 6: Empty CSS columns containers (masonry layouts)
+        empty_columns = re.compile(
+            r'<div[^>]*class="[^"]*\bcolumns-\d+\b[^"]*"[^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_columns.search(section_html):
+            return True
+        # Also catch columns with sm:/md: prefixes
+        empty_columns_responsive = re.compile(
+            r'<div[^>]*class="[^"]*\b(?:sm:|md:|lg:)?columns-\d+\b[^"]*"[^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_columns_responsive.search(section_html):
+            return True
+
+        # Pattern 7: Empty flex containers that should hold items
+        empty_flex = re.compile(
+            r'<div[^>]*class="[^"]*\bflex\b[^"]*\bgap-\d+\b[^"]*"[^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_flex.search(section_html):
+            return True
+
+        # Pattern 8: Empty marquee/scroll containers
+        empty_marquee = re.compile(
+            r'<div[^>]*(?:data-animate=["\']marquee["\']|class="[^"]*marquee[^"]*")[^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_marquee.search(section_html):
+            return True
+
+        # Pattern 9: Empty overflow-x scroll containers (filmstrip, carousel)
+        empty_scroll = re.compile(
+            r'<div[^>]*class="[^"]*\boverflow-x-(?:auto|scroll)\b[^"]*"[^>]*>\s*</div>',
+            re.DOTALL,
+        )
+        if empty_scroll.search(section_html):
+            return True
 
         return False
 
@@ -2377,31 +2693,19 @@ Return ONLY the JSON object."""
         raise ValueError(f"No JSON found in response: {content[:200]}...")
 
     def _fallback_theme(self, style_preferences=None) -> Dict[str, str]:
-        """Default theme if Kimi theme generation fails. Uses a vibrant palette, not boring defaults."""
-        primary = "#7C3AED"  # Vibrant purple
+        """Default theme if Kimi theme generation fails. Randomly picks from diverse palette pool."""
+        theme = random.choice(FALLBACK_THEME_POOL).copy()
         if style_preferences and style_preferences.get("primary_color"):
-            primary = style_preferences["primary_color"]
-        return {
-            "primary_color": primary,
-            "secondary_color": "#1E3A5F",
-            "accent_color": "#F59E0B",
-            "bg_color": "#FAF7F2",
-            "bg_alt_color": "#F0EDE6",
-            "text_color": "#1A1A2E",
-            "text_muted_color": "#6B7280",
-            "font_heading": "Space Grotesk",
-            "font_heading_url": "Space+Grotesk:wght@400;600;700;800",
-            "font_body": "DM Sans",
-            "font_body_url": "DM+Sans:wght@400;500;600",
-        }
+            theme["primary_color"] = style_preferences["primary_color"]
+        return theme
 
     def _default_selections(self, sections: List[str], available: Dict[str, List[str]]) -> Dict[str, str]:
-        """Fallback: pick first variant for each section."""
+        """Fallback: randomly pick a variant for each section from available options."""
         selections = {}
         for section in sections:
             variants = available.get(section, [])
             if variants:
-                selections[section] = variants[0]
+                selections[section] = random.choice(variants)
         return selections
 
 

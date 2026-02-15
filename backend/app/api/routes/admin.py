@@ -118,6 +118,13 @@ async def admin_stats(
     # Total generations used across all users
     total_generations = db.query(func.sum(User.generations_used)).scalar() or 0
 
+    # AI cost tracking
+    total_ai_cost = db.query(func.sum(Site.generation_cost)).scalar() or 0
+    total_tokens_in = db.query(func.sum(Site.tokens_input)).scalar() or 0
+    total_tokens_out = db.query(func.sum(Site.tokens_output)).scalar() or 0
+    sites_with_cost = db.query(func.count(Site.id)).filter(Site.generation_cost > 0).scalar() or 0
+    avg_cost = (total_ai_cost / sites_with_cost) if sites_with_cost > 0 else 0
+
     return {
         "users": {
             "total": total_users,
@@ -133,6 +140,13 @@ async def admin_stats(
         },
         "plans": plan_dist,
         "generations_total": total_generations,
+        "ai_costs": {
+            "total_usd": round(total_ai_cost, 4),
+            "avg_per_site_usd": round(avg_cost, 4),
+            "total_tokens_input": total_tokens_in,
+            "total_tokens_output": total_tokens_out,
+            "sites_tracked": sites_with_cost,
+        },
     }
 
 
@@ -358,6 +372,10 @@ async def admin_list_sites(
                 "owner_id": s.owner_id,
                 "owner_email": s.owner.email if s.owner else None,
                 "owner_name": s.owner.full_name if s.owner else None,
+                "generation_cost": s.generation_cost,
+                "tokens_input": s.tokens_input,
+                "tokens_output": s.tokens_output,
+                "ai_model": s.ai_model,
                 "created_at": s.created_at.isoformat() if s.created_at else None,
                 "updated_at": s.updated_at.isoformat() if s.updated_at else None,
             }
@@ -394,6 +412,10 @@ async def admin_get_site(
         "owner_email": site.owner.email if site.owner else None,
         "owner_name": site.owner.full_name if site.owner else None,
         "domain": site.domain,
+        "generation_cost": site.generation_cost,
+        "tokens_input": site.tokens_input,
+        "tokens_output": site.tokens_output,
+        "ai_model": site.ai_model,
         "created_at": site.created_at.isoformat() if site.created_at else None,
         "updated_at": site.updated_at.isoformat() if site.updated_at else None,
     }
