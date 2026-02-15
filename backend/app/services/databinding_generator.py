@@ -904,7 +904,7 @@ Return ONLY the JSON object"""
             result = await self.kimi.call(
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=500, thinking=False, timeout=60.0,
-                temperature=0.9, top_p=0.95, json_mode=True,
+                temperature=0.75, top_p=0.95, json_mode=True,
             )
 
         if result.get("success"):
@@ -1033,17 +1033,17 @@ Return this JSON (include only the sections listed above):
     "og_description": "OG description"
   }},
   "hero": {{
-    "HERO_TITLE": "Headline impattante (max 8 parole)",
-    "HERO_SUBTITLE": "Sottotitolo (2-3 frasi)",
-    "HERO_CTA_TEXT": "Testo bottone CTA",
+    "HERO_TITLE": "Headline impattante (max 8 parole, MIN 3 parole)",
+    "HERO_SUBTITLE": "Sottotitolo evocativo (MIN 15 parole, 2-3 frasi che creano desiderio)",
+    "HERO_CTA_TEXT": "Testo bottone CTA (3-5 parole, verbo d'azione)",
     "HERO_CTA_URL": "#contact",
     "HERO_IMAGE_URL": "https://placehold.co/800x600/{{primary_color_no_hash}}/white?text={business_name}",
-    "HERO_IMAGE_ALT": "Descrizione immagine"
+    "HERO_IMAGE_ALT": "Descrizione immagine specifica"
   }},
   "about": {{
-    "ABOUT_TITLE": "Titolo sezione",
-    "ABOUT_SUBTITLE": "Sottotitolo",
-    "ABOUT_TEXT": "2-4 frasi sulla storia/missione",
+    "ABOUT_TITLE": "Titolo sezione (evocativo, NO 'Chi Siamo')",
+    "ABOUT_SUBTITLE": "Sottotitolo (MIN 10 parole)",
+    "ABOUT_TEXT": "MIN 40 parole: racconta la storia/missione con dettagli specifici, emozioni, visione futura",
     "ABOUT_HIGHLIGHT_1": "Fatto chiave 1",
     "ABOUT_HIGHLIGHT_2": "Fatto chiave 2",
     "ABOUT_HIGHLIGHT_3": "Fatto chiave 3",
@@ -1055,40 +1055,40 @@ Return this JSON (include only the sections listed above):
     "SERVICES_TITLE": "Titolo sezione",
     "SERVICES_SUBTITLE": "Sottotitolo",
     "SERVICES": [
-      {{"SERVICE_ICON": "emoji", "SERVICE_TITLE": "Nome servizio", "SERVICE_DESCRIPTION": "Descrizione breve"}},
-      {{"SERVICE_ICON": "emoji", "SERVICE_TITLE": "Nome servizio", "SERVICE_DESCRIPTION": "Descrizione breve"}},
-      {{"SERVICE_ICON": "emoji", "SERVICE_TITLE": "Nome servizio", "SERVICE_DESCRIPTION": "Descrizione breve"}}
+      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}},
+      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}},
+      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}}
     ]
   }},
   "features": {{
     "FEATURES_TITLE": "Titolo sezione",
     "FEATURES_SUBTITLE": "Sottotitolo",
     "FEATURES": [
-      {{"FEATURE_ICON": "emoji", "FEATURE_TITLE": "Feature", "FEATURE_DESCRIPTION": "Descrizione breve"}},
-      {{"FEATURE_ICON": "emoji", "FEATURE_TITLE": "Feature", "FEATURE_DESCRIPTION": "Descrizione breve"}},
-      {{"FEATURE_ICON": "emoji", "FEATURE_TITLE": "Feature", "FEATURE_DESCRIPTION": "Descrizione breve"}},
-      {{"FEATURE_ICON": "emoji", "FEATURE_TITLE": "Feature", "FEATURE_DESCRIPTION": "Descrizione breve"}},
-      {{"FEATURE_ICON": "emoji", "FEATURE_TITLE": "Feature", "FEATURE_DESCRIPTION": "Descrizione breve"}},
-      {{"FEATURE_ICON": "emoji", "FEATURE_TITLE": "Feature", "FEATURE_DESCRIPTION": "Descrizione breve"}}
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}}
     ]
   }},
   "testimonials": {{
     "TESTIMONIALS_TITLE": "Titolo sezione",
     "TESTIMONIALS": [
-      {{"TESTIMONIAL_TEXT": "Citazione", "TESTIMONIAL_AUTHOR": "Nome", "TESTIMONIAL_ROLE": "Ruolo", "TESTIMONIAL_INITIAL": "N"}},
-      {{"TESTIMONIAL_TEXT": "Citazione", "TESTIMONIAL_AUTHOR": "Nome", "TESTIMONIAL_ROLE": "Ruolo", "TESTIMONIAL_INITIAL": "N"}},
-      {{"TESTIMONIAL_TEXT": "Citazione", "TESTIMONIAL_AUTHOR": "Nome", "TESTIMONIAL_ROLE": "Ruolo", "TESTIMONIAL_INITIAL": "N"}}
+      {{"TESTIMONIAL_TEXT": "MIN 20 parole: storia specifica con dettagli, emozioni, risultati concreti", "TESTIMONIAL_AUTHOR": "Nome e Cognome realistico italiano", "TESTIMONIAL_ROLE": "Ruolo specifico (es: CEO di NomeDitta)", "TESTIMONIAL_INITIAL": "N"}},
+      {{"TESTIMONIAL_TEXT": "MIN 20 parole: esperienza unica, diversa dalla precedente", "TESTIMONIAL_AUTHOR": "Nome e Cognome", "TESTIMONIAL_ROLE": "Ruolo specifico", "TESTIMONIAL_INITIAL": "N"}},
+      {{"TESTIMONIAL_TEXT": "MIN 20 parole: racconto con before/after, numeri o dettagli specifici", "TESTIMONIAL_AUTHOR": "Nome e Cognome", "TESTIMONIAL_ROLE": "Ruolo specifico", "TESTIMONIAL_INITIAL": "N"}}
     ]
   }},
   "cta": {{
-    "CTA_TITLE": "Headline CTA",
-    "CTA_SUBTITLE": "Testo supporto",
-    "CTA_BUTTON_TEXT": "Testo bottone",
+    "CTA_TITLE": "Headline CTA urgente e persuasiva (4-8 parole)",
+    "CTA_SUBTITLE": "MIN 12 parole: motiva all'azione con beneficio chiaro",
+    "CTA_BUTTON_TEXT": "Verbo d'azione + risultato (3-5 parole)",
     "CTA_BUTTON_URL": "#contact"
   }},
   "contact": {{
-    "CONTACT_TITLE": "Titolo sezione",
-    "CONTACT_SUBTITLE": "Sottotitolo",
+    "CONTACT_TITLE": "Titolo sezione (invitante, NO 'Contattaci')",
+    "CONTACT_SUBTITLE": "MIN 10 parole: sottotitolo che invoglia a scrivere",
     "CONTACT_ADDRESS": "indirizzo o vuoto",
     "CONTACT_PHONE": "telefono o vuoto",
     "CONTACT_EMAIL": "email o vuoto"
@@ -1109,9 +1109,9 @@ Return this JSON (include only the sections listed above):
     "TEAM_TITLE": "Titolo sezione team",
     "TEAM_SUBTITLE": "Sottotitolo",
     "TEAM_MEMBERS": [
-      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "Breve bio (1-2 frasi)"}},
-      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "Breve bio"}},
-      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "Breve bio"}}
+      {{"MEMBER_NAME": "Nome Cognome realistico", "MEMBER_ROLE": "Ruolo specifico (es: Direttore Creativo)", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "MIN 15 parole: personalita, passioni, competenze uniche"}},
+      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo specifico", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "MIN 15 parole: storia personale e approccio al lavoro"}},
+      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo specifico", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "MIN 15 parole: background e contributo al team"}}
     ]
   }},
   "pricing": {{
@@ -1185,6 +1185,14 @@ Return this JSON (include only the sections listed above):
 6. EVERY array must contain REAL, SUBSTANTIAL content. NO empty strings. Each description must be at least 15 words.
 7. DO NOT use short key names like "ICON", "TITLE", "DESCRIPTION" — always use the FULL prefixed key name as shown above.
 
+=== MINIMUM WORD COUNTS (MANDATORY — short text = FAILURE) ===
+- HERO_SUBTITLE: MIN 15 parole
+- ABOUT_TEXT: MIN 40 parole (racconta una storia, non una frase)
+- SERVICE_DESCRIPTION / FEATURE_DESCRIPTION: MIN 12 parole ciascuna
+- TESTIMONIAL_TEXT: MIN 20 parole ciascuna (storia specifica, non "ottimo servizio")
+- CTA_SUBTITLE: MIN 12 parole
+- MEMBER_BIO: MIN 15 parole
+
 FINAL CHECKLIST (every point is mandatory):
 - ALL text MUST be in Italian
 - Be WILDLY creative and hyper-specific to THIS business — if you replaced the business name, the text should NOT work for any other company
@@ -1192,16 +1200,17 @@ FINAL CHECKLIST (every point is mandatory):
 - ZERO generic text anywhere. Read every line and ask: "Could this appear on a random corporate site?" If yes, REWRITE IT.
 - Each service/feature icon: UNIQUE emoji, never repeated in the same section
 - TESTIMONIAL_INITIAL = first letter of TESTIMONIAL_AUTHOR name
-- Testimonials: real names, specific details, emotional stories (NOT "Ottimo servizio" or "Molto professionali")
+- Testimonials: real Italian names (Nome Cognome), specific details, emotional stories (NOT "Ottimo servizio" or "Molto professionali")
 - Generate ONLY the sections listed in SECTIONS NEEDED
 - Double-check: NO banned phrases from the list above appear ANYWHERE in your output
 - VERIFY: every SERVICES/FEATURES/TESTIMONIALS/GALLERY_ITEMS/TEAM_MEMBERS array has 3+ items with FULL key names (SERVICE_ICON not ICON)
+- COUNT WORDS: if any description has fewer words than the minimum, EXPAND it immediately
 - Return ONLY the JSON object"""
 
         result = await self.kimi.call(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=4000, thinking=False, timeout=120.0,
-            temperature=0.9, top_p=0.95, json_mode=True,
+            temperature=0.75, top_p=0.95, json_mode=True,
         )
 
         if result.get("success"):

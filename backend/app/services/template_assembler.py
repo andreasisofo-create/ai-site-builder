@@ -258,6 +258,11 @@ class TemplateAssembler:
             # First expand repeats, then replace remaining placeholders
             section_html = self._expand_repeats(template, merged_data)
             section_html = self._replace_placeholders(section_html, merged_data)
+
+            # For footer sections, strip nav links to non-existent sections
+            if variant_id and variant_id.startswith("footer"):
+                section_html = self._clean_footer_nav(section_html, site_data)
+
             sections_html.append(section_html)
 
         # 3. Build navigation bar from section IDs
@@ -426,6 +431,35 @@ class TemplateAssembler:
   }});
 }})();
 </script>"""
+
+    @staticmethod
+    def _clean_footer_nav(footer_html: str, site_data: Dict[str, Any]) -> str:
+        """Remove footer nav links that point to sections not present in this site."""
+        import re
+
+        # Collect active section IDs from components
+        active_sections = set()
+        for comp in site_data.get("components", []):
+            vid = comp.get("variant_id", "")
+            for sec_key in _SECTION_NAV_LABELS:
+                if vid.startswith(sec_key):
+                    active_sections.add(sec_key)
+                    break
+
+        # Remove <a href="#section">...</a> links where section is not active
+        # Matches anchor tags with href="#something" pattern
+        def _strip_dead_link(match):
+            href_section = match.group(1)
+            if href_section in active_sections or href_section == "hero":
+                return match.group(0)  # keep it
+            return ""  # remove the entire link
+
+        footer_html = re.sub(
+            r'<a\s+href="#(\w+)"[^>]*>[^<]*</a>\s*',
+            _strip_dead_link,
+            footer_html,
+        )
+        return footer_html
 
 
 # Singleton instance
