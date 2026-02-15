@@ -18,6 +18,40 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
+def _hex_to_rgb(hex_color: str) -> str:
+    """Convert '#3b82f6' to '59,130,246' for use in rgba()."""
+    hex_color = hex_color.strip().lstrip("#")
+    if len(hex_color) == 3:
+        hex_color = "".join(c * 2 for c in hex_color)
+    if len(hex_color) != 6:
+        return "99,102,241"  # fallback: indigo
+    try:
+        r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+        return f"{r},{g},{b}"
+    except ValueError:
+        return "99,102,241"
+
+
+# Section labels for navigation (Italian)
+_SECTION_NAV_LABELS = {
+    "hero": None,  # hero is the top of the page, no nav link needed
+    "about": "Chi Siamo",
+    "services": "Servizi",
+    "features": "Funzionalità",
+    "gallery": "Galleria",
+    "testimonials": "Testimonianze",
+    "team": "Team",
+    "pricing": "Prezzi",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "contact": "Contatti",
+    "cta": None,  # CTA doesn't need a nav link
+    "footer": None,
+    "stats": "Numeri",
+    "process": "Processo",
+}
+
+
 class TemplateAssembler:
     def __init__(self, components_dir: Optional[str] = None):
         if components_dir is None:
@@ -193,6 +227,12 @@ class TemplateAssembler:
         for key, value in global_data.items():
             head_data[key] = value  # global keys are already UPPER
 
+        # Inject RGB color variants for rgba() usage in templates
+        primary_hex = head_data.get("PRIMARY_COLOR", "#3b82f6")
+        bg_hex = head_data.get("BG_COLOR", "#ffffff")
+        head_data["PRIMARY_COLOR_RGB"] = _hex_to_rgb(primary_hex)
+        head_data["BG_COLOR_RGB"] = _hex_to_rgb(bg_hex)
+
         head_html = self._replace_placeholders(head_template, head_data)
 
         # 2. Build body sections
@@ -220,12 +260,17 @@ class TemplateAssembler:
             section_html = self._replace_placeholders(section_html, merged_data)
             sections_html.append(section_html)
 
-        # 3. Assemble complete page
+        # 3. Build navigation bar from section IDs
+        nav_html = self._build_nav(site_data)
+
+        # 4. Assemble complete page
         body_content = "\n\n".join(sections_html)
         gsap_script_tag = f"<script>\n{self.gsap_script}\n</script>"
 
         complete_html = f"""{head_html}
 <body class="bg-[var(--color-bg)] text-[var(--color-text)] font-body antialiased">
+
+{nav_html}
 
 {body_content}
 
@@ -234,6 +279,56 @@ class TemplateAssembler:
 </html>"""
 
         return complete_html
+
+    def _build_nav(self, site_data: Dict[str, Any]) -> str:
+        """Generate a sticky navigation bar with anchor links to each section."""
+        global_data = site_data.get("global", {})
+        business_name = global_data.get("BUSINESS_NAME", "")
+        logo_url = global_data.get("LOGO_URL", "")
+
+        # Collect section IDs from components
+        nav_links = []
+        for component in site_data.get("components", []):
+            variant_id = component.get("variant_id", "")
+            # Extract section type from variant_id (e.g. "hero-split-01" -> "hero")
+            section_type = variant_id.rsplit("-", 2)[0] if "-" in variant_id else variant_id
+            # Normalize: strip trailing digits and hyphens to get base type
+            for sec_key, label in _SECTION_NAV_LABELS.items():
+                if section_type.startswith(sec_key) and label:
+                    if not any(l[0] == sec_key for l in nav_links):
+                        nav_links.append((sec_key, label))
+                    break
+
+        if not nav_links:
+            return ""
+
+        # Build link HTML
+        links_html = "\n".join(
+            f'        <a href="#{sid}" class="text-sm font-medium text-[var(--color-text)]/70 '
+            f'hover:text-[var(--color-primary)] transition-colors duration-200">{label}</a>'
+            for sid, label in nav_links
+        )
+
+        return f"""<!-- Auto-generated sticky navigation -->
+<nav data-scroll-nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(var(--color-bg-rgb, 255,255,255), 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(var(--color-primary-rgb, 99,102,241), 0.08);" data-animate="fade-down">
+  <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+    <a href="#hero" class="flex items-center gap-2 shrink-0">
+      <img src="{logo_url}" alt="" class="h-7 w-auto object-contain">
+      <span class="font-bold font-heading text-sm text-[var(--color-text)]">{business_name}</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6">
+{links_html}
+    </div>
+    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="md:hidden p-2 rounded-lg hover:bg-[var(--color-bg-alt)] transition-colors" aria-label="Menu">
+      <svg class="w-5 h-5 text-[var(--color-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="hidden absolute top-16 left-0 right-0 md:hidden p-4 space-y-3" style="background: rgba(var(--color-bg-rgb, 255,255,255), 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(var(--color-primary-rgb, 99,102,241), 0.08);">
+{links_html.replace('text-sm', 'text-base block py-1')}
+    </div>
+  </div>
+</nav>
+<!-- Spacer for fixed nav -->
+<div class="h-16"></div>"""
 
 
 # Singleton instance

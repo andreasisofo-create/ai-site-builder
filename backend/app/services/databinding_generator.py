@@ -1859,6 +1859,8 @@ Return ONLY the JSON object."""
                 flat_prefix="TESTIMONIAL",
                 fallback_items=self._fallback_testimonials(),
             )
+            # Inject avatar URLs for each testimonial using UI Avatars API
+            data = self._inject_testimonial_avatars(data)
 
         elif section == "gallery":
             data = self._normalize_repeat_array(
@@ -2735,6 +2737,30 @@ Return ONLY the JSON object."""
                 "GALLERY_CAPTION": f"Progetto {i}",
             })
         return items
+
+    @staticmethod
+    def _inject_testimonial_avatars(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Add TESTIMONIAL_AVATAR_URL to each testimonial using UI Avatars API.
+        Generates consistent, professional-looking avatar images from author names.
+        No API key required — https://ui-avatars.com is free and unlimited."""
+        from urllib.parse import quote
+        testimonials = data.get("TESTIMONIALS", [])
+        if not isinstance(testimonials, list):
+            return data
+
+        # Color palette for avatar backgrounds (warm, professional tones)
+        bg_colors = ["3b82f6", "8b5cf6", "ec4899", "f59e0b", "10b981", "6366f1", "ef4444", "14b8a6"]
+
+        for i, item in enumerate(testimonials):
+            if isinstance(item, dict) and "TESTIMONIAL_AVATAR_URL" not in item:
+                name = item.get("TESTIMONIAL_AUTHOR", "User")
+                bg = bg_colors[i % len(bg_colors)]
+                encoded_name = quote(name)
+                item["TESTIMONIAL_AVATAR_URL"] = (
+                    f"https://ui-avatars.com/api/?name={encoded_name}"
+                    f"&background={bg}&color=fff&size=80&bold=true&format=svg"
+                )
+        return data
 
     def _inject_stock_photos(self, site_data: Dict[str, Any], template_style_id: Optional[str] = None) -> Dict[str, Any]:
         """Replace placehold.co grey boxes with high-quality Unsplash stock photos.

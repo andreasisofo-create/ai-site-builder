@@ -39,9 +39,7 @@
             </p>
             <!-- Author -->
             <div class="flex items-center gap-3 pt-6 border-t border-[var(--color-text)]/5">
-              <div class="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 shadow-md" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent));">
-                {{TESTIMONIAL_INITIAL}}
-              </div>
+              <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="w-12 h-12 rounded-full object-cover flex-shrink-0 shadow-md" loading="lazy">
               <div>
                 <p class="font-semibold text-[var(--color-text)] text-sm font-heading">{{TESTIMONIAL_AUTHOR}}</p>
                 <p class="text-xs text-[var(--color-text-muted)] font-body">{{TESTIMONIAL_ROLE}}</p>

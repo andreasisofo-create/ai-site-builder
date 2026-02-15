@@ -22,9 +22,7 @@
       <!-- REPEAT:TESTIMONIALS -->
       <div class="w-[340px] md:w-[380px] flex-shrink-0 rounded-2xl p-6 border border-[var(--color-text)]/[0.06] shadow-sm" style="background: rgba(from var(--color-bg) r g b / 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
-            {{TESTIMONIAL_INITIAL}}
-          </div>
+          <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="w-10 h-10 rounded-full object-cover flex-shrink-0" loading="lazy">
           <div class="flex-1 min-w-0">
             <p class="font-semibold text-sm text-[var(--color-text)] font-heading truncate">{{TESTIMONIAL_AUTHOR}}</p>
             <p class="text-xs text-[var(--color-text-muted)] font-body truncate">{{TESTIMONIAL_ROLE}}</p>
@@ -45,9 +43,7 @@
       <!-- REPEAT:TESTIMONIALS -->
       <div class="w-[340px] md:w-[380px] flex-shrink-0 rounded-2xl p-6 border border-[var(--color-text)]/[0.06] shadow-sm" style="background: rgba(from var(--color-bg) r g b / 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0" style="background: linear-gradient(135deg, var(--color-secondary), var(--color-accent));">
-            {{TESTIMONIAL_INITIAL}}
-          </div>
+          <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="w-10 h-10 rounded-full object-cover flex-shrink-0" loading="lazy">
           <div class="flex-1 min-w-0">
             <p class="font-semibold text-sm text-[var(--color-text)] font-heading truncate">{{TESTIMONIAL_AUTHOR}}</p>
             <p class="text-xs text-[var(--color-text-muted)] font-body truncate">{{TESTIMONIAL_ROLE}}</p>

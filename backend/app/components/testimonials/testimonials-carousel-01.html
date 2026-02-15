@@ -32,9 +32,7 @@
 
             <!-- Author info -->
             <div class="flex flex-col items-center gap-4" data-animate="fade-up">
-              <div class="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-lg" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
-                {{TESTIMONIAL_INITIAL}}
-              </div>
+              <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="w-14 h-14 rounded-full object-cover shadow-lg" loading="lazy">
               <div class="text-center">
                 <p class="font-semibold text-[var(--color-text)] text-lg">{{TESTIMONIAL_AUTHOR}}</p>
                 <p class="text-sm text-[var(--color-text-muted)]">{{TESTIMONIAL_ROLE}}</p>
