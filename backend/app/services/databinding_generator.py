@@ -23,6 +23,7 @@ Pipeline:
 import asyncio
 import json
 import logging
+import os
 import random
 import re
 import time
@@ -1762,6 +1763,7 @@ Return ONLY the JSON object."""
                 "CONTACT_EMAIL": email,
                 "CONTACT_ADDRESS": address,
                 "CURRENT_YEAR": str(__import__('datetime').datetime.now().year),
+                "WEB3FORMS_KEY": os.getenv("WEB3FORMS_KEY", ""),
             },
         }
 
