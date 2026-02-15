@@ -12,44 +12,21 @@
     <div class="absolute bottom-[15%] left-[10%] w-[250px] h-[250px] rounded-full blur-3xl" style="background: var(--color-accent); opacity: 0.06;" data-animate="float"></div>
   </div>
 
-  <!-- Navigation -->
-  <nav class="relative z-50 px-6 py-5">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <a href="#" class="flex items-center gap-2 text-xl font-bold font-heading text-[var(--color-text)]" data-animate="fade-down">
-        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain">
-        {{BUSINESS_NAME}}
-      </a>
-      <button class="flex flex-col gap-1.5 p-2 group" aria-label="Menu">
-        <span class="w-7 h-0.5 bg-[var(--color-text)] transition-transform group-hover:translate-x-1"></span>
-        <span class="w-5 h-0.5 bg-[var(--color-text)] transition-transform group-hover:translate-x-1 delay-75"></span>
-        <span class="w-7 h-0.5 bg-[var(--color-text)] transition-transform group-hover:translate-x-1 delay-150"></span>
-      </button>
-    </div>
-  </nav>
-
   <!-- Content -->
   <div class="relative z-10 flex flex-col items-center justify-center px-6" style="min-height: calc(100vh - 80px);">
     <div class="max-w-4xl mx-auto text-center">
-      <!-- Minimal top label -->
-      <div class="inline-flex items-center gap-2 mb-8" data-animate="fade-up">
-        <span class="w-8 h-px bg-[var(--color-primary)]"></span>
-        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain">
-        <span class="text-xs font-semibold tracking-[0.3em] uppercase text-[var(--color-primary)] font-body">{{BUSINESS_NAME}}</span>
-        <span class="w-8 h-px bg-[var(--color-primary)]"></span>
-      </div>
-
       <!-- Typewriter title -->
       <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold font-heading text-[var(--color-text)] leading-[1.1] mb-8" data-animate="typewriter">
         {{HERO_TITLE}}
       </h1>
 
       <!-- Blinking cursor decoration (visible during typewriter) -->
-      <div class="flex justify-center mb-6" data-animate="fade-up">
+      <div class="flex justify-center mb-6" data-animate="scale-in" data-delay="0.3">
         <span class="w-16 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></span>
       </div>
 
       <!-- Subtitle with stagger -->
-      <p class="text-lg md:text-xl text-[var(--color-text-muted)] leading-relaxed mb-12 max-w-2xl mx-auto font-body stagger-item" data-animate="fade-up">
+      <p class="text-lg md:text-xl text-[var(--color-text-muted)] leading-relaxed mb-12 max-w-2xl mx-auto font-body stagger-item" data-animate="blur-slide" data-delay="0.35" data-duration="1.2">
         {{HERO_SUBTITLE}}
       </p>
 
@@ -59,7 +36,7 @@
           {{HERO_CTA_TEXT}}
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>
-        <a href="#about" class="inline-flex items-center gap-2 px-8 py-4 text-[var(--color-text)] font-semibold rounded-xl hover:text-[var(--color-primary)] transition-colors group" data-animate="fade-up">
+        <a href="#about" class="inline-flex items-center gap-2 px-8 py-4 text-[var(--color-text)] font-semibold rounded-xl hover:text-[var(--color-primary)] transition-colors group" data-animate="blur-in" data-delay="0.5">
           Scopri di pi&ugrave;
           <svg class="w-4 h-4 transition-transform group-hover:translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
         </a>
@@ -67,7 +44,7 @@
     </div>
 
     <!-- Minimal image preview strip -->
-    <div class="mt-16 w-full max-w-3xl mx-auto" data-animate="fade-up">
+    <div class="mt-16 w-full max-w-3xl mx-auto" data-animate="clip-reveal" data-delay="0.6">
       <div class="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/10">
         <div class="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] via-transparent to-transparent z-10"></div>
         <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full object-cover aspect-[21/9] opacity-90" loading="eager">

@@ -19,6 +19,54 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  // === LENIS SMOOTH SCROLL ===
+  var lenis = null;
+  if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      smoothTouch: false,
+      touchMultiplier: 2,
+    });
+
+    // Sync with GSAP ScrollTrigger
+    lenis.on('scroll', function () {
+      if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.update();
+      }
+    });
+
+    gsap.ticker.add(function (time) {
+      lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  // === SMART NAVBAR (hide on scroll down, show on scroll up) ===
+  var navEl = document.querySelector('nav, [data-nav]');
+  if (navEl && typeof ScrollTrigger !== 'undefined') {
+    var showNav = gsap.fromTo(navEl,
+      { yPercent: 0 },
+      { yPercent: -100, duration: 0.3, ease: 'power2.inOut', paused: true }
+    );
+
+    ScrollTrigger.create({
+      start: 'top top',
+      end: 'max',
+      onUpdate: function (self) {
+        if (self.direction === -1) {
+          showNav.reverse();
+        } else if (self.scroll() > 100) {
+          showNav.play();
+        }
+      }
+    });
+  }
+
   // Safety timeout: if animations haven't started after 3s, force-show content
   var _gsapInitialized = false;
   setTimeout(function () {
@@ -613,16 +661,32 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ----------------------------------------------------------
-     25. CURSOR GLOW EFFECT (auto if body has data-cursor-glow)
+     25. GLOBAL CURSOR GLOW (desktop only, always active)
+     Uses gsap.quickTo for buttery smooth 60fps performance
      ---------------------------------------------------------- */
-  if (document.body.hasAttribute('data-cursor-glow') && !isMobile) {
+  if (window.matchMedia('(hover: hover)').matches && window.innerWidth > 768) {
     var glow = document.createElement('div');
     glow.className = 'cursor-glow';
-    glow.style.cssText = 'position:fixed;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:9999;mix-blend-mode:screen;background:radial-gradient(circle,rgba(var(--color-primary-rgb,59,130,246),0.15),transparent 70%);transform:translate(-50%,-50%);transition:opacity 0.3s;opacity:0;';
     document.body.appendChild(glow);
+
+    // gsap.quickTo avoids creating new tweens on every mousemove
+    var xTo = gsap.quickTo(glow, 'left', { duration: 0.6, ease: 'power3.out' });
+    var yTo = gsap.quickTo(glow, 'top', { duration: 0.6, ease: 'power3.out' });
+
     document.addEventListener('mousemove', function (e) {
-      glow.style.opacity = '1';
-      gsap.to(glow, { left: e.clientX, top: e.clientY, duration: 0.5, ease: 'power2.out' });
+      xTo(e.clientX);
+      yTo(e.clientY);
+      if (!glow.classList.contains('active')) {
+        glow.classList.add('active');
+      }
+    });
+
+    // Hide when mouse leaves the window
+    document.addEventListener('mouseleave', function () {
+      glow.classList.remove('active');
+    });
+    document.addEventListener('mouseenter', function () {
+      glow.classList.add('active');
     });
   }
 
@@ -670,7 +734,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var target = document.querySelector(id);
       if (target) {
         e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (lenis) {
+          lenis.scrollTo(target, { offset: 0 });
+        } else {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         if (mobileMenu && !mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
       }
     });

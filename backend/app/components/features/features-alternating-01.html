@@ -2,10 +2,10 @@
 <section id="features" class="py-24 lg:py-32 bg-[var(--color-bg)] overflow-hidden">
   <div class="max-w-7xl mx-auto px-6">
     <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-20" data-animate="fade-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Features</p>
+    <div class="text-center max-w-3xl mx-auto mb-20" data-animate="clip-reveal">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">Features</p>
       <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{FEATURES_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body">{{FEATURES_SUBTITLE}}</p>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{FEATURES_SUBTITLE}}</p>
     </div>
 
     <!-- Features rows with central connector -->
@@ -15,7 +15,7 @@
 
       <div class="space-y-0">
         <!-- REPEAT:FEATURES -->
-        <div class="stagger-item relative group" data-animate="fade-right">
+        <div class="stagger-item relative group" data-animate="reveal-right">
           <!-- Row with alternating bg -->
           <div class="py-12 lg:py-16 odd:bg-[var(--color-bg)] even:bg-[var(--color-bg-alt)] transition-colors duration-300">
             <div class="max-w-6xl mx-auto">

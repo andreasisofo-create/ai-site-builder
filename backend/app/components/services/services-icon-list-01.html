@@ -9,16 +9,16 @@
 
   <div class="max-w-7xl mx-auto px-6 relative z-10">
     <!-- Header -->
-    <div class="text-center mb-20" data-animate="fade-up">
+    <div class="text-center mb-20" data-animate="clip-reveal">
       <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">I Nostri Servizi</p>
       <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4" data-animate="text-split" data-split-type="words">{{SERVICES_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{SERVICES_SUBTITLE}}</p>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{SERVICES_SUBTITLE}}</p>
     </div>
 
     <!-- Service Items - Alternating layout -->
     <div class="space-y-16 max-w-5xl mx-auto">
       <!-- REPEAT:SERVICES -->
-      <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 md:odd:flex-row md:even:flex-row-reverse group" data-animate="reveal-left">
+      <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 md:odd:flex-row md:even:flex-row-reverse group" data-animate="blur-slide" data-duration="1">
         <!-- Large Icon -->
         <div class="flex-shrink-0">
           <div class="w-28 h-28 md:w-36 md:h-36 flex items-center justify-center rounded-3xl bg-[var(--color-bg)] shadow-lg border border-[var(--color-text)]/5 group-hover:shadow-xl group-hover:scale-105 transition-all duration-500">

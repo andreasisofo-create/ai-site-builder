@@ -1,0 +1,73 @@
+<!-- Nav: Classic — Logo left, links right, mobile hamburger -->
+<nav id="site-nav" data-animate="nav-scroll" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(var(--color-bg-rgb, 255,255,255), 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid rgba(var(--color-primary-rgb, 99,102,241), 0.07);">
+  <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+    <!-- Logo -->
+    <a href="#hero" class="flex items-center gap-2.5 shrink-0 group">
+      <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105" onerror="this.style.display='none'">
+      <span class="font-bold font-heading text-sm tracking-tight text-[var(--color-text)]">{{BUSINESS_NAME}}</span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden md:flex items-center gap-7">
+{{NAV_LINKS}}
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button id="nav-classic-toggle" class="md:hidden relative w-10 h-10 flex items-center justify-center rounded-lg hover:bg-[var(--color-bg-alt)] transition-colors" aria-label="Menu" aria-expanded="false">
+      <span class="nav-burger-line absolute w-5 h-0.5 bg-[var(--color-text)] transition-all duration-300" style="transform: translateY(-5px);"></span>
+      <span class="nav-burger-line absolute w-5 h-0.5 bg-[var(--color-text)] transition-all duration-300"></span>
+      <span class="nav-burger-line absolute w-5 h-0.5 bg-[var(--color-text)] transition-all duration-300" style="transform: translateY(5px);"></span>
+    </button>
+  </div>
+
+  <!-- Mobile dropdown -->
+  <div id="nav-classic-menu" class="md:hidden overflow-hidden transition-all duration-400" style="max-height: 0; opacity: 0; background: rgba(var(--color-bg-rgb, 255,255,255), 0.97); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);">
+    <div class="px-6 py-4 space-y-1 border-t" style="border-color: rgba(var(--color-primary-rgb, 99,102,241), 0.08);">
+{{NAV_LINKS_MOBILE}}
+    </div>
+  </div>
+</nav>
+<!-- Spacer for fixed nav -->
+<div class="h-16"></div>
+
+<script>
+(function(){
+  var toggle = document.getElementById('nav-classic-toggle');
+  var menu = document.getElementById('nav-classic-menu');
+  if (!toggle || !menu) return;
+  var open = false;
+  var lines = toggle.querySelectorAll('.nav-burger-line');
+
+  toggle.addEventListener('click', function(){
+    open = !open;
+    toggle.setAttribute('aria-expanded', open);
+    if (open) {
+      menu.style.maxHeight = menu.scrollHeight + 'px';
+      menu.style.opacity = '1';
+    } else {
+      menu.style.maxHeight = '0';
+      menu.style.opacity = '0';
+    }
+    if (lines.length === 3) {
+      lines[0].style.transform = open ? 'rotate(45deg)' : 'translateY(-5px)';
+      lines[1].style.opacity = open ? '0' : '1';
+      lines[2].style.transform = open ? 'rotate(-45deg)' : 'translateY(5px)';
+    }
+  });
+
+  // Close on link click (smooth scroll)
+  menu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      open = false;
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.style.maxHeight = '0';
+      menu.style.opacity = '0';
+      if (lines.length === 3) {
+        lines[0].style.transform = 'translateY(-5px)';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'translateY(5px)';
+      }
+    });
+  });
+})();
+</script>

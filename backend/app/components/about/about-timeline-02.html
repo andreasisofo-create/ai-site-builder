@@ -2,10 +2,10 @@
 <section id="about" class="py-24 lg:py-32 bg-[var(--color-bg-alt)] overflow-hidden">
   <div class="max-w-7xl mx-auto px-6">
     <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-8" data-animate="fade-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Our Story</p>
+    <div class="text-center max-w-3xl mx-auto mb-8" data-animate="clip-reveal">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">Our Story</p>
       <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{ABOUT_TITLE}}</h2>
-      <p class="text-lg text-[var(--color-text-muted)] font-body leading-relaxed">{{ABOUT_SUBTITLE}}</p>
+      <p class="text-lg text-[var(--color-text-muted)] font-body leading-relaxed" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{ABOUT_SUBTITLE}}</p>
     </div>
 
     <!-- Top image -->
@@ -17,7 +17,7 @@
     </div>
 
     <!-- About text -->
-    <div class="max-w-2xl mx-auto text-center mb-20" data-animate="fade-up">
+    <div class="max-w-2xl mx-auto text-center mb-20" data-animate="blur-slide" data-delay="0.15" data-duration="1.2">
       <p class="text-[var(--color-text-muted)] leading-relaxed font-body">{{ABOUT_TEXT}}</p>
     </div>
 
@@ -30,7 +30,7 @@
         <!-- REPEAT:ABOUT_STATS -->
         <div class="stagger-item relative flex items-start md:odd:flex-row md:even:flex-row-reverse group">
           <!-- Content card -->
-          <div class="ml-16 md:ml-0 md:w-[calc(50%-2rem)]" data-animate="fade-right">
+          <div class="ml-16 md:ml-0 md:w-[calc(50%-2rem)]" data-animate="reveal-right">
             <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg border border-[var(--color-text)]/5 hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
               <div class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-primary)] mb-2" data-counter="{{STAT_NUMBER}}">0</div>
               <p class="text-lg font-semibold font-heading text-[var(--color-text)] mb-2">{{STAT_LABEL}}</p>

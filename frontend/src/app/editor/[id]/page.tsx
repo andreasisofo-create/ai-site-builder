@@ -164,6 +164,7 @@ export default function Editor() {
   const [addingVideo, setAddingVideo] = useState(false);
   const mediaFileInputRef = useRef<HTMLInputElement>(null);
   const replaceFileInputRef = useRef<HTMLInputElement>(null);
+  const replacingImageRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (siteId) {
@@ -187,9 +188,13 @@ export default function Editor() {
   // Show guide panel on first visit when site is ready/generated
   useEffect(() => {
     if (site && (site.status === "ready" || site.status === "published") && liveHtml) {
-      const seen = localStorage.getItem("editor-guide-seen");
-      if (!seen) {
-        setShowGuidePanel(true);
+      try {
+        const seen = localStorage.getItem("editor-guide-seen");
+        if (!seen) {
+          setShowGuidePanel(true);
+        }
+      } catch {
+        // localStorage may throw in private browsing mode
       }
     }
   }, [site?.status, liveHtml]);
@@ -197,13 +202,13 @@ export default function Editor() {
   const handleGuideDismiss = () => {
     setShowGuidePanel(false);
     setChatOpen(true);
-    localStorage.setItem("editor-guide-seen", "true");
+    try { localStorage.setItem("editor-guide-seen", "true"); } catch {}
   };
 
   const handleGuideSuggestionClick = (chatMessage: string) => {
     setShowGuidePanel(false);
     setChatOpen(true);
-    localStorage.setItem("editor-guide-seen", "true");
+    try { localStorage.setItem("editor-guide-seen", "true"); } catch {}
     setChatInput(chatMessage);
     // Focus the textarea after a short delay to allow render
     setTimeout(() => {
@@ -762,10 +767,10 @@ export default function Editor() {
         </div>
       </header>
 
-      {/* Main Content - Preview + Chat */}
+      {/* Main Content - Sidebar (left) + Preview */}
       <main className="flex-1 flex overflow-hidden">
-        {/* Preview Area */}
-        <div className="flex-1 bg-[#0a0a0a] relative overflow-hidden flex flex-col p-4 md:p-8">
+        {/* Preview Area — order-2 so sidebar (order-1) appears first/left */}
+        <div className="flex-1 bg-[#0a0a0a] relative overflow-hidden flex flex-col p-4 md:p-8 order-2">
           {/* Grid Background */}
           <div
             className="absolute inset-0 opacity-20 pointer-events-none"
@@ -828,9 +833,9 @@ export default function Editor() {
           )}
         </div>
 
-        {/* Right Sidebar: Guide Panel, Chat Panel, or Media Panel */}
+        {/* Left Sidebar: Guide Panel, Chat Panel, or Media Panel */}
         {(chatOpen || showGuidePanel || showMediaPanel) && (
-          <aside className="w-full sm:w-[380px] fixed sm:relative inset-0 sm:inset-auto z-50 sm:z-auto bg-[#0d0d12] border-l border-white/10 flex flex-col flex-shrink-0">
+          <aside className="w-full sm:w-[380px] fixed sm:relative inset-0 sm:inset-auto z-50 sm:z-auto bg-[#0d0d12] border-r border-white/10 flex flex-col flex-shrink-0 order-1">
             {showMediaPanel ? (
               <>
                 {/* Media Panel Header */}
@@ -894,6 +899,7 @@ export default function Editor() {
                                   </div>
                                   <button
                                     onClick={() => {
+                                      replacingImageRef.current = img.src;
                                       setReplacingImage(img.src);
                                       replaceFileInputRef.current?.click();
                                     }}
@@ -923,8 +929,9 @@ export default function Editor() {
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file && replacingImage) {
-                          handleReplaceImage(replacingImage, file);
+                        const target = replacingImageRef.current;
+                        if (file && target) {
+                          handleReplaceImage(target, file);
                         }
                         e.target.value = "";
                       }}
@@ -1089,39 +1096,64 @@ export default function Editor() {
                   </button>
                 </div>
 
-                {/* Guide Panel Content */}
+                {/* Guide Panel Content — Step-by-step */}
                 <div className="flex-1 overflow-y-auto p-5 flex flex-col">
-                  {/* Title Section */}
-                  <div className="text-center mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-4">
-                      <SparklesIcon className="w-7 h-7 text-blue-400" />
-                    </div>
-                    <h2 className="text-xl font-bold text-white mb-2">
+                  {/* Title */}
+                  <div className="text-center mb-5">
+                    <h2 className="text-lg font-bold text-white mb-1">
                       {language === "en" ? "Your site is ready!" : "Il tuo sito e' pronto!"}
                     </h2>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-xs text-slate-400">
                       {language === "en"
-                        ? "Use AI Chat to customize every aspect"
-                        : "Usa la Chat AI per personalizzare ogni aspetto"}
+                        ? "Follow these steps to make it perfect"
+                        : "Segui questi passaggi per renderlo perfetto"}
                     </p>
                   </div>
 
-                  {/* Suggestion Cards */}
-                  <div className="space-y-3 flex-1">
-                    {GUIDE_SUGGESTIONS[language as "it" | "en"].map((suggestion, index) => (
+                  {/* Step-by-step guide */}
+                  <div className="space-y-2 flex-1">
+                    {(language === "en" ? [
+                      { step: 1, title: "Review the preview", desc: "Scroll through your site on the right. Check texts, images and layout.", icon: "1" },
+                      { step: 2, title: "Refine with AI Chat", desc: "Open the Chat AI to change colors, texts, add sections or fix anything.", icon: "2", action: "Cambia i colori con toni piu' moderni e professionali" },
+                      { step: 3, title: "Replace images", desc: "Click Media to upload your own photos and swap them into the site.", icon: "3" },
+                      { step: 4, title: "Add your content", desc: "Ask the AI to add testimonials, FAQ, gallery or any new section.", icon: "4", action: "Add a testimonials section with 3 reviews and a FAQ with 5 questions" },
+                      { step: 5, title: "Publish", desc: "When you're satisfied, click the green Publish button to go live!", icon: "5" },
+                    ] : [
+                      { step: 1, title: "Controlla l'anteprima", desc: "Scorri il sito a destra. Verifica testi, immagini e layout.", icon: "1" },
+                      { step: 2, title: "Modifica con Chat AI", desc: "Apri la Chat AI per cambiare colori, testi, aggiungere sezioni o correggere.", icon: "2", action: "Cambia i colori con toni piu' moderni e professionali" },
+                      { step: 3, title: "Sostituisci le immagini", desc: "Clicca Media per caricare le tue foto e inserirle nel sito.", icon: "3" },
+                      { step: 4, title: "Aggiungi contenuti", desc: "Chiedi all'AI di aggiungere testimonial, FAQ, galleria o nuove sezioni.", icon: "4", action: "Aggiungi una sezione testimonials con 3 recensioni e una FAQ con 5 domande" },
+                      { step: 5, title: "Pubblica", desc: "Quando sei soddisfatto, clicca il pulsante verde Pubblica per andare online!", icon: "5" },
+                    ]).map((item) => (
                       <button
-                        key={index}
-                        onClick={() => handleGuideSuggestionClick(suggestion.chatMessage)}
-                        className="w-full text-left rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 p-4 transition-all group"
+                        key={item.step}
+                        onClick={() => {
+                          if (item.step === 2 && item.action) {
+                            handleGuideSuggestionClick(item.action);
+                          } else if (item.step === 3) {
+                            setShowGuidePanel(false);
+                            openMediaPanel();
+                          } else if (item.step === 4 && item.action) {
+                            handleGuideSuggestionClick(item.action);
+                          } else if (item.step === 5) {
+                            setShowGuidePanel(false);
+                          } else {
+                            // Step 1: just dismiss guide to focus on preview
+                            setShowGuidePanel(false);
+                          }
+                        }}
+                        className="w-full text-left rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 p-3.5 transition-all group"
                       >
                         <div className="flex items-start gap-3">
-                          <span className="text-2xl flex-shrink-0 mt-0.5">{suggestion.icon}</span>
+                          <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                            {item.icon}
+                          </span>
                           <div>
                             <h4 className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
-                              {suggestion.title}
+                              {item.title}
                             </h4>
-                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                              {suggestion.description}
+                            <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                              {item.desc}
                             </p>
                           </div>
                         </div>
@@ -1129,13 +1161,32 @@ export default function Editor() {
                     ))}
                   </div>
 
-                  {/* Bottom CTA Button */}
-                  <div className="mt-6 pt-4 border-t border-white/10">
+                  {/* Quick improvement suggestions */}
+                  <div className="mt-4 pt-3 border-t border-white/10">
+                    <p className="text-xs text-slate-500 mb-2">
+                      {language === "en" ? "Quick improvements:" : "Migliorie rapide:"}
+                    </p>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {GUIDE_SUGGESTIONS[language as "it" | "en"].map((suggestion, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleGuideSuggestionClick(suggestion.chatMessage)}
+                          className="text-left rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 p-2.5 transition-all text-xs"
+                        >
+                          <span className="block text-sm mb-0.5">{suggestion.icon}</span>
+                          <span className="text-white font-medium">{suggestion.title}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bottom CTA */}
+                  <div className="mt-4">
                     <button
                       onClick={handleGuideDismiss}
                       className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl transition-all"
                     >
-                      {language === "en" ? "Got it, let's start!" : "Ho capito, inizia!"}
+                      {language === "en" ? "Open AI Chat" : "Apri Chat AI"}
                     </button>
                   </div>
                 </div>

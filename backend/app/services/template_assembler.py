@@ -233,6 +233,29 @@ class TemplateAssembler:
         head_data["PRIMARY_COLOR_RGB"] = _hex_to_rgb(primary_hex)
         head_data["BG_COLOR_RGB"] = _hex_to_rgb(bg_hex)
 
+        # Map layout design tokens from theme choices to CSS values
+        radius_map = {
+            "sharp": ("2px", "4px", "8px"),
+            "soft": ("6px", "12px", "20px"),
+            "round": ("12px", "24px", "32px"),
+            "pill": ("8px", "16px", "9999px"),
+        }
+        spacing_map = {
+            "compact": ("clamp(2rem, 6vw, 4rem)", "72rem"),
+            "normal": ("clamp(3rem, 10vw, 7rem)", "80rem"),
+            "generous": ("clamp(5rem, 14vw, 10rem)", "72rem"),
+        }
+        radius_style = head_data.get("BORDER_RADIUS_STYLE", "soft")
+        r_sm, r_md, r_lg = radius_map.get(radius_style, radius_map["soft"])
+        head_data["RADIUS_SM"] = r_sm
+        head_data["RADIUS_MD"] = r_md
+        head_data["RADIUS_LG"] = r_lg
+
+        spacing = head_data.get("SPACING_DENSITY", "normal")
+        sp_section, sp_max = spacing_map.get(spacing, spacing_map["normal"])
+        head_data["SPACE_SECTION"] = sp_section
+        head_data["MAX_WIDTH"] = sp_max
+
         head_html = self._replace_placeholders(head_template, head_data)
 
         # 2. Build body sections
@@ -266,7 +289,8 @@ class TemplateAssembler:
             sections_html.append(section_html)
 
         # 3. Build navigation bar from section IDs
-        nav_html = self._build_nav(site_data)
+        nav_style = site_data.get("nav_style", "nav-classic-01")
+        nav_html = self._build_nav(site_data, nav_style=nav_style)
 
         # 4. Generate Schema.org JSON-LD
         schema_ld = self._build_schema_ld(site_data)
@@ -293,8 +317,12 @@ class TemplateAssembler:
 
         return complete_html
 
-    def _build_nav(self, site_data: Dict[str, Any]) -> str:
-        """Generate a sticky navigation bar with anchor links to each section."""
+    def _build_nav(self, site_data: Dict[str, Any], nav_style: str = "nav-classic-01") -> str:
+        """Generate a sticky navigation bar with anchor links to each section.
+
+        Tries to load a template from components/nav/{nav_style}.html.
+        Falls back to inline generation if the file doesn't exist.
+        """
         global_data = site_data.get("global", {})
         business_name = global_data.get("BUSINESS_NAME", "")
         logo_url = global_data.get("LOGO_URL", "")
@@ -315,7 +343,18 @@ class TemplateAssembler:
         if not nav_links:
             return ""
 
-        # Build link HTML
+        # --- Try loading a nav template file ---
+        nav_template_path = self.components_dir / "nav" / f"{nav_style}.html"
+        try:
+            with open(nav_template_path, "r", encoding="utf-8") as f:
+                nav_template = f.read()
+            return self._render_nav_template(
+                nav_template, nav_links, business_name, logo_url,
+            )
+        except FileNotFoundError:
+            logger.warning(f"[Assembler] Nav template '{nav_style}' not found, using inline fallback")
+
+        # --- Fallback: inline generation (original code) ---
         links_html = "\n".join(
             f'        <a href="#{sid}" class="text-sm font-medium text-[var(--color-text)]/70 '
             f'hover:text-[var(--color-primary)] transition-colors duration-200">{label}</a>'
@@ -342,6 +381,65 @@ class TemplateAssembler:
 </nav>
 <!-- Spacer for fixed nav -->
 <div class="h-16"></div>"""
+
+    def _render_nav_template(
+        self,
+        template: str,
+        nav_links: List[tuple],
+        business_name: str,
+        logo_url: str,
+    ) -> str:
+        """Replace placeholders in a nav template file with generated link HTML."""
+        link_class = (
+            'text-sm font-medium text-[var(--color-text)]/70 '
+            'hover:text-[var(--color-primary)] transition-colors duration-200'
+        )
+        mobile_class = (
+            'block w-full text-center text-base font-medium py-2 rounded-lg '
+            'text-[var(--color-text)]/80 hover:text-[var(--color-primary)] '
+            'hover:bg-[var(--color-bg-alt)] transition-colors duration-200'
+        )
+        overlay_class = (
+            'nav-overlay-link block text-3xl md:text-4xl font-heading font-bold '
+            'text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors duration-300'
+        )
+
+        all_links = "\n".join(
+            f'      <a href="#{sid}" class="{link_class}">{label}</a>'
+            for sid, label in nav_links
+        )
+        all_mobile = "\n".join(
+            f'      <a href="#{sid}" class="{mobile_class}">{label}</a>'
+            for sid, label in nav_links
+        )
+        all_overlay = "\n".join(
+            f'    <a href="#{sid}" class="{overlay_class}">{label}</a>'
+            for sid, label in nav_links
+        )
+
+        # Split links for centered nav: left half / right half
+        mid = len(nav_links) // 2
+        left_links = nav_links[:mid] if mid > 0 else nav_links[:1]
+        right_links = nav_links[mid:] if mid > 0 else nav_links[1:]
+
+        left_html = "\n".join(
+            f'      <a href="#{sid}" class="{link_class}">{label}</a>'
+            for sid, label in left_links
+        )
+        right_html = "\n".join(
+            f'      <a href="#{sid}" class="{link_class}">{label}</a>'
+            for sid, label in right_links
+        )
+
+        result = template
+        result = result.replace("{{LOGO_URL}}", logo_url or "")
+        result = result.replace("{{BUSINESS_NAME}}", business_name or "")
+        result = result.replace("{{NAV_LINKS_LEFT}}", left_html)
+        result = result.replace("{{NAV_LINKS_RIGHT}}", right_html)
+        result = result.replace("{{NAV_LINKS_OVERLAY}}", all_overlay)
+        result = result.replace("{{NAV_LINKS_MOBILE}}", all_mobile)
+        result = result.replace("{{NAV_LINKS}}", all_links)
+        return result
 
     def _build_schema_ld(self, site_data: Dict[str, Any]) -> str:
         """Generate Schema.org JSON-LD structured data for SEO."""

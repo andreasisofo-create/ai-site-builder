@@ -26,13 +26,15 @@ logger = logging.getLogger(__name__)
 # For OpenRouter the price depends on the model — these are approximate defaults.
 PRICING: Dict[str, Dict[str, float]] = {
     "kimi":       {"input": 0.60, "output": 2.50},
-    "openrouter": {"input": 0.07, "output": 0.30},   # Qwen3 Coder Next default
+    "openrouter": {"input": 1.25, "output": 10.00},   # Gemini 2.5 Pro default
     "glm5":       {"input": 0.80, "output": 2.56},
     "deepseek":   {"input": 0.27, "output": 1.10},
 }
 
 # Pricing for known OpenRouter models (for accurate cost tracking)
 _OPENROUTER_MODEL_PRICING: Dict[str, Dict[str, float]] = {
+    "google/gemini-2.5-pro":          {"input": 1.25,  "output": 10.00},
+    "google/gemini-2.5-flash":        {"input": 0.30,  "output": 2.50},
     "qwen/qwen3-coder-next":         {"input": 0.07,  "output": 0.30},
     "deepseek/deepseek-v3.2":        {"input": 0.24,  "output": 0.38},
     "deepseek/deepseek-chat-v3-0324": {"input": 0.14, "output": 0.28},
@@ -272,7 +274,14 @@ class KimiClient:
                 if response.status_code >= 400:
                     await response.aread()
                     response.raise_for_status()
+                MAX_STREAM_LINES = 8000
+                line_count = 0
+                import asyncio as _asyncio
                 async for line in response.aiter_lines():
+                    line_count += 1
+                    if line_count > MAX_STREAM_LINES:
+                        logger.warning(f"[{self.provider}] Stream exceeded {MAX_STREAM_LINES} lines, breaking")
+                        break
                     if not line.startswith("data: "):
                         continue
                     data_str = line[6:]
@@ -280,6 +289,8 @@ class KimiClient:
                         break
                     try:
                         chunk = json.loads(data_str)
+                        # Check for finish_reason to detect end of stream
+                        finish_reason = chunk.get("choices", [{}])[0].get("finish_reason")
                         delta = chunk.get("choices", [{}])[0].get("delta", {})
                         if delta.get("content"):
                             collected_content.append(delta["content"])
@@ -287,6 +298,8 @@ class KimiClient:
                         if usage:
                             tokens_in = usage.get("prompt_tokens", 0)
                             tokens_out = usage.get("completion_tokens", 0)
+                        if finish_reason and finish_reason in ("stop", "length"):
+                            break
                     except json.JSONDecodeError:
                         continue
 
@@ -403,10 +416,10 @@ class KimiClient:
             await self._client.aclose()
 
 
-# Singleton — default client (Qwen3 for generation)
+# Singleton — default client (Gemini 2.5 Pro for generation)
 kimi = KimiClient()
 
-# Refine client — uses a separate model (Claude) for higher quality chat refinement.
+# Refine client — uses Gemini 2.5 Flash for fast, cheap chat modifications.
 # If OPENROUTER_REFINE_MODEL is set and provider is openrouter, creates a dedicated
 # client with Claude. Otherwise falls back to the same default client.
 _refine_model = getattr(settings, "OPENROUTER_REFINE_MODEL", "")

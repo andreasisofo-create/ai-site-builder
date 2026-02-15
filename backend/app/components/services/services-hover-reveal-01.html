@@ -8,16 +8,16 @@
 
   <div class="max-w-7xl mx-auto px-6 relative z-10">
     <!-- Header -->
-    <div class="text-center mb-20" data-animate="fade-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">What We Do</p>
+    <div class="text-center mb-20" data-animate="reveal-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">What We Do</p>
       <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{SERVICES_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body">{{SERVICES_SUBTITLE}}</p>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{SERVICES_SUBTITLE}}</p>
     </div>
 
     <!-- Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="stagger">
       <!-- REPEAT:SERVICES -->
-      <div class="stagger-item group perspective-[1200px]">
+      <div class="stagger-item group perspective-[1200px]" data-animate="card-hover-3d">
         <div class="relative bg-[var(--color-bg-alt)]/60 backdrop-blur-xl rounded-2xl border border-[var(--color-text)]/8 overflow-hidden transition-all duration-500 hover:border-[var(--color-primary)]/30 hover:shadow-2xl hover:shadow-[var(--color-primary)]/10 hover:-translate-y-2 hover:rotate-1">
           <!-- Gradient overlay on hover -->
           <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/0 via-[var(--color-primary)]/0 to-[var(--color-secondary)]/0 group-hover:from-[var(--color-primary)]/8 group-hover:via-transparent group-hover:to-[var(--color-secondary)]/8 transition-all duration-700"></div>

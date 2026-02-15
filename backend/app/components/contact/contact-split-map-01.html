@@ -13,10 +13,10 @@
 
   <div class="relative z-10 max-w-7xl mx-auto px-6">
     <!-- Section Header -->
-    <div class="text-center mb-16" data-animate="fade-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Contattaci</p>
+    <div class="text-center mb-16" data-animate="reveal-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">Contattaci</p>
       <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4" data-animate="text-split" data-split-type="words">{{CONTACT_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{CONTACT_SUBTITLE}}</p>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{CONTACT_SUBTITLE}}</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -62,7 +62,7 @@
         </div>
 
         <!-- Decorative element below cards -->
-        <div class="hidden lg:block pt-4" data-animate="fade-up">
+        <div class="hidden lg:block pt-4" data-animate="blur-in" data-delay="0.3">
           <div class="flex items-center gap-3">
             <div class="h-px flex-1" style="background: linear-gradient(90deg, var(--color-primary)/20, transparent);"></div>
             <span class="text-xs text-[var(--color-text-muted)] uppercase tracking-widest">Rispondiamo entro 24h</span>
@@ -72,7 +72,7 @@
       </div>
 
       <!-- Right: Contact Form -->
-      <div data-animate="fade-left">
+      <div data-animate="reveal-left" data-delay="0.15">
         <div class="bg-[var(--color-bg)] rounded-2xl p-8 md:p-10 shadow-lg border border-[var(--color-text)]/5">
           <form class="space-y-6">
             <!-- Name field with floating label -->

@@ -124,6 +124,14 @@
           "description": "Design naturale con forme fluide, blob SVG, contenitori arrotondati e divisore ondulato",
           "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
           "tags": ["cozy", "elegant", "classic"]
+        },
+        {
+          "id": "hero-linear-01",
+          "file": "hero/hero-linear-01.html",
+          "name": "Linear Gradient Hero",
+          "description": "Design premium ispirato a Linear.app: testo gradiente, griglia ambientale, badge eyebrow, glow radiale, CTA luminoso",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
+          "tags": ["tech", "modern", "bold"]
         }
       ]
     },
@@ -334,6 +342,14 @@
           "description": "Icone extra-large con glow radiale, card generose e animazione bounce-in",
           "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
           "tags": ["modern", "bold", "cozy"]
+        },
+        {
+          "id": "features-bento-01",
+          "file": "features/features-bento-01.html",
+          "name": "Features Bento Premium",
+          "description": "Griglia bento asimmetrica con card spotlight, glassmorphism, glow radiale e animazioni stagger",
+          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
+          "tags": ["modern", "tech", "bold"]
         }
       ]
     },

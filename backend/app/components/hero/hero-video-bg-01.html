@@ -27,53 +27,23 @@
     <div class="absolute bottom-8 right-8 w-16 h-16 border-b-2 border-r-2 border-white/10 rounded-br-lg" data-animate="fade-up"></div>
   </div>
 
-  <!-- Navigation -->
-  <nav class="relative z-50 px-6 py-5">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <a href="#" class="flex items-center gap-2 text-xl font-bold font-heading text-white" data-animate="fade-down">
-        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain">
-        {{BUSINESS_NAME}}
-      </a>
-      <div class="flex items-center gap-6">
-        <!-- Sound/mute icon (decorative, cinematic touch) -->
-        <button class="hidden md:flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-xs uppercase tracking-widest font-body" aria-label="Audio">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
-          <span>Audio</span>
-        </button>
-        <!-- Hamburger -->
-        <button class="flex flex-col gap-1.5 p-2 group" aria-label="Menu">
-          <span class="w-7 h-0.5 bg-white transition-all group-hover:w-5"></span>
-          <span class="w-5 h-0.5 bg-white transition-all group-hover:w-7 delay-75"></span>
-          <span class="w-7 h-0.5 bg-white transition-all group-hover:w-5 delay-150"></span>
-        </button>
-      </div>
-    </div>
-  </nav>
-
   <!-- Centered Content -->
   <div class="relative z-10 flex flex-col items-center justify-center text-center px-6" style="min-height: calc(100vh - 80px);">
     <div class="max-w-5xl mx-auto">
-      <!-- Business name pill -->
-      <div class="inline-flex items-center gap-2 px-5 py-2 border border-white/10 rounded-full mb-8 backdrop-blur-sm bg-white/5 stagger-item" data-animate="fade-down">
-        <div class="w-2 h-2 rounded-full bg-red-500" style="animation: pulse 2s infinite;"></div>
-        <img src="{{LOGO_URL}}" alt="" class="h-6 w-auto object-contain">
-        <span class="text-xs font-bold tracking-[0.2em] uppercase text-white/70 font-body">{{BUSINESS_NAME}}</span>
-      </div>
-
       <!-- Flip-up title -->
       <h1 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-heading text-white leading-[1.05] mb-8" data-animate="flip-up">
         {{HERO_TITLE}}
       </h1>
 
       <!-- Divider -->
-      <div class="flex items-center justify-center gap-4 mb-8" data-animate="fade-up">
+      <div class="flex items-center justify-center gap-4 mb-8" data-animate="scale-in" data-delay="0.2">
         <div class="w-16 h-px bg-gradient-to-r from-transparent to-white/30"></div>
         <div class="w-2 h-2 rounded-full" style="background: var(--color-primary);"></div>
         <div class="w-16 h-px bg-gradient-to-l from-transparent to-white/30"></div>
       </div>
 
       <!-- Subtitle -->
-      <p class="text-lg md:text-xl lg:text-2xl text-white/60 leading-relaxed mb-14 max-w-3xl mx-auto font-body" data-animate="fade-up">
+      <p class="text-lg md:text-xl lg:text-2xl text-white/60 leading-relaxed mb-14 max-w-3xl mx-auto font-body" data-animate="blur-slide" data-delay="0.3" data-duration="1.2">
         {{HERO_SUBTITLE}}
       </p>
 
@@ -95,7 +65,7 @@
     </div>
 
     <!-- Scroll Down Indicator -->
-    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3" data-animate="fade-up">
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3" data-animate="blur-in" data-delay="0.6">
       <span class="text-[10px] uppercase tracking-[0.3em] text-white/30 font-body">Scroll</span>
       <div class="w-px h-12 bg-gradient-to-b from-white/30 to-transparent"></div>
     </div>

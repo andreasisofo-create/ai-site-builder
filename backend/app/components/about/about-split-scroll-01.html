@@ -24,39 +24,39 @@
       <!-- Right: scrolling content -->
       <div class="lg:py-32 lg:pl-12 space-y-12" data-animate="stagger">
         <!-- Label -->
-        <div class="stagger-item" data-animate="fade-up">
+        <div class="stagger-item" data-animate="blur-in">
           <p class="text-xs font-semibold tracking-[0.3em] uppercase text-[var(--color-primary)] mb-2">About Us</p>
           <div class="w-10 h-px bg-[var(--color-primary)]"></div>
         </div>
 
         <!-- Title -->
-        <div class="stagger-item" data-animate="fade-up">
+        <div class="stagger-item" data-animate="clip-reveal">
           <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[var(--color-text)] leading-tight" data-animate="text-split" data-split-type="words">
             {{ABOUT_TITLE}}
           </h2>
         </div>
 
         <!-- Subtitle -->
-        <div class="stagger-item" data-animate="fade-up">
+        <div class="stagger-item" data-animate="blur-slide" data-duration="1.2">
           <p class="text-xl text-[var(--color-text)] font-heading font-medium leading-relaxed">
             {{ABOUT_SUBTITLE}}
           </p>
         </div>
 
         <!-- Body text -->
-        <div class="stagger-item" data-animate="fade-up">
+        <div class="stagger-item" data-animate="reveal-up">
           <p class="text-[var(--color-text-muted)] leading-relaxed font-body text-base lg:text-lg">
             {{ABOUT_TEXT}}
           </p>
         </div>
 
         <!-- Divider -->
-        <div class="stagger-item w-full h-px bg-[var(--color-text)]/10" data-animate="fade-up"></div>
+        <div class="stagger-item w-full h-px bg-[var(--color-text)]/10" data-animate="scale-in"></div>
 
         <!-- Stats flowing down -->
         <div class="space-y-8">
           <!-- REPEAT:ABOUT_STATS -->
-          <div class="stagger-item flex items-center gap-6 group" data-animate="fade-up">
+          <div class="stagger-item flex items-center gap-6 group" data-animate="reveal-left">
             <div class="flex-shrink-0 w-20 h-20 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-text)]/5 flex items-center justify-center group-hover:bg-[var(--color-primary)]/10 transition-colors duration-300">
               <span class="text-2xl md:text-3xl font-heading font-bold text-[var(--color-primary)]" data-counter="{{STAT_NUMBER}}">0</span>
             </div>

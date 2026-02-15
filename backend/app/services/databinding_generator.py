@@ -182,48 +182,56 @@ FALLBACK_THEME_POOL = [
         "bg_color": "#FAF7F2", "bg_alt_color": "#F0EDE6", "text_color": "#1A1A2E", "text_muted_color": "#6B7280",
         "font_heading": "Space Grotesk", "font_heading_url": "Space+Grotesk:wght@400;600;700;800",
         "font_body": "DM Sans", "font_body_url": "DM+Sans:wght@400;500;600",
+        "border_radius_style": "soft", "shadow_style": "soft", "spacing_density": "normal",
     },
     {
         "primary_color": "#0D9488", "secondary_color": "#0C4A6E", "accent_color": "#FB7185",
         "bg_color": "#F0FDFA", "bg_alt_color": "#CCFBF1", "text_color": "#0F172A", "text_muted_color": "#64748B",
         "font_heading": "Sora", "font_heading_url": "Sora:wght@400;600;700;800",
         "font_body": "Inter", "font_body_url": "Inter:wght@400;500;600",
+        "border_radius_style": "pill", "shadow_style": "soft", "spacing_density": "normal",
     },
     {
         "primary_color": "#DC2626", "secondary_color": "#1E293B", "accent_color": "#FBBF24",
         "bg_color": "#FFFBEB", "bg_alt_color": "#FEF3C7", "text_color": "#1C1917", "text_muted_color": "#78716C",
         "font_heading": "DM Serif Display", "font_heading_url": "DM+Serif+Display:wght@400",
         "font_body": "Plus Jakarta Sans", "font_body_url": "Plus+Jakarta+Sans:wght@400;500;600;700",
+        "border_radius_style": "sharp", "shadow_style": "none", "spacing_density": "compact",
     },
     {
         "primary_color": "#059669", "secondary_color": "#78350F", "accent_color": "#F472B6",
         "bg_color": "#ECFDF5", "bg_alt_color": "#D1FAE5", "text_color": "#064E3B", "text_muted_color": "#6B7280",
         "font_heading": "Fraunces", "font_heading_url": "Fraunces:wght@400;600;700;800",
         "font_body": "Nunito Sans", "font_body_url": "Nunito+Sans:wght@400;500;600;700",
+        "border_radius_style": "round", "shadow_style": "soft", "spacing_density": "generous",
     },
     {
         "primary_color": "#7C2D12", "secondary_color": "#4338CA", "accent_color": "#22D3EE",
         "bg_color": "#FEF3C7", "bg_alt_color": "#FDE68A", "text_color": "#1C1917", "text_muted_color": "#92400E",
         "font_heading": "Playfair Display", "font_heading_url": "Playfair+Display:wght@400;600;700;800",
         "font_body": "Lato", "font_body_url": "Lato:wght@400;700",
+        "border_radius_style": "soft", "shadow_style": "dramatic", "spacing_density": "generous",
     },
     {
         "primary_color": "#A855F7", "secondary_color": "#EC4899", "accent_color": "#22D3EE",
         "bg_color": "#0F172A", "bg_alt_color": "#1E293B", "text_color": "#F1F5F9", "text_muted_color": "#94A3B8",
         "font_heading": "Outfit", "font_heading_url": "Outfit:wght@400;600;700;800",
         "font_body": "DM Sans", "font_body_url": "DM+Sans:wght@400;500;600",
+        "border_radius_style": "pill", "shadow_style": "dramatic", "spacing_density": "normal",
     },
     {
         "primary_color": "#B8860B", "secondary_color": "#1C1917", "accent_color": "#047857",
         "bg_color": "#FFFDD0", "bg_alt_color": "#FEF9C3", "text_color": "#1C1917", "text_muted_color": "#78716C",
         "font_heading": "Cormorant Garamond", "font_heading_url": "Cormorant+Garamond:wght@400;600;700",
         "font_body": "Lato", "font_body_url": "Lato:wght@400;700",
+        "border_radius_style": "soft", "shadow_style": "soft", "spacing_density": "generous",
     },
     {
         "primary_color": "#831843", "secondary_color": "#581C87", "accent_color": "#FBBF24",
         "bg_color": "#FFFFF0", "bg_alt_color": "#FEF3C7", "text_color": "#1E1B4B", "text_muted_color": "#6B7280",
         "font_heading": "Libre Baskerville", "font_heading_url": "Libre+Baskerville:wght@400;700",
         "font_body": "Karla", "font_body_url": "Karla:wght@400;500;600;700",
+        "border_radius_style": "round", "shadow_style": "none", "spacing_density": "normal",
     },
 ]
 
@@ -429,6 +437,7 @@ def _get_stock_photos(category: str) -> Dict[str, List[str]]:
 STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
     # --- Restaurant ---
     "restaurant-elegant": {
+        "nav": "nav-classic-01",
         "hero": "hero-classic-01",
         "about": "about-magazine-01",
         "services": "services-alternating-rows-01",
@@ -438,6 +447,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-centered-01",
     },
     "restaurant-cozy": {
+        "nav": "nav-classic-01",
         "hero": "hero-organic-01",
         "about": "about-split-scroll-01",
         "services": "services-icon-list-01",
@@ -447,6 +457,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-multi-col-01",
     },
     "restaurant-modern": {
+        "nav": "nav-minimal-01",
         "hero": "hero-zen-01",
         "about": "about-bento-01",
         "services": "services-tabs-01",
@@ -457,6 +468,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
     },
     # --- SaaS / Landing Page ---
     "saas-gradient": {
+        "nav": "nav-minimal-01",
         "hero": "hero-gradient-03",
         "about": "about-timeline-02",
         "services": "services-hover-reveal-01",
@@ -467,6 +479,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-gradient-01",
     },
     "saas-clean": {
+        "nav": "nav-classic-01",
         "hero": "hero-centered-02",
         "about": "about-alternating-01",
         "services": "services-cards-grid-01",
@@ -477,6 +490,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-sitemap-01",
     },
     "saas-dark": {
+        "nav": "nav-minimal-01",
         "hero": "hero-dark-bold-01",
         "about": "about-split-cards-01",
         "services": "services-bento-02",
@@ -487,6 +501,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
     },
     # --- Portfolio ---
     "portfolio-gallery": {
+        "nav": "nav-centered-01",
         "hero": "hero-editorial-01",
         "about": "about-image-showcase-01",
         "gallery": "gallery-masonry-01",
@@ -496,6 +511,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-minimal-02",
     },
     "portfolio-minimal": {
+        "nav": "nav-minimal-01",
         "hero": "hero-zen-01",
         "about": "about-alternating-01",
         "gallery": "gallery-lightbox-01",
@@ -503,6 +519,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-centered-01",
     },
     "portfolio-creative": {
+        "nav": "nav-minimal-01",
         "hero": "hero-brutalist-01",
         "about": "about-bento-01",
         "gallery": "gallery-spotlight-01",
@@ -512,6 +529,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
     },
     # --- E-commerce / Shop ---
     "ecommerce-modern": {
+        "nav": "nav-classic-01",
         "hero": "hero-split-01",
         "about": "about-image-showcase-01",
         "services": "services-cards-grid-01",
@@ -521,6 +539,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-multi-col-01",
     },
     "ecommerce-luxury": {
+        "nav": "nav-centered-01",
         "hero": "hero-classic-01",
         "about": "about-magazine-01",
         "services": "services-alternating-rows-01",
@@ -531,6 +550,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
     },
     # --- Business ---
     "business-corporate": {
+        "nav": "nav-classic-01",
         "hero": "hero-split-01",
         "about": "about-alternating-01",
         "services": "services-cards-grid-01",
@@ -540,6 +560,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-mega-01",
     },
     "business-trust": {
+        "nav": "nav-classic-01",
         "hero": "hero-classic-01",
         "about": "about-timeline-01",
         "services": "services-process-steps-01",
@@ -549,6 +570,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-sitemap-01",
     },
     "business-fresh": {
+        "nav": "nav-centered-01",
         "hero": "hero-gradient-03",
         "about": "about-split-cards-01",
         "services": "services-hover-expand-01",
@@ -560,6 +582,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
     },
     # --- Blog / Magazine ---
     "blog-editorial": {
+        "nav": "nav-centered-01",
         "hero": "hero-editorial-01",
         "about": "about-alternating-01",
         "services": "services-minimal-list-01",
@@ -568,6 +591,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-sitemap-01",
     },
     "blog-dark": {
+        "nav": "nav-minimal-01",
         "hero": "hero-neon-01",
         "about": "about-split-cards-01",
         "services": "services-hover-reveal-01",
@@ -577,6 +601,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
     },
     # --- Evento / Community ---
     "event-vibrant": {
+        "nav": "nav-minimal-01",
         "hero": "hero-animated-shapes-01",
         "about": "about-bento-01",
         "services": "services-tabs-01",
@@ -586,6 +611,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
         "footer": "footer-gradient-01",
     },
     "event-minimal": {
+        "nav": "nav-centered-01",
         "hero": "hero-centered-02",
         "about": "about-timeline-01",
         "services": "services-process-steps-01",
@@ -604,6 +630,7 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
 STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     # --- Restaurant ---
     "restaurant-elegant": {
+        "nav": ["nav-classic-01", "nav-centered-01"],
         "hero": ["hero-classic-01", "hero-editorial-01", "hero-typewriter-01"],
         "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01"],
         "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01"],
@@ -613,6 +640,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-centered-01", "footer-minimal-02", "footer-sitemap-01"],
     },
     "restaurant-cozy": {
+        "nav": ["nav-classic-01", "nav-centered-01"],
         "hero": ["hero-organic-01", "hero-typewriter-01", "hero-classic-01"],
         "about": ["about-split-scroll-01", "about-image-showcase-01", "about-magazine-01"],
         "services": ["services-icon-list-01", "services-minimal-list-01", "services-alternating-rows-01"],
@@ -622,6 +650,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-multi-col-01", "footer-centered-01", "footer-minimal-02"],
     },
     "restaurant-modern": {
+        "nav": ["nav-minimal-01", "nav-centered-01"],
         "hero": ["hero-zen-01", "hero-parallax-01", "hero-glassmorphism-01"],
         "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01"],
         "services": ["services-tabs-01", "services-hover-reveal-01", "services-bento-02"],
@@ -632,36 +661,40 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     # --- SaaS / Landing Page ---
     "saas-gradient": {
-        "hero": ["hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01"],
+        "nav": ["nav-minimal-01", "nav-classic-01"],
+        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01"],
         "about": ["about-timeline-02", "about-bento-01", "about-split-cards-01"],
         "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01"],
-        "features": ["features-bento-grid-01", "features-hover-cards-01", "features-tabs-01"],
+        "features": ["features-bento-01", "features-bento-grid-01", "features-hover-cards-01", "features-tabs-01"],
         "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-carousel-01"],
         "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01"],
         "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01"],
         "footer": ["footer-gradient-01", "footer-mega-01", "footer-multi-col-01"],
     },
     "saas-clean": {
-        "hero": ["hero-centered-02", "hero-split-01", "hero-glassmorphism-01"],
+        "nav": ["nav-classic-01", "nav-centered-01"],
+        "hero": ["hero-centered-02", "hero-split-01", "hero-linear-01"],
         "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02"],
         "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01"],
-        "features": ["features-icons-grid-01", "features-alternating-01", "features-icon-showcase-01"],
+        "features": ["features-icons-grid-01", "features-bento-01", "features-alternating-01", "features-icon-showcase-01"],
         "testimonials": ["testimonials-grid-01", "testimonials-carousel-01", "testimonials-spotlight-01"],
         "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01"],
         "contact": ["contact-form-01", "contact-modern-form-01", "contact-minimal-01"],
         "footer": ["footer-sitemap-01", "footer-multi-col-01", "footer-centered-01"],
     },
     "saas-dark": {
-        "hero": ["hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01"],
+        "nav": ["nav-minimal-01", "nav-classic-01"],
+        "hero": ["hero-linear-01", "hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01"],
         "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01"],
         "services": ["services-bento-02", "services-hover-expand-01", "services-hover-reveal-01"],
-        "features": ["features-hover-cards-01", "features-bento-grid-01", "features-tabs-01"],
+        "features": ["features-bento-01", "features-hover-cards-01", "features-bento-grid-01", "features-tabs-01"],
         "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01"],
         "contact": ["contact-minimal-02", "contact-modern-form-01", "contact-card-01"],
         "footer": ["footer-mega-01", "footer-gradient-01", "footer-sitemap-01"],
     },
     # --- Portfolio ---
     "portfolio-gallery": {
+        "nav": ["nav-centered-01", "nav-minimal-01"],
         "hero": ["hero-editorial-01", "hero-zen-01", "hero-typewriter-01"],
         "about": ["about-image-showcase-01", "about-magazine-01", "about-split-scroll-01"],
         "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
@@ -671,6 +704,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-minimal-02", "footer-centered-01"],
     },
     "portfolio-minimal": {
+        "nav": ["nav-minimal-01", "nav-centered-01"],
         "hero": ["hero-zen-01", "hero-typewriter-01", "hero-editorial-01"],
         "about": ["about-alternating-01", "about-split-scroll-01", "about-image-showcase-01"],
         "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01"],
@@ -678,7 +712,8 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-centered-01", "footer-minimal-02"],
     },
     "portfolio-creative": {
-        "hero": ["hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01"],
+        "nav": ["nav-minimal-01", "nav-centered-01"],
+        "hero": ["hero-linear-01", "hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01"],
         "about": ["about-bento-01", "about-split-cards-01", "about-timeline-02"],
         "gallery": ["gallery-spotlight-01", "gallery-filmstrip-01", "gallery-masonry-01"],
         "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02"],
@@ -687,6 +722,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     # --- E-commerce / Shop ---
     "ecommerce-modern": {
+        "nav": ["nav-classic-01", "nav-centered-01"],
         "hero": ["hero-split-01", "hero-parallax-01", "hero-glassmorphism-01"],
         "about": ["about-image-showcase-01", "about-bento-01", "about-alternating-01"],
         "services": ["services-cards-grid-01", "services-hover-reveal-01", "services-tabs-01"],
@@ -696,6 +732,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-multi-col-01", "footer-mega-01", "footer-sitemap-01"],
     },
     "ecommerce-luxury": {
+        "nav": ["nav-centered-01", "nav-classic-01"],
         "hero": ["hero-classic-01", "hero-editorial-01", "hero-video-bg-01"],
         "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01"],
         "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01"],
@@ -706,6 +743,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     # --- Business ---
     "business-corporate": {
+        "nav": ["nav-classic-01", "nav-centered-01"],
         "hero": ["hero-split-01", "hero-classic-01", "hero-video-bg-01"],
         "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02"],
         "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01"],
@@ -715,6 +753,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-mega-01", "footer-sitemap-01", "footer-multi-col-01"],
     },
     "business-trust": {
+        "nav": ["nav-classic-01", "nav-centered-01"],
         "hero": ["hero-classic-01", "hero-editorial-01", "hero-split-01"],
         "about": ["about-timeline-01", "about-magazine-01", "about-image-showcase-01"],
         "services": ["services-process-steps-01", "services-alternating-rows-01", "services-cards-grid-01"],
@@ -724,10 +763,11 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-sitemap-01", "footer-mega-01", "footer-multi-col-01"],
     },
     "business-fresh": {
-        "hero": ["hero-gradient-03", "hero-animated-shapes-01", "hero-glassmorphism-01"],
+        "nav": ["nav-centered-01", "nav-minimal-01"],
+        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01"],
         "about": ["about-split-cards-01", "about-bento-01", "about-timeline-02"],
         "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02"],
-        "features": ["features-alternating-01", "features-bento-grid-01", "features-hover-cards-01"],
+        "features": ["features-bento-01", "features-alternating-01", "features-bento-grid-01", "features-hover-cards-01"],
         "testimonials": ["testimonials-carousel-01", "testimonials-marquee-01", "testimonials-masonry-01"],
         "cta": ["cta-split-image-01", "cta-gradient-animated-01", "cta-floating-card-01"],
         "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01"],
@@ -735,6 +775,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     # --- Blog / Magazine ---
     "blog-editorial": {
+        "nav": ["nav-centered-01", "nav-classic-01"],
         "hero": ["hero-editorial-01", "hero-typewriter-01", "hero-zen-01"],
         "about": ["about-alternating-01", "about-magazine-01", "about-split-scroll-01"],
         "services": ["services-minimal-list-01", "services-icon-list-01", "services-alternating-rows-01"],
@@ -743,6 +784,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-sitemap-01", "footer-centered-01", "footer-multi-col-01"],
     },
     "blog-dark": {
+        "nav": ["nav-minimal-01", "nav-centered-01"],
         "hero": ["hero-neon-01", "hero-dark-bold-01", "hero-brutalist-01"],
         "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01"],
         "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01"],
@@ -752,6 +794,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     # --- Evento / Community ---
     "event-vibrant": {
+        "nav": ["nav-minimal-01", "nav-centered-01"],
         "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01"],
         "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01"],
         "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02"],
@@ -761,6 +804,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "footer": ["footer-gradient-01", "footer-mega-01", "footer-multi-col-01"],
     },
     "event-minimal": {
+        "nav": ["nav-centered-01", "nav-classic-01"],
         "hero": ["hero-centered-02", "hero-typewriter-01", "hero-zen-01"],
         "about": ["about-timeline-01", "about-alternating-01", "about-split-scroll-01"],
         "services": ["services-process-steps-01", "services-cards-grid-01", "services-icon-list-01"],
@@ -780,6 +824,426 @@ _DEFAULT_SECTION_VARIANT_POOLS: Dict[str, List[str]] = {
     "timeline": ["timeline-vertical-01"],
 }
 
+# =========================================================
+# SECTION SCHEMAS: JSON template for each section type.
+# _generate_texts() assembles only the schemas for the
+# sections the user actually requested, cutting prompt size
+# by 40-60% and reducing noise for the LLM.
+# =========================================================
+_SECTION_SCHEMAS: Dict[str, str] = {
+    "hero": '''"hero": {{
+    "HERO_TITLE": "Headline impattante (max 8 parole, MIN 3 parole)",
+    "HERO_SUBTITLE": "Sottotitolo evocativo (MIN 15 parole, 2-3 frasi che creano desiderio)",
+    "HERO_CTA_TEXT": "Testo bottone CTA (3-5 parole, verbo d'azione)",
+    "HERO_CTA_URL": "#contact",
+    "HERO_IMAGE_URL": "",
+    "HERO_IMAGE_ALT": "Descrizione immagine specifica per il business"
+  }}''',
+    "about": '''"about": {{
+    "ABOUT_TITLE": "Titolo sezione (evocativo, NO 'Chi Siamo')",
+    "ABOUT_SUBTITLE": "Sottotitolo (MIN 10 parole)",
+    "ABOUT_TEXT": "MIN 40 parole: racconta la storia/missione con dettagli specifici, emozioni, visione futura",
+    "ABOUT_HIGHLIGHT_1": "Fatto chiave 1",
+    "ABOUT_HIGHLIGHT_2": "Fatto chiave 2",
+    "ABOUT_HIGHLIGHT_3": "Fatto chiave 3",
+    "ABOUT_HIGHLIGHT_NUM_1": "25",
+    "ABOUT_HIGHLIGHT_NUM_2": "500",
+    "ABOUT_HIGHLIGHT_NUM_3": "98"
+  }}''',
+    "services": '''"services": {{
+    "SERVICES_TITLE": "Titolo sezione",
+    "SERVICES_SUBTITLE": "Sottotitolo",
+    "SERVICES": [
+      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}},
+      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}},
+      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}}
+    ]
+  }}''',
+    "features": '''"features": {{
+    "FEATURES_TITLE": "Titolo sezione",
+    "FEATURES_SUBTITLE": "Sottotitolo",
+    "FEATURES": [
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
+      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}}
+    ]
+  }}''',
+    "testimonials": '''"testimonials": {{
+    "TESTIMONIALS_TITLE": "Titolo sezione",
+    "TESTIMONIALS": [
+      {{"TESTIMONIAL_TEXT": "MIN 20 parole: storia specifica con dettagli, emozioni, risultati concreti", "TESTIMONIAL_AUTHOR": "Nome e Cognome realistico italiano", "TESTIMONIAL_ROLE": "Ruolo specifico (es: CEO di NomeDitta)", "TESTIMONIAL_INITIAL": "N"}},
+      {{"TESTIMONIAL_TEXT": "MIN 20 parole: esperienza unica, diversa dalla precedente", "TESTIMONIAL_AUTHOR": "Nome e Cognome", "TESTIMONIAL_ROLE": "Ruolo specifico", "TESTIMONIAL_INITIAL": "N"}},
+      {{"TESTIMONIAL_TEXT": "MIN 20 parole: racconto con before/after, numeri o dettagli specifici", "TESTIMONIAL_AUTHOR": "Nome e Cognome", "TESTIMONIAL_ROLE": "Ruolo specifico", "TESTIMONIAL_INITIAL": "N"}}
+    ]
+  }}''',
+    "cta": '''"cta": {{
+    "CTA_TITLE": "Headline CTA urgente e persuasiva (4-8 parole)",
+    "CTA_SUBTITLE": "MIN 12 parole: motiva all'azione con beneficio chiaro",
+    "CTA_BUTTON_TEXT": "Verbo d'azione + risultato (3-5 parole)",
+    "CTA_BUTTON_URL": "#contact"
+  }}''',
+    "contact": '''"contact": {{
+    "CONTACT_TITLE": "Titolo sezione (invitante, NO 'Contattaci')",
+    "CONTACT_SUBTITLE": "MIN 10 parole: sottotitolo che invoglia a scrivere",
+    "CONTACT_ADDRESS": "indirizzo o vuoto",
+    "CONTACT_PHONE": "telefono o vuoto",
+    "CONTACT_EMAIL": "email o vuoto"
+  }}''',
+    "gallery": '''"gallery": {{
+    "GALLERY_TITLE": "Titolo galleria",
+    "GALLERY_SUBTITLE": "Sottotitolo",
+    "GALLERY_ITEMS": [
+      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
+      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
+      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
+      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
+      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
+      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}}
+    ]
+  }}''',
+    "team": '''"team": {{
+    "TEAM_TITLE": "Titolo sezione team",
+    "TEAM_SUBTITLE": "Sottotitolo",
+    "TEAM_MEMBERS": [
+      {{"MEMBER_NAME": "Nome Cognome realistico", "MEMBER_ROLE": "Ruolo specifico (es: Direttore Creativo)", "MEMBER_IMAGE_URL": "", "MEMBER_BIO": "MIN 15 parole: personalita, passioni, competenze uniche"}},
+      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo specifico", "MEMBER_IMAGE_URL": "", "MEMBER_BIO": "MIN 15 parole: storia personale e approccio al lavoro"}},
+      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo specifico", "MEMBER_IMAGE_URL": "", "MEMBER_BIO": "MIN 15 parole: background e contributo al team"}}
+    ]
+  }}''',
+    "pricing": '''"pricing": {{
+    "PRICING_TITLE": "Titolo sezione prezzi",
+    "PRICING_SUBTITLE": "Sottotitolo",
+    "PRICING_PLANS": [
+      {{"PLAN_NAME": "Base", "PLAN_PRICE": "29", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Ideale per iniziare", "PLAN_FEATURES": "Feature 1, Feature 2, Feature 3", "PLAN_CTA_TEXT": "Inizia Ora", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "false"}},
+      {{"PLAN_NAME": "Pro", "PLAN_PRICE": "59", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Il piu popolare", "PLAN_FEATURES": "Tutto Base + Feature 4, Feature 5, Feature 6", "PLAN_CTA_TEXT": "Scegli Pro", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "true"}},
+      {{"PLAN_NAME": "Enterprise", "PLAN_PRICE": "99", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Per grandi aziende", "PLAN_FEATURES": "Tutto Pro + Feature 7, Feature 8, Supporto dedicato", "PLAN_CTA_TEXT": "Contattaci", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "false"}}
+    ]
+  }}''',
+    "faq": '''"faq": {{
+    "FAQ_TITLE": "Domande Frequenti",
+    "FAQ_SUBTITLE": "Sottotitolo",
+    "FAQ_ITEMS": [
+      {{"FAQ_QUESTION": "Domanda 1?", "FAQ_ANSWER": "Risposta dettagliata (2-3 frasi)"}},
+      {{"FAQ_QUESTION": "Domanda 2?", "FAQ_ANSWER": "Risposta dettagliata"}},
+      {{"FAQ_QUESTION": "Domanda 3?", "FAQ_ANSWER": "Risposta dettagliata"}},
+      {{"FAQ_QUESTION": "Domanda 4?", "FAQ_ANSWER": "Risposta dettagliata"}},
+      {{"FAQ_QUESTION": "Domanda 5?", "FAQ_ANSWER": "Risposta dettagliata"}}
+    ]
+  }}''',
+    "stats": '''"stats": {{
+    "STATS_TITLE": "I Nostri Numeri",
+    "STATS_SUBTITLE": "Sottotitolo",
+    "STATS_ITEMS": [
+      {{"STAT_NUMBER": "150", "STAT_SUFFIX": "+", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
+      {{"STAT_NUMBER": "98", "STAT_SUFFIX": "%", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
+      {{"STAT_NUMBER": "10", "STAT_SUFFIX": "K", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
+      {{"STAT_NUMBER": "24", "STAT_SUFFIX": "/7", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}}
+    ]
+  }}''',
+    "logos": '''"logos": {{
+    "LOGOS_TITLE": "I Nostri Partner",
+    "LOGOS_ITEMS": [
+      {{"LOGO_IMAGE_URL": "", "LOGO_ALT": "Partner 1", "LOGO_NAME": "Partner 1"}},
+      {{"LOGO_IMAGE_URL": "", "LOGO_ALT": "Partner 2", "LOGO_NAME": "Partner 2"}},
+      {{"LOGO_IMAGE_URL": "", "LOGO_ALT": "Partner 3", "LOGO_NAME": "Partner 3"}},
+      {{"LOGO_IMAGE_URL": "", "LOGO_ALT": "Partner 4", "LOGO_NAME": "Partner 4"}}
+    ]
+  }}''',
+    "process": '''"process": {{
+    "PROCESS_TITLE": "Come Funziona",
+    "PROCESS_SUBTITLE": "Sottotitolo",
+    "PROCESS_STEPS": [
+      {{"STEP_NUMBER": "1", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}},
+      {{"STEP_NUMBER": "2", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}},
+      {{"STEP_NUMBER": "3", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}}
+    ]
+  }}''',
+    "timeline": '''"timeline": {{
+    "TIMELINE_TITLE": "La Nostra Storia",
+    "TIMELINE_SUBTITLE": "Sottotitolo",
+    "TIMELINE_ITEMS": [
+      {{"TIMELINE_YEAR": "2020", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}},
+      {{"TIMELINE_YEAR": "2022", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}},
+      {{"TIMELINE_YEAR": "2024", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}}
+    ]
+  }}''',
+    "footer": '''"footer": {{
+    "FOOTER_DESCRIPTION": "Breve descrizione per footer (1 frase)"
+  }}''',
+}
+
+# Map array keys for dynamic structure-rule generation
+_SECTION_ARRAY_RULES: Dict[str, str] = {
+    "services": 'The "SERVICES" key MUST be an array of objects with EXACTLY: "SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION". At LEAST 3 items.',
+    "features": 'The "FEATURES" key MUST be an array of objects with EXACTLY: "FEATURE_ICON", "FEATURE_TITLE", "FEATURE_DESCRIPTION". At LEAST 4 items.',
+    "testimonials": 'The "TESTIMONIALS" key MUST be an array of objects with EXACTLY: "TESTIMONIAL_TEXT", "TESTIMONIAL_AUTHOR", "TESTIMONIAL_ROLE", "TESTIMONIAL_INITIAL". At LEAST 3 items.',
+    "gallery": 'The "GALLERY_ITEMS" key MUST be an array of objects with EXACTLY: "GALLERY_IMAGE_URL", "GALLERY_IMAGE_ALT", "GALLERY_CAPTION". At LEAST 4 items.',
+    "team": 'The "TEAM_MEMBERS" key MUST be an array of objects with EXACTLY: "MEMBER_NAME", "MEMBER_ROLE", "MEMBER_IMAGE_URL", "MEMBER_BIO". At LEAST 3 items.',
+}
+
+# =========================================================
+# CATEGORY-SPECIFIC FALLBACK TEXTS
+# When AI text generation fails, use these instead of generic text.
+# Each category has tailored copy that matches the business type.
+# =========================================================
+_CATEGORY_FALLBACK_TEXTS: Dict[str, Dict[str, dict]] = {
+    "restaurant": {
+        "hero": {
+            "HERO_TITLE": "Dove il Gusto Incontra l'Arte",
+            "HERO_SUBTITLE": "Ogni piatto racconta una storia di passione, tradizione e ingredienti scelti con cura maniacale. Un viaggio sensoriale che inizia dal primo sguardo al menu.",
+            "HERO_CTA_TEXT": "Prenota il Tuo Tavolo",
+            "HERO_CTA_URL": "#contact",
+            "HERO_IMAGE_URL": "",
+            "HERO_IMAGE_ALT": "L'esperienza culinaria nel nostro ristorante",
+        },
+        "about": {
+            "ABOUT_TITLE": "La Nostra Filosofia in Cucina",
+            "ABOUT_SUBTITLE": "Ogni ingrediente ha una provenienza, ogni ricetta una storia che merita di essere raccontata",
+            "ABOUT_TEXT": "Nasciamo dalla convinzione che mangiare non sia solo nutrirsi, ma vivere un'esperienza. La nostra cucina parte dalla terra: collaboriamo con produttori locali selezionati, seguiamo la stagionalita e trasformiamo materie prime eccezionali in piatti che emozionano. Ogni ricetta e il risultato di ricerca, sperimentazione e amore per il dettaglio.",
+            "ABOUT_HIGHLIGHT_1": "Fornitori locali selezionati",
+            "ABOUT_HIGHLIGHT_2": "Coperti serviti ogni anno",
+            "ABOUT_HIGHLIGHT_3": "Valutazione media clienti",
+            "ABOUT_HIGHLIGHT_NUM_1": "18",
+            "ABOUT_HIGHLIGHT_NUM_2": "12400",
+            "ABOUT_HIGHLIGHT_NUM_3": "4.9",
+        },
+        "services": {
+            "SERVICES_TITLE": "I Nostri Piatti Signature",
+            "SERVICES_SUBTITLE": "Tre esperienze culinarie che definiscono la nostra identita gastronomica",
+            "SERVICES": [
+                {"SERVICE_ICON": "\U0001f372", "SERVICE_TITLE": "Menu Degustazione", "SERVICE_DESCRIPTION": "Un percorso di 7 portate che attraversa sapori e territori. Ogni piatto dialoga con il successivo in un crescendo di gusto che sorprende il palato."},
+                {"SERVICE_ICON": "\U0001f37e", "SERVICE_TITLE": "Cantina Curata", "SERVICE_DESCRIPTION": "Oltre 180 etichette selezionate personalmente dal nostro sommelier. Abbinamenti pensati per esaltare ogni singola portata del vostro menu."},
+                {"SERVICE_ICON": "\U0001f382", "SERVICE_TITLE": "Eventi Privati", "SERVICE_DESCRIPTION": "La nostra sala riservata accoglie fino a 40 ospiti per cene aziendali, celebrazioni e serate esclusive con menu personalizzati dallo chef."},
+            ],
+        },
+        "contact": {
+            "CONTACT_TITLE": "Riserva il Tuo Momento Speciale",
+            "CONTACT_SUBTITLE": "Che sia una cena romantica, un pranzo di lavoro o una serata tra amici, siamo pronti ad accoglierti con il calore che meriti.",
+            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
+        },
+        "cta": {
+            "CTA_TITLE": "La Tavola Ti Aspetta",
+            "CTA_SUBTITLE": "I posti migliori vanno via in fretta, soprattutto il venerdi e sabato sera. Prenota ora e assicurati un'esperienza indimenticabile.",
+            "CTA_BUTTON_TEXT": "Prenota Ora", "CTA_BUTTON_URL": "#contact",
+        },
+        "footer": {"FOOTER_DESCRIPTION": "Dove ogni pasto diventa un ricordo che vale la pena conservare."},
+    },
+    "saas": {
+        "hero": {
+            "HERO_TITLE": "Il Futuro e Adesso",
+            "HERO_SUBTITLE": "La piattaforma che trasforma il caos operativo in flussi intelligenti. Automatizza, analizza, scala - mentre tu ti concentri su cio che conta davvero.",
+            "HERO_CTA_TEXT": "Prova Gratis 14 Giorni",
+            "HERO_CTA_URL": "#contact", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "Dashboard della piattaforma",
+        },
+        "about": {
+            "ABOUT_TITLE": "Costruito per Chi Vuole di Piu",
+            "ABOUT_SUBTITLE": "Non un altro tool. Una rivoluzione nel modo in cui lavori ogni giorno",
+            "ABOUT_TEXT": "Siamo nati dalla frustrazione di chi usa 15 strumenti diversi per fare il lavoro di uno. La nostra piattaforma unifica, semplifica e potenzia ogni flusso operativo. Dietro ogni funzionalita c'e un team ossessionato dall'esperienza utente e dalla performance. Zero compromessi sulla velocita, zero compromessi sulla sicurezza.",
+            "ABOUT_HIGHLIGHT_1": "Aziende attive sulla piattaforma",
+            "ABOUT_HIGHLIGHT_2": "Uptime garantito",
+            "ABOUT_HIGHLIGHT_3": "Ore risparmiate al mese per utente",
+            "ABOUT_HIGHLIGHT_NUM_1": "2400", "ABOUT_HIGHLIGHT_NUM_2": "99.97", "ABOUT_HIGHLIGHT_NUM_3": "23",
+        },
+        "services": {
+            "SERVICES_TITLE": "Funzionalita che Cambiano le Regole",
+            "SERVICES_SUBTITLE": "Ogni feature e progettata per eliminare un problema reale, non per riempire una checklist",
+            "SERVICES": [
+                {"SERVICE_ICON": "\u26a1", "SERVICE_TITLE": "Automazione Intelligente", "SERVICE_DESCRIPTION": "Crea flussi di lavoro complessi in pochi click. Il nostro motore AI impara dai tuoi pattern e suggerisce ottimizzazioni che ti fanno risparmiare ore ogni settimana."},
+                {"SERVICE_ICON": "\U0001f4ca", "SERVICE_TITLE": "Analytics in Tempo Reale", "SERVICE_DESCRIPTION": "Dashboard personalizzabili con metriche che contano. Visualizza trend, anomalie e opportunita prima che diventino problemi o che la concorrenza le colga."},
+                {"SERVICE_ICON": "\U0001f6e1\ufe0f", "SERVICE_TITLE": "Sicurezza Enterprise", "SERVICE_DESCRIPTION": "Crittografia end-to-end, SSO, audit log completo e conformita GDPR integrata. La tua sicurezza non e un'opzione, e la nostra ossessione."},
+            ],
+        },
+        "contact": {
+            "CONTACT_TITLE": "Parliamo del Tuo Prossimo Livello",
+            "CONTACT_SUBTITLE": "Demo personalizzata in 15 minuti. Ti mostriamo esattamente come la piattaforma risolve i tuoi problemi specifici.",
+            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
+        },
+        "cta": {
+            "CTA_TITLE": "Smetti di Perdere Tempo",
+            "CTA_SUBTITLE": "Ogni giorno senza automazione e un giorno di produttivita sprecata. Inizia ora, i risultati arrivano dalla prima settimana.",
+            "CTA_BUTTON_TEXT": "Inizia la Prova Gratuita", "CTA_BUTTON_URL": "#contact",
+        },
+        "footer": {"FOOTER_DESCRIPTION": "La piattaforma che fa lavorare la tecnologia per te, non il contrario."},
+    },
+    "portfolio": {
+        "hero": {
+            "HERO_TITLE": "Creo Mondi Visivi",
+            "HERO_SUBTITLE": "Designer, pensatore, risolutore di problemi. Trasformo idee astratte in esperienze digitali che le persone ricordano e con cui vogliono interagire.",
+            "HERO_CTA_TEXT": "Esplora i Progetti",
+            "HERO_CTA_URL": "#gallery", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "Portfolio dei migliori progetti creativi",
+        },
+        "about": {
+            "ABOUT_TITLE": "Il Metodo Dietro la Creativita",
+            "ABOUT_SUBTITLE": "Ogni progetto inizia con una domanda: come posso superare le aspettative?",
+            "ABOUT_TEXT": "Con oltre un decennio di esperienza nel design digitale, ho sviluppato un approccio che unisce ricerca, intuizione e ossessione per il dettaglio. Non creo semplicemente interfacce - costruisco esperienze che risolvono problemi reali e generano risultati misurabili. Ogni pixel ha uno scopo, ogni interazione racconta una storia.",
+            "ABOUT_HIGHLIGHT_1": "Progetti completati", "ABOUT_HIGHLIGHT_2": "Premi e riconoscimenti",
+            "ABOUT_HIGHLIGHT_3": "Clienti in tutto il mondo",
+            "ABOUT_HIGHLIGHT_NUM_1": "127", "ABOUT_HIGHLIGHT_NUM_2": "14", "ABOUT_HIGHLIGHT_NUM_3": "38",
+        },
+        "services": {
+            "SERVICES_TITLE": "Competenze al Tuo Servizio",
+            "SERVICES_SUBTITLE": "Dalla strategia al pixel finale, ogni fase del progetto riceve la stessa cura maniacale",
+            "SERVICES": [
+                {"SERVICE_ICON": "\U0001f3a8", "SERVICE_TITLE": "Brand Identity", "SERVICE_DESCRIPTION": "Logo, palette, tipografia e sistema visivo completo. Costruisco identita che si distinguono nel rumore e restano impresse nella memoria."},
+                {"SERVICE_ICON": "\U0001f4f1", "SERVICE_TITLE": "UI/UX Design", "SERVICE_DESCRIPTION": "Interfacce intuitive che guidano l'utente verso l'obiettivo. Ricerca, wireframe, prototipazione e test - ogni decisione e supportata dai dati."},
+                {"SERVICE_ICON": "\U0001f680", "SERVICE_TITLE": "Design Strategico", "SERVICE_DESCRIPTION": "Non solo estetica: analizzo il mercato, studio i competitor e progetto soluzioni che generano conversioni reali e crescita misurabile."},
+            ],
+        },
+        "contact": {
+            "CONTACT_TITLE": "Costruiamo Qualcosa di Grande",
+            "CONTACT_SUBTITLE": "Hai un progetto ambizioso? Parliamone davanti a un caffe virtuale. Le migliori collaborazioni iniziano con una conversazione sincera.",
+            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
+        },
+        "cta": {
+            "CTA_TITLE": "Il Tuo Progetto Merita il Meglio",
+            "CTA_SUBTITLE": "Accetto solo 3 nuovi progetti al mese per garantire a ciascuno l'attenzione che merita. Verifica la mia disponibilita.",
+            "CTA_BUTTON_TEXT": "Richiedi una Consulenza", "CTA_BUTTON_URL": "#contact",
+        },
+        "footer": {"FOOTER_DESCRIPTION": "Design che risolve problemi e crea connessioni autentiche."},
+    },
+    "ecommerce": {
+        "hero": {
+            "HERO_TITLE": "Stile Che Parla di Te",
+            "HERO_SUBTITLE": "Prodotti selezionati con cura per chi non si accontenta del banale. Qualita artigianale, design contemporaneo, spedizione fulminante.",
+            "HERO_CTA_TEXT": "Scopri la Collezione",
+            "HERO_CTA_URL": "#services", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "La nostra collezione esclusiva",
+        },
+        "services": {
+            "SERVICES_TITLE": "Perche Scegliere Noi",
+            "SERVICES_SUBTITLE": "Tre promesse che manteniamo ogni singolo giorno",
+            "SERVICES": [
+                {"SERVICE_ICON": "\U0001f48e", "SERVICE_TITLE": "Qualita Certificata", "SERVICE_DESCRIPTION": "Ogni prodotto passa 3 controlli qualita prima di raggiungere le tue mani. Materiali premium, lavorazione impeccabile, durabilita garantita nel tempo."},
+                {"SERVICE_ICON": "\U0001f69a", "SERVICE_TITLE": "Spedizione Express", "SERVICE_DESCRIPTION": "Ordini prima delle 14? Spedito lo stesso giorno. Tracciamento in tempo reale e consegna in 24-48 ore in tutta Italia, gratis sopra i 59 euro."},
+                {"SERVICE_ICON": "\U0001f504", "SERVICE_TITLE": "Reso Senza Pensieri", "SERVICE_DESCRIPTION": "30 giorni per cambiare idea. Reso gratuito, rimborso immediato, zero domande. La tua soddisfazione e la nostra unica priorita."},
+            ],
+        },
+        "contact": {
+            "CONTACT_TITLE": "Siamo Qui Per Te",
+            "CONTACT_SUBTITLE": "Dubbi sulla taglia, domande sui materiali o bisogno di un consiglio personalizzato? Il nostro team risponde in meno di 2 ore.",
+            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
+        },
+        "cta": {
+            "CTA_TITLE": "Non Lasciarti Sfuggire Questo",
+            "CTA_SUBTITLE": "Nuovi arrivi ogni settimana. Iscriviti alla newsletter e ricevi il 15% di sconto sul primo ordine.",
+            "CTA_BUTTON_TEXT": "Ottieni il 15% di Sconto", "CTA_BUTTON_URL": "#contact",
+        },
+        "footer": {"FOOTER_DESCRIPTION": "Prodotti che raccontano chi sei, consegnati a casa tua con cura."},
+    },
+    "business": {
+        "hero": {
+            "HERO_TITLE": "Costruiamo il Domani",
+            "HERO_SUBTITLE": "Partner strategici per aziende che non si accontentano dello status quo. Trasformiamo sfide complesse in opportunita concrete di crescita misurabile.",
+            "HERO_CTA_TEXT": "Richiedi una Consulenza",
+            "HERO_CTA_URL": "#contact", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "Il nostro approccio strategico al business",
+        },
+        "about": {
+            "ABOUT_TITLE": "Il Nostro Approccio Strategico",
+            "ABOUT_SUBTITLE": "Non vendiamo servizi. Costruiamo partnership che generano risultati duraturi",
+            "ABOUT_TEXT": "Nasciamo dalla convinzione che il mercato merita di meglio. Non ci accontentiamo della mediocrita e non inseguiamo le scorciatoie. Ogni progetto diventa una sfida personale, un'opportunita per dimostrare che si puo fare di piu, meglio e con piu cura. La nostra storia e fatta di intuizioni brillanti e la testardaggine di chi crede davvero in quello che fa.",
+            "ABOUT_HIGHLIGHT_1": "Anni di esperienza sul campo",
+            "ABOUT_HIGHLIGHT_2": "Progetti completati con successo",
+            "ABOUT_HIGHLIGHT_3": "Tasso di soddisfazione clienti",
+            "ABOUT_HIGHLIGHT_NUM_1": "15", "ABOUT_HIGHLIGHT_NUM_2": "847", "ABOUT_HIGHLIGHT_NUM_3": "99.2",
+        },
+        "services": {
+            "SERVICES_TITLE": "Il Metodo Dietro i Risultati",
+            "SERVICES_SUBTITLE": "Tre pilastri che trasformano la complessita in vantaggio competitivo",
+            "SERVICES": [
+                {"SERVICE_ICON": "\U0001f3af", "SERVICE_TITLE": "Strategia su Misura", "SERVICE_DESCRIPTION": "Analizziamo a fondo il tuo contesto per costruire un percorso che rifletta la vera identita del tuo business e porti risultati misurabili nel tempo."},
+                {"SERVICE_ICON": "\U0001f680", "SERVICE_TITLE": "Esecuzione Fulminante", "SERVICE_DESCRIPTION": "Dalla visione al lancio in tempi record. Ogni fase del progetto segue un metodo collaudato che elimina gli sprechi e accelera i risultati concreti."},
+                {"SERVICE_ICON": "\U0001f4a1", "SERVICE_TITLE": "Evoluzione Continua", "SERVICE_DESCRIPTION": "Non ci fermiamo al primo traguardo. Monitoriamo, ottimizziamo e iteriamo per garantire che ogni aspetto cresca insieme al tuo business."},
+            ],
+        },
+        "contact": {
+            "CONTACT_TITLE": "Parliamo del Tuo Prossimo Passo",
+            "CONTACT_SUBTITLE": "Ogni grande progetto inizia con una conversazione. Raccontaci la tua idea e trasformiamola insieme in qualcosa di straordinario.",
+            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
+        },
+        "cta": {
+            "CTA_TITLE": "Il Momento e Adesso",
+            "CTA_SUBTITLE": "Ogni giorno che passa e un'opportunita persa. Fai il primo passo verso risultati che superano le aspettative.",
+            "CTA_BUTTON_TEXT": "Prenota una Consulenza Gratuita", "CTA_BUTTON_URL": "#contact",
+        },
+        "footer": {"FOOTER_DESCRIPTION": "Dove nascono le idee che cambiano le regole del gioco."},
+    },
+    "blog": {
+        "hero": {
+            "HERO_TITLE": "Parole Che Lasciano il Segno",
+            "HERO_SUBTITLE": "Storie, riflessioni e approfondimenti per chi vuole andare oltre la superficie. Contenuti che informano, ispirano e provocano il pensiero critico.",
+            "HERO_CTA_TEXT": "Leggi l'Ultimo Articolo",
+            "HERO_CTA_URL": "#services", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "Il nostro blog editoriale",
+        },
+        "services": {
+            "SERVICES_TITLE": "Le Nostre Rubriche",
+            "SERVICES_SUBTITLE": "Contenuti curati per menti curiose che cercano sostanza, non rumore",
+            "SERVICES": [
+                {"SERVICE_ICON": "\U0001f4dd", "SERVICE_TITLE": "Analisi di Fondo", "SERVICE_DESCRIPTION": "Approfondimenti che vanno oltre il titolo. Ricerche originali, dati verificati e prospettive che non trovi altrove. Ogni articolo e un viaggio."},
+                {"SERVICE_ICON": "\U0001f4a1", "SERVICE_TITLE": "Idee e Tendenze", "SERVICE_DESCRIPTION": "Cosa sta cambiando nel nostro settore e perche dovrebbe importarti. Anticipiamo i trend con analisi lucide e consigli pratici immediati."},
+                {"SERVICE_ICON": "\U0001f399\ufe0f", "SERVICE_TITLE": "Interviste Esclusive", "SERVICE_DESCRIPTION": "Conversazioni con chi sta plasmando il futuro. Storie vere, lezioni apprese e visioni che ampliano gli orizzonti di ogni lettore."},
+            ],
+        },
+        "contact": {
+            "CONTACT_TITLE": "Unisciti alla Conversazione",
+            "CONTACT_SUBTITLE": "Hai un'idea per un articolo, una storia da raccontare o semplicemente vuoi dire la tua? La nostra community cresce grazie a voci come la tua.",
+            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
+        },
+        "footer": {"FOOTER_DESCRIPTION": "Storie che contano, scritte per chi vuole capire davvero."},
+    },
+    "event": {
+        "hero": {
+            "HERO_TITLE": "Vivi l'Esperienza dal Vivo",
+            "HERO_SUBTITLE": "Gli eventi che creano connessioni autentiche, ispirano nuove idee e lasciano ricordi che durano. Non semplici incontri, ma momenti che cambiano prospettive.",
+            "HERO_CTA_TEXT": "Riserva il Tuo Posto",
+            "HERO_CTA_URL": "#contact", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "L'atmosfera dei nostri eventi esclusivi",
+        },
+        "services": {
+            "SERVICES_TITLE": "Cosa Ti Aspetta",
+            "SERVICES_SUBTITLE": "Un programma progettato per massimizzare ogni minuto della tua esperienza",
+            "SERVICES": [
+                {"SERVICE_ICON": "\U0001f3a4", "SERVICE_TITLE": "Speaker d'Eccezione", "SERVICE_DESCRIPTION": "Relatori selezionati tra i migliori del settore. Non le solite presentazioni, ma conversazioni che provocano idee e cambiano il modo di pensare."},
+                {"SERVICE_ICON": "\U0001f91d", "SERVICE_TITLE": "Networking Mirato", "SERVICE_DESCRIPTION": "Sessioni strutturate per connettere le persone giuste. Il nostro sistema di matching ti mette in contatto con chi puo davvero fare la differenza."},
+                {"SERVICE_ICON": "\U0001f3c6", "SERVICE_TITLE": "Esperienza Premium", "SERVICE_DESCRIPTION": "Dall'accoglienza al follow-up, ogni dettaglio e curato per offrirti un'esperienza che supera qualsiasi aspettativa. Location esclusiva, catering d'autore."},
+            ],
+        },
+        "contact": {
+            "CONTACT_TITLE": "Non Perdere Questa Occasione",
+            "CONTACT_SUBTITLE": "I posti sono limitati e ogni edizione registra il tutto esaurito. Assicurati il tuo ingresso prima che sia troppo tardi.",
+            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
+        },
+        "cta": {
+            "CTA_TITLE": "I Posti Stanno Finendo",
+            "CTA_SUBTITLE": "Le ultime tre edizioni hanno registrato il sold out in meno di una settimana. Non aspettare l'ultimo momento.",
+            "CTA_BUTTON_TEXT": "Acquista il Tuo Biglietto", "CTA_BUTTON_URL": "#contact",
+        },
+        "footer": {"FOOTER_DESCRIPTION": "Eventi che creano connessioni e ispirano il cambiamento."},
+    },
+}
+
+
+def _detect_category(template_style_id: Optional[str] = None, business_description: str = "") -> str:
+    """Detect business category from template_style_id or business_description."""
+    if template_style_id:
+        prefix = template_style_id.split("-")[0]
+        if prefix in _CATEGORY_FALLBACK_TEXTS:
+            return prefix
+    # Scan description for category hints
+    desc_lower = business_description.lower() if business_description else ""
+    category_keywords = {
+        "restaurant": ["ristorante", "restaurant", "cucina", "chef", "menu", "trattoria", "pizzeria"],
+        "saas": ["saas", "software", "piattaforma", "app", "startup", "tech", "dashboard"],
+        "portfolio": ["portfolio", "designer", "creativo", "freelance", "fotografo", "artista"],
+        "ecommerce": ["ecommerce", "e-commerce", "shop", "negozio", "vendita", "prodotti"],
+        "blog": ["blog", "magazine", "editoriale", "articoli", "giornale"],
+        "event": ["evento", "event", "conferenza", "workshop", "festival", "meetup"],
+    }
+    for cat, keywords in category_keywords.items():
+        if any(kw in desc_lower for kw in keywords):
+            return cat
+    return "business"
+
 
 class DataBindingGenerator:
     def __init__(self):
@@ -798,8 +1262,12 @@ class DataBindingGenerator:
         creative_context: str = "",
         reference_url_context: str = "",
         variety_context: Optional[Dict[str, Any]] = None,
+        reference_analysis: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Kimi returns JSON with color palette and fonts."""
+        # Determine if we have a strong reference to follow
+        has_reference = bool(reference_analysis) or bool(reference_image_url)
+
         style_hint = ""
         if style_preferences:
             if style_preferences.get("primary_color"):
@@ -807,10 +1275,30 @@ class DataBindingGenerator:
             if style_preferences.get("mood"):
                 style_hint += f"Mood/style: {style_preferences['mood']}. "
 
+        # === REFERENCE ANALYSIS OVERRIDE (highest priority) ===
+        # When user provided a reference image, its analysis MUST dominate
+        reference_override = ""
+        if reference_analysis:
+            reference_override = f"""
+=== MANDATORY REFERENCE OVERRIDE (HIGHEST PRIORITY — OVERRIDE ALL OTHER DIRECTIVES) ===
+The user provided a reference website screenshot. You MUST match its visual style.
+Here is the analysis of that reference:
+
+{reference_analysis}
+
+STRICT RULES:
+1. Extract the EXACT hex colors mentioned above and use them as your primary, secondary, accent colors.
+2. If the reference is DARK (dark background), your bg_color MUST be dark. If it's LIGHT, bg_color MUST be light.
+3. Match the MOOD exactly: if the reference is brutalist/bold, your palette must be brutalist/bold. If elegant, be elegant. Do NOT soften or "corporate-ify" the style.
+4. The typography style must match: if the reference uses bold geometric sans-serifs, pick similar fonts. If it uses elegant serifs, pick serifs.
+5. Do NOT override these colors with random variety or creative context — the reference is the user's EXPLICIT design intent.
+=== END MANDATORY REFERENCE ===
+"""
+
         # Extract palette guidance from creative context (blueprints)
         palette_hint = ""
-        if creative_context:
-            # Extract just the palette/font recommendations (first ~500 chars of blueprint)
+        if creative_context and not has_reference:
+            # Only use creative context when there's no reference (reference takes priority)
             palette_hint = f"\nPROFESSIONAL DESIGN REFERENCE:\n{creative_context[:500]}\n"
 
         # Inject reference URL analysis (colors and fonts from a real site)
@@ -818,8 +1306,9 @@ class DataBindingGenerator:
             palette_hint += f"\n{reference_url_context}\nMatch these colors and fonts closely.\n"
 
         # --- VARIETY: inject random color mood and font suggestion ---
+        # When a reference is provided, SKIP variety to avoid conflicting directions
         variety_hint = ""
-        if variety_context:
+        if variety_context and not has_reference:
             color_mood = variety_context.get("color_mood", {})
             font_pair = variety_context.get("font_pairing", {})
             variety_hint = f"""
@@ -845,7 +1334,7 @@ font_body_url: "{font_pair.get('url_b', 'DM+Sans:wght@400;500;600')}"
 
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
-
+{reference_override}
 BUSINESS: {business_name} - {business_description[:500]}
 {style_hint}
 {palette_hint}
@@ -862,7 +1351,10 @@ Return this exact JSON structure:
   "font_heading": "Google Font Name",
   "font_heading_url": "FontName:wght@400;600;700;800",
   "font_body": "Google Font Name",
-  "font_body_url": "FontName:wght@400;500;600"
+  "font_body_url": "FontName:wght@400;500;600",
+  "border_radius_style": "sharp|soft|round|pill",
+  "shadow_style": "none|soft|dramatic",
+  "spacing_density": "compact|normal|generous"
 }}
 
 === COLOR RULES (CRITICAL) ===
@@ -887,12 +1379,16 @@ Pick ONE of these curated pairings based on the business personality:
 - font_heading_url format: "FontName:wght@400;600;700;800" (replace spaces with +)
 - font_body_url format: "FontName:wght@400;500;600"
 
-=== UNIQUENESS DIRECTIVE (CRITICAL) ===
-IMPORTANT: Generate a UNIQUE palette. Do NOT repeat common web palettes.
+=== LAYOUT TOKEN RULES ===
+- border_radius_style: "sharp" for brutalist/editorial designs (0px corners), "soft" for modern/clean (12px), "round" for playful/friendly (24px), "pill" for SaaS buttons/cards (99px). Pick based on brand personality.
+- shadow_style: "none" for flat/minimal/brutalist, "soft" for most modern designs, "dramatic" for luxury/3D/premium look with deep shadows.
+- spacing_density: "compact" for info-dense sites (news, dashboards), "normal" for balanced layouts, "generous" for luxury/minimal brands with lots of whitespace.
+
+=== UNIQUENESS DIRECTIVE {'(SKIP IF REFERENCE PROVIDED)' if has_reference else '(CRITICAL)'} ===
+{'NOTE: A reference image/analysis was provided above. MATCH those colors and style instead of generating random ones.' if has_reference else f"""IMPORTANT: Generate a UNIQUE palette. Do NOT repeat common web palettes.
 Use the business personality to pick unexpected but fitting color combinations.
 Each generation must feel fresh and different from the previous ones.
-Randomization seed: {random.randint(1000, 9999)}
-Pick a font pairing you haven't used recently. Surprise the viewer.
+Pick a font pairing you haven't used recently. Surprise the viewer."""}
 
 Return ONLY the JSON object"""
 
@@ -932,6 +1428,7 @@ Return ONLY the JSON object"""
         creative_context: str = "",
         reference_url_context: str = "",
         variety_context: Optional[Dict[str, Any]] = None,
+        reference_analysis: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Kimi returns JSON with all text content for every section."""
         contact_str = ""
@@ -939,6 +1436,18 @@ Return ONLY the JSON object"""
             contact_str = "CONTACT INFO: " + ", ".join(f"{k}: {v}" for k, v in contact_info.items())
 
         sections_str = ", ".join(sections)
+
+        # Inject reference analysis mood/tone guidance for text generation
+        reference_tone_hint = ""
+        if reference_analysis:
+            reference_tone_hint = f"""
+
+=== REFERENCE SITE STYLE (match this tone in your copy) ===
+The user provided a reference website. Match its communication tone and style:
+{reference_analysis[:800]}
+If the reference is bold/edgy, write bold/edgy copy. If elegant, write elegant copy. Do NOT default to generic corporate tone.
+=== END REFERENCE ===
+"""
 
         # Inject creative context from design knowledge base
         knowledge_hint = ""
@@ -970,7 +1479,28 @@ Return ONLY the JSON object"""
             except Exception:
                 pass
 
-        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.{knowledge_hint}{reference_hint}
+        # === DYNAMIC SECTION SCHEMA ASSEMBLY ===
+        # Only include JSON schemas for the sections the user actually requested.
+        # This cuts prompt size by 40-60% and reduces noise for the LLM.
+        section_schemas = []
+        for section in sections:
+            if section in _SECTION_SCHEMAS:
+                section_schemas.append(_SECTION_SCHEMAS[section])
+        sections_json = ",\n  ".join(section_schemas)
+
+        # Build structure rules only for sections that have array constraints
+        structure_rule_parts = []
+        rule_num = 1
+        for section in sections:
+            if section in _SECTION_ARRAY_RULES:
+                structure_rule_parts.append(f"{rule_num}. {_SECTION_ARRAY_RULES[section]}")
+                rule_num += 1
+        structure_rule_parts.append(f"{rule_num}. EVERY array must contain REAL, SUBSTANTIAL content. NO empty strings. Each description must be at least 15 words.")
+        rule_num += 1
+        structure_rule_parts.append(f'{rule_num}. DO NOT use short key names like "ICON", "TITLE", "DESCRIPTION" — always use the FULL prefixed key name as shown above.')
+        structure_rules = "=== CRITICAL JSON STRUCTURE RULES (violating these = BROKEN website) ===\n" + "\n".join(structure_rule_parts) if structure_rule_parts else ""
+
+        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.{reference_tone_hint}{knowledge_hint}{reference_hint}
 Your copy must be SHARP, EVOCATIVE, and EMOTIONALLY MAGNETIC. Every word earns its place. Zero filler, zero corporate jargon.
 Return ONLY valid JSON, no markdown.
 
@@ -1023,9 +1553,8 @@ SECTIONS NEEDED: {sections_str}
 Headline style: {variety_context["personality"]["headline_style"] if variety_context else "varied and surprising"}
 EVERY piece of text — headlines, subtitles, descriptions, CTAs — must reflect this personality.
 Do NOT write generic copy that ignores the personality. The personality is your creative brief.
-Randomization seed: {random.randint(10000, 99999)}
 
-Return this JSON (include only the sections listed above):
+Return this JSON (include ONLY the sections listed in SECTIONS NEEDED):
 {{
   "meta": {{
     "title": "Page title (max 60 chars)",
@@ -1033,158 +1562,10 @@ Return this JSON (include only the sections listed above):
     "og_title": "OG title",
     "og_description": "OG description"
   }},
-  "hero": {{
-    "HERO_TITLE": "Headline impattante (max 8 parole, MIN 3 parole)",
-    "HERO_SUBTITLE": "Sottotitolo evocativo (MIN 15 parole, 2-3 frasi che creano desiderio)",
-    "HERO_CTA_TEXT": "Testo bottone CTA (3-5 parole, verbo d'azione)",
-    "HERO_CTA_URL": "#contact",
-    "HERO_IMAGE_URL": "https://placehold.co/800x600/{{primary_color_no_hash}}/white?text={business_name}",
-    "HERO_IMAGE_ALT": "Descrizione immagine specifica"
-  }},
-  "about": {{
-    "ABOUT_TITLE": "Titolo sezione (evocativo, NO 'Chi Siamo')",
-    "ABOUT_SUBTITLE": "Sottotitolo (MIN 10 parole)",
-    "ABOUT_TEXT": "MIN 40 parole: racconta la storia/missione con dettagli specifici, emozioni, visione futura",
-    "ABOUT_HIGHLIGHT_1": "Fatto chiave 1",
-    "ABOUT_HIGHLIGHT_2": "Fatto chiave 2",
-    "ABOUT_HIGHLIGHT_3": "Fatto chiave 3",
-    "ABOUT_HIGHLIGHT_NUM_1": "25",
-    "ABOUT_HIGHLIGHT_NUM_2": "500",
-    "ABOUT_HIGHLIGHT_NUM_3": "98"
-  }},
-  "services": {{
-    "SERVICES_TITLE": "Titolo sezione",
-    "SERVICES_SUBTITLE": "Sottotitolo",
-    "SERVICES": [
-      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}},
-      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}},
-      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}}
-    ]
-  }},
-  "features": {{
-    "FEATURES_TITLE": "Titolo sezione",
-    "FEATURES_SUBTITLE": "Sottotitolo",
-    "FEATURES": [
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}}
-    ]
-  }},
-  "testimonials": {{
-    "TESTIMONIALS_TITLE": "Titolo sezione",
-    "TESTIMONIALS": [
-      {{"TESTIMONIAL_TEXT": "MIN 20 parole: storia specifica con dettagli, emozioni, risultati concreti", "TESTIMONIAL_AUTHOR": "Nome e Cognome realistico italiano", "TESTIMONIAL_ROLE": "Ruolo specifico (es: CEO di NomeDitta)", "TESTIMONIAL_INITIAL": "N"}},
-      {{"TESTIMONIAL_TEXT": "MIN 20 parole: esperienza unica, diversa dalla precedente", "TESTIMONIAL_AUTHOR": "Nome e Cognome", "TESTIMONIAL_ROLE": "Ruolo specifico", "TESTIMONIAL_INITIAL": "N"}},
-      {{"TESTIMONIAL_TEXT": "MIN 20 parole: racconto con before/after, numeri o dettagli specifici", "TESTIMONIAL_AUTHOR": "Nome e Cognome", "TESTIMONIAL_ROLE": "Ruolo specifico", "TESTIMONIAL_INITIAL": "N"}}
-    ]
-  }},
-  "cta": {{
-    "CTA_TITLE": "Headline CTA urgente e persuasiva (4-8 parole)",
-    "CTA_SUBTITLE": "MIN 12 parole: motiva all'azione con beneficio chiaro",
-    "CTA_BUTTON_TEXT": "Verbo d'azione + risultato (3-5 parole)",
-    "CTA_BUTTON_URL": "#contact"
-  }},
-  "contact": {{
-    "CONTACT_TITLE": "Titolo sezione (invitante, NO 'Contattaci')",
-    "CONTACT_SUBTITLE": "MIN 10 parole: sottotitolo che invoglia a scrivere",
-    "CONTACT_ADDRESS": "indirizzo o vuoto",
-    "CONTACT_PHONE": "telefono o vuoto",
-    "CONTACT_EMAIL": "email o vuoto"
-  }},
-  "gallery": {{
-    "GALLERY_TITLE": "Titolo galleria",
-    "GALLERY_SUBTITLE": "Sottotitolo",
-    "GALLERY_ITEMS": [
-      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+1", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
-      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+2", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
-      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+3", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
-      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+4", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
-      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+5", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}},
-      {{"GALLERY_IMAGE_URL": "https://placehold.co/600x400/eee/999?text=Foto+6", "GALLERY_IMAGE_ALT": "descrizione", "GALLERY_CAPTION": "Didascalia"}}
-    ]
-  }},
-  "team": {{
-    "TEAM_TITLE": "Titolo sezione team",
-    "TEAM_SUBTITLE": "Sottotitolo",
-    "TEAM_MEMBERS": [
-      {{"MEMBER_NAME": "Nome Cognome realistico", "MEMBER_ROLE": "Ruolo specifico (es: Direttore Creativo)", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "MIN 15 parole: personalita, passioni, competenze uniche"}},
-      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo specifico", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "MIN 15 parole: storia personale e approccio al lavoro"}},
-      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo specifico", "MEMBER_IMAGE_URL": "https://placehold.co/300x300/eee/999?text=Team", "MEMBER_BIO": "MIN 15 parole: background e contributo al team"}}
-    ]
-  }},
-  "pricing": {{
-    "PRICING_TITLE": "Titolo sezione prezzi",
-    "PRICING_SUBTITLE": "Sottotitolo",
-    "PRICING_PLANS": [
-      {{"PLAN_NAME": "Base", "PLAN_PRICE": "29", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Ideale per iniziare", "PLAN_FEATURES": "Feature 1, Feature 2, Feature 3", "PLAN_CTA_TEXT": "Inizia Ora", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "false"}},
-      {{"PLAN_NAME": "Pro", "PLAN_PRICE": "59", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Il più popolare", "PLAN_FEATURES": "Tutto Base + Feature 4, Feature 5, Feature 6", "PLAN_CTA_TEXT": "Scegli Pro", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "true"}},
-      {{"PLAN_NAME": "Enterprise", "PLAN_PRICE": "99", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Per grandi aziende", "PLAN_FEATURES": "Tutto Pro + Feature 7, Feature 8, Supporto dedicato", "PLAN_CTA_TEXT": "Contattaci", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "false"}}
-    ]
-  }},
-  "faq": {{
-    "FAQ_TITLE": "Domande Frequenti",
-    "FAQ_SUBTITLE": "Sottotitolo",
-    "FAQ_ITEMS": [
-      {{"FAQ_QUESTION": "Domanda 1?", "FAQ_ANSWER": "Risposta dettagliata (2-3 frasi)"}},
-      {{"FAQ_QUESTION": "Domanda 2?", "FAQ_ANSWER": "Risposta dettagliata"}},
-      {{"FAQ_QUESTION": "Domanda 3?", "FAQ_ANSWER": "Risposta dettagliata"}},
-      {{"FAQ_QUESTION": "Domanda 4?", "FAQ_ANSWER": "Risposta dettagliata"}},
-      {{"FAQ_QUESTION": "Domanda 5?", "FAQ_ANSWER": "Risposta dettagliata"}}
-    ]
-  }},
-  "stats": {{
-    "STATS_TITLE": "I Nostri Numeri",
-    "STATS_SUBTITLE": "Sottotitolo",
-    "STATS_ITEMS": [
-      {{"STAT_NUMBER": "150", "STAT_SUFFIX": "+", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
-      {{"STAT_NUMBER": "98", "STAT_SUFFIX": "%", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
-      {{"STAT_NUMBER": "10", "STAT_SUFFIX": "K", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
-      {{"STAT_NUMBER": "24", "STAT_SUFFIX": "/7", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}}
-    ]
-  }},
-  "logos": {{
-    "LOGOS_TITLE": "I Nostri Partner",
-    "LOGOS_ITEMS": [
-      {{"LOGO_IMAGE_URL": "https://placehold.co/160x60/eee/999?text=Partner+1", "LOGO_ALT": "Partner 1", "LOGO_NAME": "Partner 1"}},
-      {{"LOGO_IMAGE_URL": "https://placehold.co/160x60/eee/999?text=Partner+2", "LOGO_ALT": "Partner 2", "LOGO_NAME": "Partner 2"}},
-      {{"LOGO_IMAGE_URL": "https://placehold.co/160x60/eee/999?text=Partner+3", "LOGO_ALT": "Partner 3", "LOGO_NAME": "Partner 3"}},
-      {{"LOGO_IMAGE_URL": "https://placehold.co/160x60/eee/999?text=Partner+4", "LOGO_ALT": "Partner 4", "LOGO_NAME": "Partner 4"}}
-    ]
-  }},
-  "process": {{
-    "PROCESS_TITLE": "Come Funziona",
-    "PROCESS_SUBTITLE": "Sottotitolo",
-    "PROCESS_STEPS": [
-      {{"STEP_NUMBER": "1", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}},
-      {{"STEP_NUMBER": "2", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}},
-      {{"STEP_NUMBER": "3", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}}
-    ]
-  }},
-  "timeline": {{
-    "TIMELINE_TITLE": "La Nostra Storia",
-    "TIMELINE_SUBTITLE": "Sottotitolo",
-    "TIMELINE_ITEMS": [
-      {{"TIMELINE_YEAR": "2020", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}},
-      {{"TIMELINE_YEAR": "2022", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}},
-      {{"TIMELINE_YEAR": "2024", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}}
-    ]
-  }},
-  "footer": {{
-    "FOOTER_DESCRIPTION": "Breve descrizione per footer (1 frase)"
-  }}
+  {sections_json}
 }}
 
-=== CRITICAL JSON STRUCTURE RULES (violating these = BROKEN website) ===
-1. The "SERVICES" key MUST be an array [...] of objects, each with EXACTLY these keys: "SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION". NOT "ICON"/"TITLE"/"DESCRIPTION". NOT "service_icon". EXACTLY "SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION". Include at LEAST 3 items.
-2. The "FEATURES" key MUST be an array [...] of objects, each with EXACTLY: "FEATURE_ICON", "FEATURE_TITLE", "FEATURE_DESCRIPTION". At LEAST 4 items.
-3. The "TESTIMONIALS" key MUST be an array [...] of objects, each with EXACTLY: "TESTIMONIAL_TEXT", "TESTIMONIAL_AUTHOR", "TESTIMONIAL_ROLE", "TESTIMONIAL_INITIAL". At LEAST 3 items.
-4. The "GALLERY_ITEMS" key MUST be an array [...] of objects, each with EXACTLY: "GALLERY_IMAGE_URL", "GALLERY_IMAGE_ALT", "GALLERY_CAPTION". At LEAST 4 items.
-5. The "TEAM_MEMBERS" key MUST be an array of objects with EXACTLY: "MEMBER_NAME", "MEMBER_ROLE", "MEMBER_IMAGE_URL", "MEMBER_BIO". At LEAST 3 items.
-6. EVERY array must contain REAL, SUBSTANTIAL content. NO empty strings. Each description must be at least 15 words.
-7. DO NOT use short key names like "ICON", "TITLE", "DESCRIPTION" — always use the FULL prefixed key name as shown above.
+{structure_rules}
 
 === MINIMUM WORD COUNTS (MANDATORY — short text = FAILURE) ===
 - HERO_SUBTITLE: MIN 15 parole
@@ -1300,6 +1681,13 @@ FINAL CHECKLIST (every point is mandatory):
                         f"in style '{template_style_id}'"
                     )
 
+        # Select nav style (not a section, handled separately by assembler)
+        nav_pool = pool_map.get("nav", [])
+        if nav_pool:
+            selections["nav"] = random.choice(nav_pool)
+        elif "nav" in fixed_map:
+            selections["nav"] = fixed_map["nav"]
+
         logger.info(f"[DataBinding] Randomized selection for '{template_style_id}': {selections}")
         return selections
 
@@ -1392,6 +1780,7 @@ Return ONLY the JSON object."""
                     sections=sections,
                     style_preferences=style_preferences,
                     reference_image_url=reference_image_url,
+                    reference_analysis=reference_analysis,
                     logo_url=logo_url,
                     contact_info=contact_info,
                     on_progress=on_progress,
@@ -1411,9 +1800,10 @@ Return ONLY the JSON object."""
         sections: List[str],
         style_preferences: Optional[Dict[str, Any]],
         reference_image_url: Optional[str],
-        logo_url: Optional[str],
-        contact_info: Optional[Dict[str, str]],
-        on_progress: ProgressCallback,
+        reference_analysis: Optional[str] = None,
+        logo_url: Optional[str] = None,
+        contact_info: Optional[Dict[str, str]] = None,
+        on_progress: ProgressCallback = None,
         photo_urls: Optional[List[str]] = None,
         template_style_id: Optional[str] = None,
     ) -> Dict[str, Any]:
@@ -1458,6 +1848,34 @@ Return ONLY the JSON object."""
                 except Exception as e:
                     logger.warning(f"[DataBinding] URL analysis failed: {e}")
 
+        # === ANALYZE REFERENCE IMAGE (if provided but not yet analyzed) ===
+        if reference_image_url and not reference_analysis:
+            try:
+                if on_progress:
+                    on_progress(1, "Analisi immagine di riferimento...")
+                logger.info(f"[DataBinding] Analyzing reference image: {reference_image_url[:80]}...")
+                analysis_result = await self.kimi.call_with_image(
+                    prompt="""Analyze this website screenshot and describe:
+1. Color palette (primary, secondary, accent colors in EXACT hex format, e.g. #1a1a2e)
+2. Whether the background is DARK or LIGHT
+3. Typography style (modern, classic, bold, minimal, elegant, geometric, serif, sans-serif)
+4. Overall mood/atmosphere (professional, playful, elegant, corporate, brutalist, luxurious, tech)
+5. Key visual elements (gradients, shadows, cards, rounded corners, sharp edges, etc.)
+
+Be specific and concise. Focus on extractable design parameters.""",
+                    image_url=reference_image_url,
+                    max_tokens=800,
+                    thinking=False,
+                    timeout=30.0,
+                )
+                if analysis_result.get("success") and analysis_result.get("content"):
+                    reference_analysis = analysis_result["content"]
+                    logger.info(f"[DataBinding] Reference image analyzed: {len(reference_analysis)} chars")
+                else:
+                    logger.warning(f"[DataBinding] Reference image analysis failed: {analysis_result.get('error', 'unknown')}")
+            except Exception as e:
+                logger.warning(f"[DataBinding] Reference image analysis error: {e}")
+
         # === PICK VARIETY CONTEXT (random personality, color mood, font pairing) ===
         variety = _pick_variety_context()
         logger.info(
@@ -1478,6 +1896,7 @@ Return ONLY the JSON object."""
             creative_context=creative_context,
             reference_url_context=reference_url_context,
             variety_context=variety,
+            reference_analysis=reference_analysis,
         )
         texts_task = self._generate_texts(
             business_name, business_description,
@@ -1485,6 +1904,7 @@ Return ONLY the JSON object."""
             creative_context=creative_context,
             reference_url_context=reference_url_context,
             variety_context=variety,
+            reference_analysis=reference_analysis,
         )
         theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
 
@@ -1752,6 +2172,7 @@ Return ONLY the JSON object."""
                 "og_description": f"Sito web di {business_name}",
             }),
             "components": components,
+            "nav_style": selections.get("nav", "nav-classic-01"),
             "global": {
                 "BUSINESS_NAME": business_name,
                 "LOGO_URL": logo_url or self._generate_text_logo(business_name, theme),

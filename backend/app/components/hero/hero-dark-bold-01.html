@@ -16,36 +16,12 @@
     <div class="absolute top-0 right-[35%] w-px h-full origin-top" style="background: linear-gradient(180deg, transparent, var(--color-accent), transparent); opacity: 0.06; transform: rotate(15deg) scaleY(1.5);"></div>
   </div>
 
-  <!-- Navigation -->
-  <nav class="relative z-50 px-6 py-5">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <a href="#" class="flex items-center gap-2 text-xl font-bold font-heading text-white" data-animate="fade-down">
-        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain">
-        {{BUSINESS_NAME}}
-      </a>
-      <button class="p-2.5 border border-white/10 rounded-lg group hover:border-[var(--color-primary)]/50 transition-colors" aria-label="Menu">
-        <div class="flex flex-col gap-1.5">
-          <span class="w-6 h-0.5 bg-white/70 transition-all group-hover:bg-[var(--color-primary)]"></span>
-          <span class="w-4 h-0.5 bg-white/70 transition-all group-hover:bg-[var(--color-primary)] group-hover:w-6 delay-75"></span>
-          <span class="w-6 h-0.5 bg-white/70 transition-all group-hover:bg-[var(--color-primary)] delay-150"></span>
-        </div>
-      </button>
-    </div>
-  </nav>
-
   <!-- Content -->
   <div class="relative z-10 max-w-7xl mx-auto px-6 py-16 flex items-center" style="min-height: calc(100vh - 80px);">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full">
 
       <!-- Left: Bold text content -->
       <div class="lg:col-span-7">
-        <!-- Tag with accent -->
-        <div class="flex items-center gap-3 mb-8 stagger-item" data-animate="fade-right">
-          <div class="w-12 h-1 rounded-full" style="background: var(--color-primary);"></div>
-          <img src="{{LOGO_URL}}" alt="" class="h-10 w-auto object-contain">
-          <span class="text-sm font-bold tracking-[0.25em] uppercase font-body" style="color: var(--color-primary);">{{BUSINESS_NAME}}</span>
-        </div>
-
         <!-- Massive heading with word split -->
         <h1 class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-heading text-white leading-[1.05] mb-8" data-animate="text-split" data-split-type="chars">
           {{HERO_TITLE}}

@@ -222,12 +222,24 @@ export interface RefineResponse {
 
 export async function refineWebsite(data: RefineRequest): Promise<RefineResponse> {
   const headers = getAuthHeaders();
-  const res = await fetch(`${API_BASE}/api/generate/refine`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(data),
-  });
-  return handleResponse<RefineResponse>(res);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120_000); // 2 min timeout
+  try {
+    const res = await fetch(`${API_BASE}/api/generate/refine`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    return handleResponse<RefineResponse>(res);
+  } catch (err: any) {
+    if (err.name === "AbortError") {
+      return { success: false, error: "Timeout: la modifica ha impiegato troppo tempo. Riprova con una richiesta piu' semplice." };
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 // ============ GENERATION STATUS ============

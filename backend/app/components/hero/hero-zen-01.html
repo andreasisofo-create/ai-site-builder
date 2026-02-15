@@ -1,28 +1,12 @@
 <!-- Hero Zen: ultra-minimal Japanese-inspired design with extreme whitespace -->
 <section id="hero" class="min-h-screen relative flex flex-col bg-[var(--color-bg)]">
 
-  <!-- Navigation: barely there -->
-  <nav class="relative z-50 px-8 md:px-16 lg:px-24 py-8">
-    <div class="flex items-center justify-between">
-      <a href="#" class="flex items-center gap-3 opacity-40 hover:opacity-70 transition-opacity" data-animate="fade-down">
-        <img src="{{LOGO_URL}}" alt="" class="h-5 w-auto object-contain">
-        <span class="font-body text-[11px] tracking-[0.4em] uppercase text-[var(--color-text)]">{{BUSINESS_NAME}}</span>
-      </a>
-      <button class="opacity-40 hover:opacity-70 transition-opacity p-2" aria-label="Menu">
-        <div class="flex flex-col gap-[5px]">
-          <span class="w-5 h-px bg-[var(--color-text)]"></span>
-          <span class="w-5 h-px bg-[var(--color-text)]"></span>
-        </div>
-      </button>
-    </div>
-  </nav>
-
   <!-- Content: centered with extreme whitespace -->
   <div class="flex-1 flex items-center justify-center px-8 md:px-16 lg:px-24 py-24 md:py-32 lg:py-40">
     <div class="max-w-3xl mx-auto text-center">
 
       <!-- Single thin line divider -->
-      <div class="w-px h-12 bg-[var(--color-text)] opacity-15 mx-auto mb-16" data-animate="fade-up"></div>
+      <div class="w-px h-12 bg-[var(--color-text)] opacity-15 mx-auto mb-16" data-animate="reveal-down" data-delay="0.1"></div>
 
       <!-- Minimal heading -->
       <h1 class="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-[var(--color-text)] leading-relaxed tracking-wide mb-8" data-animate="text-split" data-split-type="words">
@@ -30,15 +14,15 @@
       </h1>
 
       <!-- Dot divider -->
-      <div class="w-1 h-1 rounded-full bg-[var(--color-text)] opacity-20 mx-auto mb-8" data-animate="fade-up"></div>
+      <div class="w-1 h-1 rounded-full bg-[var(--color-text)] opacity-20 mx-auto mb-8" data-animate="scale-in" data-delay="0.3"></div>
 
       <!-- Delicate subtitle -->
-      <p class="font-body text-sm text-[var(--color-text-muted)] leading-loose tracking-wide max-w-md mx-auto mb-16" data-animate="fade-up">
+      <p class="font-body text-sm text-[var(--color-text-muted)] leading-loose tracking-wide max-w-md mx-auto mb-16" data-animate="blur-slide" data-delay="0.35" data-duration="1.2">
         {{HERO_SUBTITLE}}
       </p>
 
       <!-- Understated CTA -->
-      <div data-animate="fade-up">
+      <div data-animate="blur-in" data-delay="0.5">
         <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-flex items-center gap-3 font-body text-xs tracking-[0.3em] uppercase text-[var(--color-text)] opacity-50 hover:opacity-100 transition-opacity border-b border-[var(--color-text)] border-opacity-20 pb-1 hover:border-opacity-50">
           {{HERO_CTA_TEXT}}
         </a>
@@ -48,7 +32,7 @@
 
   <!-- Image: small, centered, understated -->
   <div class="px-8 md:px-16 lg:px-24 pb-24 md:pb-32">
-    <div class="max-w-lg mx-auto" data-animate="fade-up">
+    <div class="max-w-lg mx-auto" data-animate="clip-reveal" data-delay="0.6">
       <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full aspect-[16/9] object-cover opacity-80" loading="eager">
       <p class="font-body text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-muted)] opacity-40 text-center mt-6">{{HERO_IMAGE_ALT}}</p>
     </div>

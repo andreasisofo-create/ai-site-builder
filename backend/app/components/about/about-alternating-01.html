@@ -8,7 +8,7 @@
   <div class="relative max-w-7xl mx-auto px-6 md:px-12">
     <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
       <!-- Image -->
-      <div class="relative" data-animate="fade-right">
+      <div class="relative" data-animate="reveal-right">
         <!-- Rotated background shape -->
         <div class="absolute -inset-6 rounded-3xl rotate-2 opacity-10" style="background: var(--color-primary)"></div>
         <!-- Glow -->
@@ -20,19 +20,19 @@
       </div>
 
       <!-- Content -->
-      <div class="space-y-6" data-animate="fade-left">
-        <p class="text-sm font-semibold tracking-widest uppercase" style="color: var(--color-primary)" data-animate="fade-up">Chi Siamo</p>
+      <div class="space-y-6" data-animate="blur-slide" data-duration="1.2">
+        <p class="text-sm font-semibold tracking-widest uppercase" style="color: var(--color-primary)" data-animate="blur-in">Chi Siamo</p>
 
         <h2 class="text-3xl sm:text-4xl md:text-5xl font-heading font-bold leading-tight" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">
           {{ABOUT_TITLE}}
         </h2>
 
-        <div class="w-12 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));" data-animate="fade-up" data-delay="0.1"></div>
+        <div class="w-12 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));" data-animate="scale-in" data-delay="0.1"></div>
 
-        <p class="text-lg leading-relaxed" style="color: var(--color-text-muted)" data-animate="fade-up" data-delay="0.2">
+        <p class="text-lg leading-relaxed" style="color: var(--color-text-muted)" data-animate="blur-slide" data-delay="0.2" data-duration="1">
           {{ABOUT_SUBTITLE}}
         </p>
-        <p class="leading-relaxed" style="color: var(--color-text-muted)" data-animate="fade-up" data-delay="0.3">
+        <p class="leading-relaxed" style="color: var(--color-text-muted)" data-animate="reveal-up" data-delay="0.3">
           {{ABOUT_TEXT}}
         </p>
 

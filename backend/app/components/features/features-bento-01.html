@@ -1,0 +1,53 @@
+<!-- Features Bento Premium: asymmetric bento grid with spotlight card, glassmorphism accents, and staggered reveals -->
+<section id="features" class="relative py-24 lg:py-32 bg-[var(--color-bg)] overflow-hidden">
+
+  <!-- Background glow -->
+  <div class="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 70%);"></div>
+  <div class="absolute bottom-0 left-0 w-80 h-80 rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.04) 0%, transparent 70%);"></div>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="max-w-2xl mb-16" data-animate="reveal-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">Features</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] leading-tight" data-animate="text-split" data-split-type="words">{{FEATURES_TITLE}}</h2>
+      <p class="mt-4 text-[var(--color-text-muted)] text-lg font-body leading-relaxed" data-animate="blur-slide" data-delay="0.15">{{FEATURES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Bento Grid: 4-col asymmetric -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(200px,auto)]">
+
+      <!-- REPEAT:FEATURES -->
+      <div class="stagger-item first:lg:col-span-2 first:lg:row-span-2 [&:nth-child(4)]:lg:col-span-2 relative group rounded-2xl border border-[var(--color-text)]/[0.06] p-6 lg:p-8 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl" style="background: linear-gradient(145deg, var(--color-bg-alt) 0%, var(--color-bg) 100%);" data-animate="scale-in">
+
+        <!-- Hover gradient overlay -->
+        <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style="background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.04) 0%, transparent 60%);"></div>
+
+        <!-- Large background icon (decorative) -->
+        <div class="absolute -bottom-4 -right-4 text-[7rem] leading-none opacity-[0.03] pointer-events-none select-none transition-all duration-700 group-hover:opacity-[0.07] group-hover:scale-110">
+          {{FEATURE_ICON}}
+        </div>
+
+        <div class="relative z-10 h-full flex flex-col">
+          <!-- Icon pill -->
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-5 transition-all duration-300 group-hover:shadow-lg group-hover:scale-105" style="background: rgba(var(--color-primary-rgb), 0.1);">
+            {{FEATURE_ICON}}
+          </div>
+
+          <!-- Title -->
+          <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-2 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+            {{FEATURE_TITLE}}
+          </h3>
+
+          <!-- Description -->
+          <p class="text-sm text-[var(--color-text-muted)] leading-relaxed font-body mt-auto">
+            {{FEATURE_DESCRIPTION}}
+          </p>
+
+          <!-- Bottom accent bar -->
+          <div class="mt-5 h-0.5 rounded-full w-0 group-hover:w-full transition-all duration-500" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:FEATURES -->
+    </div>
+  </div>
+</section>

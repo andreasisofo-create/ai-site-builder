@@ -1,0 +1,88 @@
+<!-- Nav: Minimal — Small logo + hamburger on ALL sizes, fullscreen overlay menu -->
+<nav id="site-nav" data-animate="nav-scroll" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(var(--color-bg-rgb, 255,255,255), 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);">
+  <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+    <!-- Small logo -->
+    <a href="#hero" class="flex items-center gap-2 shrink-0 group">
+      <img src="{{LOGO_URL}}" alt="" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
+      <span class="font-heading font-bold text-sm text-[var(--color-text)] tracking-tight">{{BUSINESS_NAME}}</span>
+    </a>
+
+    <!-- Hamburger (always visible) -->
+    <button id="nav-minimal-toggle" class="relative w-10 h-10 flex items-center justify-center rounded-lg hover:bg-[var(--color-bg-alt)] transition-colors z-[60]" aria-label="Menu" aria-expanded="false">
+      <span class="nav-min-line absolute w-5 h-0.5 bg-[var(--color-text)] transition-all duration-300" style="transform: translateY(-5px);"></span>
+      <span class="nav-min-line absolute w-5 h-0.5 bg-[var(--color-text)] transition-all duration-300"></span>
+      <span class="nav-min-line absolute w-5 h-0.5 bg-[var(--color-text)] transition-all duration-300" style="transform: translateY(5px);"></span>
+    </button>
+  </div>
+</nav>
+<!-- Spacer for fixed nav -->
+<div class="h-16"></div>
+
+<!-- Fullscreen overlay menu -->
+<div id="nav-minimal-overlay" class="fixed inset-0 z-[55] pointer-events-none" style="opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;">
+  <div class="absolute inset-0" style="background: rgba(var(--color-bg-rgb, 255,255,255), 0.98);"></div>
+  <div class="relative h-full flex flex-col items-center justify-center gap-6 px-8">
+{{NAV_LINKS_OVERLAY}}
+  </div>
+</div>
+
+<script>
+(function(){
+  var toggle = document.getElementById('nav-minimal-toggle');
+  var overlay = document.getElementById('nav-minimal-overlay');
+  if (!toggle || !overlay) return;
+  var open = false;
+  var lines = toggle.querySelectorAll('.nav-min-line');
+  var links = overlay.querySelectorAll('.nav-overlay-link');
+
+  function setOpen(state) {
+    open = state;
+    toggle.setAttribute('aria-expanded', open);
+    if (open) {
+      overlay.style.opacity = '1';
+      overlay.style.visibility = 'visible';
+      overlay.style.pointerEvents = 'auto';
+      document.body.style.overflow = 'hidden';
+      // Stagger-animate links in
+      links.forEach(function(link, i){
+        link.style.transition = 'opacity 0.35s ease ' + (i * 0.06) + 's, transform 0.35s ease ' + (i * 0.06) + 's';
+        link.style.opacity = '1';
+        link.style.transform = 'translateY(0)';
+      });
+    } else {
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+      document.body.style.overflow = '';
+      links.forEach(function(link){
+        link.style.opacity = '0';
+        link.style.transform = 'translateY(20px)';
+        link.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+      });
+      setTimeout(function(){ if (!open) overlay.style.visibility = 'hidden'; }, 400);
+    }
+    if (lines.length === 3) {
+      lines[0].style.transform = open ? 'rotate(45deg)' : 'translateY(-5px)';
+      lines[1].style.opacity = open ? '0' : '1';
+      lines[2].style.transform = open ? 'rotate(-45deg)' : 'translateY(5px)';
+    }
+  }
+
+  // Initial state for links
+  links.forEach(function(link){
+    link.style.opacity = '0';
+    link.style.transform = 'translateY(20px)';
+  });
+
+  toggle.addEventListener('click', function(){ setOpen(!open); });
+
+  // Close on link click
+  links.forEach(function(link){
+    link.addEventListener('click', function(){ setOpen(false); });
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && open) setOpen(false);
+  });
+})();
+</script>

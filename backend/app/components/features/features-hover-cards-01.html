@@ -2,16 +2,16 @@
 <section id="features" class="py-24 lg:py-32 bg-[var(--color-bg-alt)]">
   <div class="max-w-7xl mx-auto px-6">
     <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16" data-animate="fade-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Features</p>
+    <div class="text-center max-w-3xl mx-auto mb-16" data-animate="reveal-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">Features</p>
       <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{FEATURES_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body">{{FEATURES_SUBTITLE}}</p>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{FEATURES_SUBTITLE}}</p>
     </div>
 
     <!-- Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-animate="stagger">
       <!-- REPEAT:FEATURES -->
-      <div class="stagger-item group relative" data-animate="fade-up">
+      <div class="stagger-item group relative" data-animate="card-hover-3d">
         <div class="relative h-[320px] md:h-[380px] rounded-3xl overflow-hidden cursor-pointer
                     bg-[var(--color-bg)] border border-[var(--color-text)]/5 shadow-sm
                     hover:shadow-2xl hover:border-[var(--color-primary)]/20

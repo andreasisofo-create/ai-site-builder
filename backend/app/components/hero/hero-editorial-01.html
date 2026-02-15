@@ -6,23 +6,6 @@
   <div class="absolute top-0 left-[50%] w-px h-full bg-[var(--color-text)] opacity-[0.06] z-0"></div>
   <div class="absolute top-0 right-[8.33%] w-px h-full bg-[var(--color-text)] opacity-[0.06] z-0"></div>
 
-  <!-- Navigation -->
-  <nav class="relative z-50 px-6 md:px-12 py-6">
-    <div class="flex items-center justify-between">
-      <a href="#" class="flex items-center gap-3 group" data-animate="fade-down">
-        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain">
-        <span class="font-heading text-lg tracking-[0.15em] uppercase text-[var(--color-text)]">{{BUSINESS_NAME}}</span>
-      </a>
-      <div class="flex items-center gap-6">
-        <span class="hidden md:inline text-xs font-body tracking-[0.3em] uppercase text-[var(--color-text-muted)]">Menu</span>
-        <button class="w-10 h-10 flex flex-col items-end justify-center gap-1.5 group" aria-label="Menu">
-          <span class="w-8 h-px bg-[var(--color-text)] transition-all group-hover:w-6"></span>
-          <span class="w-6 h-px bg-[var(--color-text)] transition-all group-hover:w-8"></span>
-        </button>
-      </div>
-    </div>
-  </nav>
-
   <!-- Editorial Content -->
   <div class="relative z-10 px-6 md:px-12 lg:px-16 pb-16">
     <div class="grid grid-cols-12 gap-4 md:gap-6 items-start" style="min-height: calc(100vh - 100px);">
@@ -34,7 +17,7 @@
           <div class="w-8 h-px bg-[var(--color-primary)] mb-4"></div>
           <p class="font-body text-[10px] tracking-[0.4em] uppercase text-[var(--color-primary)] mb-8">{{BUSINESS_NAME}}</p>
         </div>
-        <div class="hidden md:block" data-animate="fade-up">
+        <div class="hidden md:block" data-animate="blur-slide" data-delay="0.2" data-duration="1.2">
           <p class="font-body text-sm leading-relaxed text-[var(--color-text-muted)] max-w-[200px]" style="font-variant: small-caps; letter-spacing: 0.05em;">
             {{HERO_SUBTITLE}}
           </p>
@@ -46,7 +29,7 @@
         <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-normal leading-[0.95] text-[var(--color-text)] tracking-tight" data-animate="text-split" data-split-type="words" style="font-style: italic;">
           {{HERO_TITLE}}
         </h1>
-        <div class="mt-8 flex items-center gap-6" data-animate="fade-up">
+        <div class="mt-8 flex items-center gap-6" data-animate="blur-in" data-delay="0.3">
           <div class="w-16 h-px bg-[var(--color-primary)]"></div>
           <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-flex items-center gap-3 font-body text-xs tracking-[0.3em] uppercase text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors group">
             {{HERO_CTA_TEXT}}

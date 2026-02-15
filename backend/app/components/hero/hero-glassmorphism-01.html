@@ -13,23 +13,6 @@
   <!-- Subtle grid pattern overlay -->
   <div class="absolute inset-0 z-[1] opacity-[0.04]" style="background-image: linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px); background-size: 60px 60px;"></div>
 
-  <!-- Navigation (glass) -->
-  <nav class="relative z-50 px-6 py-5">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <a href="#" class="flex items-center gap-2 text-xl font-bold font-heading text-white drop-shadow-sm" data-animate="fade-down">
-        <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain">
-        {{BUSINESS_NAME}}
-      </a>
-      <button class="p-2.5 rounded-xl backdrop-blur-md bg-white/10 border border-white/20 group hover:bg-white/20 transition-colors" aria-label="Menu">
-        <div class="flex flex-col gap-1.5">
-          <span class="w-6 h-0.5 bg-white transition-transform group-hover:translate-x-0.5"></span>
-          <span class="w-4 h-0.5 bg-white transition-transform group-hover:translate-x-0.5 delay-75"></span>
-          <span class="w-6 h-0.5 bg-white transition-transform group-hover:translate-x-0.5 delay-150"></span>
-        </div>
-      </button>
-    </div>
-  </nav>
-
   <!-- Content -->
   <div class="relative z-10 flex items-center justify-center px-6 py-12" style="min-height: calc(100vh - 80px);">
     <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -44,13 +27,6 @@
           <!-- Decorative corner accents -->
           <div class="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-white/30 rounded-tl-lg"></div>
           <div class="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-white/30 rounded-br-lg"></div>
-
-          <div data-animate="blur-in">
-            <div class="mb-5 flex items-center gap-3 stagger-item">
-              <img src="{{LOGO_URL}}" alt="" class="h-10 w-auto object-contain">
-              <p class="text-sm font-semibold tracking-[0.25em] uppercase text-white/60 font-body">{{BUSINESS_NAME}}</p>
-            </div>
-          </div>
 
           <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-white leading-tight mb-6" data-animate="blur-in">
             {{HERO_TITLE}}

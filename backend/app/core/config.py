@@ -64,11 +64,12 @@ class Settings(BaseSettings):
     KIMI_MODEL: str = "kimi-k2.5"
 
     # OpenRouter (unified gateway — recommended)
-    OPENROUTER_MODEL: str = "qwen/qwen3-coder-next"
+    # Generation: Gemini 2.5 Pro — best quality/price for HTML/CSS, vision, 1M context
+    OPENROUTER_MODEL: str = "google/gemini-2.5-pro"
 
-    # Hybrid strategy: separate model for chat refine (higher quality)
-    # If empty, uses the same model as OPENROUTER_MODEL
-    OPENROUTER_REFINE_MODEL: str = "anthropic/claude-sonnet-4.5"
+    # Hybrid strategy: separate model for chat refine (fast + cheap)
+    # Refine: Gemini 2.5 Flash — 250 tok/s, vision, 1M context, $0.30/$2.50 per 1M
+    OPENROUTER_REFINE_MODEL: str = "google/gemini-2.5-flash"
 
     # GLM-5 direct (Z.ai / Zhipu)
     GLM5_API_KEY: str = ""
