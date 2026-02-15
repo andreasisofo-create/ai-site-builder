@@ -1764,6 +1764,7 @@ Return ONLY the JSON object."""
                 "CONTACT_ADDRESS": address,
                 "CURRENT_YEAR": str(__import__('datetime').datetime.now().year),
                 "WEB3FORMS_KEY": os.getenv("WEB3FORMS_KEY", ""),
+                "PEXELS_API_KEY": os.getenv("PEXELS_API_KEY", ""),
             },
         }
 
