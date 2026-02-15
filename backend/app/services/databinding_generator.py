@@ -1025,9 +1025,28 @@ FINAL CHECKLIST (every point is mandatory):
                 texts = self._extract_json(result["content"])
                 result["parsed"] = texts
             except (json.JSONDecodeError, ValueError) as e:
-                logger.error(f"[DataBinding] Texts JSON parse failed: {e}")
-                result["success"] = False
-                result["error"] = f"Failed to parse texts JSON: {e}"
+                logger.warning(f"[DataBinding] Texts JSON parse failed (attempt 1): {e}")
+                logger.debug(f"[DataBinding] Raw response: {result['content'][:500]}...")
+                # Retry with stricter prompt and lower temperature
+                retry_result = await self.kimi.call(
+                    messages=[{"role": "user", "content": prompt + "\n\nIMPORTANT: Your previous response had invalid JSON. Return ONLY valid JSON. No comments, no trailing commas, no explanation."}],
+                    max_tokens=4000, thinking=False, timeout=120.0,
+                    temperature=0.5,
+                )
+                if retry_result.get("success"):
+                    try:
+                        texts = self._extract_json(retry_result["content"])
+                        result["parsed"] = texts
+                        result["tokens_input"] = result.get("tokens_input", 0) + retry_result.get("tokens_input", 0)
+                        result["tokens_output"] = result.get("tokens_output", 0) + retry_result.get("tokens_output", 0)
+                        logger.info("[DataBinding] Texts JSON parse succeeded on retry")
+                    except (json.JSONDecodeError, ValueError) as e2:
+                        logger.error(f"[DataBinding] Texts JSON parse failed (attempt 2): {e2}")
+                        result["success"] = False
+                        result["error"] = f"Failed to parse texts JSON after retry: {e2}"
+                else:
+                    result["success"] = False
+                    result["error"] = f"Failed to parse texts JSON: {e}"
 
         return result
 
@@ -1278,11 +1297,10 @@ Return ONLY the JSON object."""
         theme = theme_result.get("parsed", self._fallback_theme(style_preferences))
 
         if not texts_result.get("success") or not texts_result.get("parsed"):
-            return {
-                "success": False,
-                "error": texts_result.get("error", "Impossibile generare i testi del sito"),
-            }
-        texts = texts_result["parsed"]
+            logger.warning(f"[DataBinding] AI texts failed, using fallback: {texts_result.get('error', 'unknown')}")
+            texts = self._fallback_texts(business_name, sections)
+        else:
+            texts = texts_result["parsed"]
 
         # Accumulate tokens
         for r in [theme_result, texts_result]:
@@ -2679,18 +2697,142 @@ Return ONLY the JSON object."""
         return texts
 
     def _extract_json(self, content: str) -> dict:
-        """Extracts JSON from Kimi response (handles markdown code blocks)."""
+        """Extracts JSON from AI response with repair for common LLM errors."""
         # Try JSON in code block
         json_match = re.search(r'```(?:json)?\s*\n?(.*?)\n?\s*```', content, re.DOTALL)
-        if json_match:
-            return json.loads(json_match.group(1).strip())
-        # Try raw JSON (find first { to last })
-        content = content.strip()
-        start = content.find('{')
-        end = content.rfind('}')
-        if start != -1 and end != -1 and end > start:
-            return json.loads(content[start:end + 1])
-        raise ValueError(f"No JSON found in response: {content[:200]}...")
+        raw_json = json_match.group(1).strip() if json_match else None
+
+        if not raw_json:
+            # Try raw JSON (find first { to last })
+            stripped = content.strip()
+            start = stripped.find('{')
+            end = stripped.rfind('}')
+            if start != -1 and end != -1 and end > start:
+                raw_json = stripped[start:end + 1]
+
+        if not raw_json:
+            raise ValueError(f"No JSON found in response: {content[:200]}...")
+
+        # Try parsing as-is first
+        try:
+            return json.loads(raw_json)
+        except json.JSONDecodeError:
+            pass
+
+        # Repair common LLM JSON errors and retry
+        repaired = self._repair_json(raw_json)
+        return json.loads(repaired)
+
+    def _repair_json(self, raw: str) -> str:
+        """Repair common JSON errors from LLM output."""
+        s = raw
+        # Remove trailing commas before } or ]
+        s = re.sub(r',\s*([}\]])', r'\1', s)
+        # Fix missing commas between "value"\n"key" patterns (missing comma between properties)
+        s = re.sub(r'(")\s*\n(\s*")', r'\1,\n\2', s)
+        # But the above may add double commas where one already existed — fix that
+        s = re.sub(r',\s*,', ',', s)
+        # Remove control characters (except \n \r \t)
+        s = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', s)
+        # Fix single quotes used instead of double quotes for keys
+        # Only do this if the JSON has no double-quoted keys (heuristic)
+        if s.count("'") > s.count('"'):
+            s = s.replace("'", '"')
+        # Remove JavaScript-style comments (// and /* */)
+        s = re.sub(r'//[^\n]*', '', s)
+        s = re.sub(r'/\*.*?\*/', '', s, flags=re.DOTALL)
+        # Fix truncated JSON: ensure balanced braces/brackets
+        open_braces = s.count('{') - s.count('}')
+        open_brackets = s.count('[') - s.count(']')
+        if open_braces > 0 or open_brackets > 0:
+            # Truncated response — close open structures
+            s = s.rstrip().rstrip(',')
+            s += ']' * max(0, open_brackets)
+            s += '}' * max(0, open_braces)
+        return s
+
+    def _fallback_texts(self, business_name: str, sections: List[str]) -> dict:
+        """Generate minimal fallback texts when AI text generation fails twice."""
+        texts = {
+            "meta": {
+                "title": business_name,
+                "description": f"{business_name} - Sito ufficiale",
+                "og_title": business_name,
+                "og_description": f"{business_name} - Sito ufficiale",
+            }
+        }
+        if "hero" in sections:
+            texts["hero"] = {
+                "HERO_TITLE": business_name,
+                "HERO_SUBTITLE": f"Scopri {business_name} e tutto quello che possiamo offrirti.",
+                "HERO_CTA_TEXT": "Scopri di più",
+                "HERO_CTA_URL": "#contact",
+                "HERO_IMAGE_URL": f"https://placehold.co/800x600/3b82f6/white?text={business_name}",
+                "HERO_IMAGE_ALT": business_name,
+            }
+        if "about" in sections:
+            texts["about"] = {
+                "ABOUT_TITLE": "Chi Siamo",
+                "ABOUT_SUBTITLE": f"La storia di {business_name}",
+                "ABOUT_TEXT": f"{business_name} nasce dalla passione e dalla dedizione. Ogni giorno lavoriamo per offrire il meglio ai nostri clienti.",
+                "ABOUT_HIGHLIGHT_1": "Esperienza consolidata",
+                "ABOUT_HIGHLIGHT_2": "Clienti soddisfatti",
+                "ABOUT_HIGHLIGHT_3": "Qualità garantita",
+                "ABOUT_HIGHLIGHT_NUM_1": "15",
+                "ABOUT_HIGHLIGHT_NUM_2": "500",
+                "ABOUT_HIGHLIGHT_NUM_3": "98",
+            }
+        if "services" in sections:
+            texts["services"] = {
+                "SERVICES_TITLE": "I Nostri Servizi",
+                "SERVICES_SUBTITLE": f"Cosa offre {business_name}",
+                "SERVICES": [
+                    {"SERVICE_ICON": "⚡", "SERVICE_TITLE": "Servizio Premium", "SERVICE_DESCRIPTION": "Un servizio dedicato pensato per rispondere alle esigenze più specifiche dei nostri clienti."},
+                    {"SERVICE_ICON": "🎯", "SERVICE_TITLE": "Consulenza Dedicata", "SERVICE_DESCRIPTION": "Supporto personalizzato per guidarti nella scelta migliore per il tuo progetto."},
+                    {"SERVICE_ICON": "🚀", "SERVICE_TITLE": "Soluzioni Rapide", "SERVICE_DESCRIPTION": "Risposte veloci e concrete per ogni tipo di necessità, senza compromessi sulla qualità."},
+                ],
+            }
+        if "contact" in sections:
+            texts["contact"] = {
+                "CONTACT_TITLE": "Contatti",
+                "CONTACT_SUBTITLE": "Parliamo del tuo progetto",
+                "CONTACT_ADDRESS": "",
+                "CONTACT_PHONE": "",
+                "CONTACT_EMAIL": "",
+            }
+        if "footer" in sections:
+            texts["footer"] = {
+                "FOOTER_DESCRIPTION": f"{business_name} — Tutti i diritti riservati.",
+            }
+        if "cta" in sections:
+            texts["cta"] = {
+                "CTA_TITLE": "Pronto a iniziare?",
+                "CTA_SUBTITLE": "Contattaci oggi stesso per scoprire come possiamo aiutarti.",
+                "CTA_BUTTON_TEXT": "Inizia Ora",
+                "CTA_BUTTON_URL": "#contact",
+            }
+        if "features" in sections:
+            texts["features"] = {
+                "FEATURES_TITLE": "Perché Sceglierci",
+                "FEATURES_SUBTITLE": f"I punti di forza di {business_name}",
+                "FEATURES": [
+                    {"FEATURE_ICON": "💡", "FEATURE_TITLE": "Innovazione", "FEATURE_DESCRIPTION": "Soluzioni all'avanguardia per restare sempre un passo avanti nel mercato."},
+                    {"FEATURE_ICON": "🤝", "FEATURE_TITLE": "Affidabilità", "FEATURE_DESCRIPTION": "Un partner su cui contare, sempre disponibile e pronto a supportarti."},
+                    {"FEATURE_ICON": "📈", "FEATURE_TITLE": "Crescita", "FEATURE_DESCRIPTION": "Strategie pensate per far crescere il tuo business in modo sostenibile."},
+                    {"FEATURE_ICON": "🔒", "FEATURE_TITLE": "Sicurezza", "FEATURE_DESCRIPTION": "La massima attenzione alla protezione dei tuoi dati e della tua privacy."},
+                ],
+            }
+        if "testimonials" in sections:
+            texts["testimonials"] = {
+                "TESTIMONIALS_TITLE": "Cosa Dicono di Noi",
+                "TESTIMONIALS": [
+                    {"TESTIMONIAL_TEXT": "Un'esperienza fantastica, hanno superato ogni aspettativa con professionalità e creatività.", "TESTIMONIAL_AUTHOR": "Marco Rossi", "TESTIMONIAL_ROLE": "Imprenditore", "TESTIMONIAL_INITIAL": "M"},
+                    {"TESTIMONIAL_TEXT": "Collaborare con loro è stato semplice e produttivo. Risultati visibili fin da subito.", "TESTIMONIAL_AUTHOR": "Laura Bianchi", "TESTIMONIAL_ROLE": "Designer", "TESTIMONIAL_INITIAL": "L"},
+                    {"TESTIMONIAL_TEXT": "Finalmente un team che ascolta davvero le esigenze del cliente e le trasforma in realtà.", "TESTIMONIAL_AUTHOR": "Giuseppe Verdi", "TESTIMONIAL_ROLE": "Manager", "TESTIMONIAL_INITIAL": "G"},
+                ],
+            }
+        logger.warning(f"[DataBinding] Using fallback texts for {business_name} (sections: {sections})")
+        return texts
 
     def _fallback_theme(self, style_preferences=None) -> Dict[str, str]:
         """Default theme if Kimi theme generation fails. Randomly picks from diverse palette pool."""

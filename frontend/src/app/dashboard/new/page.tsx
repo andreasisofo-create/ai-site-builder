@@ -24,7 +24,7 @@ import {
 } from "@heroicons/react/24/outline";
 import GenerationExperience, { type PreviewData } from "@/components/GenerationExperience";
 import toast from "react-hot-toast";
-import { createSite, generateWebsite, updateSite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus } from "@/lib/api";
+import { createSite, generateWebsite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus } from "@/lib/api";
 import {
   TEMPLATE_CATEGORIES, TemplateCategory, TemplateStyle,
   SECTION_LABELS, STYLE_OPTIONS, CTA_OPTIONS, ALL_SECTIONS, STYLE_TO_MOOD,
@@ -59,6 +59,7 @@ function NewProjectContent() {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const refImageInput1 = useRef<HTMLInputElement>(null);
   const refImageInput2 = useRef<HTMLInputElement>(null);
+  const generationRef = useRef<HTMLDivElement>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -243,6 +244,11 @@ function NewProjectContent() {
     setPreviewData(null);
     setGenerationProgress({ step: 0, totalSteps: 3, message: language === "en" ? "Preparing..." : "Preparazione...", percentage: 0 });
 
+    // Scroll the generation UI into view so the user sees progress immediately
+    setTimeout(() => {
+      generationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+
     try {
       const quota = await getQuota();
       if (!quota.has_remaining_generations) {
@@ -344,16 +350,9 @@ function NewProjectContent() {
 
       if (!generateResult.success) throw new Error(generateResult.error || (language === "en" ? "Error starting generation" : "Errore nell'avvio della generazione"));
 
-      await updateSite(site.id, {
-        thumbnail: `https://placehold.co/600x400/1a1a1a/666?text=${encodeURIComponent(formData.businessName)}`,
-      });
-
-      toast.success(language === "en" ? "Generation started! Please wait..." : "Generazione avviata! Attendere...");
-
-      // Re-enable the button before navigating so it's not stuck disabled if user navigates back
-      setIsGenerating(false);
-
-      // Navigate to the immersive generation experience page
+      // Navigate immediately to the immersive generation experience page.
+      // generateWebsite() returns fast (generation runs in background on backend).
+      // The /generate page handles progress polling, so no need to wait here.
       router.push(`/generate/${site.id}`);
     } catch (error: any) {
       stopProgressPolling();
@@ -992,7 +991,7 @@ function NewProjectContent() {
                   </div>
 
                   {isGenerating ? (
-                    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                    <div ref={generationRef} className="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
                       <GenerationExperience
                         step={generationProgress.step}
                         totalSteps={generationProgress.totalSteps}
