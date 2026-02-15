@@ -466,6 +466,56 @@ export async function chatMessage(
   return res.json();
 }
 
+// ============ MEDIA ============
+
+export interface SiteImage {
+  src: string;
+  alt: string;
+  section: string;
+  index: number;
+}
+
+export async function uploadMedia(siteId: number, file: File): Promise<{ url: string; filename: string }> {
+  const token = getToken();
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("site_id", String(siteId));
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(`${API_BASE}/api/media/upload`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+  return handleResponse<{ url: string; filename: string }>(res);
+}
+
+export async function getSiteImages(siteId: number): Promise<{ images: SiteImage[] }> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/media/sites/${siteId}/images`, { headers });
+  return handleResponse<{ images: SiteImage[] }>(res);
+}
+
+export async function replaceImage(siteId: number, oldSrc: string, newSrc: string): Promise<{ html_content: string; message: string }> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/media/sites/${siteId}/replace-image`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ old_src: oldSrc, new_src: newSrc }),
+  });
+  return handleResponse<{ html_content: string; message: string }>(res);
+}
+
+export async function addVideo(siteId: number, videoUrl: string, afterSection: string): Promise<{ html_content: string; message: string }> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/media/sites/${siteId}/add-video`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ video_url: videoUrl, after_section: afterSection }),
+  });
+  return handleResponse<{ html_content: string; message: string }>(res);
+}
+
 // ============ UTILS ============
 
 /** Genera uno slug univoco dal nome */

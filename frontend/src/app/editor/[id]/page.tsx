@@ -22,7 +22,10 @@ import {
   QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import { getSite, updateSite, refineWebsite, deploySite, regenerateImages, Site } from "@/lib/api";
+import {
+  getSite, updateSite, refineWebsite, deploySite, regenerateImages, Site,
+  uploadMedia, getSiteImages, replaceImage, addVideo, SiteImage,
+} from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/i18n";
 import EquipePromo from "@/components/EquipePromo";
@@ -148,6 +151,20 @@ export default function Editor() {
   // Guide panel state
   const [showGuidePanel, setShowGuidePanel] = useState(false);
 
+  // Media panel state
+  const [showMediaPanel, setShowMediaPanel] = useState(false);
+  const [siteImages, setSiteImages] = useState<SiteImage[]>([]);
+  const [loadingImages, setLoadingImages] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+  const [replacingImage, setReplacingImage] = useState<string | null>(null);
+  const [mediaVideoUrl, setMediaVideoUrl] = useState("");
+  const [mediaVideoError, setMediaVideoError] = useState("");
+  const [mediaVideoSection, setMediaVideoSection] = useState("hero");
+  const [addingVideo, setAddingVideo] = useState(false);
+  const mediaFileInputRef = useRef<HTMLInputElement>(null);
+  const replaceFileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (siteId) {
       loadSite();
@@ -192,6 +209,108 @@ export default function Editor() {
     setTimeout(() => {
       textareaRef.current?.focus();
     }, 100);
+  };
+
+  // Media panel handlers
+  const loadSiteImages = async () => {
+    if (!site) return;
+    setLoadingImages(true);
+    try {
+      const result = await getSiteImages(site.id);
+      setSiteImages(result.images || []);
+    } catch {
+      toast.error(language === "en" ? "Error loading images" : "Errore caricamento immagini");
+    } finally {
+      setLoadingImages(false);
+    }
+  };
+
+  const openMediaPanel = () => {
+    setShowMediaPanel(true);
+    setShowGuidePanel(false);
+    setChatOpen(false);
+    loadSiteImages();
+  };
+
+  const handleMediaUpload = async (file: File) => {
+    if (!site) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(language === "en" ? "File too large (max 10MB)" : "File troppo grande (max 10MB)");
+      return;
+    }
+    setUploadingFile(true);
+    try {
+      const result = await uploadMedia(site.id, file);
+      setUploadedUrls((prev) => [...prev, result.url]);
+      toast.success(language === "en" ? "Image uploaded" : "Immagine caricata");
+    } catch (err: any) {
+      toast.error(err.message || (language === "en" ? "Upload error" : "Errore caricamento"));
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
+  const handleReplaceImage = async (oldSrc: string, file: File) => {
+    if (!site) return;
+    setReplacingImage(oldSrc);
+    try {
+      const uploaded = await uploadMedia(site.id, file);
+      if (liveHtml) {
+        setHtmlHistory((prev) => [...prev, liveHtml]);
+      }
+      const result = await replaceImage(site.id, oldSrc, uploaded.url);
+      setLiveHtml(result.html_content);
+      setSite((prev) => prev ? { ...prev, html_content: result.html_content } : prev);
+      toast.success(language === "en" ? "Image replaced" : "Immagine sostituita");
+      loadSiteImages();
+    } catch (err: any) {
+      toast.error(err.message || (language === "en" ? "Replace error" : "Errore sostituzione"));
+    } finally {
+      setReplacingImage(null);
+    }
+  };
+
+  const handleUseUploadedImage = async (uploadedUrl: string, targetImage: SiteImage) => {
+    if (!site) return;
+    setReplacingImage(targetImage.src);
+    try {
+      if (liveHtml) {
+        setHtmlHistory((prev) => [...prev, liveHtml]);
+      }
+      const result = await replaceImage(site.id, targetImage.src, uploadedUrl);
+      setLiveHtml(result.html_content);
+      setSite((prev) => prev ? { ...prev, html_content: result.html_content } : prev);
+      toast.success(language === "en" ? "Image replaced" : "Immagine sostituita");
+      loadSiteImages();
+    } catch (err: any) {
+      toast.error(err.message || (language === "en" ? "Replace error" : "Errore sostituzione"));
+    } finally {
+      setReplacingImage(null);
+    }
+  };
+
+  const handleAddVideo = async () => {
+    if (!site || !mediaVideoUrl.trim()) return;
+    if (!validateVideoUrl(mediaVideoUrl.trim())) {
+      setMediaVideoError(language === "en" ? "Invalid URL. Use a YouTube or Vimeo link." : "URL non valido. Usa un link YouTube o Vimeo.");
+      return;
+    }
+    setAddingVideo(true);
+    try {
+      if (liveHtml) {
+        setHtmlHistory((prev) => [...prev, liveHtml]);
+      }
+      const result = await addVideo(site.id, mediaVideoUrl.trim(), mediaVideoSection);
+      setLiveHtml(result.html_content);
+      setSite((prev) => prev ? { ...prev, html_content: result.html_content } : prev);
+      setMediaVideoUrl("");
+      setMediaVideoError("");
+      toast.success(language === "en" ? "Video added" : "Video aggiunto");
+    } catch (err: any) {
+      toast.error(err.message || (language === "en" ? "Error adding video" : "Errore aggiunta video"));
+    } finally {
+      setAddingVideo(false);
+    }
   };
 
   const loadSite = async () => {
@@ -561,16 +680,31 @@ export default function Editor() {
               <QuestionMarkCircleIcon className="w-5 h-5" />
             </button>
 
+            {/* Media Toggle */}
+            <button
+              onClick={openMediaPanel}
+              className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                showMediaPanel
+                  ? "bg-emerald-600 text-white"
+                  : "text-slate-300 hover:text-white hover:bg-white/5"
+              }`}
+              title="Media"
+            >
+              <PhotoIcon className="w-4 h-4" />
+              <span className="hidden md:inline">Media</span>
+            </button>
+
             {/* Chat Toggle */}
             <button
               onClick={() => {
                 if (showGuidePanel) {
                   setShowGuidePanel(false);
                 }
+                setShowMediaPanel(false);
                 setChatOpen(!chatOpen);
               }}
               className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                chatOpen && !showGuidePanel
+                chatOpen && !showGuidePanel && !showMediaPanel
                   ? "bg-blue-600 text-white"
                   : "text-slate-300 hover:text-white hover:bg-white/5"
               }`}
@@ -694,10 +828,252 @@ export default function Editor() {
           )}
         </div>
 
-        {/* Right Sidebar: Guide Panel or Chat Panel */}
-        {(chatOpen || showGuidePanel) && (
+        {/* Right Sidebar: Guide Panel, Chat Panel, or Media Panel */}
+        {(chatOpen || showGuidePanel || showMediaPanel) && (
           <aside className="w-full sm:w-[380px] fixed sm:relative inset-0 sm:inset-auto z-50 sm:z-auto bg-[#0d0d12] border-l border-white/10 flex flex-col flex-shrink-0">
-            {showGuidePanel ? (
+            {showMediaPanel ? (
+              <>
+                {/* Media Panel Header */}
+                <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <PhotoIcon className="w-5 h-5 text-emerald-400" />
+                    <h3 className="font-semibold">Media</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowMediaPanel(false)}
+                    className="p-1 hover:bg-white/5 rounded-lg transition-colors"
+                  >
+                    <XMarkIcon className="w-5 h-5 text-slate-400" />
+                  </button>
+                </div>
+
+                {/* Media Panel Content */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-6">
+
+                  {/* Section A: Site Images */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-white/90 mb-3 flex items-center gap-2">
+                      <PhotoIcon className="w-4 h-4 text-emerald-400" />
+                      {language === "en" ? "Site Images" : "Immagini del sito"}
+                    </h4>
+                    {loadingImages ? (
+                      <div className="flex items-center justify-center py-8">
+                        <ArrowPathIcon className="w-5 h-5 animate-spin text-slate-400" />
+                      </div>
+                    ) : siteImages.length === 0 ? (
+                      <p className="text-xs text-slate-500 text-center py-4">
+                        {language === "en" ? "No images found in the site" : "Nessuna immagine trovata nel sito"}
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {/* Group by section */}
+                        {Object.entries(
+                          siteImages.reduce<Record<string, SiteImage[]>>((acc, img) => {
+                            const key = img.section || "other";
+                            if (!acc[key]) acc[key] = [];
+                            acc[key].push(img);
+                            return acc;
+                          }, {})
+                        ).map(([section, images]) => (
+                          <div key={section}>
+                            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1.5">{section}</p>
+                            <div className="grid grid-cols-2 gap-2">
+                              {images.map((img, idx) => (
+                                <div
+                                  key={`${section}-${idx}`}
+                                  className="group relative bg-white/5 rounded-lg overflow-hidden border border-white/10 hover:border-white/20 transition-colors"
+                                >
+                                  <img
+                                    src={img.src}
+                                    alt={img.alt || section}
+                                    className="w-full h-20 object-cover"
+                                    onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='80' fill='%23333'%3E%3Crect width='100' height='80'/%3E%3Ctext x='50%25' y='50%25' fill='%23666' text-anchor='middle' dy='.3em' font-size='10'%3EImg%3C/text%3E%3C/svg%3E"; }}
+                                  />
+                                  <div className="p-1.5">
+                                    <p className="text-[10px] text-slate-400 truncate">{img.alt || `${section} #${img.index + 1}`}</p>
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      setReplacingImage(img.src);
+                                      replaceFileInputRef.current?.click();
+                                    }}
+                                    disabled={replacingImage === img.src}
+                                    className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    {replacingImage === img.src ? (
+                                      <ArrowPathIcon className="w-5 h-5 text-white animate-spin" />
+                                    ) : (
+                                      <span className="text-xs font-medium text-white bg-emerald-600 px-3 py-1.5 rounded-lg">
+                                        {language === "en" ? "Replace" : "Sostituisci"}
+                                      </span>
+                                    )}
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {/* Hidden file input for replacing images */}
+                    <input
+                      ref={replaceFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file && replacingImage) {
+                          handleReplaceImage(replacingImage, file);
+                        }
+                        e.target.value = "";
+                      }}
+                    />
+                  </div>
+
+                  {/* Section B: Upload New Photos */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-white/90 mb-3 flex items-center gap-2">
+                      <ArrowPathIcon className="w-4 h-4 text-emerald-400" />
+                      {language === "en" ? "Upload Photos" : "Carica foto"}
+                    </h4>
+                    <input
+                      ref={mediaFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleMediaUpload(file);
+                        e.target.value = "";
+                      }}
+                    />
+                    <button
+                      onClick={() => mediaFileInputRef.current?.click()}
+                      disabled={uploadingFile}
+                      className="w-full py-6 border-2 border-dashed border-white/10 hover:border-emerald-500/40 rounded-xl text-sm text-slate-400 hover:text-emerald-400 transition-colors disabled:opacity-50 flex flex-col items-center gap-2"
+                    >
+                      {uploadingFile ? (
+                        <>
+                          <ArrowPathIcon className="w-6 h-6 animate-spin" />
+                          <span>{language === "en" ? "Uploading..." : "Caricamento..."}</span>
+                        </>
+                      ) : (
+                        <>
+                          <PhotoIcon className="w-6 h-6" />
+                          <span>{language === "en" ? "Click to upload an image" : "Clicca per caricare un'immagine"}</span>
+                          <span className="text-[10px] text-slate-500">Max 10MB - JPG, PNG, WebP</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* Uploaded Images Gallery */}
+                    {uploadedUrls.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-xs text-slate-500 mb-2">
+                          {language === "en" ? "Uploaded images" : "Immagini caricate"} ({uploadedUrls.length})
+                        </p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {uploadedUrls.map((url, idx) => (
+                            <div key={idx} className="relative group">
+                              <img
+                                src={url}
+                                alt={`Upload ${idx + 1}`}
+                                className="w-full h-16 object-cover rounded-lg border border-white/10"
+                              />
+                              {/* Show "Use in..." on hover if there are site images to replace */}
+                              {siteImages.length > 0 && (
+                                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                  <select
+                                    className="bg-[#111] text-xs text-white border border-white/20 rounded px-1.5 py-1 cursor-pointer max-w-[90%]"
+                                    defaultValue=""
+                                    onChange={(e) => {
+                                      const targetIdx = parseInt(e.target.value);
+                                      if (!isNaN(targetIdx) && siteImages[targetIdx]) {
+                                        handleUseUploadedImage(url, siteImages[targetIdx]);
+                                      }
+                                      e.target.value = "";
+                                    }}
+                                  >
+                                    <option value="" disabled>{language === "en" ? "Use in..." : "Usa in..."}</option>
+                                    {siteImages.map((img, sIdx) => (
+                                      <option key={sIdx} value={sIdx}>
+                                        {img.section} #{img.index + 1}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Section C: Add Video */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-white/90 mb-3 flex items-center gap-2">
+                      <VideoCameraIcon className="w-4 h-4 text-emerald-400" />
+                      {language === "en" ? "Add Video" : "Aggiungi video"}
+                    </h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs text-slate-400 mb-1 block">
+                          {language === "en" ? "YouTube or Vimeo URL" : "URL YouTube o Vimeo"}
+                        </label>
+                        <input
+                          type="text"
+                          value={mediaVideoUrl}
+                          onChange={(e) => { setMediaVideoUrl(e.target.value); setMediaVideoError(""); }}
+                          placeholder="https://youtube.com/watch?v=..."
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                        />
+                        {mediaVideoError && (
+                          <p className="text-xs text-red-400 mt-1">{mediaVideoError}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="text-xs text-slate-400 mb-1 block">
+                          {language === "en" ? "Insert after section" : "Inserisci dopo sezione"}
+                        </label>
+                        <select
+                          value={mediaVideoSection}
+                          onChange={(e) => setMediaVideoSection(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                        >
+                          <option value="hero">Hero</option>
+                          <option value="about">About</option>
+                          <option value="services">{language === "en" ? "Services" : "Servizi"}</option>
+                          <option value="gallery">Gallery</option>
+                          <option value="portfolio">Portfolio</option>
+                          <option value="testimonials">Testimonials</option>
+                          <option value="contact">{language === "en" ? "Contact" : "Contatti"}</option>
+                        </select>
+                      </div>
+                      <button
+                        onClick={handleAddVideo}
+                        disabled={!mediaVideoUrl.trim() || addingVideo}
+                        className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                      >
+                        {addingVideo ? (
+                          <>
+                            <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                            {language === "en" ? "Adding..." : "Aggiunta..."}
+                          </>
+                        ) : (
+                          <>
+                            <VideoCameraIcon className="w-4 h-4" />
+                            {language === "en" ? "Add Video" : "Aggiungi video"}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            ) : showGuidePanel ? (
               <>
                 {/* Guide Panel Header */}
                 <div className="p-4 border-b border-white/10 flex items-center justify-between">

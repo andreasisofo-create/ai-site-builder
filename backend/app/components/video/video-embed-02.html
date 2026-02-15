@@ -1,0 +1,43 @@
+<!-- Video Embed Light: clean light section with accent line and soft shadow -->
+<section id="video" class="py-24 md:py-32 relative overflow-hidden" style="background: var(--color-bg);">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-3xl opacity-[0.04]" style="background: var(--color-primary)"></div>
+  </div>
+
+  <div class="relative max-w-5xl mx-auto px-6 md:px-12">
+    <!-- Header with accent line -->
+    <div class="text-center mb-14" data-animate="fade-up">
+      <!-- Gradient accent line -->
+      <div class="w-16 h-1 rounded-full mx-auto mb-6" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));"></div>
+      <p class="text-sm font-semibold tracking-widest uppercase mb-4" style="color: var(--color-primary)">Video</p>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold leading-tight" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">{{VIDEO_TITLE}}</h2>
+      <p class="mt-4 text-lg max-w-2xl mx-auto" style="color: var(--color-text-muted)">{{VIDEO_SUBTITLE}}</p>
+    </div>
+
+    <!-- Video container -->
+    <div class="relative" data-animate="scale-in">
+      <!-- Decorative offset frame -->
+      <div class="absolute -top-2 -right-2 w-full h-full rounded-2xl opacity-[0.1]" style="border: 2px solid var(--color-primary)"></div>
+
+      <!-- Main iframe wrapper -->
+      <div class="relative rounded-2xl overflow-hidden shadow-xl" style="background: var(--color-bg); border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);">
+        <!-- 16:9 responsive iframe -->
+        <div class="aspect-video">
+          <iframe
+            src="{{VIDEO_EMBED_URL}}"
+            class="w-full h-full"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy"
+            title="{{VIDEO_TITLE}}"
+          ></iframe>
+        </div>
+      </div>
+
+      <!-- Bottom accent dot -->
+      <div class="absolute -bottom-3 left-8 w-6 h-6 rounded-full shadow-lg" style="background: var(--color-accent, var(--color-primary));" data-animate="float" data-speed="0.5"></div>
+    </div>
+  </div>
+</section>

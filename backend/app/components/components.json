@@ -715,6 +715,28 @@
         }
       ]
     },
+    "video": {
+      "label": "Video",
+      "required": false,
+      "variants": [
+        {
+          "id": "video-embed-01",
+          "file": "video/video-embed-01.html",
+          "name": "Video Embed Dark",
+          "description": "Sezione video cinematica scura con iframe glowing, barra decorativa e sfondo dot-grid",
+          "placeholders": ["VIDEO_TITLE", "VIDEO_SUBTITLE", "VIDEO_EMBED_URL"],
+          "tags": ["modern", "bold", "tech"]
+        },
+        {
+          "id": "video-embed-02",
+          "file": "video/video-embed-02.html",
+          "name": "Video Embed Light",
+          "description": "Sezione video chiara con linea accent, cornice offset decorativa e ombra morbida",
+          "placeholders": ["VIDEO_TITLE", "VIDEO_SUBTITLE", "VIDEO_EMBED_URL"],
+          "tags": ["elegant", "classic", "corporate"]
+        }
+      ]
+    },
     "footer": {
       "label": "Footer",
       "required": true,

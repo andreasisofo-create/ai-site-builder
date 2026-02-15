@@ -4,6 +4,7 @@ API per la gestione dei siti web, componenti e deploy
 """
 
 import logging
+import os
 import sys
 import traceback
 from contextlib import asynccontextmanager
@@ -267,6 +268,14 @@ except Exception as e:
     logger.error(traceback.format_exc())
 
 try:
+    from app.api.routes import media
+    app.include_router(media.router, prefix="/api/media", tags=["media"])
+    logger.info("Route media registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route media: {e}")
+    logger.error(traceback.format_exc())
+
+try:
     from app.api.routes.chat import router as chat_router
     app.include_router(chat_router)
     logger.info("Route chat registrate")
@@ -284,6 +293,16 @@ except Exception as e:
     logger.error(f"Errore registrazione test routes: {e}")
 
 logger.info("Routes registrate")
+
+# ===== STATIC FILE SERVING (uploads) =====
+try:
+    from fastapi.staticfiles import StaticFiles
+    _uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+    os.makedirs(_uploads_dir, exist_ok=True)
+    app.mount("/static/uploads", StaticFiles(directory=_uploads_dir), name="uploads")
+    logger.info(f"Static uploads mounted at /static/uploads -> {_uploads_dir}")
+except Exception as e:
+    logger.error(f"Errore mount static uploads: {e}")
 
 # ===== ENDPOINTS BASE (senza prefisso /api) =====
 @app.get("/")
