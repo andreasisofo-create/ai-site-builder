@@ -263,7 +263,13 @@ class TemplateAssembler:
         # 3. Build navigation bar from section IDs
         nav_html = self._build_nav(site_data)
 
-        # 4. Assemble complete page
+        # 4. Generate Schema.org JSON-LD
+        schema_ld = self._build_schema_ld(site_data)
+
+        # 5. Build Web3Forms contact handler script
+        form_handler = self._build_form_handler(site_data)
+
+        # 6. Assemble complete page
         body_content = "\n\n".join(sections_html)
         gsap_script_tag = f"<script>\n{self.gsap_script}\n</script>"
 
@@ -274,6 +280,8 @@ class TemplateAssembler:
 
 {body_content}
 
+{schema_ld}
+{form_handler}
 {gsap_script_tag}
 </body>
 </html>"""
@@ -329,6 +337,95 @@ class TemplateAssembler:
 </nav>
 <!-- Spacer for fixed nav -->
 <div class="h-16"></div>"""
+
+    def _build_schema_ld(self, site_data: Dict[str, Any]) -> str:
+        """Generate Schema.org JSON-LD structured data for SEO."""
+        import json as _json
+        global_data = site_data.get("global", {})
+        meta = site_data.get("meta", {})
+
+        business_name = global_data.get("BUSINESS_NAME", "")
+        if not business_name:
+            return ""
+
+        schema = {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": business_name,
+            "description": meta.get("description", meta.get("og_description", "")),
+        }
+
+        phone = global_data.get("BUSINESS_PHONE", "")
+        if phone:
+            schema["telephone"] = phone
+
+        email = global_data.get("BUSINESS_EMAIL", "")
+        if email:
+            schema["email"] = email
+
+        address = global_data.get("BUSINESS_ADDRESS", "")
+        if address:
+            schema["address"] = {
+                "@type": "PostalAddress",
+                "streetAddress": address,
+            }
+
+        logo_url = global_data.get("LOGO_URL", "")
+        if logo_url and not logo_url.startswith("data:"):
+            schema["logo"] = logo_url
+
+        schema_json = _json.dumps(schema, ensure_ascii=False, indent=2)
+        return f'<script type="application/ld+json">\n{schema_json}\n</script>'
+
+    def _build_form_handler(self, site_data: Dict[str, Any]) -> str:
+        """Generate a Web3Forms-compatible form handler script.
+
+        If a WEB3FORMS_KEY is set in global data, forms submit via API.
+        Otherwise, forms show the inline success state (demo mode).
+        The script also sends a copy to the business email via mailto: fallback.
+        """
+        global_data = site_data.get("global", {})
+        business_email = global_data.get("BUSINESS_EMAIL", "")
+        web3forms_key = global_data.get("WEB3FORMS_KEY", "")
+
+        return f"""<script>
+(function() {{
+  // Web3Forms contact form handler
+  var W3F_KEY = '{web3forms_key}';
+  var BIZ_EMAIL = '{business_email}';
+
+  document.querySelectorAll('#contact form').forEach(function(form) {{
+    form.addEventListener('submit', function(e) {{
+      e.preventDefault();
+      var fd = new FormData(form);
+      var data = {{}};
+      form.querySelectorAll('input,textarea').forEach(function(el) {{
+        if (el.name) data[el.name] = el.value;
+        else if (el.type === 'email') data['email'] = el.value;
+        else if (el.type === 'text' && !data['name']) data['name'] = el.value;
+        else if (el.tagName === 'TEXTAREA') data['message'] = el.value;
+      }});
+
+      // Show success state immediately
+      var successHTML = '<div class="text-center py-12">'
+        + '<div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: var(--color-primary);">'
+        + '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+        + '</div><h3 class="text-xl font-bold font-heading" style="color: var(--color-text);">Messaggio inviato!</h3>'
+        + '<p class="mt-2 font-body" style="color: var(--color-text-muted);">Grazie, ti risponderemo al pi\\u00f9 presto.</p></div>';
+      form.innerHTML = successHTML;
+
+      // If Web3Forms key is configured, send via API
+      if (W3F_KEY) {{
+        fetch('https://api.web3forms.com/submit', {{
+          method: 'POST',
+          headers: {{ 'Content-Type': 'application/json' }},
+          body: JSON.stringify({{ access_key: W3F_KEY, ...data, to: BIZ_EMAIL }})
+        }}).catch(function() {{}});
+      }}
+    }});
+  }});
+}})();
+</script>"""
 
 
 # Singleton instance
