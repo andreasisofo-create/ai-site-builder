@@ -132,6 +132,14 @@
           "description": "Design premium ispirato a Linear.app: testo gradiente, griglia ambientale, badge eyebrow, glow radiale, CTA luminoso",
           "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
           "tags": ["tech", "modern", "bold"]
+        },
+        {
+          "id": "hero-physics-01",
+          "file": "hero/hero-physics-01.html",
+          "name": "Physics Interactive Hero",
+          "description": "Hero interattivo con Matter.js: elementi fisici che cadono e l'utente può trascinare, effetto playground creativo",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
+          "tags": ["bold", "modern", "tech"]
         }
       ]
     },

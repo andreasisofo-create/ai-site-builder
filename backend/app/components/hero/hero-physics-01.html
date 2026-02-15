@@ -1,0 +1,234 @@
+<!-- Hero Physics: Interactive Matter.js physics playground with falling elements users can drag -->
+<section id="hero" class="relative overflow-hidden bg-[var(--color-bg)]" style="min-height: 100vh;">
+
+  <!-- Physics Canvas (behind text) -->
+  <canvas id="physicsCanvas" class="absolute inset-0 w-full h-full z-0"></canvas>
+
+  <!-- Radial glow decoration -->
+  <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full pointer-events-none z-5 opacity-20" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.3) 0%, transparent 70%);"></div>
+
+  <!-- Content (above physics) -->
+  <div class="relative z-10 flex flex-col items-center justify-center text-center px-6 py-32 md:py-40 lg:py-48 pointer-events-none">
+
+    <!-- Eyebrow badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-text)]/10 bg-[var(--color-bg)]/80 backdrop-blur-sm mb-8" data-animate="blur-in" data-delay="0.1">
+      <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>
+      <span class="font-body text-xs tracking-widest uppercase text-[var(--color-text-muted)]">Interattivo</span>
+    </div>
+
+    <!-- Main headline -->
+    <h1 class="font-heading text-5xl md:text-7xl lg:text-[5.5rem] xl:text-[7rem] font-bold leading-[1.0] tracking-tight max-w-5xl text-[var(--color-text)]" data-animate="text-split" data-split-type="words" style="text-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);">
+      {{HERO_TITLE}}
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="mt-6 md:mt-8 font-body text-lg md:text-xl text-[var(--color-text-muted)] max-w-2xl leading-relaxed" data-animate="blur-slide" data-delay="0.2" data-duration="1">
+      {{HERO_SUBTITLE}}
+    </p>
+
+    <!-- CTA -->
+    <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 pointer-events-auto" data-animate="fade-up" data-delay="0.35">
+      <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="group relative inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-body text-sm font-semibold tracking-wide text-white overflow-hidden transition-all duration-300 hover:shadow-[0_0_32px_rgba(var(--color-primary-rgb),0.4)]" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+        <span class="relative z-10">{{HERO_CTA_TEXT}}</span>
+        <svg class="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        <!-- Shine sweep on hover -->
+        <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+      </a>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="mt-16 md:mt-20 flex flex-col items-center gap-2 opacity-50" data-animate="fade-up" data-delay="0.5">
+      <span class="font-body text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-muted)]">Trascina gli elementi</span>
+      <div class="w-px h-8 bg-gradient-to-b from-[var(--color-text-muted)] to-transparent"></div>
+    </div>
+  </div>
+
+  <!-- Matter.js Physics Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+  <script>
+  (function() {
+    // Only run if Matter.js loaded successfully
+    if (typeof Matter === 'undefined') {
+      console.warn('[Physics Hero] Matter.js not loaded');
+      return;
+    }
+
+    const canvas = document.getElementById('physicsCanvas');
+    if (!canvas) return;
+
+    // Matter.js aliases
+    const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint, Events } = Matter;
+
+    // Create engine
+    const engine = Engine.create();
+    const world = engine.world;
+    world.gravity.y = 0.5; // Gentle gravity
+
+    // Get canvas dimensions
+    function getCanvasDimensions() {
+      return {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+    }
+
+    const dims = getCanvasDimensions();
+
+    // Create renderer
+    const render = Render.create({
+      canvas: canvas,
+      engine: engine,
+      options: {
+        width: dims.width,
+        height: dims.height,
+        wireframes: false,
+        background: 'transparent',
+        pixelRatio: window.devicePixelRatio || 1
+      }
+    });
+
+    // Extract RGB values from CSS variables
+    function getCSSColorRGB(varName) {
+      const rgb = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+      if (rgb) {
+        const values = rgb.split(',').map(v => parseInt(v.trim()));
+        return `rgb(${values[0]}, ${values[1]}, ${values[2]})`;
+      }
+      return '#6366f1'; // fallback
+    }
+
+    const primaryColor = getCSSColorRGB('--color-primary-rgb');
+    const secondaryColor = getCSSColorRGB('--color-secondary-rgb');
+
+    // Define body colors (alternating primary/secondary with opacity variations)
+    const bodyColors = [
+      primaryColor,
+      secondaryColor,
+      primaryColor + 'cc',
+      secondaryColor + 'cc',
+      primaryColor + 'aa',
+      secondaryColor + 'aa',
+      primaryColor + '88',
+      secondaryColor + '88'
+    ];
+
+    // Create falling physics bodies (circles representing services/features)
+    const bodies = [];
+    const numBodies = 12; // Max 12 for performance
+    const bodyRadius = 30;
+
+    for (let i = 0; i < numBodies; i++) {
+      const x = Math.random() * dims.width;
+      const y = -100 - (i * 60); // Start above viewport, staggered
+      const body = Bodies.circle(x, y, bodyRadius, {
+        restitution: 0.7, // Bounciness
+        friction: 0.05,
+        density: 0.002,
+        render: {
+          fillStyle: bodyColors[i % bodyColors.length],
+          strokeStyle: 'rgba(255, 255, 255, 0.2)',
+          lineWidth: 2
+        }
+      });
+      bodies.push(body);
+    }
+
+    // Create walls (floor, left, right) - invisible barriers
+    const wallThickness = 60;
+    const floor = Bodies.rectangle(
+      dims.width / 2,
+      dims.height + wallThickness / 2,
+      dims.width,
+      wallThickness,
+      { isStatic: true, render: { visible: false } }
+    );
+    const leftWall = Bodies.rectangle(
+      -wallThickness / 2,
+      dims.height / 2,
+      wallThickness,
+      dims.height,
+      { isStatic: true, render: { visible: false } }
+    );
+    const rightWall = Bodies.rectangle(
+      dims.width + wallThickness / 2,
+      dims.height / 2,
+      wallThickness,
+      dims.height,
+      { isStatic: true, render: { visible: false } }
+    );
+
+    // Add all bodies to world
+    Composite.add(world, [...bodies, floor, leftWall, rightWall]);
+
+    // Mouse control
+    const mouse = Mouse.create(canvas);
+    const mouseConstraint = MouseConstraint.create(engine, {
+      mouse: mouse,
+      constraint: {
+        stiffness: 0.2,
+        render: { visible: false }
+      }
+    });
+    Composite.add(world, mouseConstraint);
+
+    // Keep mouse in sync with rendering
+    render.mouse = mouse;
+
+    // Run renderer and engine
+    Render.run(render);
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+
+    // Handle resize
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(function() {
+        const newDims = getCanvasDimensions();
+
+        // Update canvas size
+        canvas.width = newDims.width;
+        canvas.height = newDims.height;
+        render.options.width = newDims.width;
+        render.options.height = newDims.height;
+        render.canvas.width = newDims.width;
+        render.canvas.height = newDims.height;
+
+        // Remove old walls
+        Composite.remove(world, [floor, leftWall, rightWall]);
+
+        // Create new walls with updated dimensions
+        const newFloor = Bodies.rectangle(
+          newDims.width / 2,
+          newDims.height + wallThickness / 2,
+          newDims.width,
+          wallThickness,
+          { isStatic: true, render: { visible: false } }
+        );
+        const newLeftWall = Bodies.rectangle(
+          -wallThickness / 2,
+          newDims.height / 2,
+          wallThickness,
+          newDims.height,
+          { isStatic: true, render: { visible: false } }
+        );
+        const newRightWall = Bodies.rectangle(
+          newDims.width + wallThickness / 2,
+          newDims.height / 2,
+          wallThickness,
+          newDims.height,
+          { isStatic: true, render: { visible: false } }
+        );
+
+        Composite.add(world, [newFloor, newLeftWall, newRightWall]);
+      }, 250);
+    });
+
+    // Performance: will-change on canvas
+    canvas.style.willChange = 'transform';
+  })();
+  </script>
+
+  <!-- Bottom fade line -->
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-text)]/10 to-transparent z-20"></div>
+</section>

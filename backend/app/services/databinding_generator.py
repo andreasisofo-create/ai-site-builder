@@ -29,7 +29,8 @@ import re
 import time
 from typing import Dict, Any, Optional, List, Callable
 
-from app.services.kimi_client import kimi
+from app.core.config import settings
+from app.services.kimi_client import kimi, kimi_refine
 from app.services.template_assembler import assembler as template_assembler
 from app.services.sanitizer import sanitize_input, sanitize_output
 from app.services.quality_control import qc_pipeline
@@ -713,7 +714,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "portfolio-creative": {
         "nav": ["nav-minimal-01", "nav-centered-01"],
-        "hero": ["hero-linear-01", "hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01"],
+        "hero": ["hero-linear-01", "hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01", "hero-physics-01"],
         "about": ["about-bento-01", "about-split-cards-01", "about-timeline-02"],
         "gallery": ["gallery-spotlight-01", "gallery-filmstrip-01", "gallery-masonry-01"],
         "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02"],
@@ -795,7 +796,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     # --- Evento / Community ---
     "event-vibrant": {
         "nav": ["nav-minimal-01", "nav-centered-01"],
-        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01"],
+        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01", "hero-physics-01"],
         "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01"],
         "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02"],
         "team": ["team-carousel-01", "team-grid-01"],
@@ -1339,6 +1340,16 @@ BUSINESS: {business_name} - {business_description[:500]}
 {style_hint}
 {palette_hint}
 {variety_hint}
+
+=== COLOR THEORY RULES (follow these for professional palettes) ===
+- PRIMARY: The brand's emotional core. Ask: "What feeling should this business evoke?" Warm = trust/comfort (amber, coral). Cool = innovation/clarity (blue, teal). Bold = energy/passion (red, purple).
+- SECONDARY: Must create VISUAL TENSION with primary. Use analogous (adjacent on wheel) for harmony, or split-complementary for energy. NEVER pick a color that's just a lighter/darker shade of primary.
+- ACCENT: This is the CTA/action color. It MUST pop against the background. Use the complementary of bg_color on the color wheel. If bg is dark blue, accent should be warm orange/amber. If bg is cream, accent should be deep violet/teal.
+- BG vs BG_ALT: bg_alt must differ enough from bg to create visible section separation (at least 5% lightness difference in HSL).
+- TEXT_MUTED: Not just "gray". Tint it slightly toward the primary color for cohesion (e.g., if primary is blue, text_muted should be a blue-gray, not pure gray).
+- FORBIDDEN: Muddy browns, desaturated greens that look sick, pure gray (#808080), neon that hurts eyes on white bg.
+- SATURATION: Keep all colors above 40% saturation (except neutrals). Washed-out colors = amateur design.
+
 Return this exact JSON structure:
 {{
   "primary_color": "#hex",
@@ -1626,6 +1637,116 @@ FINAL CHECKLIST (every point is mandatory):
         return result
 
     # =========================================================
+    # Step 2.5: Reflexion Self-Critique (Optional)
+    # =========================================================
+    async def _reflexion_review(
+        self,
+        texts: Dict[str, Any],
+        sections: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Optional AI self-critique step that reviews generated texts for quality issues.
+        Only runs if GENERATION_REFLEXION is enabled in config.
+
+        Reviews for:
+        - Banned generic phrases
+        - Descriptions shorter than minimum word counts
+        - Repeated sentence structures
+        - Consistent personality tone
+
+        Returns corrected texts if issues found, or original texts if clean.
+        NEVER breaks the pipeline - always wrapped in try/except.
+        """
+        if not settings.GENERATION_REFLEXION:
+            logger.debug("[DataBinding] Reflexion disabled (GENERATION_REFLEXION=False)")
+            return texts
+
+        try:
+            logger.info("[DataBinding] Running reflexion self-critique...")
+
+            # Build a concise review prompt
+            sections_str = ", ".join(sections)
+            texts_json = json.dumps(texts, ensure_ascii=False, indent=2)
+
+            review_prompt = f"""You are a quality reviewer for website copy. Review this JSON for quality issues:
+
+{texts_json}
+
+CHECK FOR THESE ISSUES:
+
+1. BANNED PHRASES (auto-fail if found):
+   - "Benvenuti" / "Benvenuto"
+   - "Siamo un'azienda" / "Siamo un team" / "Siamo leader"
+   - "I nostri servizi" / "Cosa offriamo"
+   - "Qualita e professionalita" / "Eccellenza e innovazione"
+   - "Contattaci per maggiori informazioni"
+   - "Il nostro team di esperti"
+   - "Soluzioni su misura" / "Soluzioni personalizzate"
+   - "A 360 gradi" / "Chiavi in mano"
+   - Any generic corporate jargon
+
+2. MINIMUM WORD COUNTS:
+   - HERO_SUBTITLE: min 15 words
+   - ABOUT_TEXT: min 40 words
+   - SERVICE_DESCRIPTION / FEATURE_DESCRIPTION: min 12 words each
+   - TESTIMONIAL_TEXT: min 20 words each
+   - CTA_SUBTITLE: min 12 words
+   - MEMBER_BIO: min 15 words
+
+3. REPEATED STRUCTURES:
+   - Check if services/features use the same sentence pattern repeatedly
+   - Each description should have unique phrasing
+
+4. PERSONALITY CONSISTENCY:
+   - Does the tone feel consistent across all sections?
+   - Is it generic corporate or does it have character?
+
+If you find issues, return the CORRECTED JSON with fixes applied.
+If the text is clean, return the EXACT SAME JSON unchanged.
+
+Return ONLY the JSON object, no explanation."""
+
+            result = await kimi_refine.call(
+                messages=[{"role": "user", "content": review_prompt}],
+                max_tokens=2000,
+                thinking=False,
+                timeout=30.0,
+                temperature=0.3,
+                json_mode=True,
+            )
+
+            if result.get("success"):
+                try:
+                    reviewed_texts = self._extract_json(result["content"])
+
+                    # Basic sanity check: does reviewed JSON have the same sections?
+                    original_sections = set(texts.keys())
+                    reviewed_sections = set(reviewed_texts.keys())
+
+                    if original_sections == reviewed_sections:
+                        logger.info("[DataBinding] Reflexion review completed successfully")
+                        return reviewed_texts
+                    else:
+                        logger.warning(
+                            f"[DataBinding] Reflexion changed structure "
+                            f"(original: {original_sections}, reviewed: {reviewed_sections}), "
+                            f"using original texts"
+                        )
+                        return texts
+
+                except (json.JSONDecodeError, ValueError) as e:
+                    logger.warning(f"[DataBinding] Reflexion returned invalid JSON: {e}, using original texts")
+                    return texts
+            else:
+                logger.warning(f"[DataBinding] Reflexion call failed: {result.get('error', 'unknown')}, using original texts")
+                return texts
+
+        except Exception as e:
+            # Critical safety: NEVER break the pipeline
+            logger.error(f"[DataBinding] Reflexion error (non-fatal): {e}", exc_info=True)
+            return texts
+
+    # =========================================================
     # Step 3: Select Components
     # =========================================================
     # Default variants for section types not in STYLE_VARIANT_MAP.
@@ -1862,6 +1983,12 @@ Return ONLY the JSON object."""
 4. Overall mood/atmosphere (professional, playful, elegant, corporate, brutalist, luxurious, tech)
 5. Key visual elements (gradients, shadows, cards, rounded corners, sharp edges, etc.)
 
+When extracting colors, don't just identify the literal colors. Analyze the COLOR RELATIONSHIPS:
+- What creates the visual hierarchy? (Which color draws the eye first?)
+- What's the contrast strategy? (High contrast = bold, Low contrast = subtle)
+- Is there a "surprise" accent color that breaks the pattern?
+Report these relationships, not just HEX codes.
+
 Be specific and concise. Focus on extractable design parameters.""",
                     image_url=reference_image_url,
                     max_tokens=800,
@@ -1916,6 +2043,9 @@ Be specific and concise. Focus on extractable design parameters.""",
             texts = self._fallback_texts(business_name, sections)
         else:
             texts = texts_result["parsed"]
+
+        # === OPTIONAL REFLEXION: Self-critique and quality improvement ===
+        texts = await self._reflexion_review(texts, sections)
 
         # Accumulate tokens
         for r in [theme_result, texts_result]:

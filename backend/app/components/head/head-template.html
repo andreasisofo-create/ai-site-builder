@@ -199,6 +199,16 @@
     nav a:hover { font-weight: 600; }
     /* Smooth image reveal default */
     img { transition: opacity 0.4s ease, transform 0.4s ease; }
+    /* Gooey liquid effect - apply to containers with overlapping animated children */
+    .gooey { filter: url(#gooey); }
   </style>
+  <!-- Gooey SVG Filter (0x0, invisible, activates via .gooey class) -->
+  <svg style="position:absolute;width:0;height:0;" aria-hidden="true">
+    <filter id="gooey">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+      <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+    </filter>
+  </svg>
   <noscript><style>[data-animate] { opacity: 1 !important; animation: none !important; }</style></noscript>
 </head>
