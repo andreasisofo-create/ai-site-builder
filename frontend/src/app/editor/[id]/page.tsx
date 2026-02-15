@@ -1017,7 +1017,7 @@ export default function Editor() {
 
                 {/* Embed Popover */}
                 {activePopover === "embed" && (
-                  <div className="absolute bottom-full left-0 mb-2 w-80 bg-[#1a1a1a] border border-white/10 rounded-xl p-3 shadow-xl z-10">
+                  <div className="absolute bottom-full left-0 mb-2 w-[calc(100%-0.5rem)] max-w-80 bg-[#1a1a1a] border border-white/10 rounded-xl p-3 shadow-xl z-10">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-medium text-slate-300">
                         {language === "en" ? "Insert embed" : "Inserisci embed"}
@@ -1051,7 +1051,7 @@ export default function Editor() {
                 )}
               </div>
 
-              <div className="relative">
+              <div className="flex items-end gap-2">
                 <textarea
                   ref={textareaRef}
                   value={chatInput}
@@ -1060,12 +1060,12 @@ export default function Editor() {
                   placeholder={language === "en" ? "Describe the edit..." : "Descrivi la modifica..."}
                   disabled={isRefining}
                   rows={2}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pr-12 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
                 />
                 <button
                   onClick={() => handleSendMessage()}
                   disabled={!chatInput.trim() || isRefining}
-                  className="absolute right-2 bottom-2 p-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg transition-colors"
+                  className="flex-shrink-0 p-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl transition-colors mb-[1px]"
                 >
                   <PaperAirplaneIcon className="w-4 h-4" />
                 </button>

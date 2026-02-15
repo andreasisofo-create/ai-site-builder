@@ -536,38 +536,128 @@ IMPORTANT:
         }
 
     # =================================================================
-    # HELPERS: Strip/re-inject GSAP script to reduce token count
+    # HELPERS: Aggressive strip/re-inject for refine to stay under token limit
     # =================================================================
 
+    # Kimi K2.5 hard limit is 262144 tokens. We target <180K input tokens
+    # to leave room for max_tokens output and safety margin.
+    _MAX_INPUT_CHARS = 600000  # ~150K tokens at ~4 chars/token
+
+    @staticmethod
+    def _estimate_tokens(text: str) -> int:
+        """Rough token estimate: ~4 chars per token for mixed HTML/text."""
+        return len(text) // 4
+
+    @staticmethod
+    def _strip_for_refine(html: str) -> Tuple[str, Dict[str, Any]]:
+        """Aggressively strip heavy content from HTML before sending to Kimi.
+
+        Strips (in order):
+        1. GSAP Universal Animation Engine inline script (~20KB)
+        2. All <style> blocks (CSS can be large in Awwwards-quality templates)
+        3. SVG content (replace with small placeholder keeping attributes)
+        4. Excessive whitespace / empty lines
+        5. HTML comments (except our placeholders)
+
+        Returns (stripped_html, stash) where stash contains all removed content
+        for reinject later.
+        """
+        stash: Dict[str, Any] = {"gsap": "", "styles": [], "svgs": []}
+
+        # 1. Strip GSAP Universal Animation Engine script
+        gsap_pattern = r'<script>\s*/\*[\s\S]*?GSAP Universal Animation Engine[\s\S]*?</script>'
+        gsap_match = re.search(gsap_pattern, html)
+        if gsap_match:
+            stash["gsap"] = gsap_match.group(0)
+            html = html[:gsap_match.start()] + '<!-- __GSAP_PLACEHOLDER__ -->' + html[gsap_match.end():]
+            logger.info(f"[Swarm] Stripped GSAP script ({len(stash['gsap'])} chars)")
+
+        # 2. Strip all <style> blocks (numbered placeholders)
+        style_pattern = r'<style[^>]*>[\s\S]*?</style>'
+        style_matches = list(re.finditer(style_pattern, html))
+        # Process in reverse so indices stay valid
+        for i, m in enumerate(reversed(style_matches)):
+            idx = len(style_matches) - 1 - i
+            stash["styles"].insert(0, m.group(0))
+            html = html[:m.start()] + f'<!-- __STYLE_{idx}__ -->' + html[m.end():]
+        if style_matches:
+            logger.info(f"[Swarm] Stripped {len(style_matches)} <style> blocks ({sum(len(s) for s in stash['styles'])} chars)")
+
+        # 3. Strip SVG content (keep the <svg> tag with attributes but remove inner paths/shapes)
+        svg_pattern = r'(<svg[^>]*>)([\s\S]*?)(</svg>)'
+        svg_matches = list(re.finditer(svg_pattern, html))
+        for i, m in enumerate(reversed(svg_matches)):
+            idx = len(svg_matches) - 1 - i
+            inner = m.group(2)
+            # Only strip if SVG inner content is substantial (>200 chars)
+            if len(inner) > 200:
+                stash["svgs"].insert(0, {"index": idx, "inner": inner, "open_tag": m.group(1), "close_tag": m.group(3)})
+                html = html[:m.start()] + f'{m.group(1)}<!-- __SVG_INNER_{idx}__ -->{m.group(3)}' + html[m.end():]
+        if stash["svgs"]:
+            logger.info(f"[Swarm] Stripped {len(stash['svgs'])} large SVG inners ({sum(len(s['inner']) for s in stash['svgs'])} chars)")
+
+        # 4. Strip HTML comments (except our placeholders)
+        html = re.sub(r'<!--(?!\s*__)[^>]*?-->', '', html)
+
+        # 5. Collapse excessive whitespace: multiple blank lines -> single, trim line whitespace
+        html = re.sub(r'\n\s*\n\s*\n', '\n\n', html)  # 3+ blank lines -> 1
+        html = re.sub(r'[ \t]+\n', '\n', html)  # trailing whitespace
+        html = re.sub(r'\n[ \t]+', '\n', html)  # leading whitespace (careful with pre tags, but HTML templates don't use them)
+        html = re.sub(r'  +', ' ', html)  # multiple spaces -> single
+
+        return html, stash
+
+    @staticmethod
+    def _reinject_after_refine(html: str, stash: Dict[str, Any]) -> str:
+        """Re-inject all stripped content back into the HTML after AI refinement."""
+
+        # 1. Re-inject SVG inners
+        for svg_info in stash.get("svgs", []):
+            placeholder = f'<!-- __SVG_INNER_{svg_info["index"]}__ -->'
+            if placeholder in html:
+                html = html.replace(placeholder, svg_info["inner"])
+
+        # 2. Re-inject <style> blocks
+        for i, style_block in enumerate(stash.get("styles", [])):
+            placeholder = f'<!-- __STYLE_{i}__ -->'
+            if placeholder in html:
+                html = html.replace(placeholder, style_block)
+
+        # 3. Re-inject GSAP script
+        gsap_block = stash.get("gsap", "")
+        if gsap_block:
+            if '<!-- __GSAP_PLACEHOLDER__ -->' in html:
+                html = html.replace('<!-- __GSAP_PLACEHOLDER__ -->', gsap_block)
+            elif '</body>' in html.lower():
+                idx = html.lower().rfind('</body>')
+                html = html[:idx] + '\n' + gsap_block + '\n' + html[idx:]
+            else:
+                html = html + '\n' + gsap_block
+
+        return html
+
+    # Keep legacy methods for backward compatibility with any other callers
     @staticmethod
     def _strip_gsap_script(html: str) -> Tuple[str, str]:
-        """Strip the large GSAP Universal Animation Engine script from HTML to reduce token count.
-        The inline GSAP script is ~687 lines / ~20KB which adds ~5000+ tokens.
-        Returns (stripped_html, gsap_script_block).
-        """
-        # Match the GSAP Universal Animation Engine script block
+        """Legacy: Strip only GSAP script. Use _strip_for_refine for full stripping."""
         pattern = r'<script>\s*/\*[\s\S]*?GSAP Universal Animation Engine[\s\S]*?</script>'
         match = re.search(pattern, html)
         if match:
             gsap_block = match.group(0)
-            stripped = html[:match.start()] + '<!-- GSAP_SCRIPT_PLACEHOLDER -->' + html[match.end():]
-            logger.info(f"[Swarm] Stripped GSAP script ({len(gsap_block)} chars) to reduce token count")
+            stripped = html[:match.start()] + '<!-- __GSAP_PLACEHOLDER__ -->' + html[match.end():]
             return stripped, gsap_block
         return html, ""
 
     @staticmethod
     def _reinject_gsap_script(html: str, gsap_block: str) -> str:
-        """Re-inject the GSAP script block into the HTML after AI refinement."""
+        """Legacy: Re-inject GSAP script. Use _reinject_after_refine for full reinjection."""
         if not gsap_block:
             return html
-        # Replace placeholder if present
-        if '<!-- GSAP_SCRIPT_PLACEHOLDER -->' in html:
-            return html.replace('<!-- GSAP_SCRIPT_PLACEHOLDER -->', gsap_block)
-        # Otherwise inject before </body>
+        if '<!-- __GSAP_PLACEHOLDER__ -->' in html:
+            return html.replace('<!-- __GSAP_PLACEHOLDER__ -->', gsap_block)
         if '</body>' in html.lower():
             idx = html.lower().rfind('</body>')
             return html[:idx] + '\n' + gsap_block + '\n' + html[idx:]
-        # Last resort: append
         return html + '\n' + gsap_block
 
     # =================================================================
@@ -583,76 +673,86 @@ IMPORTANT:
         """
         Modifica un sito esistente via chat.
         Usa streaming per evitare timeout con HTML grandi.
+        Aggressively strips GSAP, <style>, SVGs, whitespace to stay under 262144 token limit.
         """
         modification_request = sanitize_refine_input(modification_request)
 
-        # Strip GSAP script to reduce token count (it's ~20KB / ~5000+ tokens)
-        # This prevents exceeding Kimi's 262144 token limit on large sites
-        stripped_html, gsap_block = self._strip_gsap_script(current_html)
+        # Aggressive strip: GSAP script + <style> blocks + SVGs + whitespace
+        stripped_html, stash = self._strip_for_refine(current_html)
 
-        # GSAP & design system knowledge for the AI
-        design_system = """DESIGN SYSTEM (MUST preserve):
-- CSS Variables: var(--color-primary), var(--color-secondary), var(--color-accent), var(--color-bg), var(--color-bg-alt), var(--color-text), var(--color-text-muted)
-- Font classes: font-heading (for h1-h6), font-body (for body text)
-- Tailwind with custom colors: bg-primary, text-primary, bg-secondary, text-accent, etc.
-- GSAP animations via data-animate attribute. Available effects:
-  Scroll: fade-up, fade-down, fade-left, fade-right, scale-in, scale-up, rotate-in, flip-up, blur-in, slide-up, reveal-left/right/up/down, bounce-in, zoom-out
-  Text: text-split (with data-split-type="words|chars|lines"), text-reveal, typewriter
-  Interactive: tilt, magnetic, card-hover-3d, float, image-zoom
-  Container: stagger (children need class="stagger-item"), stagger-scale
-  Advanced: clip-reveal, blur-slide, rotate-3d, gradient-flow, morph-bg, draw-svg, split-screen
-  Utility: data-counter="NUMBER" (animated counter), marquee, horizontal-scroll, cursor-glow
-  Modifiers: data-delay="0.3", data-duration="0.9", data-ease="power3.out"
-- ALL section headings MUST use data-animate="text-split" data-split-type="words"
-- ALL CTA buttons MUST use data-animate="magnetic"
-- Section containers should use data-animate="fade-up" or similar
-- Cards/grids should use data-animate="stagger" with children having class="stagger-item"
-- Images should use data-animate="image-zoom"
-- NEVER remove data-animate attributes from existing elements
-- ALWAYS add data-animate to new elements you create"""
+        original_tokens = self._estimate_tokens(current_html)
+        stripped_tokens = self._estimate_tokens(stripped_html)
+        logger.info(
+            f"[Swarm] Refine HTML reduction: {len(current_html)} -> {len(stripped_html)} chars "
+            f"(~{original_tokens} -> ~{stripped_tokens} tokens, saved ~{original_tokens - stripped_tokens} tokens)"
+        )
+
+        # Compact design system prompt (trimmed from ~1200 chars to ~600)
+        design_system = """RULES:
+- Preserve CSS vars: var(--color-primary/secondary/accent/bg/bg-alt/text/text-muted)
+- Use Tailwind CSS + font-heading/font-body classes
+- Preserve all data-animate attributes. Headings: data-animate="text-split" data-split-type="words". Buttons: data-animate="magnetic". Grids: data-animate="stagger" with .stagger-item children.
+- Add data-animate to new elements (fade-up, scale-in, etc.)
+- Keep all <!-- __*_PLACEHOLDER__ --> and <!-- __STYLE_*__ --> and <!-- __SVG_INNER_*__ --> comments intact - they are auto-restored after your edit.
+- Return ONLY complete HTML between ```html and ``` tags. Do NOT truncate."""
 
         if section_to_modify:
-            prompt = f"""Modify the {section_to_modify} section of this HTML website.
+            prompt = f"""Modify ONLY the {section_to_modify} section. Keep all other sections unchanged.
 
-CURRENT HTML:
-{stripped_html}
-
-MODIFICATION REQUEST:
-{modification_request}
+REQUEST: {modification_request}
 
 {design_system}
 
-Instructions:
-1. Modify ONLY the {section_to_modify} section
-2. Keep all other sections exactly as they are
-3. Return the COMPLETE HTML file with the modification
-4. Use Tailwind CSS + CSS variables (var(--color-primary), etc.)
-5. Preserve and add GSAP data-animate attributes on all elements
-6. Ensure sections have REAL content - never leave empty placeholders
-7. Return ONLY HTML between ```html and ``` tags
-8. Do NOT truncate the output - include the FULL HTML
-9. Note: The GSAP animation script has been removed for brevity - it will be automatically re-injected. Do NOT add any new <script> blocks for GSAP. Keep the <!-- GSAP_SCRIPT_PLACEHOLDER --> comment intact."""
+HTML:
+{stripped_html}"""
         else:
-            prompt = f"""Modify this HTML website according to the request.
+            prompt = f"""Modify this HTML website.
 
-CURRENT HTML:
-{stripped_html}
-
-MODIFICATION REQUEST:
-{modification_request}
+REQUEST: {modification_request}
 
 {design_system}
 
-Instructions:
-1. Apply the requested changes
-2. Keep the overall structure and style consistent
-3. Use Tailwind CSS + CSS variables (var(--color-primary), etc.)
-4. Preserve and add GSAP data-animate attributes on all elements
-5. Ensure sections have REAL content - never leave empty placeholders
-6. Return the COMPLETE modified HTML file
-7. Return ONLY HTML between ```html and ``` tags
-8. Do NOT truncate the output - include the FULL HTML
-9. Note: The GSAP animation script has been removed for brevity - it will be automatically re-injected. Do NOT add any new <script> blocks for GSAP. Keep the <!-- GSAP_SCRIPT_PLACEHOLDER --> comment intact."""
+HTML:
+{stripped_html}"""
+
+        prompt_tokens = self._estimate_tokens(prompt)
+        logger.info(f"[Swarm] Refine prompt: ~{prompt_tokens} tokens (limit: 262144)")
+
+        # Safety check: if still over limit, apply further truncation
+        if prompt_tokens > 200000:
+            logger.warning(f"[Swarm] Prompt still too large (~{prompt_tokens} tokens), truncating HTML")
+            # Keep first 400K chars of HTML (~100K tokens) - enough for structure
+            max_html_chars = self._MAX_INPUT_CHARS - len(prompt) + len(stripped_html)
+            if max_html_chars < len(stripped_html):
+                # Truncate from the middle, keeping head and tail for structure
+                keep_head = max_html_chars * 2 // 3
+                keep_tail = max_html_chars // 3
+                stripped_html = (
+                    stripped_html[:keep_head]
+                    + '\n<!-- ... MIDDLE SECTIONS TRUNCATED FOR SIZE ... -->\n'
+                    + stripped_html[-keep_tail:]
+                )
+                # Rebuild prompt with truncated HTML
+                if section_to_modify:
+                    prompt = f"""Modify ONLY the {section_to_modify} section. Keep all other sections unchanged.
+
+REQUEST: {modification_request}
+
+{design_system}
+
+HTML:
+{stripped_html}"""
+                else:
+                    prompt = f"""Modify this HTML website.
+
+REQUEST: {modification_request}
+
+{design_system}
+
+HTML:
+{stripped_html}"""
+                prompt_tokens = self._estimate_tokens(prompt)
+                logger.info(f"[Swarm] After truncation: ~{prompt_tokens} tokens")
 
         start_time = time.time()
         # Use streaming with higher max_tokens to handle large HTML sites
@@ -668,8 +768,8 @@ Instructions:
 
         html_content = self.kimi.extract_html(result["content"])
 
-        # Re-inject the GSAP script that was stripped before sending to AI
-        html_content = self._reinject_gsap_script(html_content, gsap_block)
+        # Re-inject everything that was stripped: SVGs, <style> blocks, GSAP script
+        html_content = self._reinject_after_refine(html_content, stash)
 
         html_content = sanitize_output(html_content)
 

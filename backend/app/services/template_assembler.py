@@ -97,7 +97,12 @@ class TemplateAssembler:
                     logger.info(f"[Assembler] REPEAT:{key} resolved via case-insensitive lookup to '{real_key}'")
 
             if not isinstance(items, list) or not items:
-                logger.warning(f"[Assembler] REPEAT:{key} has no items (key missing or empty array)")
+                available_lists = {k: len(v) for k, v in data.items() if isinstance(v, list)}
+                logger.warning(
+                    f"[Assembler] REPEAT:{key} has no items (key missing or empty array). "
+                    f"Available list keys in data: {available_lists}. "
+                    f"All data keys: {list(data.keys())}"
+                )
                 return ""
 
             fragments = []

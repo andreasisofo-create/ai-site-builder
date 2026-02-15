@@ -1567,6 +1567,106 @@ Return ONLY the JSON object."""
 
         return data
 
+    # Synonym map: maps common AI key variations to canonical suffixes.
+    # Used by _normalize_item_keys to catch any creative key naming Kimi uses.
+    _KEY_SYNONYMS: Dict[str, str] = {
+        # ICON synonyms
+        "ICON": "ICON",
+        "EMOJI": "ICON",
+        "ICONA": "ICON",
+        "SYMBOL": "ICON",
+        "SIMBOLO": "ICON",
+        "IMAGE": "ICON",  # fallback: if no IMAGE_URL field, treat as icon
+        # TITLE synonyms
+        "TITLE": "TITLE",
+        "TITOLO": "TITLE",
+        "NAME": "TITLE",
+        "NOME": "TITLE",
+        "HEADING": "TITLE",
+        "LABEL": "TITLE",
+        "TITL": "TITLE",
+        # DESCRIPTION synonyms
+        "DESCRIPTION": "DESCRIPTION",
+        "DESCRIZIONE": "DESCRIPTION",
+        "DESC": "DESCRIPTION",
+        "TEXT": "DESCRIPTION",
+        "TESTO": "DESCRIPTION",
+        "BODY": "DESCRIPTION",
+        "CONTENT": "DESCRIPTION",
+        "DETAIL": "DESCRIPTION",
+        "DETAILS": "DESCRIPTION",
+        "SUMMARY": "DESCRIPTION",
+        # CTA synonyms
+        "CTA": "CTA",
+        "CTA_TEXT": "CTA",
+        "LINK": "CTA",
+        "LINK_TEXT": "CTA",
+        "BUTTON": "CTA",
+        "BUTTON_TEXT": "CTA",
+        # AUTHOR synonyms (for testimonials)
+        "AUTHOR": "AUTHOR",
+        "AUTORE": "AUTHOR",
+        "WRITER": "AUTHOR",
+        # ROLE synonyms (for testimonials)
+        "ROLE": "ROLE",
+        "RUOLO": "ROLE",
+        "JOB": "ROLE",
+        "POSITION": "ROLE",
+        "JOB_TITLE": "ROLE",
+        # INITIAL synonyms (for testimonials)
+        "INITIAL": "INITIAL",
+        "INIZIALE": "INITIAL",
+        "AVATAR": "INITIAL",
+        # IMAGE_URL synonyms
+        "IMAGE_URL": "IMAGE_URL",
+        "IMG_URL": "IMAGE_URL",
+        "PHOTO": "IMAGE_URL",
+        "FOTO": "IMAGE_URL",
+        "PHOTO_URL": "IMAGE_URL",
+        "IMAGE_SRC": "IMAGE_URL",
+        # IMAGE_ALT synonyms
+        "IMAGE_ALT": "IMAGE_ALT",
+        "IMG_ALT": "IMAGE_ALT",
+        "ALT": "IMAGE_ALT",
+        "ALT_TEXT": "IMAGE_ALT",
+        # CAPTION synonyms
+        "CAPTION": "CAPTION",
+        "DIDASCALIA": "CAPTION",
+        # BIO synonyms
+        "BIO": "BIO",
+        "BIOGRAFIA": "BIO",
+        "ABOUT": "BIO",
+        # NUMBER/NUM synonyms (for stats)
+        "NUMBER": "NUMBER",
+        "NUM": "NUMBER",
+        "NUMERO": "NUMBER",
+        "VALUE": "NUMBER",
+        "VALORE": "NUMBER",
+        # SUFFIX synonyms (for stats)
+        "SUFFIX": "SUFFIX",
+        "SUFFISSO": "SUFFIX",
+        "UNIT": "SUFFIX",
+        # QUESTION/ANSWER synonyms (for FAQ)
+        "QUESTION": "QUESTION",
+        "DOMANDA": "QUESTION",
+        "Q": "QUESTION",
+        "ANSWER": "ANSWER",
+        "RISPOSTA": "ANSWER",
+        "A": "ANSWER",
+        # YEAR synonyms (for timeline)
+        "YEAR": "YEAR",
+        "ANNO": "YEAR",
+        "DATE": "YEAR",
+        "DATA": "YEAR",
+        "PERIOD": "YEAR",
+        # HEADING synonym (for timeline)
+        "HEADING": "HEADING",
+        # STEP fields
+        "STEP_NUMBER": "NUMBER",
+        "STEP_TITLE": "TITLE",
+        "STEP_DESCRIPTION": "DESCRIPTION",
+    }
+
     def _normalize_item_keys(
         self,
         items: List[Dict[str, Any]],
@@ -1579,18 +1679,40 @@ Return ONLY the JSON object."""
         - {"ICON": "x", "TITLE": "y"} -> {"SERVICE_ICON": "x", "SERVICE_TITLE": "y"}
         - {"icon": "x", "title": "y"} -> {"SERVICE_ICON": "x", "SERVICE_TITLE": "y"}
         - {"service_icon": "x"} -> {"SERVICE_ICON": "x"}  (already correct, just uppercased)
+        - {"emoji": "x", "name": "y"} -> {"SERVICE_ICON": "x", "SERVICE_TITLE": "y"}
+        - {"titolo": "x", "descrizione": "y"} -> {"SERVICE_TITLE": "x", "SERVICE_DESCRIPTION": "y"}
 
+        Uses a synonym map to handle any creative key naming the AI might use.
         Also preserves any extra keys the item might have (e.g., SERVICE_IMAGE_URL).
         """
         if not items or not isinstance(items, list):
             return items
 
-        # Build a mapping: suffix -> full_field (e.g., "ICON" -> "SERVICE_ICON")
+        prefix_upper = flat_prefix.upper()
+
+        # Build a mapping: canonical_suffix -> full_field (e.g., "ICON" -> "SERVICE_ICON")
         suffix_map: Dict[str, str] = {}
         for field in item_fields:
-            if field.startswith(flat_prefix + "_"):
-                suffix = field[len(flat_prefix) + 1:]
+            if field.startswith(prefix_upper + "_"):
+                suffix = field[len(prefix_upper) + 1:]
                 suffix_map[suffix.upper()] = field
+
+        # Build a reverse synonym lookup: any synonym key -> canonical suffix -> full field
+        # e.g., "EMOJI" -> "ICON" -> "SERVICE_ICON"
+        synonym_to_field: Dict[str, str] = {}
+        for synonym, canonical in self._KEY_SYNONYMS.items():
+            if canonical in suffix_map:
+                synonym_to_field[synonym.upper()] = suffix_map[canonical]
+
+        # Log for debugging
+        if items:
+            sample_keys = list(items[0].keys()) if isinstance(items[0], dict) else []
+            logger.info(
+                f"[DataBinding] _normalize_item_keys: prefix={prefix_upper}, "
+                f"expected_fields={item_fields}, "
+                f"sample_item_keys={sample_keys}, "
+                f"items_count={len(items)}"
+            )
 
         normalized = []
         for item in items:
@@ -1598,17 +1720,51 @@ Return ONLY the JSON object."""
                 continue
             new_item = {}
             for key, value in item.items():
-                key_upper = key.upper()
+                key_upper = key.upper().strip()
                 str_value = str(value) if value is not None else ""
-                # Already has the full prefix (e.g., SERVICE_ICON) - keep as-is
-                if key_upper.startswith(flat_prefix.upper() + "_"):
+
+                # 1. Already has the full prefix (e.g., SERVICE_ICON) - keep as-is
+                if key_upper.startswith(prefix_upper + "_"):
                     new_item[key_upper] = str_value
-                # Short key matching a known suffix (e.g., ICON, TITLE, DESCRIPTION)
-                elif key_upper in suffix_map:
+                    continue
+
+                # 2. Strip any OTHER prefix the AI may have added (e.g., "SERVIZIO_TITOLO")
+                #    Try removing everything before the last underscore segment
+                #    But first check direct suffix match
+                if key_upper in suffix_map:
                     new_item[suffix_map[key_upper]] = str_value
-                else:
-                    # Preserve unknown keys as-is (e.g., extra fields)
-                    new_item[key_upper] = str_value
+                    continue
+
+                # 3. Synonym lookup (e.g., "emoji" -> SERVICE_ICON, "name" -> SERVICE_TITLE)
+                if key_upper in synonym_to_field:
+                    target_field = synonym_to_field[key_upper]
+                    # Don't overwrite if we already have this field from a more specific match
+                    if target_field not in new_item:
+                        new_item[target_field] = str_value
+                    continue
+
+                # 4. Try stripping any prefix from the key and check suffix
+                #    e.g., "SERVIZIO_TITOLO" -> strip "SERVIZIO_" -> "TITOLO" -> synonym -> TITLE -> SERVICE_TITLE
+                if "_" in key_upper:
+                    parts = key_upper.split("_")
+                    # Try the last part as a synonym
+                    last_part = parts[-1]
+                    if last_part in synonym_to_field:
+                        target_field = synonym_to_field[last_part]
+                        if target_field not in new_item:
+                            new_item[target_field] = str_value
+                        continue
+                    # Try last two parts joined (e.g., "IMAGE_URL")
+                    if len(parts) >= 2:
+                        last_two = "_".join(parts[-2:])
+                        if last_two in synonym_to_field:
+                            target_field = synonym_to_field[last_two]
+                            if target_field not in new_item:
+                                new_item[target_field] = str_value
+                            continue
+
+                # 5. Preserve unknown keys with prefix applied
+                new_item[key_upper] = str_value
 
             # Ensure all expected fields exist (even if empty) to prevent template breakage
             for field in item_fields:
@@ -1616,6 +1772,17 @@ Return ONLY the JSON object."""
                     new_item[field] = ""
 
             normalized.append(new_item)
+
+        # Log what we produced
+        if normalized:
+            sample = normalized[0]
+            matched_fields = [f for f in item_fields if sample.get(f, "") != ""]
+            logger.info(
+                f"[DataBinding] _normalize_item_keys result: "
+                f"matched_fields={matched_fields}/{len(item_fields)}, "
+                f"sample_output_keys={list(sample.keys())}"
+            )
+
         return normalized
 
     def _normalize_repeat_array(
@@ -1696,6 +1863,14 @@ Return ONLY the JSON object."""
                     suffix_set.add(field[len(flat_prefix) + 1:].lower())
                 suffix_set.add(field.lower())
 
+            # Also add all synonym keys for broader matching
+            for field in item_fields:
+                if field.startswith(flat_prefix + "_"):
+                    suffix = field[len(flat_prefix) + 1:].upper()
+                    for syn, canonical in self._KEY_SYNONYMS.items():
+                        if canonical == suffix:
+                            suffix_set.add(syn.lower())
+
             best_match = None
             best_score = 0
             for key, val in data.items():
@@ -1703,7 +1878,7 @@ Return ONLY the JSON object."""
                     continue
                 if not isinstance(val[0], dict):
                     continue
-                # Score: how many item keys match expected suffixes
+                # Score: how many item keys match expected suffixes or synonyms
                 item_keys_lower = {k.lower() for k in val[0].keys()}
                 score = len(item_keys_lower & suffix_set)
                 if score > best_score:
@@ -1716,11 +1891,31 @@ Return ONLY the JSON object."""
 
         # 5. If we found items, normalize their keys and store under canonical key
         if found_items is not None and len(found_items) > 0:
+            logger.info(
+                f"[DataBinding] _normalize_repeat_array: found {len(found_items)} items "
+                f"from source='{found_source}', sample_keys="
+                f"{list(found_items[0].keys()) if isinstance(found_items[0], dict) else 'N/A'}"
+            )
             normalized = self._normalize_item_keys(found_items, item_fields, flat_prefix)
             if normalized:
-                data[canonical_key] = normalized
-                logger.info(f"[DataBinding] Normalized {found_source} -> {canonical_key} ({len(normalized)} items)")
-                return data
+                # Validate: check if at least one item has non-empty required fields
+                # For services: at least TITLE or DESCRIPTION should be non-empty
+                has_content = False
+                for item in normalized:
+                    non_empty_fields = [f for f in item_fields if item.get(f, "").strip()]
+                    if len(non_empty_fields) >= 2:  # At least 2 fields filled
+                        has_content = True
+                        break
+
+                if has_content:
+                    data[canonical_key] = normalized
+                    logger.info(f"[DataBinding] Normalized {found_source} -> {canonical_key} ({len(normalized)} items, validated)")
+                    return data
+                else:
+                    logger.warning(
+                        f"[DataBinding] Normalized items from '{found_source}' have no real content "
+                        f"(all fields empty after normalization). Falling through to fallback."
+                    )
 
         # 6. If canonical key exists but is empty/invalid, or doesn't exist at all -> fallback
         if fallback_items:
