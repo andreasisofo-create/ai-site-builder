@@ -258,6 +258,10 @@ async def _run_generation_background(
 
     except Exception as e:
         logger.exception(f"[BG] Errore generazione background")
+        try:
+            db.rollback()
+        except Exception:
+            pass
         if site_id:
             try:
                 site = db.query(Site).filter(Site.id == site_id).first()
@@ -780,7 +784,7 @@ async def _trigger_n8n_generation(request: GenerateRequest, site_id: int):
         "callback_url": f"{settings.RENDER_EXTERNAL_URL}/api/generate/n8n-callback",
         "progress_url": f"{settings.RENDER_EXTERNAL_URL}/api/generate/n8n-progress",
         "secret": settings.N8N_CALLBACK_SECRET,
-        "moonshot_api_key": settings.active_api_key,
+        # NOTE: Do NOT send API keys to n8n - configure them directly in n8n credentials
     }
 
     try:
