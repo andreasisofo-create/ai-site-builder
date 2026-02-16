@@ -1,0 +1,227 @@
+{
+  "ristorante": {
+    "google": {
+      "cpc": {"min": 0.4, "max": 1.2, "avg": 0.8},
+      "cpm": {"min": 3, "max": 8},
+      "budgetMin": 180
+    },
+    "meta": {
+      "cpc": {"min": 0.25, "max": 0.7, "avg": 0.45},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 120
+    },
+    "cpl": {"min": 3, "max": 8},
+    "recommendedBudget": 300,
+    "platformSplit": {"google": 60, "meta": 40}
+  },
+  "ecommerce": {
+    "google": {
+      "cpc": {"min": 0.5, "max": 1.5, "avg": 1.0},
+      "cpm": {"min": 4, "max": 12},
+      "budgetMin": 600
+    },
+    "meta": {
+      "cpc": {"min": 0.3, "max": 0.9, "avg": 0.6},
+      "cpm": {"min": 5, "max": 15},
+      "budgetMin": 400
+    },
+    "cpl": {"min": 5, "max": 15},
+    "recommendedBudget": 1000,
+    "platformSplit": {"google": 60, "meta": 40}
+  },
+  "studio_legale": {
+    "google": {
+      "cpc": {"min": 1.5, "max": 4.0, "avg": 2.5},
+      "cpm": {"min": 8, "max": 18},
+      "budgetMin": 280
+    },
+    "meta": {
+      "cpc": {"min": 0.5, "max": 1.2, "avg": 0.8},
+      "cpm": {"min": 6, "max": 14},
+      "budgetMin": 120
+    },
+    "cpl": {"min": 15, "max": 50},
+    "recommendedBudget": 400,
+    "platformSplit": {"google": 70, "meta": 30}
+  },
+  "commercialista": {
+    "google": {
+      "cpc": {"min": 1.0, "max": 3.0, "avg": 1.8},
+      "cpm": {"min": 7, "max": 15},
+      "budgetMin": 200
+    },
+    "meta": {
+      "cpc": {"min": 0.4, "max": 1.0, "avg": 0.65},
+      "cpm": {"min": 5, "max": 12},
+      "budgetMin": 150
+    },
+    "cpl": {"min": 10, "max": 35},
+    "recommendedBudget": 350,
+    "platformSplit": {"google": 70, "meta": 30}
+  },
+  "palestra": {
+    "google": {
+      "cpc": {"min": 0.6, "max": 1.8, "avg": 1.0},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 120
+    },
+    "meta": {
+      "cpc": {"min": 0.3, "max": 0.8, "avg": 0.5},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 180
+    },
+    "cpl": {"min": 5, "max": 15},
+    "recommendedBudget": 300,
+    "platformSplit": {"google": 40, "meta": 60}
+  },
+  "fitness": {
+    "google": {
+      "cpc": {"min": 0.5, "max": 1.5, "avg": 0.9},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 120
+    },
+    "meta": {
+      "cpc": {"min": 0.25, "max": 0.7, "avg": 0.45},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 180
+    },
+    "cpl": {"min": 5, "max": 12},
+    "recommendedBudget": 300,
+    "platformSplit": {"google": 35, "meta": 65}
+  },
+  "immobiliare": {
+    "google": {
+      "cpc": {"min": 0.8, "max": 2.5, "avg": 1.5},
+      "cpm": {"min": 5, "max": 12},
+      "budgetMin": 250
+    },
+    "meta": {
+      "cpc": {"min": 0.4, "max": 1.0, "avg": 0.7},
+      "cpm": {"min": 5, "max": 12},
+      "budgetMin": 250
+    },
+    "cpl": {"min": 8, "max": 25},
+    "recommendedBudget": 500,
+    "platformSplit": {"google": 50, "meta": 50}
+  },
+  "estetica": {
+    "google": {
+      "cpc": {"min": 0.5, "max": 1.5, "avg": 0.9},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 125
+    },
+    "meta": {
+      "cpc": {"min": 0.25, "max": 0.7, "avg": 0.45},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 125
+    },
+    "cpl": {"min": 4, "max": 12},
+    "recommendedBudget": 250,
+    "platformSplit": {"google": 50, "meta": 50}
+  },
+  "parrucchiere": {
+    "google": {
+      "cpc": {"min": 0.4, "max": 1.2, "avg": 0.7},
+      "cpm": {"min": 3, "max": 9},
+      "budgetMin": 100
+    },
+    "meta": {
+      "cpc": {"min": 0.2, "max": 0.6, "avg": 0.4},
+      "cpm": {"min": 3, "max": 8},
+      "budgetMin": 100
+    },
+    "cpl": {"min": 3, "max": 10},
+    "recommendedBudget": 200,
+    "platformSplit": {"google": 40, "meta": 60}
+  },
+  "edile": {
+    "google": {
+      "cpc": {"min": 1.0, "max": 3.0, "avg": 1.8},
+      "cpm": {"min": 6, "max": 14},
+      "budgetMin": 240
+    },
+    "meta": {
+      "cpc": {"min": 0.4, "max": 1.0, "avg": 0.65},
+      "cpm": {"min": 5, "max": 12},
+      "budgetMin": 160
+    },
+    "cpl": {"min": 10, "max": 30},
+    "recommendedBudget": 400,
+    "platformSplit": {"google": 60, "meta": 40}
+  },
+  "fotografo": {
+    "google": {
+      "cpc": {"min": 0.6, "max": 1.8, "avg": 1.1},
+      "cpm": {"min": 5, "max": 12},
+      "budgetMin": 150
+    },
+    "meta": {
+      "cpc": {"min": 0.3, "max": 0.8, "avg": 0.55},
+      "cpm": {"min": 5, "max": 12},
+      "budgetMin": 150
+    },
+    "cpl": {"min": 6, "max": 18},
+    "recommendedBudget": 300,
+    "platformSplit": {"google": 45, "meta": 55}
+  },
+  "creativo": {
+    "google": {
+      "cpc": {"min": 0.7, "max": 2.0, "avg": 1.2},
+      "cpm": {"min": 5, "max": 13},
+      "budgetMin": 180
+    },
+    "meta": {
+      "cpc": {"min": 0.35, "max": 0.9, "avg": 0.6},
+      "cpm": {"min": 6, "max": 14},
+      "budgetMin": 220
+    },
+    "cpl": {"min": 8, "max": 22},
+    "recommendedBudget": 400,
+    "platformSplit": {"google": 40, "meta": 60}
+  },
+  "startup": {
+    "google": {
+      "cpc": {"min": 1.0, "max": 3.5, "avg": 2.0},
+      "cpm": {"min": 6, "max": 15},
+      "budgetMin": 300
+    },
+    "meta": {
+      "cpc": {"min": 0.5, "max": 1.2, "avg": 0.8},
+      "cpm": {"min": 6, "max": 14},
+      "budgetMin": 300
+    },
+    "cpl": {"min": 15, "max": 40},
+    "recommendedBudget": 600,
+    "platformSplit": {"google": 50, "meta": 50}
+  },
+  "saas": {
+    "google": {
+      "cpc": {"min": 1.5, "max": 4.0, "avg": 2.5},
+      "cpm": {"min": 8, "max": 18},
+      "budgetMin": 400
+    },
+    "meta": {
+      "cpc": {"min": 0.6, "max": 1.5, "avg": 1.0},
+      "cpm": {"min": 7, "max": 16},
+      "budgetMin": 350
+    },
+    "cpl": {"min": 20, "max": 60},
+    "recommendedBudget": 750,
+    "platformSplit": {"google": 60, "meta": 40}
+  },
+  "default": {
+    "google": {
+      "cpc": {"min": 0.5, "max": 1.5, "avg": 1.0},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 200
+    },
+    "meta": {
+      "cpc": {"min": 0.3, "max": 0.8, "avg": 0.55},
+      "cpm": {"min": 4, "max": 10},
+      "budgetMin": 150
+    },
+    "cpl": {"min": 5, "max": 15},
+    "recommendedBudget": 350,
+    "platformSplit": {"google": 50, "meta": 50}
+  }
+}

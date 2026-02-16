@@ -21,6 +21,7 @@ PLAN_CONFIG = {
         "pages_limit": 1,        # Solo homepage (preview)
         "can_publish": False,
         "domain_included": False,
+        "ads_campaigns_limit": 0,
         "label": "Starter",
     },
     "base": {
@@ -30,6 +31,7 @@ PLAN_CONFIG = {
         "pages_limit": 2,        # Homepage + 1 extra (ulteriori €70/pag)
         "can_publish": True,
         "domain_included": False,  # Acquistabile a parte dallo shop
+        "ads_campaigns_limit": 3,
         "label": "Creazione Sito",
     },
     "premium": {
@@ -39,6 +41,7 @@ PLAN_CONFIG = {
         "pages_limit": 9999,     # Illimitate
         "can_publish": True,
         "domain_included": True,  # Dominio incluso nel prezzo
+        "ads_campaigns_limit": 20,
         "label": "Premium",
     },
 }

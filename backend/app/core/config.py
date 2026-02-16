@@ -164,6 +164,16 @@ class Settings(BaseSettings):
     DEPLOY_TARGET: str = "vps"          # "vps" or "vercel"
     SITE_BASE_DOMAIN: str = "e-quipe.app"
 
+    # n8n Ads Automation
+    N8N_BASE_URL: str = ""  # n8n instance base URL (e.g. https://n8n.example.com)
+    N8N_API_KEY: str = ""  # n8n API key for authentication
+    N8N_WEBHOOK_CAMPAIGN_CREATE: str = "campaign-create"
+    N8N_WEBHOOK_CAMPAIGN_MONITOR: str = "campaign-monitor"
+    N8N_WEBHOOK_ALERT_PERFORMANCE: str = "alert-performance"
+    N8N_WEBHOOK_LEAD_SYNC: str = "lead-sync"
+    N8N_WEBHOOK_REPORT_DAILY: str = "report-daily"
+    N8N_WEBHOOK_KEYWORD_RESEARCH: str = "keyword-research"
+
     # Render
     RENDER_EXTERNAL_URL: str = ""  # Populated automatically by Render
     

@@ -294,6 +294,14 @@ except ImportError:
 except Exception as e:
     logger.error(f"Errore registrazione test routes: {e}")
 
+try:
+    from app.api.routes import ads
+    app.include_router(ads.router, prefix="/api/ads", tags=["ads"])
+    logger.info("Route ads registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route ads: {e}")
+    logger.error(traceback.format_exc())
+
 logger.info("Routes registrate")
 
 # ===== STATIC FILE SERVING (uploads) =====

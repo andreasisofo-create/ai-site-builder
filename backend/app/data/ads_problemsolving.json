@@ -1,0 +1,176 @@
+[
+  {
+    "id": "molti-clic-zero-conversioni",
+    "sintomo": "Molti clic, zero conversioni",
+    "diagnosi": "Landing page non convince o è lenta; annuncio promette qualcosa che nel sito non c'è",
+    "soluzioni": [
+      "Controlla velocità sito su mobile (deve essere < 3 secondi)",
+      "Semplifica modulo di contatto (meno campi)",
+      "Assicurati che titolo pagina sia identico all'annuncio",
+      "Aggiungi testimonianze o recensioni visibili",
+      "Verifica che il CTA sia chiaro e prominente",
+      "Implementa tracciamento conversioni correttamente"
+    ],
+    "priorita": "alta",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "ctr-basso",
+    "sintomo": "Pochi clic (CTR basso)",
+    "diagnosi": "Annuncio poco attraente o non pertinente al pubblico",
+    "soluzioni": [
+      "Inserisci keyword principale nel Titolo 1",
+      "Sostituisci immagine con una dai colori vivaci",
+      "Usa video invece di immagini statiche (Reels funzionano meglio)",
+      "Usa CTA più forte (Scarica gratis vs Scopri)",
+      "Aggiungi numeri o offerte specifiche (-20%, Gratis)",
+      "Testa diverse headline emotive vs. funzionali"
+    ],
+    "priorita": "media",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "cpc-alto",
+    "sintomo": "CPC troppo alto",
+    "diagnosi": "Alta concorrenza o Quality Score basso",
+    "soluzioni": [
+      "Controlla Quality Score (deve essere > 5)",
+      "Migliora pertinenza keyword/annuncio/landing",
+      "Cambia creatività (alto engagement abbassa CPC)",
+      "Prova keyword più specifiche (long-tail)",
+      "Aumenta raggio geografico per ridurre competizione",
+      "Ottimizza per conversioni invece che clic"
+    ],
+    "priorita": "media",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "cpl-altissimo",
+    "sintomo": "CPL altissimo",
+    "diagnosi": "Pubblico troppo ristretto o offerta non interessante",
+    "soluzioni": [
+      "Espandi raggio geografico o interessi",
+      "Aggiungi incentivo (sconto, guida gratuita)",
+      "Usa Moduli Istantanei Meta invece del sito",
+      "Migliora copy dell'offerta (più benefit)",
+      "Testa audience lookalike più ampia (3% vs 1%)",
+      "Verifica che il pixel tracci correttamente"
+    ],
+    "priorita": "alta",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "frequenza-alta",
+    "sintomo": "Frequenza troppo alta (> 4 su Meta)",
+    "diagnosi": "Stai inseguendo le stesse persone: saturazione",
+    "soluzioni": [
+      "Allarga audience (aumenta lookalike da 1% a 3%)",
+      "Sostituisci immagine/video annuncio",
+      "Metti in pausa campagna per 48 ore",
+      "Aggiungi nuovi interessi all'audience",
+      "Escludi chi ha già convertito",
+      "Attiva reach optimization invece di conversioni"
+    ],
+    "priorita": "media",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "pmax-non-converte",
+    "sintomo": "PMax spende ma non converte",
+    "diagnosi": "Algoritmo non ha abbastanza dati o asset scadenti",
+    "soluzioni": [
+      "Torna a campagna Search manuale finché non hai 30 conversioni/mese",
+      "Carica video di alta qualità (non solo immagini statiche)",
+      "Aggiungi più asset diversi (15+ titoli, 5+ descrizioni)",
+      "Verifica che il feed shopping sia completo",
+      "Aggiungi segnali di pubblico (customer lists)",
+      "Attendi 14 giorni prima di modificare (learning phase)"
+    ],
+    "priorita": "alta",
+    "settori": ["ecommerce"]
+  },
+  {
+    "id": "campagna-ferma",
+    "sintomo": "Campagna ferma (zero impression)",
+    "diagnosi": "Budget troppo basso, offerta troppo bassa o problemi policy",
+    "soluzioni": [
+      "Aumenta budget giornaliero o CPA target",
+      "Controlla se annuncio è approvato con riserva",
+      "Verifica metodi di pagamento",
+      "Controlla policy (alcune parole possono bloccare)",
+      "Verifica che il pixel sia attivo e funzionante",
+      "Controlla se account ha limitazioni"
+    ],
+    "priorita": "alta",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "lead-non-qualificati",
+    "sintomo": "Troppi lead ma poco qualificati",
+    "diagnosi": "Targeting troppo ampio o modulo contatto troppo semplice",
+    "soluzioni": [
+      "Aggiungi campi qualificanti (budget, timeline, ruolo)",
+      "Stringi il targeting geografico",
+      "Aggiungi prezzi nel copy per filtrare",
+      "Usa lead form con più domande",
+      "Escludi interessi troppo generici"
+    ],
+    "priorita": "media",
+    "settori": ["studio_legale", "commercialista", "edile", "immobiliare"]
+  },
+  {
+    "id": "tasso-rimbalzo-alto",
+    "sintomo": "Tasso di rimbalzo alto (>70%)",
+    "diagnosi": "Traffico non pertinente o landing page non allineata con annuncio",
+    "soluzioni": [
+      "Verifica coerenza tra annuncio e landing page",
+      "Migliora velocità caricamento (< 2.5s)",
+      "Aggiungi contenuto rilevante sopra la piega",
+      "Riduci distrazioni sulla landing",
+      "Testa headline più specifiche"
+    ],
+    "priorita": "media",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "cpm-aumentato",
+    "sintomo": "CPM aumentato improvvisamente",
+    "diagnosi": "Aumento competizione stagionale o saturazione audience",
+    "soluzioni": [
+      "Testa nuovi interessi",
+      "Allarga fascia d'età",
+      "Prova posizionamenti diversi (Stories, Reels)",
+      "Riduci budget giornaliero temporaneamente",
+      "Cambia creatività per aumentare engagement"
+    ],
+    "priorita": "bassa",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "budget-esaurito",
+    "sintomo": "Budget esaurito troppo presto",
+    "diagnosi": "Offerta troppo alta o pubblico troppo piccolo",
+    "soluzioni": [
+      "Riduci offerta CPC/CPM",
+      "Allarga audience",
+      "Impausa nelle ore notturne se non performanti",
+      "Usa programmazione oraria",
+      "Distribuisci budget su più giorni"
+    ],
+    "priorita": "media",
+    "settori": ["tutti"]
+  },
+  {
+    "id": "pochi-lead-mattina",
+    "sintomo": "Pochi lead la mattina",
+    "diagnosi": "Orari di attività non ottimizzati per il target",
+    "soluzioni": [
+      "Verifica orari apertura (se servizio fisico)",
+      "Programma annunci nelle ore di punta",
+      "Testa dayparting",
+      "Aumenta bid nelle ore performanti"
+    ],
+    "priorita": "bassa",
+    "settori": ["ristorante", "palestra", "estetica", "parrucchiere"]
+  }
+]

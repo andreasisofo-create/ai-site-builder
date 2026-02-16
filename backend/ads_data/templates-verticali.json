@@ -1,0 +1,724 @@
+{
+  "ristorante": {
+    "nome": "Ristorante / Pizzeria",
+    "icon": "🍕",
+    "obiettivi": ["prenotazioni", "followers", "visite"],
+    "keyword": [
+      "ristorante [città]",
+      "pizzeria [città]",
+      "miglior ristorante [città]",
+      "dove mangiare [città]",
+      "pranzo [città]",
+      "cena [città]",
+      "menu del giorno [città]",
+      "pizza al taglio [città]"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "ricetta",
+      "domicilio gratis",
+      "catena",
+      "all you can eat",
+      "mcdonalds",
+      "kfc",
+      "burger king"
+    ],
+    "targeting": {
+      "eta_min": 18,
+      "eta_max": 55,
+      "interessi": ["cibo italiano", "ristoranti", "uscire"],
+      "raggio_km": 5
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Pizzeria [Città] - Prenota Ora",
+        "Pizza Napoletana Autentica",
+        "Menu della Settimana",
+        "Ingredienti Freschi",
+        "Prenotazione Online",
+        "Pranzo di Lavoro",
+        "Cena Romantica",
+        "Offerta Speciale Weekend"
+      ],
+      "google_descriptions": [
+        "Ingredienti freschi e selezionati. Prenota il tuo tavolo online.",
+        "Atmosfera accogliente e prezzi onesti. Vieni a trovarci!",
+        "Pizza cotta in forno a legna. Autentica tradizione napoletana."
+      ],
+      "meta_hooks": [
+        "Hai voglia di una vera pizza napoletana?",
+        "Scopri il nostro menu stagionale",
+        "🍕 Prenota ora il tuo tavolo",
+        "Il segreto della pizza perfetta?"
+      ],
+      "meta_bodies": [
+        "Ingredienti freschi ogni giorno. Atmosfera accogliente e prezzi onesti. Prenota ora il tuo tavolo. Ti aspettiamo!",
+        "Pizza cotta in forno a legna con ingredienti selezionati. Menu della settimana disponibile."
+      ],
+      "ctas": ["Prenota Ora", "Scopri il Menu", "Chiama per Prenotare"]
+    }
+  },
+  "ecommerce": {
+    "nome": "E-commerce Moda",
+    "icon": "🛒",
+    "obiettivi": ["vendite", "traffico", "carrello"],
+    "keyword": [
+      "shop online",
+      "abbigliamento [categoria]",
+      "sconti moda",
+      "spedizione gratuita",
+      "nuova collezione",
+      "outfit donna",
+      "outfit uomo"
+    ],
+    "keyword_negative": [
+      "usato",
+      "vintage",
+      "second hand",
+      "lavoro",
+      "annunci",
+      "ebay"
+    ],
+    "targeting": {
+      "eta_min": 18,
+      "eta_max": 45,
+      "interessi": ["moda", "shopping", "stile"],
+      "raggio_km": 0
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Shop Online - Spedizione Gratis",
+        "Nuova Collezione 2026",
+        "-20% Primo Ordine",
+        "Reso Gratuito 30 Giorni",
+        "Moda Sostenibile",
+        "Abbigliamento Made in Italy"
+      ],
+      "google_descriptions": [
+        "Abbigliamento di qualità. Reso gratuito entro 30 giorni.",
+        "Spedizione gratuita per ordini superiori a 50€. Nuovi arrivi ogni settimana."
+      ],
+      "meta_hooks": [
+        "La nuova collezione è arrivata",
+        "Il tuo look perfetto ti aspetta",
+        "🛍️ Sconto 20% sul primo ordine"
+      ],
+      "meta_bodies": [
+        "Scopri i trend della stagione. Spedizione gratuita per ordini >50€.",
+        "Qualità e stile a prezzi imbattibili. Reso facile entro 30 giorni."
+      ],
+      "ctas": ["Acquista Ora", "Scopri la Collezione", "Aggiungi al Carrello"]
+    }
+  },
+  "studio_legale": {
+    "nome": "Studio Legale",
+    "icon": "⚖️",
+    "obiettivi": ["consulenze", "prenotazioni", "lead"],
+    "keyword": [
+      "avvocato [città]",
+      "studio legale [città]",
+      "consulenza legale",
+      "divorzio [città]",
+      "causa civile",
+      "risarcimento danni"
+    ],
+    "keyword_negative": [
+      "gratis",
+      "fai da te",
+      "online",
+      "lavoro",
+      "stage",
+      "tirocinio"
+    ],
+    "targeting": {
+      "eta_min": 30,
+      "eta_max": 65,
+      "interessi": ["diritto", "business"],
+      "raggio_km": 25
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Avvocato [Città] - Consulenza",
+        "Studio Legale Esperti",
+        "Prima Consultazione Gratuita",
+        "Casi di Successo",
+        "40+ Anni di Esperienza"
+      ],
+      "google_descriptions": [
+        "Studio legale specializzato in diritto civile e familiare. Contattaci oggi.",
+        "Consulenza professionale e riservata. Risultati garantiti."
+      ],
+      "meta_hooks": [
+        "Hai bisogno di un avvocato affidabile?",
+        "Problemi legali? Siamo qui per aiutarti"
+      ],
+      "meta_bodies": [
+        "Studio legale con anni di esperienza nel diritto civile e familiare. Prima consulenza gratuita.",
+        "Affidati a professionisti del diritto. Riservatezza e competenza garantite."
+      ],
+      "ctas": ["Prenota Consulenza", "Chiamaci Ora", "Richiedi Info"]
+    }
+  },
+  "commercialista": {
+    "nome": "Commercialista",
+    "icon": "📊",
+    "obiettivi": ["consulenze", "dichiarazioni", "lead"],
+    "keyword": [
+      "commercialista [città]",
+      "consulente fiscale",
+      "dichiarazione redditi",
+      "aprire partita iva",
+      "gestione aziendale"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "gratis",
+      "online",
+      "fai da te"
+    ],
+    "targeting": {
+      "eta_min": 25,
+      "eta_max": 60,
+      "interessi": ["business", "finanza", "imprenditoria"],
+      "raggio_km": 20
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Commercialista [Città]",
+        "Consulenza Fiscale",
+        "730 e Unico",
+        "Partita IVA",
+        "Aziende e Privati"
+      ],
+      "google_descriptions": [
+        "Servizi contabili e fiscali per aziende e professionisti.",
+        "Affidabilità e professionalità per la tua contabilità."
+      ],
+      "meta_hooks": [
+        "Gestisci la tua contabilità senza stress",
+        "Commercialista per aziende e professionisti"
+      ],
+      "meta_bodies": [
+        "Servizi completi di consulenza fiscale e contabile. Dichiarazioni, partite IVA, bilanci.",
+        "Esperienza ventennale nel settore fiscale. Contattaci per una consulenza."
+      ],
+      "ctas": ["Prenota Consulenza", "Chiedi un Preventivo", "Scrivici"]
+    }
+  },
+  "palestra": {
+    "nome": "Palestra / Fitness",
+    "icon": "💪",
+    "obiettivi": ["iscrizioni", "lead", "visite"],
+    "keyword": [
+      "palestra [città]",
+      "fitness [città]",
+      "allenamento [città]",
+      "palestra aperta 24h",
+      "personal trainer"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "dieta",
+      "casa",
+      "gratis",
+      "attrezzi usati"
+    ],
+    "targeting": {
+      "eta_min": 18,
+      "eta_max": 45,
+      "interessi": ["fitness", "bodybuilding", "benessere"],
+      "raggio_km": 5
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Palestra [Città] - Prova Gratis",
+        "Iscriviti Oggi",
+        "Personal Trainer",
+        "Aperta 24/7",
+        "Attrezzatura Top"
+      ],
+      "google_descriptions": [
+        "Allenati con noi! Prova gratuita disponibile. Attrezzi moderni.",
+        "Personal trainer professionisti. Orari flessibili 24/7."
+      ],
+      "meta_hooks": [
+        "Pronto per la tua trasformazione?",
+        "💪 Inizia oggi il tuo percorso fitness"
+      ],
+      "meta_bodies": [
+        "Palestra moderna con attrezzatura all'avanguardia. Prima settimana gratis!",
+        "Personal trainer dedicati per raggiungere i tuoi obiettivi. Prenota una prova."
+      ],
+      "ctas": ["Prenota Prova", "Iscriviti Ora", "Chiedi Info"]
+    }
+  },
+  "fitness": {
+    "nome": "Fitness / Personal Trainer",
+    "icon": "🏋️",
+    "obiettivi": ["iscrizioni", "lead", "visite"],
+    "keyword": [
+      "personal trainer [città]",
+      "allenamento funzionale",
+      "crossfit [città]",
+      "yoga [città]",
+      "pilates [città]"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "dieta",
+      "online",
+      "video",
+      "gratis"
+    ],
+    "targeting": {
+      "eta_min": 18,
+      "eta_max": 50,
+      "interessi": ["fitness", "yoga", "benessere"],
+      "raggio_km": 8
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Personal Trainer [Città]",
+        "Allenamento Personalizzato",
+        "Dimagrimento Garantito",
+        "Prima Lezione Gratis",
+        "Ottieni i Tuoi Risultati"
+      ],
+      "google_descriptions": [
+        "Programmi personalizzati per i tuoi obiettivi. Prenota una prova gratuita.",
+        "Esperienza decennale nel fitness. Risultati garantiti."
+      ],
+      "meta_hooks": [
+        "Il tuo corpo ideale è più vicino di quanto pensi",
+        "🏋️‍♂️ Inizia il tuo percorso con un esperto"
+      ],
+      "meta_bodies": [
+        "Personal trainer professionista per raggiungere i tuoi obiettivi fitness. Programmi su misura.",
+        "Allenamento funzionale, yoga, pilates. Trova la disciplina giusta per te."
+      ],
+      "ctas": ["Prenota Prova", "Chiedi Info", "Inizia Oggi"]
+    }
+  },
+  "immobiliare": {
+    "nome": "Agenzia Immobiliare",
+    "icon": "🏠",
+    "obiettivi": ["lead", "visite", "contatti"],
+    "keyword": [
+      "agenzia immobiliare [città]",
+      "casa in vendita [città]",
+      "affitto [città]",
+      "appartamento [città]",
+      "immobiliare [città]"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "privato",
+      "subito",
+      "usato"
+    ],
+    "targeting": {
+      "eta_min": 28,
+      "eta_max": 60,
+      "interessi": ["immobili", "casa", "investimenti"],
+      "raggio_km": 15
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Agenzia Immobiliare [Città]",
+        "Case in Vendita",
+        "Affitti [Città]",
+        "Valutazione Gratuita",
+        "30 Anni di Esperienza"
+      ],
+      "google_descriptions": [
+        "Trova la casa dei tuoi sogni con noi. Valutazione gratuita del tuo immobile.",
+        "Ampia selezione di case in vendita e affitto. Contattaci oggi."
+      ],
+      "meta_hooks": [
+        "Stai cercando casa? Abbiamo la soluzione giusta",
+        "🏠 La tua nuova casa ti aspetta"
+      ],
+      "meta_bodies": [
+        "Agenzia immobiliare con oltre 30 anni di esperienza. Vendita e affitto case.",
+        "Valutazione gratuita del tuo immobile. Affidati a professionisti del settore."
+      ],
+      "ctas": ["Vedi Annunci", "Valuta Casa", "Contattaci"]
+    }
+  },
+  "estetica": {
+    "nome": "Centro Estetico",
+    "icon": "💆‍♀️",
+    "obiettivi": ["prenotazioni", "lead", "visite"],
+    "keyword": [
+      "centro estetico [città]",
+      "trattamenti viso",
+      "massaggi [città]",
+      "unghie [città]",
+      "epilazione laser"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "fai da te",
+      "prodotti",
+      "online"
+    ],
+    "targeting": {
+      "eta_min": 18,
+      "eta_max": 55,
+      "interessi": ["bellezza", "benessere", "cura del corpo"],
+      "raggio_km": 8
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Centro Estetico [Città]",
+        "Trattamenti Viso e Corpo",
+        "Prenota Ora",
+        "Promo Primavera",
+        "Expert di Bellezza"
+      ],
+      "google_descriptions": [
+        "Trattamenti viso e corpo professionali. Prenota la tua consulenza gratuita.",
+        "Prodotti di alta qualità per la cura della tua bellezza."
+      ],
+      "meta_hooks": [
+        "Meriti un momento di relax e bellezza",
+        "💆‍♀️ Scopri i nostri trattamenti esclusivi"
+      ],
+      "meta_bodies": [
+        "Centro estetico professionale con trattamenti personalizzati. Prenota ora.",
+        "Massaggi, trattamenti viso, manicure e molto altro. La tua bellezza è la nostra passione."
+      ],
+      "ctas": ["Prenota Ora", "Scopri Trattamenti", "Richiedi Info"]
+    }
+  },
+  "parrucchiere": {
+    "nome": "Parrucchiere",
+    "icon": "💇‍♀️",
+    "obiettivi": ["prenotazioni", "lead", "visite"],
+    "keyword": [
+      "parrucchiere [città]",
+      "taglio capelli [città]",
+      "colore capelli",
+      "hair stylist",
+      "balayage [città]"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "fai da te",
+      "prodotti",
+      "online"
+    ],
+    "targeting": {
+      "eta_min": 18,
+      "eta_max": 55,
+      "interessi": ["bellezza", "moda", "acconciature"],
+      "raggio_km": 5
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Parrucchiere [Città]",
+        "Taglio & Colore",
+        "Prenota Online",
+        "Nuovi Clienti -10%",
+        "Hair Stylist Expert"
+      ],
+      "google_descriptions": [
+        "Tagli personalizzati e colorazioni professionali. Prenota il tuo appuntamento.",
+        "Prodotti di alta qualità per i tuoi capelli. Vieni a scoprire le novità."
+      ],
+      "meta_hooks": [
+        "Pronta per un nuovo look?",
+        "💇‍♀️ I tuoi capelli meritano il meglio"
+      ],
+      "meta_bodies": [
+        "Parrucchiere professionale con servizi personalizzati. Taglio, colore, trattamenti.",
+        "Sconto 10% per i nuovi clienti. Prenota il tuo appuntamento oggi stesso."
+      ],
+      "ctas": ["Prenota Ora", "Chiedi Info", "Vedi Prezzi"]
+    }
+  },
+  "edile": {
+    "nome": "Impresa Edile",
+    "icon": "🏗️",
+    "obiettivi": ["preventivi", "lead", "contatti"],
+    "keyword": [
+      "impresa edile [città]",
+      "ristrutturazioni [città]",
+      "costruzioni [città]",
+      "idraulico [città]",
+      "imbianchino [città]"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "fai da te",
+      "materiale",
+      "attrezzatura"
+    ],
+    "targeting": {
+      "eta_min": 30,
+      "eta_max": 65,
+      "interessi": ["casa", "ristrutturazione", "edilizia"],
+      "raggio_km": 25
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Impresa Edile [Città]",
+        "Ristrutturazioni Complete",
+        "Preventivo Gratuito",
+        "20 Anni Esperienza",
+        "Lavori Garantiti"
+      ],
+      "google_descriptions": [
+        "Ristrutturazioni interni ed esterni. Preventivo gratuito e senza impegno.",
+        "Impresa edile con oltre 20 anni di esperienza. Lavori garantiti."
+      ],
+      "meta_hooks": [
+        "Vuoi ristrutturare casa? Inizia con un preventivo gratuito",
+        "🏗️ Trasforma la tua casa con professionisti"
+      ],
+      "meta_bodies": [
+        "Impresa edile per ristrutturazioni complete. Preventivo gratuito e personalizzato.",
+        "Esperienza ventennale nel settore edile. Lavori di qualità garantiti."
+      ],
+      "ctas": ["Richiedi Preventivo", "Chiamaci Ora", "Vedi Progetti"]
+    }
+  },
+  "fotografo": {
+    "nome": "Fotografo",
+    "icon": "📸",
+    "obiettivi": ["prenotazioni", "lead", "visite"],
+    "keyword": [
+      "fotografo [città]",
+      "foto matrimonio [città]",
+      "servizio fotografico",
+      "fotografo professionista",
+      "book fotografico"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "gratis",
+      "corso",
+      "tutorial"
+    ],
+    "targeting": {
+      "eta_min": 25,
+      "eta_max": 50,
+      "interessi": ["fotografia", "matrimonio", "eventi"],
+      "raggio_km": 30
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Fotografo [Città]",
+        "Matrimoni ed Eventi",
+        "Servizio Fotografico",
+        "Book Professionali",
+        "Preventivo Gratuito"
+      ],
+      "google_descriptions": [
+        "Fotografo professionista per matrimoni, eventi e ritratti. Contattami per un preventivo.",
+        "Immagini uniche che raccontano la tua storia. Prenota una consulenza."
+      ],
+      "meta_hooks": [
+        "Immagini che raccontano la tua storia",
+        "📸 Servizio fotografico professionale"
+      ],
+      "meta_bodies": [
+        "Fotografo professionista con anni di esperienza. Matrimoni, eventi, book fotografici.",
+        "Catturo i momenti più belli della tua vita. Preventivo gratuito disponibile."
+      ],
+      "ctas": ["Richiedi Preventivo", "Vedi Portfolio", "Prenota Data"]
+    }
+  },
+  "creativo": {
+    "nome": "Studio Creativo",
+    "icon": "🎨",
+    "obiettivi": ["lead", "contatti", "visite"],
+    "keyword": [
+      "agenzia creativa [città]",
+      "graphic design",
+      "logo design",
+      "brand identity",
+      "web design [città]"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "gratis",
+      "corso",
+      "tutorial"
+    ],
+    "targeting": {
+      "eta_min": 25,
+      "eta_max": 55,
+      "interessi": ["design", "marketing", "imprenditoria"],
+      "raggio_km": 50
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Agenzia Creativa [Città]",
+        "Brand Identity",
+        "Logo Design",
+        "Web Design",
+        "Social Media Marketing"
+      ],
+      "google_descriptions": [
+        "Studio creativo per branding, web design e marketing. Trasformiamo la tua visione in realtà.",
+        "Soluzioni creative su misura per il tuo business. Contattaci oggi."
+      ],
+      "meta_hooks": [
+        "Dai vita alla tua brand identity",
+        "🎨 Design che fa la differenza"
+      ],
+      "meta_bodies": [
+        "Studio creativo specializzato in brand identity, web design e social media. Soluzioni su misura.",
+        "Trasformiamo le tue idee in progetti concreti. Richiedi una consulenza gratuita."
+      ],
+      "ctas": ["Richiedi Consulenza", "Vedi Progetti", "Inizia Oggi"]
+    }
+  },
+  "startup": {
+    "nome": "Startup / Tech",
+    "icon": "🚀",
+    "obiettivi": ["lead", "contatti", "demo"],
+    "keyword": [
+      "software [categoria]",
+      "app [categoria]",
+      "soluzione digitale",
+      "tool business",
+      "piattaforma online"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "gratis",
+      "crack",
+      "download"
+    ],
+    "targeting": {
+      "eta_min": 25,
+      "eta_max": 55,
+      "interessi": ["tecnologia", "business", "startup"],
+      "raggio_km": 0
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Software per il tuo Business",
+        "Prova Gratuita 14 Giorni",
+        "Automatizza i Processi",
+        "Soluzione All-in-One",
+        "Demo Personalizzata"
+      ],
+      "google_descriptions": [
+        "Piattaforma software per automatizzare il tuo business. Prova gratuita 14 giorni.",
+        "Soluzioni digitali per imprenditori e aziende. Richiedi una demo personalizzata."
+      ],
+      "meta_hooks": [
+        "Automatizza il tuo business oggi",
+        "🚀 La soluzione che cercavi per la tua azienda"
+      ],
+      "meta_bodies": [
+        "Software innovativo per semplificare i processi aziendali. Prova gratuita 14 giorni.",
+        "Piattaforma completa per startup e imprese. Richiedi una demo personalizzata."
+      ],
+      "ctas": ["Prova Gratis", "Richiedi Demo", "Scopri di Più"]
+    }
+  },
+  "saas": {
+    "nome": "SaaS / Software",
+    "icon": "💻",
+    "obiettivi": ["demo", "trial", "contatti"],
+    "keyword": [
+      "software [categoria]",
+      "saas [categoria]",
+      "cloud solution",
+      "business automation",
+      "enterprise software"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "gratis",
+      "crack",
+      "pirata"
+    ],
+    "targeting": {
+      "eta_min": 28,
+      "eta_max": 55,
+      "interessi": ["tecnologia", "business", "software"],
+      "raggio_km": 0
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "Software Enterprise",
+        "Soluzione Cloud",
+        "Prova Gratuita",
+        "Integrazione API",
+        "Supporto 24/7"
+      ],
+      "google_descriptions": [
+        "Piattaforma SaaS enterprise per grandi aziende. Scalabilità e sicurezza garantite.",
+        "Soluzione cloud completa con integrazioni API. Supporto tecnico dedicato."
+      ],
+      "meta_hooks": [
+        "Potenzia la tua azienda con il nostro SaaS",
+        "💻 La soluzione enterprise che fa la differenza"
+      ],
+      "meta_bodies": [
+        "Piattaforma SaaS completa per automatizzare i processi aziendali. Scalabile e sicura.",
+        "Soluzione cloud enterprise con supporto 24/7. Richiedi una demo personalizzata."
+      ],
+      "ctas": ["Prova Gratis", "Richiedi Demo", "Parla con Sales"]
+    }
+  },
+  "default": {
+    "nome": "Generico",
+    "icon": "🏢",
+    "obiettivi": ["lead", "contatti", "visite"],
+    "keyword": [
+      "[servizio] [città]",
+      "[categoria] [città]",
+      "miglior [servizio]",
+      "[servizio] professionale"
+    ],
+    "keyword_negative": [
+      "lavoro",
+      "stage",
+      "gratis",
+      "fai da te"
+    ],
+    "targeting": {
+      "eta_min": 25,
+      "eta_max": 55,
+      "interessi": ["business"],
+      "raggio_km": 15
+    },
+    "ad_copy": {
+      "google_headlines": [
+        "[Servizio] [Città]",
+        "Professionisti del Settore",
+        "Preventivo Gratuito",
+        "Qualità Garantita",
+        "Contattaci Oggi"
+      ],
+      "google_descriptions": [
+        "Servizi professionali di alta qualità. Contattaci per un preventivo gratuito.",
+        "Esperienza e competenza al tuo servizio. Scopri di più."
+      ],
+      "meta_hooks": [
+        "Hai bisogno di [servizio]? Siamo qui per aiutarti",
+        "Scopri i nostri servizi professionali"
+      ],
+      "meta_bodies": [
+        "Servizi professionali di alta qualità. Esperienza e competenza garantite.",
+        "Preventivo gratuito e personalizzato. Contattaci oggi stesso."
+      ],
+      "ctas": ["Richiedi Info", "Contattaci", "Scopri di Più"]
+    }
+  }
+}

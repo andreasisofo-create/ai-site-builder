@@ -1,0 +1,114 @@
+[
+  {
+    "id": "google-asta",
+    "categoria": "google",
+    "titolo": "Come funziona l'asta Google Ads",
+    "contenuto": "Sistema ad asta: quando un utente effettua una ricerca, Google avvia un'asta in tempo reale. L'Ad Rank è determinato da: bid × qualità × impatto previsto degli asset. Quality Score (1-10): valuta la pertinenza annuncio/parola chiave e l'esperienza della landing page.",
+    "tags": ["asta", "quality-score", "adrank"]
+  },
+  {
+    "id": "google-consent-mode",
+    "categoria": "google",
+    "titolo": "Consent Mode v2 - Obbligatorio in UE",
+    "contenuto": "Dal 2024 il Digital Markets Act richiede Google Consent Mode v2 per tutti i siti UE. Senza Consent Mode v2: perdita stimata del 30-50% dei dati. Parametri nuovi: ad_user_data e ad_personalization.",
+    "tags": ["privacy", "consent-mode", "gdpr"]
+  },
+  {
+    "id": "google-performance-max",
+    "categoria": "google",
+    "titolo": "Performance Max: Guida Completa",
+    "contenuto": "Performance Max utilizza l'AI di Google per distribuire annunci su tutti i canali: Search, Display, YouTube, Discover, Gmail, Maps. Richiede feed shopping, asset group diversificati e almeno 30 conversioni/mese per ottimizzarsi.",
+    "tags": ["performance-max", "pmax", "google-ads", "ecommerce"]
+  },
+  {
+    "id": "google-search-best-practice",
+    "categoria": "google",
+    "titolo": "Campagne Search - Best Practice",
+    "contenuto": "Struttura account: 1 campagna per obiettivo, 3-5 gruppi di annunci per campagna, max 15-20 keyword per gruppo. Usa corrispondenza per frase esatta. Aggiungi estensioni sitelink, callout e strutturate. Landing page: velocità <3s, mobile-friendly, CTA chiara.",
+    "tags": ["search", "best-practice", "google-ads", "struttura"]
+  },
+  {
+    "id": "google-display-dimensioni",
+    "categoria": "google",
+    "titolo": "Dimensioni Creative Display",
+    "contenuto": "Immagini responsive: 1200x628 (landscape), 1200x1200 (square), 900x1600 (portrait). Immagini native: 300x250, 728x90, 160x600, 320x50 (mobile). Video: 16:9 landscape (YouTube), 9:16 vertical (Discovery). Logo: 1200x1200.",
+    "tags": ["display", "dimensioni", "creative", "responsive"]
+  },
+  {
+    "id": "meta-pixel",
+    "categoria": "meta",
+    "titolo": "Setup Business Manager e Pixel",
+    "contenuto": "Business Manager: business.facebook.com → Crea account. Pixel Meta: Gestione eventi → Connetti dati → Web. Conversions API (CAPI): invia eventi dal server, bypassa blocchi cookie. Verifica dominio in Impostazioni Brand.",
+    "tags": ["setup", "pixel", "capi", "business-manager"]
+  },
+  {
+    "id": "meta-lead-gen",
+    "categoria": "meta",
+    "titolo": "Campagne Lead Generation",
+    "contenuto": "Obiettivo: Contatti. Sorgenti lead: Modulo istantaneo (utente compila dentro Facebook/Instagram), Sito web (richiede Pixel), Messenger/WhatsApp. CPL B2B ragionevole: 5-15€. CPL B2C: 3-8€. Aggiungi domande qualificanti per migliorare qualità.",
+    "tags": ["lead", "moduli-istantanei", "form", "contatti"]
+  },
+  {
+    "id": "meta-audience",
+    "categoria": "meta",
+    "titolo": "Target Audience su Meta",
+    "contenuto": "Custom Audience: email, sito web, engagement. Lookalike: 1-10% della popolazione. Interessi: comportamentali e dichiarati. Comportamenti: viaggiatori, utenti mobile, ecc. Saved Audience per riutilizzare targeting.",
+    "tags": ["audience", "targeting", "lookalike", "custom-audience"]
+  },
+  {
+    "id": "meta-creativi",
+    "categoria": "meta",
+    "titolo": "Creative Best Practice Meta",
+    "contenuto": "Video verticali 9:16 performano meglio. Hook nei primi 3 secondi. Sottotitoli obbligatori (80% senza audio). Caroselli: minimo 3 card, usa storytelling. Testa 3-5 creativi per campagna. Aggiorna ogni 2-4 settimane.",
+    "tags": ["creative", "video", "carosello", "reels", "best-practice"]
+  },
+  {
+    "id": "meta-ottimizzazione",
+    "categoria": "meta",
+    "titolo": "Ottimizzazione Campagne Meta",
+    "contenuto": "Learning Phase: 50 conversioni/settimana per uscire. Non modificare durante learning. Budget minimo: 10€/giorno per obiettivo. OTTIMIZZA: 1 obiettivo, 1 conversion event, 1 pixel. Consolidazione: max 3-5 set di annunci per campagna.",
+    "tags": ["ottimizzazione", "learning-phase", "budget", "consolidazione"]
+  },
+  {
+    "id": "meta-policy",
+    "categoria": "meta",
+    "titolo": "Policy e Restrizioni Meta",
+    "contenuto": "Vietato: discriminazione (housing, lavoro, credito), contenuti sensibili, prima e dopo ingannevoli, promesse irrealistiche. Richiede disclaimer per: salute, finanze, politica. Landing page: funzionante, privacy policy, niente popup ingannevoli.",
+    "tags": ["policy", "restrizioni", "compliance", "regole"]
+  },
+  {
+    "id": "strategia-budget-basso",
+    "categoria": "strategia",
+    "titolo": "Strategia con Budget <300€/mese",
+    "contenuto": "Focus su 1 piattaforma (Meta per B2C, Google per B2B). Scegli 1 obiettivo specifico. Usa targeting ristretto (5-10km). Scegli 2-3 keyword esatte. Ottimizza per conversioni, non per clic. Considera moduli istantanei Meta per ridurre costi.",
+    "tags": ["budget", "strategia", "low-budget", "ottimizzazione"]
+  },
+  {
+    "id": "strategia-test-a-b",
+    "categoria": "strategia",
+    "titolo": "A/B Testing Efficace",
+    "contenuto": "Testa 1 elemento alla volta: creativo, copy, targeting, offerta. Budget minimo per test: 50€ per variante. Durata: minimo 3-7 giorni. Dimensione campione: 100+ conversioni per decidere. Usa A/B test tool di Meta/Google per risultati validi.",
+    "tags": ["ab-test", "testing", "ottimizzazione", "conversioni"]
+  },
+  {
+    "id": "strategia-remarketing",
+    "categoria": "strategia",
+    "titolo": "Remarketing: Strategie Avanzate",
+    "contenuto": "Segmenti: visitatori 7, 14, 30, 60 giorni. Escludi convertiti. Frequenza capping: max 3-4 impression/giorno. Creativi dedicati: 'Ti sei dimenticato qualcosa?', offerta speciale. Sequence messaging: awareness → consideration → conversion.",
+    "tags": ["remarketing", "retargeting", "segmentazione", "funnel"]
+  },
+  {
+    "id": "metriche-kpi",
+    "categoria": "analisi",
+    "titolo": "Metriche e KPI da Monitorare",
+    "contenuto": "Brand Awareness: Reach, Impression, Frequency. Engagement: CTR, Video View Rate, Engagement Rate. Conversion: Conversion Rate, CPA, ROAS, CPL. Qualità: Quality Score, Relevance Score, Frequency. Lifetime Value: CLV, Repeat Purchase Rate.",
+    "tags": ["kpi", "metriche", "analisi", "reporting"]
+  },
+  {
+    "id": "landing-page-optimization",
+    "categoria": "conversion",
+    "titolo": "Landing Page Optimization",
+    "contenuto": "Velocità <2.5s. Mobile-first design. Headline corrisponde all'annuncio. CTA sopra la piega. Form breve (max 3-4 campi). Trust signals: recensioni, badge, logo clienti. A/B test continuo. Heatmap tracking per capire comportamento utenti.",
+    "tags": ["landing-page", "cro", "conversion", "ux"]
+  }
+]
