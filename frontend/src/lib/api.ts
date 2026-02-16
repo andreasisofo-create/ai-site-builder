@@ -531,12 +531,10 @@ export async function addVideo(siteId: number, videoUrl: string, afterSection: s
 
 // ============ UTILS ============
 
-/** Genera uno slug univoco dal nome */
+/** Genera uno slug dal nome (senza suffissi random) */
 export function generateSlug(name: string): string {
-  const base = name
+  return name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  const timestamp = Date.now().toString(36).slice(-4);
-  return `${base}-${timestamp}`;
 }

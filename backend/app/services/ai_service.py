@@ -324,14 +324,30 @@ IMPORTANT:
 
     async def analyze_image_style(self, image_url: str) -> Dict[str, Any]:
         """Analizza un'immagine di riferimento per estrarre stile e colori."""
-        prompt = """Analyze this website screenshot and describe:
-1. Color palette (primary, secondary, accent colors in hex format)
-2. Typography style (modern, classic, bold, minimal, elegant)
-3. Layout structure (clean, busy, grid-based, fluid, centered)
-4. Overall mood/atmosphere (professional, playful, elegant, corporate, cozy)
-5. Key design elements that stand out
+        prompt = """Analyze this website screenshot and extract the EXACT visual design system.
 
-Be specific and concise. Format as a structured list."""
+You MUST return EXACTLY this format (one field per line, no other text):
+
+PRIMARY_COLOR: #hexcode (the main brand/accent color)
+SECONDARY_COLOR: #hexcode (supporting color)
+ACCENT_COLOR: #hexcode (highlights, CTAs)
+BG_COLOR: #hexcode (main background color)
+BG_ALT_COLOR: #hexcode (alternate section background)
+TEXT_COLOR: #hexcode (main text color)
+TEXT_MUTED_COLOR: #hexcode (secondary/muted text)
+IS_DARK_THEME: true/false
+TYPOGRAPHY_STYLE: brutalist|elegant|minimal|modern|corporate|playful
+FONT_WEIGHT: bold|normal|light
+LAYOUT_STYLE: clean|dense|spacious|asymmetric
+MOOD: one word
+DESIGN_NOTES: one sentence about distinctive visual elements
+
+RULES:
+- Extract EXACT hex codes by sampling the dominant colors you see. Be precise.
+- For dark sites (black/navy background), BG_COLOR must be dark (#000000-#1a1a2e range).
+- For light sites, BG_COLOR must be light (#f5f5f5-#ffffff range).
+- PRIMARY_COLOR is the most prominent brand color (e.g. neon green, electric blue).
+- Do NOT guess or approximate. Report what you actually see in the image."""
 
         payload = {
             "model": "kimi-k2.5",
@@ -344,7 +360,8 @@ Be specific and concise. Format as a structured list."""
                     ],
                 }
             ],
-            "max_tokens": 1000,
+            "max_tokens": 500,
+            "temperature": 0.3,
         }
 
         try:

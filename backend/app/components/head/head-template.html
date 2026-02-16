@@ -81,10 +81,23 @@
     .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
     body { font-family: var(--font-body), sans-serif; }
     h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading), sans-serif; }
-    [data-animate] { opacity: 0; }
+    /* Initial hidden state for animated elements with GPU acceleration */
+    [data-animate] {
+      opacity: 0;
+      transform: translateY(20px);
+      will-change: transform, opacity;
+    }
+    /* Hero elements: visible immediately (above the fold) */
+    section:first-of-type [data-animate],
+    [data-hero] [data-animate],
+    .hero [data-animate],
+    .hero-section [data-animate] {
+      opacity: 1;
+      transform: none;
+    }
     /* Fallback: show content after 3s if GSAP hasn't initialized */
     @keyframes gsapFallback {
-      to { opacity: 1; }
+      to { opacity: 1; transform: none; }
     }
     [data-animate] {
       animation: gsapFallback 0s 3.5s forwards;
@@ -103,8 +116,12 @@
       100% { background-position: -200% 0; }
     }
     /* Reduced motion: show all elements immediately */
-    .reduced-motion [data-animate] { opacity: 1 !important; }
+    .reduced-motion [data-animate] { opacity: 1 !important; transform: none !important; }
     .reduced-motion * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    @media (prefers-reduced-motion: reduce) {
+      [data-animate] { opacity: 1 !important; transform: none !important; }
+      [data-parallax], [data-parallax] img, [data-scrub], [data-pin] { will-change: auto !important; }
+    }
     /* Scroll bounce animation for hero indicators */
     @keyframes scrollBounce {
       0%, 100% { transform: translateY(0); opacity: 0.4; }
@@ -127,17 +144,35 @@
       background-repeat: repeat;
       mix-blend-mode: overlay;
     }
-    /* Footer Reveal Effect */
-    main > section:last-of-type { position: relative; z-index: 1; }
-    footer { position: sticky; bottom: 0; z-index: 0; }
+    /* Footer: normal flow, no sticky/fixed */
+    footer { position: relative; z-index: auto; }
+    /* Section stacking and depth */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+    section:first-of-type {
+      z-index: 0;
+    }
     /* Section Overlap - breaks stacked blocks feel */
     section + section {
+      margin-top: -2rem;
       position: relative;
+      z-index: 1;
     }
     .section-overlap {
       margin-top: -4rem;
       position: relative;
       z-index: 2;
+    }
+    /* Section background transitions */
+    .section-dark {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+    }
+    .section-light {
+      background-color: var(--color-bg-alt);
+      color: var(--color-text);
     }
     /* Gradient bridge between sections */
     section::after {
@@ -147,12 +182,60 @@
       left: 0;
       right: 0;
       height: 4rem;
-      background: linear-gradient(to bottom, var(--color-bg, #fff), transparent);
+      background: linear-gradient(to bottom, var(--color-bg), transparent);
       pointer-events: none;
       z-index: 1;
     }
     section:last-of-type::after {
       display: none;
+    }
+    /* Subtle section dividers via clip-path */
+    .section-divider-wave::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 3rem;
+      background: var(--color-bg);
+      clip-path: polygon(0 0, 100% 0, 100% 40%, 50% 100%, 0 40%);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .section-divider-angle::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 4rem;
+      background: var(--color-bg);
+      clip-path: polygon(0 0, 100% 0, 100% 0%, 0 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+    /* Parallax container CSS */
+    [data-parallax] {
+      will-change: transform;
+      overflow: hidden;
+    }
+    [data-parallax] img,
+    .parallax-img {
+      height: 120%;
+      width: 100%;
+      object-fit: cover;
+      will-change: transform;
+    }
+    /* Pinned section CSS (GSAP ScrollTrigger creates .pin-spacer) */
+    .pin-spacer {
+      overflow: visible !important;
+    }
+    [data-pin] {
+      will-change: transform;
+    }
+    /* Scrub-animated elements */
+    [data-scrub] {
+      will-change: transform, opacity;
     }
     /* Enhanced Glassmorphism */
     .glass, [class*="backdrop-blur"] {
@@ -240,5 +323,5 @@
       <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
     </filter>
   </svg>
-  <noscript><style>[data-animate] { opacity: 1 !important; animation: none !important; }</style></noscript>
+  <noscript><style>[data-animate] { opacity: 1 !important; transform: none !important; animation: none !important; }</style></noscript>
 </head>

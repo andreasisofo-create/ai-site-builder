@@ -1246,6 +1246,84 @@ def _detect_category(template_style_id: Optional[str] = None, business_descripti
     return "business"
 
 
+def _parse_reference_analysis(analysis_text: str) -> Dict[str, Any]:
+    """
+    Parse structured reference image analysis into a dict with exact hex colors.
+    Expects KEY: value format from the structured prompt. Falls back to regex
+    extraction of any hex codes found in the text.
+    """
+    result = {}
+
+    # Map structured field names to dict keys
+    field_map = {
+        "PRIMARY_COLOR": "primary_color",
+        "SECONDARY_COLOR": "secondary_color",
+        "ACCENT_COLOR": "accent_color",
+        "BG_COLOR": "bg_color",
+        "BG_ALT_COLOR": "bg_alt_color",
+        "TEXT_COLOR": "text_color",
+        "TEXT_MUTED_COLOR": "text_muted_color",
+        "IS_DARK_THEME": "is_dark",
+        "TYPOGRAPHY_STYLE": "typography_style",
+        "FONT_WEIGHT": "font_weight",
+        "LAYOUT_STYLE": "layout_style",
+        "MOOD": "mood",
+        "DESIGN_NOTES": "design_notes",
+    }
+
+    for line in analysis_text.split("\n"):
+        line = line.strip()
+        if not line or ":" not in line:
+            continue
+        # Split on first colon
+        key_part, _, value_part = line.partition(":")
+        key_part = key_part.strip().upper().replace(" ", "_")
+        value_part = value_part.strip()
+
+        if key_part in field_map:
+            dict_key = field_map[key_part]
+            if dict_key == "is_dark":
+                result[dict_key] = value_part.lower().startswith("true")
+            else:
+                # For color fields, extract just the hex code
+                hex_match = re.search(r'#[0-9A-Fa-f]{6}', value_part)
+                if hex_match and dict_key.endswith("_color"):
+                    result[dict_key] = hex_match.group(0)
+                else:
+                    # For non-color fields, take the first word/phrase
+                    result[dict_key] = value_part.split("(")[0].strip().strip("[]")
+
+    # Fallback: if structured parsing got fewer than 3 color fields, try brute-force hex extraction
+    color_keys = [k for k in result if k.endswith("_color")]
+    if len(color_keys) < 3:
+        all_hexes = re.findall(r'#[0-9A-Fa-f]{6}', analysis_text)
+        # Deduplicate while preserving order
+        seen = set()
+        unique_hexes = []
+        for h in all_hexes:
+            if h.lower() not in seen:
+                seen.add(h.lower())
+                unique_hexes.append(h)
+        # Assign to standard fields in order of appearance
+        fallback_keys = ["primary_color", "secondary_color", "accent_color",
+                         "bg_color", "bg_alt_color", "text_color", "text_muted_color"]
+        for i, hex_val in enumerate(unique_hexes):
+            if i < len(fallback_keys) and fallback_keys[i] not in result:
+                result[fallback_keys[i]] = hex_val
+
+    # Detect dark theme from bg_color if not explicitly set
+    if "is_dark" not in result and "bg_color" in result:
+        try:
+            bg = result["bg_color"].lstrip("#")
+            r, g, b = int(bg[:2], 16), int(bg[2:4], 16), int(bg[4:6], 16)
+            luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+            result["is_dark"] = luminance < 0.5
+        except (ValueError, IndexError):
+            pass
+
+    return result
+
+
 class DataBindingGenerator:
     def __init__(self):
         self.kimi = kimi
@@ -1264,10 +1342,18 @@ class DataBindingGenerator:
         reference_url_context: str = "",
         variety_context: Optional[Dict[str, Any]] = None,
         reference_analysis: Optional[str] = None,
+        parsed_reference: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Kimi returns JSON with color palette and fonts."""
+        """Kimi returns JSON with color palette and fonts.
+
+        When parsed_reference contains hex colors (from image analysis), the
+        generation is constrained: lower temperature, no variety injection,
+        exact color codes in the prompt, and post-generation validation.
+        """
         # Determine if we have a strong reference to follow
         has_reference = bool(reference_analysis) or bool(reference_image_url)
+        # Exact parsed colors from reference image (structured hex codes)
+        has_exact_colors = bool(parsed_reference and parsed_reference.get("primary_color"))
 
         style_hint = ""
         if style_preferences:
@@ -1276,10 +1362,33 @@ class DataBindingGenerator:
             if style_preferences.get("mood"):
                 style_hint += f"Mood/style: {style_preferences['mood']}. "
 
-        # === REFERENCE ANALYSIS OVERRIDE (highest priority) ===
-        # When user provided a reference image, its analysis MUST dominate
+        # === MANDATORY EXACT COLORS (highest priority - from parsed reference) ===
+        exact_colors_block = ""
+        if has_exact_colors:
+            ref = parsed_reference
+            dark_hint = ""
+            if ref.get("is_dark") is True:
+                dark_hint = "\nThe reference has a DARK background. bg_color MUST be dark (#000-#222 range). text_color MUST be light (#DDD-#FFF range)."
+            elif ref.get("is_dark") is False:
+                dark_hint = "\nThe reference has a LIGHT background. bg_color MUST be light (#EEE-#FFF range). text_color MUST be dark (#000-#333 range)."
+            exact_colors_block = f"""
+=== MANDATORY REFERENCE COLORS (DO NOT CHANGE) ===
+Use EXACTLY these colors from the reference:
+primary_color: {ref.get('primary_color')}
+secondary_color: {ref.get('secondary_color', ref.get('primary_color'))}
+accent_color: {ref.get('accent_color', ref.get('primary_color'))}
+bg_color: {ref.get('bg_color', '#0F172A' if ref.get('is_dark') else '#FAF7F2')}
+text_color: {ref.get('text_color', '#F1F5F9' if ref.get('is_dark') else '#1A1A2E')}
+{dark_hint}
+
+These are NON-NEGOTIABLE. Return them exactly as provided.
+Only generate: bg_alt_color, text_muted_color (derived from above), fonts, border_radius, shadow, spacing.
+=== END MANDATORY COLORS ===
+"""
+
+        # === REFERENCE ANALYSIS OVERRIDE (used when we have text analysis but no parsed colors) ===
         reference_override = ""
-        if reference_analysis:
+        if reference_analysis and not has_exact_colors:
             reference_override = f"""
 === MANDATORY REFERENCE OVERRIDE (HIGHEST PRIORITY — OVERRIDE ALL OTHER DIRECTIVES) ===
 The user provided a reference website screenshot. You MUST match its visual style.
@@ -1297,19 +1406,20 @@ STRICT RULES:
 """
 
         # Extract palette guidance from creative context (blueprints)
+        # SKIP entirely when exact reference colors are provided
         palette_hint = ""
-        if creative_context and not has_reference:
-            # Only use creative context when there's no reference (reference takes priority)
+        if creative_context and not has_reference and not has_exact_colors:
             palette_hint = f"\nPROFESSIONAL DESIGN REFERENCE:\n{creative_context[:500]}\n"
 
         # Inject reference URL analysis (colors and fonts from a real site)
-        if reference_url_context:
+        # SKIP when exact colors are already parsed from image
+        if reference_url_context and not has_exact_colors:
             palette_hint += f"\n{reference_url_context}\nMatch these colors and fonts closely.\n"
 
         # --- VARIETY: inject random color mood and font suggestion ---
-        # When a reference is provided, SKIP variety to avoid conflicting directions
+        # SKIP entirely when reference or exact colors are provided
         variety_hint = ""
-        if variety_context and not has_reference:
+        if variety_context and not has_reference and not has_exact_colors:
             color_mood = variety_context.get("color_mood", {})
             font_pair = variety_context.get("font_pairing", {})
             variety_hint = f"""
@@ -1325,21 +1435,61 @@ font_heading_url: "{font_pair.get('url_h', 'Space+Grotesk:wght@400;600;700')}"
 font_body_url: "{font_pair.get('url_b', 'DM+Sans:wght@400;500;600')}"
 """
 
+        # --- FONT HINT for reference: match typography style ---
+        reference_font_hint = ""
+        if has_exact_colors:
+            typo = parsed_reference.get("typography_style", "")
+            fw = parsed_reference.get("font_weight", "")
+            if typo == "brutalist" or fw == "bold":
+                reference_font_hint = """
+=== FONT OVERRIDE FOR REFERENCE ===
+The reference uses BOLD/GEOMETRIC typography. Use one of these pairings:
+- "Space Grotesk" (heading, wght 700-800) + "DM Sans" (body)
+- "Archivo Black" (heading) + "Work Sans" (body)
+- "Oswald" (heading, wght 700) + "Source Sans 3" (body)
+- "Unbounded" (heading, wght 800-900) + "Figtree" (body)
+The heading font MUST have weight 800-900 for maximum impact.
+=== END FONT OVERRIDE ===
+"""
+            elif typo in ("elegant", "serif", "classic"):
+                reference_font_hint = """
+=== FONT OVERRIDE FOR REFERENCE ===
+The reference uses ELEGANT/SERIF typography. Use one of these pairings:
+- "Playfair Display" (heading) + "Inter" (body)
+- "DM Serif Display" (heading) + "Plus Jakarta Sans" (body)
+- "Cormorant Garamond" (heading) + "Lato" (body)
+- "Instrument Serif" (heading) + "Instrument Sans" (body)
+=== END FONT OVERRIDE ===
+"""
+            elif typo == "minimal":
+                reference_font_hint = """
+=== FONT OVERRIDE FOR REFERENCE ===
+The reference uses MINIMAL/CLEAN typography. Use one of these pairings:
+- "Sora" (heading) + "Inter" (body)
+- "Albert Sans" (heading) + "IBM Plex Sans" (body)
+- "Epilogue" (heading) + "Source Sans 3" (body)
+=== END FONT OVERRIDE ===
+"""
+
         # Build the full font pairings list dynamically from the pool
-        # Shuffle to prevent the AI from always picking the first option
-        shuffled_fonts = random.sample(FONT_PAIRING_POOL, min(8, len(FONT_PAIRING_POOL)))
-        font_list_str = "\n".join(
-            f'{fp["personality"]}: "{fp["heading"]}" (heading) + "{fp["body"]}" (body)'
-            for fp in shuffled_fonts
-        )
+        # Skip random font pool when exact reference colors specify a typography override
+        if has_exact_colors and reference_font_hint:
+            font_list_str = "(See FONT OVERRIDE section above for reference-matched pairings)"
+        else:
+            shuffled_fonts = random.sample(FONT_PAIRING_POOL, min(8, len(FONT_PAIRING_POOL)))
+            font_list_str = "\n".join(
+                f'{fp["personality"]}: "{fp["heading"]}" (heading) + "{fp["body"]}" (body)'
+                for fp in shuffled_fonts
+            )
 
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
-{reference_override}
+{exact_colors_block}{reference_override}
 BUSINESS: {business_name} - {business_description[:500]}
 {style_hint}
 {palette_hint}
 {variety_hint}
+{reference_font_hint}
 
 === COLOR THEORY RULES (follow these for professional palettes) ===
 - PRIMARY: The brand's emotional core. Ask: "What feeling should this business evoke?" Warm = trust/comfort (amber, coral). Cool = innovation/clarity (blue, teal). Bold = energy/passion (red, purple).
@@ -1395,35 +1545,98 @@ Pick ONE of these curated pairings based on the business personality:
 - shadow_style: "none" for flat/minimal/brutalist, "soft" for most modern designs, "dramatic" for luxury/3D/premium look with deep shadows.
 - spacing_density: "compact" for info-dense sites (news, dashboards), "normal" for balanced layouts, "generous" for luxury/minimal brands with lots of whitespace.
 
-=== UNIQUENESS DIRECTIVE {'(SKIP IF REFERENCE PROVIDED)' if has_reference else '(CRITICAL)'} ===
-{'NOTE: A reference image/analysis was provided above. MATCH those colors and style instead of generating random ones.' if has_reference else '''IMPORTANT: Generate a UNIQUE palette. Do NOT repeat common web palettes.
+=== UNIQUENESS DIRECTIVE {'(SKIP — MATCH REFERENCE)' if has_reference or has_exact_colors else '(CRITICAL)'} ===
+{'NOTE: A reference image was provided. MATCH those exact colors and style. Do NOT generate random colors.' if has_reference or has_exact_colors else '''IMPORTANT: Generate a UNIQUE palette. Do NOT repeat common web palettes.
 Use the business personality to pick unexpected but fitting color combinations.
 Each generation must feel fresh and different from the previous ones.
 Pick a font pairing you have not used recently. Surprise the viewer.'''}
 
 Return ONLY the JSON object"""
 
+        # Temperature: low (0.3) for reference matching, higher (0.75) for creative generation
+        temperature = 0.3 if has_exact_colors else 0.75
+
         if reference_image_url:
-            result = await self.kimi.call_with_image(
-                prompt=prompt, image_url=reference_image_url,
+            # Build image message manually so we can control temperature
+            image_messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": reference_image_url}},
+                    ],
+                }
+            ]
+            result = await self.kimi.call(
+                messages=image_messages,
                 max_tokens=500, thinking=False, timeout=60.0,
+                temperature=temperature, json_mode=True,
             )
         else:
             result = await self.kimi.call(
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=500, thinking=False, timeout=60.0,
-                temperature=0.75, top_p=0.95, json_mode=True,
+                temperature=temperature, top_p=0.95, json_mode=True,
             )
 
         if result.get("success"):
             try:
                 theme = self._extract_json(result["content"])
+                # Post-generation validation against reference
+                if has_exact_colors:
+                    theme = self._validate_theme_against_reference(theme, parsed_reference)
                 result["parsed"] = theme
             except (json.JSONDecodeError, ValueError) as e:
                 logger.warning(f"[DataBinding] Theme JSON parse failed: {e}, using fallback")
-                result["parsed"] = self._fallback_theme(style_preferences)
+                result["parsed"] = self._fallback_theme(style_preferences, reference_colors=parsed_reference)
         else:
-            result["parsed"] = self._fallback_theme(style_preferences)
+            result["parsed"] = self._fallback_theme(style_preferences, reference_colors=parsed_reference)
+
+        # === FINAL OVERRIDE: Force parsed reference colors into theme ===
+        # Even after prompt instructions + validation, the AI may still deviate.
+        # This guarantees exact color match as a last resort.
+        if has_exact_colors and result.get("parsed"):
+            theme = result["parsed"]
+            color_fields = ["primary_color", "secondary_color", "accent_color",
+                            "bg_color", "bg_alt_color", "text_color", "text_muted_color"]
+            overridden = []
+            for field in color_fields:
+                if field in parsed_reference and parsed_reference[field]:
+                    if theme.get(field) != parsed_reference[field]:
+                        overridden.append(f"{field}: {theme.get(field)} -> {parsed_reference[field]}")
+                    theme[field] = parsed_reference[field]
+            # Derive bg_alt and text_muted if not in reference
+            if "bg_alt_color" not in parsed_reference or not parsed_reference.get("bg_alt_color"):
+                theme["bg_alt_color"] = self._derive_alt_bg(theme.get("bg_color", "#0F172A"))
+            elif parsed_reference.get("bg_alt_color"):
+                theme["bg_alt_color"] = parsed_reference["bg_alt_color"]
+            if "text_muted_color" not in parsed_reference or not parsed_reference.get("text_muted_color"):
+                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#F1F5F9"))
+            elif parsed_reference.get("text_muted_color"):
+                theme["text_muted_color"] = parsed_reference["text_muted_color"]
+            if overridden:
+                logger.info(f"[DataBinding] Theme colors force-overridden from reference: {', '.join(overridden)}")
+            result["parsed"] = theme
+
+        # === CONSISTENCY GUARD: dark bg must not have light bg_alt ===
+        # Catches edge cases where AI or derivation produces mismatched tones.
+        if result.get("parsed"):
+            theme = result["parsed"]
+            bg_l = self._hex_lightness(theme.get("bg_color", "#FFFFFF"))
+            alt_l = self._hex_lightness(theme.get("bg_alt_color", "#F8FAFC"))
+            if bg_l < 20 and alt_l > 40:
+                # Dark bg but light alt — force re-derive
+                logger.warning(
+                    f"[DataBinding] Consistency fix: bg_color L={bg_l} is dark but bg_alt_color L={alt_l} is light. Re-deriving."
+                )
+                theme["bg_alt_color"] = self._derive_alt_bg(theme["bg_color"])
+            elif bg_l > 80 and alt_l < 40:
+                # Light bg but dark alt — force re-derive
+                logger.warning(
+                    f"[DataBinding] Consistency fix: bg_color L={bg_l} is light but bg_alt_color L={alt_l} is dark. Re-deriving."
+                )
+                theme["bg_alt_color"] = self._derive_alt_bg(theme["bg_color"])
+            result["parsed"] = theme
 
         return result
 
@@ -1970,38 +2183,64 @@ Return ONLY the JSON object."""
                     logger.warning(f"[DataBinding] URL analysis failed: {e}")
 
         # === ANALYZE REFERENCE IMAGE (if provided but not yet analyzed) ===
+        parsed_reference = {}
         if reference_image_url and not reference_analysis:
             try:
                 if on_progress:
                     on_progress(1, "Analisi immagine di riferimento...")
                 logger.info(f"[DataBinding] Analyzing reference image: {reference_image_url[:80]}...")
                 analysis_result = await self.kimi.call_with_image(
-                    prompt="""Analyze this website screenshot and describe:
-1. Color palette (primary, secondary, accent colors in EXACT hex format, e.g. #1a1a2e)
-2. Whether the background is DARK or LIGHT
-3. Typography style (modern, classic, bold, minimal, elegant, geometric, serif, sans-serif)
-4. Overall mood/atmosphere (professional, playful, elegant, corporate, brutalist, luxurious, tech)
-5. Key visual elements (gradients, shadows, cards, rounded corners, sharp edges, etc.)
+                    prompt="""Analyze this website screenshot and extract the EXACT visual design system.
 
-When extracting colors, don't just identify the literal colors. Analyze the COLOR RELATIONSHIPS:
-- What creates the visual hierarchy? (Which color draws the eye first?)
-- What's the contrast strategy? (High contrast = bold, Low contrast = subtle)
-- Is there a "surprise" accent color that breaks the pattern?
-Report these relationships, not just HEX codes.
+You MUST return EXACTLY this format (one field per line, no other text):
 
-Be specific and concise. Focus on extractable design parameters.""",
+PRIMARY_COLOR: #hexcode (the main brand/accent color)
+SECONDARY_COLOR: #hexcode (supporting color)
+ACCENT_COLOR: #hexcode (highlights, CTAs)
+BG_COLOR: #hexcode (main background color)
+BG_ALT_COLOR: #hexcode (alternate section background)
+TEXT_COLOR: #hexcode (main text color)
+TEXT_MUTED_COLOR: #hexcode (secondary/muted text)
+IS_DARK_THEME: true/false
+TYPOGRAPHY_STYLE: brutalist|elegant|minimal|modern|corporate|playful
+FONT_WEIGHT: bold|normal|light
+LAYOUT_STYLE: clean|dense|spacious|asymmetric
+MOOD: one word
+DESIGN_NOTES: one sentence about distinctive visual elements
+
+RULES:
+- Extract EXACT hex codes by sampling the dominant colors you see. Be precise.
+- For dark sites (black/navy background), BG_COLOR must be dark (#000000-#1a1a2e range).
+- For light sites, BG_COLOR must be light (#f5f5f5-#ffffff range).
+- PRIMARY_COLOR is the most prominent brand color (e.g. neon green, electric blue).
+- Do NOT guess or approximate. Report what you actually see in the image.""",
                     image_url=reference_image_url,
-                    max_tokens=800,
+                    max_tokens=500,
                     thinking=False,
                     timeout=30.0,
+                    temperature=0.3,
                 )
                 if analysis_result.get("success") and analysis_result.get("content"):
                     reference_analysis = analysis_result["content"]
-                    logger.info(f"[DataBinding] Reference image analyzed: {len(reference_analysis)} chars")
+                    parsed_reference = _parse_reference_analysis(reference_analysis)
+                    logger.info(f"[DataBinding] Reference image analyzed: {len(reference_analysis)} chars, "
+                                f"parsed {len(parsed_reference)} fields: {parsed_reference}")
+                    # Prepend explicit hex summary for downstream consumers
+                    if parsed_reference.get("primary_color"):
+                        hex_summary = "\n".join(
+                            f"EXTRACTED_{k.upper()}: {v}"
+                            for k, v in parsed_reference.items()
+                            if k.endswith("_color") and isinstance(v, str) and v.startswith("#")
+                        )
+                        if hex_summary:
+                            reference_analysis = f"=== EXTRACTED HEX COLORS (use these exactly) ===\n{hex_summary}\n=== END EXTRACTED ===\n\n{reference_analysis}"
                 else:
                     logger.warning(f"[DataBinding] Reference image analysis failed: {analysis_result.get('error', 'unknown')}")
             except Exception as e:
                 logger.warning(f"[DataBinding] Reference image analysis error: {e}")
+        elif reference_analysis:
+            # If reference_analysis was passed in already, parse it too
+            parsed_reference = _parse_reference_analysis(reference_analysis)
 
         # === PICK VARIETY CONTEXT (random personality, color mood, font pairing) ===
         variety = _pick_variety_context()
@@ -2024,6 +2263,7 @@ Be specific and concise. Focus on extractable design parameters.""",
             reference_url_context=reference_url_context,
             variety_context=variety,
             reference_analysis=reference_analysis,
+            parsed_reference=parsed_reference,
         )
         texts_task = self._generate_texts(
             business_name, business_description,
@@ -2035,8 +2275,8 @@ Be specific and concise. Focus on extractable design parameters.""",
         )
         theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
 
-        # Extract results
-        theme = theme_result.get("parsed", self._fallback_theme(style_preferences))
+        # Extract results (use reference colors in fallback if available)
+        theme = theme_result.get("parsed", self._fallback_theme(style_preferences, reference_colors=parsed_reference))
 
         if not texts_result.get("success") or not texts_result.get("parsed"):
             logger.warning(f"[DataBinding] AI texts failed, using fallback: {texts_result.get('error', 'unknown')}")
@@ -3662,11 +3902,156 @@ Be specific and concise. Focus on extractable design parameters.""",
         logger.warning(f"[DataBinding] Using fallback texts for {business_name} (sections: {sections})")
         return texts
 
-    def _fallback_theme(self, style_preferences=None) -> Dict[str, str]:
-        """Default theme if Kimi theme generation fails. Randomly picks from diverse palette pool."""
+    def _fallback_theme(self, style_preferences=None, reference_colors: Optional[Dict] = None) -> Dict[str, str]:
+        """Default theme if Kimi theme generation fails. Uses reference colors if available, else random pool."""
+        if reference_colors and reference_colors.get("primary_color"):
+            # Build fallback from reference colors - never use random palette
+            typo_style = reference_colors.get("typography_style", "")
+            is_dark = reference_colors.get("is_dark", False)
+            return {
+                "primary_color": reference_colors["primary_color"],
+                "secondary_color": reference_colors.get("secondary_color", reference_colors["primary_color"]),
+                "accent_color": reference_colors.get("accent_color", reference_colors["primary_color"]),
+                "bg_color": reference_colors.get("bg_color", "#0F172A" if is_dark else "#FAF7F2"),
+                "bg_alt_color": self._derive_alt_bg(reference_colors.get("bg_color", "#0F172A" if is_dark else "#FAF7F2")),
+                "text_color": reference_colors.get("text_color", "#F1F5F9" if is_dark else "#1A1A2E"),
+                "text_muted_color": self._derive_muted(reference_colors.get("text_color", "#F1F5F9" if is_dark else "#1A1A2E")),
+                "font_heading": "Space Grotesk",
+                "font_heading_url": "Space+Grotesk:wght@400;600;700;800",
+                "font_body": "DM Sans",
+                "font_body_url": "DM+Sans:wght@400;500;600",
+                "border_radius_style": "sharp" if typo_style == "brutalist" else "soft",
+                "shadow_style": "none" if is_dark else "soft",
+                "spacing_density": "normal",
+            }
         theme = random.choice(FALLBACK_THEME_POOL).copy()
         if style_preferences and style_preferences.get("primary_color"):
             theme["primary_color"] = style_preferences["primary_color"]
+        return theme
+
+    @staticmethod
+    def _hex_to_hsl(hex_color: str) -> tuple:
+        """Convert hex color to HSL (h: 0-360, s: 0-100, l: 0-100)."""
+        hex_color = hex_color.lstrip("#")
+        if len(hex_color) == 3:
+            hex_color = "".join(c * 2 for c in hex_color)
+        r, g, b = int(hex_color[0:2], 16) / 255, int(hex_color[2:4], 16) / 255, int(hex_color[4:6], 16) / 255
+        max_c, min_c = max(r, g, b), min(r, g, b)
+        l = (max_c + min_c) / 2
+        if max_c == min_c:
+            h = s = 0.0
+        else:
+            d = max_c - min_c
+            s = d / (2.0 - max_c - min_c) if l > 0.5 else d / (max_c + min_c)
+            if max_c == r:
+                h = (g - b) / d + (6 if g < b else 0)
+            elif max_c == g:
+                h = (b - r) / d + 2
+            else:
+                h = (r - g) / d + 4
+            h /= 6
+        return round(h * 360), round(s * 100), round(l * 100)
+
+    @staticmethod
+    def _hsl_to_hex(h: int, s: int, l: int) -> str:
+        """Convert HSL (h: 0-360, s: 0-100, l: 0-100) to hex color."""
+        h, s, l = h / 360, s / 100, l / 100
+        if s == 0:
+            r = g = b = l
+        else:
+            def hue2rgb(p, q, t):
+                if t < 0: t += 1
+                if t > 1: t -= 1
+                if t < 1/6: return p + (q - p) * 6 * t
+                if t < 1/2: return q
+                if t < 2/3: return p + (q - p) * (2/3 - t) * 6
+                return p
+            q = l * (1 + s) if l < 0.5 else l + s - l * s
+            p = 2 * l - q
+            r = hue2rgb(p, q, h + 1/3)
+            g = hue2rgb(p, q, h)
+            b = hue2rgb(p, q, h - 1/3)
+        return f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}"
+
+    def _hex_lightness(self, hex_color: str) -> int:
+        """Get lightness (0-100) from a hex color."""
+        try:
+            return self._hex_to_hsl(hex_color)[2]
+        except (ValueError, IndexError):
+            return 50
+
+    def _derive_alt_bg(self, bg_hex: str) -> str:
+        """Derive an alternate background color by shifting lightness.
+
+        Uses a smaller shift for very dark or very light backgrounds to keep
+        the alt color tonally consistent (e.g. dark bg -> still-dark alt).
+        """
+        try:
+            h, s, l = self._hex_to_hsl(bg_hex)
+            # Adaptive shift: small for extremes, larger for mid-range
+            if l < 15:
+                shift = 6  # very dark: subtle lift (e.g. #000 -> ~#101010)
+            elif l < 50:
+                shift = 10  # dark: moderate lift
+            elif l > 90:
+                shift = 6  # very light: subtle dip
+            else:
+                shift = 10  # light: moderate dip
+            new_l = min(100, l + shift) if l < 50 else max(0, l - shift)
+            return self._hsl_to_hex(h, s, new_l)
+        except (ValueError, IndexError):
+            return bg_hex
+
+    def _derive_muted(self, text_hex: str) -> str:
+        """Derive a muted text color by moving lightness toward 50%."""
+        try:
+            h, s, l = self._hex_to_hsl(text_hex)
+            # Move lightness 30% toward middle (50)
+            new_l = l + int((50 - l) * 0.4)
+            # Reduce saturation slightly
+            new_s = max(0, s - 15)
+            return self._hsl_to_hex(h, new_s, new_l)
+        except (ValueError, IndexError):
+            return "#6B7280"
+
+    def _validate_theme_against_reference(self, theme: Dict[str, str], reference_colors: Dict[str, Any]) -> Dict[str, str]:
+        """Post-generation validation: force-correct theme if it deviates from reference."""
+        if not reference_colors:
+            return theme
+
+        # Force-correct dark/light mismatch
+        ref_is_dark = reference_colors.get("is_dark", False)
+        theme_bg_lightness = self._hex_lightness(theme.get("bg_color", "#FFFFFF"))
+
+        if ref_is_dark and theme_bg_lightness > 40:
+            # Reference is dark but theme bg is light - force correct
+            logger.warning(f"[DataBinding] Theme bg_color {theme.get('bg_color')} is light but reference is dark. Forcing reference colors.")
+            theme["bg_color"] = reference_colors.get("bg_color", "#0F172A")
+            theme["bg_alt_color"] = self._derive_alt_bg(theme["bg_color"])
+            theme["text_color"] = reference_colors.get("text_color", "#F1F5F9")
+            theme["text_muted_color"] = self._derive_muted(theme["text_color"])
+        elif not ref_is_dark and theme_bg_lightness < 40:
+            # Reference is light but theme bg is dark - force correct
+            logger.warning(f"[DataBinding] Theme bg_color {theme.get('bg_color')} is dark but reference is light. Forcing reference colors.")
+            theme["bg_color"] = reference_colors.get("bg_color", "#FAF7F2")
+            theme["bg_alt_color"] = self._derive_alt_bg(theme["bg_color"])
+            theme["text_color"] = reference_colors.get("text_color", "#1A1A2E")
+            theme["text_muted_color"] = self._derive_muted(theme["text_color"])
+
+        # Force-correct primary/accent if they differ significantly from reference
+        ref_primary = reference_colors.get("primary_color")
+        if ref_primary and theme.get("primary_color") != ref_primary:
+            logger.info(f"[DataBinding] Forcing primary_color from {theme.get('primary_color')} to {ref_primary}")
+            theme["primary_color"] = ref_primary
+
+        ref_accent = reference_colors.get("accent_color")
+        if ref_accent and theme.get("accent_color") != ref_accent:
+            theme["accent_color"] = ref_accent
+
+        ref_secondary = reference_colors.get("secondary_color")
+        if ref_secondary and theme.get("secondary_color") != ref_secondary:
+            theme["secondary_color"] = ref_secondary
+
         return theme
 
     @staticmethod

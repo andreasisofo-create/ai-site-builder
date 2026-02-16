@@ -88,14 +88,17 @@ async def create_site(
     db: Session = Depends(get_db)
 ):
     """Crea un nuovo sito"""
-    # Verifica slug unico
-    existing = db.query(Site).filter(Site.slug == data.slug).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="Slug già in uso")
-    
+    # Genera slug unico: se esiste, aggiunge -2, -3, ecc.
+    slug = data.slug
+    if db.query(Site).filter(Site.slug == slug).first():
+        counter = 2
+        while db.query(Site).filter(Site.slug == f"{slug}-{counter}").first():
+            counter += 1
+        slug = f"{slug}-{counter}"
+
     site = Site(
         name=data.name,
-        slug=data.slug,
+        slug=slug,
         description=data.description,
         template=data.template,
         owner_id=current_user.id,

@@ -232,6 +232,11 @@ async def _run_generation_background(
             site.generation_message = ""
             if result.get("site_data"):
                 site.config = result["site_data"]
+            # Store reference_analysis in config for future refine use
+            if request.reference_analysis:
+                config = site.config if isinstance(site.config, dict) else {}
+                config["_reference_analysis"] = request.reference_analysis
+                site.config = config
             # Store QC results
             qc_data = result.get("qc_report")
             if qc_data:
@@ -392,10 +397,16 @@ async def refine_website(
         raise HTTPException(status_code=400, detail="Il sito non ha ancora contenuto HTML")
 
     try:
+        # Retrieve reference_analysis from site config for color/theme correction
+        reference_analysis = None
+        if isinstance(site.config, dict):
+            reference_analysis = site.config.get("_reference_analysis")
+
         result = await swarm.refine(
             current_html=site.html_content,
             modification_request=data.message,
             section_to_modify=data.section,
+            reference_analysis=reference_analysis,
         )
 
         if not result.get("success"):

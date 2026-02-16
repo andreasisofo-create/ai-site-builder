@@ -1,13 +1,15 @@
 /* ============================================================
-   GSAP Universal Animation Engine v3.0
+   GSAP Universal Animation Engine v3.1
    Auto-injected in every generated site
    Effects: parallax, text-split, typewriter, magnetic, 3D tilt,
    floating, gradient-flow, blur-in, curtain, morphing, glass,
    marquee, counter, stagger, scroll-progress, text-reveal,
    stagger-scale, clip-reveal, blur-slide, rotate-3d, image-zoom,
-   card-hover-3d, draw-svg, split-screen
-   Supports: data-delay, data-duration, data-ease on all animations
+   card-hover-3d, draw-svg, split-screen, scroll-fade, pin-hero,
+   section-reveal, data-parallax (standalone)
+   Supports: data-delay, data-duration, data-ease, data-scrub
    Respects prefers-reduced-motion
+   Skips heavy scroll effects on mobile/touch
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   // Fallback: if GSAP didn't load, show all content immediately
@@ -143,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('[data-animate]').forEach(function (el) {
     var type = el.getAttribute('data-animate');
-    if (['stagger', 'parallax', 'text-split', 'typewriter', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen'].indexOf(type) !== -1) return;
+    if (['stagger', 'parallax', 'text-split', 'typewriter', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal'].indexOf(type) !== -1) return;
     var config = animations[type];
     if (!config) { el.style.opacity = 1; return; }
 
@@ -168,17 +170,18 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!items.length) return;
     var effect = container.getAttribute('data-stagger-effect') || 'fade-up';
     var delay = parseFloat(container.getAttribute('data-delay') || 0);
-    var dur = parseFloat(container.getAttribute('data-duration') || 0.7);
+    var dur = parseFloat(container.getAttribute('data-duration') || 0.8);
     var easing = container.getAttribute('data-ease') || 'power3.out';
     var from = { opacity: 0 };
-    if (effect === 'fade-up')    Object.assign(from, { y: 50 });
-    if (effect === 'scale-in')   Object.assign(from, { scale: 0.7 });
-    if (effect === 'blur-in')    Object.assign(from, { filter: 'blur(12px)', y: 20 });
-    if (effect === 'slide-left') Object.assign(from, { x: -60 });
+    if (effect === 'fade-up')    Object.assign(from, { y: 30, filter: 'blur(6px)' });
+    if (effect === 'scale-in')   Object.assign(from, { scale: 0.7, filter: 'blur(4px)' });
+    if (effect === 'blur-in')    Object.assign(from, { filter: 'blur(16px)', y: 30 });
+    if (effect === 'slide-left') Object.assign(from, { x: -60, filter: 'blur(4px)' });
 
     gsap.fromTo(items, from, {
       y: 0, x: 0, scale: 1, opacity: 1, filter: 'blur(0px)',
-      duration: dur, delay: delay, stagger: function(i) { return 0.12 * i + Math.random() * 0.08; },
+      duration: dur, delay: delay,
+      stagger: { each: 0.12, from: 'start', onStart: function() {} },
       ease: easing,
       scrollTrigger: { trigger: container, start: 'top 85%', toggleActions: 'play none none none' }
     });
@@ -194,24 +197,113 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ----------------------------------------------------------
-     3. PARALLAX SCROLLING (data-animate="parallax")
+     3. PARALLAX SCROLLING (data-animate="parallax" or data-parallax)
+     Skip on mobile/touch for performance
      ---------------------------------------------------------- */
-  document.querySelectorAll('[data-animate="parallax"]').forEach(function (el) {
-    var speed = parseFloat(el.getAttribute('data-speed') || 0.3);
-    var direction = el.getAttribute('data-direction') || 'y';
-    var props = {};
-    props[direction] = function () { return -ScrollTrigger.maxScroll(window) * speed; };
-    gsap.to(el, {
-      y: direction === 'y' ? speed * -200 : 0,
-      x: direction === 'x' ? speed * -200 : 0,
-      ease: 'none',
-      scrollTrigger: { trigger: el.parentElement || el, start: 'top bottom', end: 'bottom top', scrub: 1.5 }
+  if (!isMobile) {
+    document.querySelectorAll('[data-animate="parallax"]').forEach(function (el) {
+      var speed = parseFloat(el.getAttribute('data-speed') || el.getAttribute('data-parallax') || 0.3);
+      var direction = el.getAttribute('data-direction') || 'y';
+      gsap.to(el, {
+        y: direction === 'y' ? speed * -200 : 0,
+        x: direction === 'x' ? speed * -200 : 0,
+        ease: 'none',
+        scrollTrigger: { trigger: el.parentElement || el, start: 'top bottom', end: 'bottom top', scrub: 1.5 }
+      });
     });
+
+    // Standalone data-parallax attribute (any element, not just data-animate="parallax")
+    document.querySelectorAll('[data-parallax]:not([data-animate="parallax"])').forEach(function (el) {
+      var speed = parseFloat(el.getAttribute('data-parallax') || 0.3);
+      gsap.to(el, {
+        yPercent: -speed * 100,
+        ease: 'none',
+        scrollTrigger: { trigger: el.parentElement || el, start: 'top bottom', end: 'bottom top', scrub: 1 }
+      });
+    });
+  } else {
+    // On mobile, just show parallax elements without scroll effect
+    document.querySelectorAll('[data-animate="parallax"], [data-parallax]').forEach(function (el) {
+      el.style.opacity = '1';
+    });
+  }
+
+  /* ----------------------------------------------------------
+     3b. SCROLL-LINKED FADE (data-animate="scroll-fade")
+     Element opacity fades out as user scrolls past it.
+     Great for hero text that dissolves on scroll.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="scroll-fade"]').forEach(function (el) {
+    el.style.opacity = '1';
+    var startTrigger = el.getAttribute('data-fade-start') || 'top top';
+    var endTrigger = el.getAttribute('data-fade-end') || 'bottom top';
+    gsap.fromTo(el,
+      { opacity: 1 },
+      {
+        opacity: 0, ease: 'none',
+        scrollTrigger: { trigger: el, start: startTrigger, end: endTrigger, scrub: true }
+      }
+    );
   });
+
+  /* ----------------------------------------------------------
+     3c. PIN HERO (data-animate="pin-hero")
+     Pins the hero section while content scrolls over it.
+     Desktop only — on mobile it just displays normally.
+     ---------------------------------------------------------- */
+  if (!isMobile) {
+    document.querySelectorAll('[data-animate="pin-hero"]').forEach(function (el) {
+      el.style.opacity = '1';
+      el.style.zIndex = '0';
+      var pinDuration = el.getAttribute('data-pin-duration') || '100%';
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top top',
+        end: '+=' + pinDuration,
+        pin: true,
+        pinSpacing: false,
+        scrub: true
+      });
+      // Optional: fade out as content scrolls over
+      if (el.getAttribute('data-pin-fade') !== 'false') {
+        gsap.to(el, {
+          opacity: 0.3,
+          ease: 'none',
+          scrollTrigger: { trigger: el, start: 'top top', end: '+=' + pinDuration, scrub: true }
+        });
+      }
+    });
+  } else {
+    document.querySelectorAll('[data-animate="pin-hero"]').forEach(function (el) {
+      el.style.opacity = '1';
+    });
+  }
+
+  /* ----------------------------------------------------------
+     3d. SECTION REVEAL (data-animate="section-reveal")
+     Sections reveal via clip-path inset that opens on scroll.
+     Gives a "curtain opening" effect. Desktop only.
+     ---------------------------------------------------------- */
+  if (!isMobile) {
+    document.querySelectorAll('[data-animate="section-reveal"]').forEach(function (el) {
+      gsap.fromTo(el,
+        { clipPath: 'inset(10% 0 10% 0)' },
+        {
+          clipPath: 'inset(0% 0% 0% 0%)', ease: 'none',
+          scrollTrigger: { trigger: el, start: 'top 90%', end: 'top 40%', scrub: 1 }
+        }
+      );
+    });
+  } else {
+    document.querySelectorAll('[data-animate="section-reveal"]').forEach(function (el) {
+      el.style.opacity = '1';
+    });
+  }
 
   /* ----------------------------------------------------------
      4. TEXT SPLIT ANIMATION (data-animate="text-split")
      Splits text into chars/words and animates them
+     Supports data-scrub="true" for scroll-linked character reveal
      ---------------------------------------------------------- */
   document.querySelectorAll('[data-animate="text-split"]').forEach(function (el) {
     var splitBy = el.getAttribute('data-split-type') || el.getAttribute('data-split') || 'chars';
@@ -254,17 +346,28 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    var useScrub = el.getAttribute('data-scrub') === 'true';
     var defaultDur = splitBy === 'chars' ? 0.5 : (splitBy === 'lines' ? 0.7 : 0.6);
     var defaultStagger = splitBy === 'chars' ? 0.03 : (splitBy === 'lines' ? 0.1 : 0.08);
 
-    gsap.fromTo(el.children, { y: splitBy === 'words' ? 30 : (splitBy === 'lines' ? 40 : 15), opacity: 0, rotationX: splitBy === 'chars' ? -40 : 0 }, {
-      y: 0, opacity: 1, rotationX: 0,
-      duration: dur ? parseFloat(dur) : defaultDur,
-      delay: delay,
-      stagger: defaultStagger,
-      ease: easing,
-      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
-    });
+    if (useScrub) {
+      // Scrub mode: characters reveal as you scroll through the section
+      gsap.fromTo(el.children, { y: 10, opacity: 0 }, {
+        y: 0, opacity: 1,
+        stagger: defaultStagger,
+        ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top 80%', end: 'top 30%', scrub: 1 }
+      });
+    } else {
+      gsap.fromTo(el.children, { y: splitBy === 'words' ? 30 : (splitBy === 'lines' ? 40 : 15), opacity: 0, rotationX: splitBy === 'chars' ? -40 : 0 }, {
+        y: 0, opacity: 1, rotationX: 0,
+        duration: dur ? parseFloat(dur) : defaultDur,
+        delay: delay,
+        stagger: defaultStagger,
+        ease: easing,
+        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+      });
+    }
   });
 
   /* ----------------------------------------------------------
@@ -323,14 +426,23 @@ document.addEventListener('DOMContentLoaded', function () {
     var suffix = el.getAttribute('data-counter-suffix') || '';
     var prefix = el.getAttribute('data-counter-prefix') || '';
     var decimals = parseInt(el.getAttribute('data-counter-decimals') || 0);
-    var dur = parseFloat(el.getAttribute('data-counter-duration') || 2.5);
+    var dur = parseFloat(el.getAttribute('data-counter-duration') || 2);
+    var useSeparator = el.getAttribute('data-counter-separator') !== 'false';
     var obj = { val: 0 };
+
+    function formatNumber(num, dec) {
+      var fixed = dec > 0 ? num.toFixed(dec) : Math.round(num).toString();
+      if (!useSeparator) return fixed;
+      var parts = fixed.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return parts.join(',');
+    }
 
     gsap.to(obj, {
       val: target, duration: dur, ease: 'power2.out',
       scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
       onUpdate: function () {
-        el.textContent = prefix + (decimals > 0 ? obj.val.toFixed(decimals) : Math.round(obj.val)) + suffix;
+        el.textContent = prefix + formatNumber(obj.val, decimals) + suffix;
       }
     });
   });

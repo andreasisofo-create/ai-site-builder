@@ -7,8 +7,8 @@
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate="stagger">
       <!-- REPEAT:TESTIMONIALS -->
-      <div class="stagger-item bg-[var(--color-bg)] rounded-2xl p-8 shadow-sm">
-        <div class="text-[var(--color-primary)] text-4xl mb-4">&ldquo;</div>
+      <div class="stagger-item bg-[var(--color-bg)] rounded-2xl p-8 shadow-sm" data-animate="tilt">
+        <div class="text-[var(--color-primary)] text-4xl mb-4" data-animate="float" data-float-range="5">&ldquo;</div>
         <p class="text-[var(--color-text-muted)] leading-relaxed mb-6">{{TESTIMONIAL_TEXT}}</p>
         <div class="flex items-center gap-3">
           <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="w-10 h-10 rounded-full object-cover" loading="lazy">

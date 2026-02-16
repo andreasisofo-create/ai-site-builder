@@ -675,12 +675,22 @@ IMPORTANT:
 
     # Request classification categories
     _CSS_KEYWORDS = [
-        # Colors
-        "colore", "sfondo", "background", "primario", "secondario",
-        "scuro", "chiaro", "dark", "light", "tema",
-        "bianco", "nero", "grigio", "blu", "rosso", "verde", "giallo",
-        "arancione", "viola", "rosa", "azzurro", "marrone", "beige",
-        "color", "colour", "palette", "tinta", "tonalità",
+        # Colors (all Italian gender/plural variants)
+        "colore", "colori", "sfondo", "background", "primario", "secondario",
+        "scuro", "scura", "scuri", "scure", "chiaro", "chiara", "chiari", "chiare",
+        "dark", "light", "tema",
+        "bianco", "bianca", "bianchi", "bianche",
+        "nero", "nera", "neri", "nere",
+        "grigio", "grigia", "grigi", "grigie",
+        "blu",
+        "rosso", "rossa", "rossi", "rosse",
+        "verde", "verdi",
+        "giallo", "gialla", "gialli", "gialle",
+        "arancione", "arancioni",
+        "viola", "rosa", "azzurro", "azzurra", "azzurri", "azzurre",
+        "marrone", "marroni", "beige",
+        "color", "colour", "palette", "tinta", "tonalità", "tonalita",
+        "sfumatura", "sfumature",
         # Fonts
         "font", "carattere", "tipografia", "grassetto", "bold",
         "dimensione", "size", "serif", "sans",
@@ -690,12 +700,32 @@ IMPORTANT:
     ]
 
     _TEXT_KEYWORDS = [
-        "testo", "titolo", "scrivi", "riscrivi", "modifica il testo",
-        "cambia il nome", "sostituisci", "rinomina", "descrizione",
-        "sottotitolo", "paragrafo", "slogan", "frase", "headline",
+        "testo", "testi", "titolo", "titoli", "scrivi", "riscrivi",
+        "modifica il testo", "cambia il nome", "sostituisci", "rinomina",
+        "descrizione", "sottotitolo", "paragrafo", "paragrafi",
+        "slogan", "frase", "headline",
+        "scritta", "scritte", "lettere", "lettera",
         "cambia la scritta", "modifica la scritta", "testo del",
         "title", "text", "heading", "label", "copy",
         "parola", "parole", "contenuto testuale",
+        # Italian imperative verbs for "make them/it" (color target)
+        "falle", "falli", "fallo", "falla",
+        "rendile", "rendili", "rendilo", "rendila",
+        "mettile", "mettili", "mettilo", "mettila",
+    ]
+
+    # Major theme change patterns — these need structural strategy, not just CSS vars,
+    # because switching light↔dark requires changing Tailwind classes, overlays, etc.
+    _MAJOR_THEME_PATTERNS = [
+        r'(?:colori?|palette|tema)\s+(?:sono|è|e\'|sbagliat|non\s+(?:va|corrett|corrispon))',
+        r'(?:non\s+corrisponde?|non\s+(?:è|e\')\s+come)\s+(?:la\s+)?(?:reference|riferimento|immagine)',
+        r'(?:cambia|modifica)\s+tutt[oi]\s+(?:il\s+)?(?:tema|colori?|palette|scheme)',
+        r'(?:fai|rendi|metti)\s+(?:tutto\s+)?(?:scuro|dark|nero|chiaro|light|bianco)',
+        r'(?:da\s+(?:chiaro|light)\s+a\s+(?:scuro|dark))|(?:da\s+(?:scuro|dark)\s+a\s+(?:chiaro|light))',
+        r'(?:inverti|ribalta|scambia)\s+(?:i\s+)?(?:colori|tema|palette)',
+        r'(?:rifai|rigenera)\s+(?:i\s+)?(?:colori|tema|palette)',
+        r'sbagliati?\s+(?:i\s+)?colori',
+        r'(?:tutto|completamente)\s+(?:diverso|sbagliato|errato)',
     ]
 
     @staticmethod
@@ -705,6 +735,29 @@ IMPORTANT:
         Returns one of: 'css_vars', 'text', 'section', 'structural'
         """
         msg_lower = message.lower().strip()
+
+        # === EARLY EXIT: Major theme changes need structural, not css_vars ===
+        for pat in SwarmGenerator._MAJOR_THEME_PATTERNS:
+            if re.search(pat, msg_lower):
+                logger.info(f"[SmartRefine] Classified as STRUCTURAL (major theme change: {pat})")
+                return "structural"
+
+        # === SPECIAL RULE: "da [color] a [color]" pattern is ALWAYS css_vars ===
+        # e.g., "da nere a rosse", "da bianco a nero"
+        _ALL_COLOR_WORDS = {
+            "nero", "nera", "neri", "nere", "rosso", "rossa", "rossi", "rosse",
+            "verde", "verdi", "giallo", "gialla", "gialli", "gialle",
+            "bianco", "bianca", "bianchi", "bianche", "grigio", "grigia", "grigi", "grigie",
+            "viola", "arancione", "arancioni", "rosa", "azzurro", "azzurra", "azzurri", "azzurre",
+            "blu", "marrone", "marroni", "beige",
+            "scuro", "scura", "scuri", "scure", "chiaro", "chiara", "chiari", "chiare",
+        }
+        da_a_match = re.search(r'\bda\s+(\w+)\s+a\s+(\w+)', msg_lower)
+        if da_a_match:
+            word1, word2 = da_a_match.group(1), da_a_match.group(2)
+            if word1 in _ALL_COLOR_WORDS or word2 in _ALL_COLOR_WORDS:
+                logger.info(f"[SmartRefine] Classified as CSS_VARS ('da {word1} a {word2}' color pattern)")
+                return "css_vars"
 
         # Score-based classification
         css_score = 0
@@ -717,6 +770,10 @@ IMPORTANT:
         for kw in SwarmGenerator._TEXT_KEYWORDS:
             if kw in msg_lower:
                 text_score += 1
+
+        # Boost: ANY color word found is a strong signal for CSS change
+        if any(cw in msg_lower for cw in _ALL_COLOR_WORDS):
+            css_score += 3
 
         # Strong CSS signals (color change requests)
         if re.search(r'cambia.*(?:colore|sfondo|background|font|carattere)', msg_lower):
@@ -836,10 +893,19 @@ IMPORTANT:
             return html.replace(old_root, new_root, 1)
         return html
 
+    @staticmethod
+    def _parse_css_vars(root_block: str) -> Dict[str, str]:
+        """Parse CSS :root block into a dict of variable name -> value."""
+        result = {}
+        for m in re.finditer(r'(--[\w-]+)\s*:\s*([^;]+);', root_block):
+            result[m.group(1).strip()] = m.group(2).strip()
+        return result
+
     async def _refine_css_vars(
         self,
         current_html: str,
         modification_request: str,
+        reference_analysis: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Strategy 1: Modify only CSS variables. Ultra-fast, zero risk to HTML."""
         start_time = time.time()
@@ -855,6 +921,10 @@ IMPORTANT:
         font_links = re.findall(r'<link[^>]*fonts\.googleapis\.com[^>]*>', current_html)
         font_context = "\n".join(font_links) if font_links else ""
 
+        ref_hint = ""
+        if reference_analysis:
+            ref_hint = f"\nREFERENCE ANALYSIS (user's desired look):\n{reference_analysis}\nUse the colors from the reference analysis when correcting the palette.\n"
+
         prompt = f"""Modify ONLY the CSS :root variables based on the user request.
 Return ONLY the modified :root {{ ... }} block, nothing else.
 
@@ -863,12 +933,22 @@ IMPORTANT RULES:
 - Keep ALL existing variables, modify only the ones needed
 - For color changes, use proper hex values
 - For font changes, use Google Fonts names (e.g., 'Inter', 'Playfair Display')
-- If user asks for "dark mode", invert bg/text colors and adjust all colors
+- If user asks for "dark mode", invert bg/text colors and adjust ALL colors atomically
+- When switching theme (light↔dark), update --bg-color AND --bg-alt-color AND --text-color AND --text-muted together
 - RGB variants (--color-primary-rgb etc.) must match their hex counterparts
 - Do NOT add any explanation, just the CSS
 
-USER REQUEST: {modification_request}
+CRITICAL SCOPE RULES — ONLY change what the user asked:
+- If user asks about SCRITTE/TESTO/LETTERE/TEXT → ONLY change --color-text and --color-text-muted. NEVER touch --color-bg or --color-bg-alt.
+- If user asks about SFONDO/BACKGROUND → ONLY change --color-bg and --color-bg-alt. NEVER touch --color-text or --color-text-muted.
+- If user asks about COLORE PRIMARIO/BRAND → ONLY change --color-primary (and its -rgb variant).
+- If user asks about BOTTONE/CTA/ACCENTO → ONLY change --color-accent (and its -rgb variant).
+- NEVER change --color-bg when the user only asked about text color.
+- NEVER change --color-text when the user only asked about background color.
+- When in doubt, change FEWER variables rather than more.
 
+USER REQUEST: {modification_request}
+{ref_hint}
 {f"CURRENT FONTS: {font_context}" if font_context else ""}
 
 CURRENT :root BLOCK:
@@ -910,6 +990,46 @@ CURRENT :root BLOCK:
         if "--color-" not in new_root:
             logger.warning("[SmartRefine/CSS] AI response missing CSS vars, falling back")
             return {"success": False, "fallback": True}
+
+        # === POST-VALIDATION: Revert unrelated variable changes ===
+        # Parse the user request to determine scope, then revert out-of-scope changes
+        req_lower = modification_request.lower()
+        _text_signal_words = {"scritte", "scritta", "testo", "testi", "lettere", "lettera", "titolo", "titoli", "paragrafo", "paragrafi", "testo", "text"}
+        _bg_signal_words = {"sfondo", "background", "bg"}
+        is_text_request = any(w in req_lower for w in _text_signal_words)
+        is_bg_request = any(w in req_lower for w in _bg_signal_words)
+
+        # Only apply revert guard when request is clearly scoped (not both, not neither)
+        if is_text_request and not is_bg_request:
+            # User asked about text only — revert any bg changes
+            old_vars = self._parse_css_vars(root_block)
+            new_vars = self._parse_css_vars(new_root)
+            bg_var_names = [k for k in old_vars if "bg" in k or "background" in k]
+            reverted = []
+            for var_name in bg_var_names:
+                if var_name in old_vars and var_name in new_vars and old_vars[var_name] != new_vars[var_name]:
+                    new_root = new_root.replace(
+                        f"{var_name}: {new_vars[var_name]}",
+                        f"{var_name}: {old_vars[var_name]}"
+                    )
+                    reverted.append(var_name)
+            if reverted:
+                logger.info(f"[SmartRefine/CSS] Reverted out-of-scope bg changes: {reverted}")
+        elif is_bg_request and not is_text_request:
+            # User asked about bg only — revert any text changes
+            old_vars = self._parse_css_vars(root_block)
+            new_vars = self._parse_css_vars(new_root)
+            text_var_names = [k for k in old_vars if "text" in k and "bg" not in k]
+            reverted = []
+            for var_name in text_var_names:
+                if var_name in old_vars and var_name in new_vars and old_vars[var_name] != new_vars[var_name]:
+                    new_root = new_root.replace(
+                        f"{var_name}: {new_vars[var_name]}",
+                        f"{var_name}: {old_vars[var_name]}"
+                    )
+                    reverted.append(var_name)
+            if reverted:
+                logger.info(f"[SmartRefine/CSS] Reverted out-of-scope text changes: {reverted}")
 
         # Apply the new :root block
         new_html = self._replace_css_root(current_html, new_root)
@@ -1150,6 +1270,7 @@ Return ONLY valid JSON array, no explanation."""
         current_html: str,
         modification_request: str,
         section_to_modify: Optional[str] = None,
+        reference_analysis: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Smart Refine: classifica la richiesta e usa la strategia ottimale.
@@ -1168,7 +1289,7 @@ Return ONLY valid JSON array, no explanation."""
 
         # Strategy 1: CSS Variables (colors, fonts, backgrounds)
         if strategy == "css_vars":
-            result = await self._refine_css_vars(current_html, modification_request)
+            result = await self._refine_css_vars(current_html, modification_request, reference_analysis)
             if result.get("success"):
                 return result
             if result.get("fallback"):
@@ -1212,6 +1333,15 @@ Return ONLY valid JSON array, no explanation."""
 - Keep all <!-- __*_PLACEHOLDER__ --> and <!-- __STYLE_*__ --> and <!-- __SVG_INNER_*__ --> comments intact - they are auto-restored after your edit.
 - Return ONLY complete HTML between ```html and ``` tags. Do NOT truncate."""
 
+        # Add reference analysis context for color/theme correction
+        reference_context = ""
+        if reference_analysis:
+            reference_context = f"""
+ORIGINAL REFERENCE ANALYSIS (the user's desired look):
+{reference_analysis}
+
+When the user complains about colors or theme, use the reference analysis above to determine the CORRECT colors, fonts, and mood. Update :root CSS variables, Tailwind classes, and background colors to match the reference."""
+
         # Strategy: ALWAYS use section-only mode when a section is specified
         # This dramatically reduces token usage and improves quality
         section_only_mode = False
@@ -1230,6 +1360,7 @@ Return ONLY valid JSON array, no explanation."""
             prompt = f"""Modify ONLY this {section_to_modify} section HTML. Return ONLY the modified section.
 
 REQUEST: {modification_request}
+{reference_context}
 
 {design_system}
 
@@ -1239,6 +1370,7 @@ SECTION HTML:
             prompt = f"""Modify ONLY the {section_to_modify} section. Keep all other sections unchanged.
 
 REQUEST: {modification_request}
+{reference_context}
 
 {design_system}
 
@@ -1248,6 +1380,7 @@ HTML:
             prompt = f"""Modify this HTML website.
 
 REQUEST: {modification_request}
+{reference_context}
 
 {design_system}
 
@@ -1282,6 +1415,7 @@ HTML:
                     prompt = f"""Modify ONLY this {section_to_modify} section HTML. Return ONLY the modified section.
 
 REQUEST: {modification_request}
+{reference_context}
 
 {design_system}
 
@@ -1291,6 +1425,7 @@ SECTION HTML:
                     prompt = f"""Modify ONLY the {section_to_modify} section. Keep all other sections unchanged.
 
 REQUEST: {modification_request}
+{reference_context}
 
 {design_system}
 
@@ -1300,6 +1435,7 @@ HTML:
                     prompt = f"""Modify this HTML website.
 
 REQUEST: {modification_request}
+{reference_context}
 
 {design_system}
 

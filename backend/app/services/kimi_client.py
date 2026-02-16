@@ -331,6 +331,7 @@ class KimiClient:
         max_tokens: int = 1500,
         thinking: bool = True,
         timeout: float = 90.0,
+        temperature: Optional[float] = None,
     ) -> Dict[str, Any]:
         """
         Chiamata multimodal con immagine (OpenAI vision format).
@@ -351,6 +352,7 @@ class KimiClient:
             max_tokens=max_tokens,
             thinking=thinking,
             timeout=timeout,
+            temperature=temperature,
         )
 
     def _handle_http_error(self, e: httpx.HTTPStatusError) -> str:
