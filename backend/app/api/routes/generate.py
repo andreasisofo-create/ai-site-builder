@@ -47,6 +47,7 @@ class GenerateRequest(BaseModel):
     style_preferences: Optional[Dict[str, Any]] = None
     reference_analysis: Optional[str] = None
     reference_image_url: Optional[str] = None
+    reference_urls: Optional[List[str]] = None  # Separate reference website URLs (not embedded in description)
     logo_url: Optional[str] = None
     contact_info: Optional[Dict[str, str]] = None
     site_id: Optional[int] = None  # Se fornito, salva direttamente sul sito
@@ -205,12 +206,14 @@ async def _run_generation_background(
             contact_info=request.contact_info,
             on_progress=on_progress,
         )
-        # Only databinding_generator supports photo_urls and template_style_id
+        # Only databinding_generator supports photo_urls, template_style_id, reference_urls
         if generator is databinding_generator:
             if request.photo_urls:
                 gen_kwargs["photo_urls"] = request.photo_urls
             if request.template_style_id:
                 gen_kwargs["template_style_id"] = request.template_style_id
+            if request.reference_urls:
+                gen_kwargs["reference_urls"] = request.reference_urls
 
         result = await generator.generate(**gen_kwargs)
 

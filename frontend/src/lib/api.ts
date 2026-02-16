@@ -167,6 +167,7 @@ export interface GenerateRequest {
   };
   reference_analysis?: string;
   reference_image_url?: string;
+  reference_urls?: string[];
   photo_urls?: string[];
   logo_url?: string;
   contact_info?: Record<string, string>;
@@ -528,6 +529,23 @@ export async function addVideo(siteId: number, videoUrl: string, afterSection: s
     body: JSON.stringify({ video_url: videoUrl, after_section: afterSection }),
   });
   return handleResponse<{ html_content: string; message: string }>(res);
+}
+
+// ============ IMAGE ANALYSIS ============
+
+export async function analyzeImage(imageUrl: string): Promise<{ analysis: string } | null> {
+  try {
+    const headers = getAuthHeaders();
+    const res = await fetch(`${API_BASE}/api/generate/analyze-image`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ image_url: imageUrl }),
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
 }
 
 // ============ UTILS ============

@@ -11,7 +11,7 @@ import httpx
 logger = logging.getLogger(__name__)
 
 
-async def analyze_reference_url(url: str, timeout: float = 15.0) -> Optional[Dict]:
+async def analyze_reference_url(url: str, timeout: float = 25.0) -> Optional[Dict]:
     """
     Fetch a URL and extract design-relevant information.
     Returns a dict with: title, description, colors, fonts, style_cues, content_summary
@@ -23,7 +23,9 @@ async def analyze_reference_url(url: str, timeout: float = 15.0) -> Optional[Dic
     try:
         async with httpx.AsyncClient(follow_redirects=True, timeout=timeout) as client:
             response = await client.get(url, headers={
-                "User-Agent": "Mozilla/5.0 (compatible; SiteBuilderBot/1.0)"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9,it;q=0.8",
             })
             response.raise_for_status()
             html = response.text[:50000]  # Limit to first 50KB

@@ -24,7 +24,7 @@ import {
 } from "@heroicons/react/24/outline";
 import GenerationExperience, { type PreviewData } from "@/components/GenerationExperience";
 import toast from "react-hot-toast";
-import { createSite, generateWebsite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus } from "@/lib/api";
+import { createSite, generateWebsite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus, analyzeImage } from "@/lib/api";
 import {
   TEMPLATE_CATEGORIES, TemplateCategory, TemplateStyle,
   SECTION_LABELS, STYLE_OPTIONS, CTA_OPTIONS, ALL_SECTIONS, STYLE_TO_MOOD,
@@ -121,19 +121,39 @@ function NewProjectContent() {
     }
   };
 
-  // Reference image upload
+  // Compress image via canvas (max 1024px, JPEG 0.8)
+  const compressImageForRef = (dataUrl: string, maxWidth = 1024): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ratio = Math.min(1, maxWidth / img.width);
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.8));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  };
+
+  // Reference image upload (with compression to reduce payload)
   const handleReferenceImageUpload = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error(language === "en" ? "File too large (max 2MB)" : "File troppo grande (max 2MB)");
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(language === "en" ? "File too large (max 5MB)" : "File troppo grande (max 5MB)");
         return;
       }
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
+        const raw = reader.result as string;
+        const compressed = await compressImageForRef(raw);
         setFormData(prev => {
           const newRefImages = [...prev.referenceImages];
-          newRefImages[index] = reader.result as string;
+          newRefImages[index] = compressed;
           return { ...prev, referenceImages: newRefImages };
         });
       };
@@ -349,6 +369,21 @@ function NewProjectContent() {
       const photoUrls = formData.photos.map(p => p.dataUrl);
       const refImageUrl = formData.referenceImages.find(img => img !== null) || undefined;
 
+      // Extract reference URLs as dedicated array
+      const refUrlList = formData.referenceUrls
+        .split(/[\s,]+/)
+        .map(u => u.trim())
+        .filter(u => u.startsWith("http://") || u.startsWith("https://"));
+
+      // Pre-analyze reference image (non-blocking on failure)
+      let refAnalysis: string | undefined;
+      if (refImageUrl) {
+        try {
+          const result = await analyzeImage(refImageUrl);
+          if (result?.analysis) refAnalysis = result.analysis;
+        } catch { /* non-blocking */ }
+      }
+
       const generateResult = await generateWebsite({
         business_name: formData.businessName,
         business_description: fullDescription,
@@ -356,6 +391,8 @@ function NewProjectContent() {
         style_preferences: stylePrefs,
         logo_url: formData.logo || undefined,
         reference_image_url: refImageUrl || (photoUrls.length > 0 ? photoUrls[0] : undefined),
+        reference_analysis: refAnalysis,
+        reference_urls: refUrlList.length > 0 ? refUrlList : undefined,
         photo_urls: photoUrls.length > 0 ? photoUrls : undefined,
         contact_info: Object.keys(contactInfo).length > 0 ? contactInfo : undefined,
         site_id: site.id,
@@ -888,18 +925,37 @@ function NewProjectContent() {
                 {/* --- Photos --- */}
                 <div className="pt-4 border-t border-white/10">
                   <label className="block text-sm font-medium mb-3">{language === "en" ? "Photos of your business (optional, max 8)" : "Foto della tua attivit\u00E0 (opzionale, max 8)"}</label>
+                  {/* Placement guide */}
+                  <p className="text-xs text-slate-400 mb-3">
+                    {language === "en"
+                      ? "Photos are placed in order: Photo 1 \u2192 Hero, Photos 2-5 \u2192 Gallery, Photo 6 \u2192 About Us, Photos 7-8 \u2192 Team"
+                      : "Le foto vengono posizionate in ordine: Foto 1 \u2192 Hero, Foto 2-5 \u2192 Galleria, Foto 6 \u2192 Chi Siamo, Foto 7-8 \u2192 Team"}
+                  </p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {formData.photos.map(photo => (
-                      <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 group">
-                        <Image src={photo.dataUrl} alt={photo.label} fill className="object-cover" />
-                        <button
-                          onClick={() => removePhoto(photo.id)}
-                          className="absolute top-2 right-2 p-1.5 bg-black/70 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
-                        >
-                          <TrashIcon className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    ))}
+                    {formData.photos.map((photo, idx) => {
+                      // Determine placement label based on index + selected sections
+                      const sections = formData.selectedSections;
+                      let placement = "";
+                      if (idx === 0 && sections.includes("hero")) placement = "Hero";
+                      else if (idx >= 1 && idx <= 4 && sections.includes("gallery")) placement = language === "en" ? "Gallery" : "Galleria";
+                      else if (idx === 5 && sections.includes("about")) placement = language === "en" ? "About" : "Chi Siamo";
+                      else if (idx >= 6 && sections.includes("team")) placement = "Team";
+                      return (
+                        <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 group">
+                          <Image src={photo.dataUrl} alt={photo.label} fill className="object-cover" />
+                          {/* Numbered label with section target */}
+                          <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/70 backdrop-blur-sm rounded-md text-xs text-white font-medium">
+                            {idx + 1}{placement ? `. ${placement}` : ""}
+                          </div>
+                          <button
+                            onClick={() => removePhoto(photo.id)}
+                            className="absolute top-2 right-2 p-1.5 bg-black/70 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
+                          >
+                            <TrashIcon className="w-4 h-4 text-white" />
+                          </button>
+                        </div>
+                      );
+                    })}
                     {formData.photos.length < 8 && (
                       <button
                         onClick={() => photoInputRef.current?.click()}
@@ -911,7 +967,26 @@ function NewProjectContent() {
                     )}
                   </div>
                   <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
-                  <p className="text-xs text-slate-500 mt-2">{language === "en" ? "If you don't upload photos, AI will use professional stock images." : "Se non carichi foto, l'AI user\u00E0 immagini professionali di stock."}</p>
+                  {/* Dynamic section-count hint */}
+                  <p className="text-xs text-slate-500 mt-2">
+                    {(() => {
+                      const s = formData.selectedSections;
+                      const recommended = (s.includes("hero") ? 1 : 0) + (s.includes("gallery") ? 4 : 0) + (s.includes("about") ? 1 : 0) + (s.includes("team") ? 2 : 0);
+                      if (recommended > 0) {
+                        const parts: string[] = [];
+                        if (s.includes("hero")) parts.push("1 hero");
+                        if (s.includes("gallery")) parts.push(language === "en" ? "4 gallery" : "4 galleria");
+                        if (s.includes("about")) parts.push(language === "en" ? "1 about" : "1 chi siamo");
+                        if (s.includes("team")) parts.push("2 team");
+                        return language === "en"
+                          ? `We recommend: ${recommended} photos for the selected sections (${parts.join(" + ")}). Without photos, AI will use stock images.`
+                          : `Consigliamo: ${recommended} foto per le sezioni selezionate (${parts.join(" + ")}). Senza foto, l'AI usera' immagini di stock.`;
+                      }
+                      return language === "en"
+                        ? "If you don't upload photos, AI will use professional stock images."
+                        : "Se non carichi foto, l'AI usera' immagini professionali di stock.";
+                    })()}
+                  </p>
                 </div>
 
                 {/* --- AI Image Generation Toggle --- */}
@@ -946,6 +1021,13 @@ function NewProjectContent() {
                       }`} />
                     </div>
                   </button>
+                  {formData.generateImages && formData.photos.length > 0 && (
+                    <p className="text-xs text-violet-400/80 mt-2 px-1">
+                      {language === "en"
+                        ? "Your photos always take priority over AI-generated images."
+                        : "Le tue foto hanno sempre la priorita' sulle immagini AI."}
+                    </p>
+                  )}
                 </div>
 
                 {/* --- Review Compatto + Genera --- */}

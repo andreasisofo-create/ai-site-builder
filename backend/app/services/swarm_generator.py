@@ -732,9 +732,18 @@ IMPORTANT:
     def _classify_refine_request(message: str) -> str:
         """Classify a refine request into a strategy category.
 
-        Returns one of: 'css_vars', 'text', 'section', 'structural'
+        Returns one of: 'image_replace', 'css_vars', 'text', 'section', 'structural'
         """
         msg_lower = message.lower().strip()
+
+        # === EARLY EXIT: Image insertion requests ===
+        if re.search(r'\[(?:inserisci questa immagine|insert this image):', message, re.IGNORECASE):
+            logger.info("[SmartRefine] Classified as IMAGE_REPLACE (image insertion marker)")
+            return "image_replace"
+        if re.search(r'(?:inserisci|metti|aggiungi|usa)\s+(?:questa\s+)?(?:foto|immagine|image|photo)', msg_lower):
+            if re.search(r'(?:https?://|/static/uploads/)', message):
+                logger.info("[SmartRefine] Classified as IMAGE_REPLACE (image URL + insert verb)")
+                return "image_replace"
 
         # === EARLY EXIT: Major theme changes need structural, not css_vars ===
         for pat in SwarmGenerator._MAJOR_THEME_PATTERNS:
@@ -884,6 +893,89 @@ IMPORTANT:
                 if depth == 0:
                     return html[start:i + 1]
         return None
+
+    @staticmethod
+    def _refine_image_replace(
+        html: str,
+        message: str,
+        photo_urls: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """Direct image replacement in HTML without AI calls.
+
+        Extracts the new image URL from the message or photo_urls,
+        finds placeholder/hero images, and replaces the src attribute.
+        Returns in <100ms, zero AI cost.
+        """
+        # 1. Determine the new image URL
+        new_url = None
+        # From photo_urls (preferred - already validated)
+        if photo_urls:
+            new_url = photo_urls[0]
+        # From message markers
+        if not new_url:
+            marker_match = re.search(
+                r'\[(?:Inserisci questa immagine|Insert this image):\s*((?:data:image/[^\]]+|https?://[^\]]+))\]',
+                message,
+            )
+            if marker_match:
+                new_url = marker_match.group(1).strip()
+        # From bare URLs in message
+        if not new_url:
+            url_match = re.search(r'(https?://\S+\.(?:jpg|jpeg|png|webp|gif|svg))', message, re.IGNORECASE)
+            if url_match:
+                new_url = url_match.group(1)
+        if not new_url:
+            url_match = re.search(r'(/static/uploads/\S+)', message)
+            if url_match:
+                new_url = url_match.group(1)
+
+        if not new_url:
+            return {"success": False, "error": "No image URL found in message"}
+
+        # 2. Find images to replace (priority: placeholders > hero > first)
+        img_tags = list(re.finditer(r'<img\s[^>]*src=["\']([^"\']+)["\'][^>]*/?\s*>', html))
+        if not img_tags:
+            return {"success": False, "error": "No <img> tags found in HTML"}
+
+        target = None
+        # Priority 1: Placeholder images (placehold.co, placeholder.com, via.placeholder, picsum)
+        for m in img_tags:
+            src = m.group(1)
+            if any(ph in src for ph in ["placehold", "placeholder", "picsum", "unsplash.com/photo"]):
+                target = m
+                break
+        # Priority 2: Hero section images
+        if not target:
+            hero_region = re.search(r'<(?:section|div)[^>]*(?:id|class)=["\'][^"\']*hero[^"\']*["\'][^>]*>.*?</(?:section|div)>', html, re.DOTALL | re.IGNORECASE)
+            if hero_region:
+                hero_imgs = list(re.finditer(r'<img\s[^>]*src=["\']([^"\']+)["\'][^>]*/?\s*>', hero_region.group(0)))
+                if hero_imgs:
+                    target = hero_imgs[0]
+                    # Adjust match position to full HTML
+                    start_offset = hero_region.start()
+                    target = re.search(re.escape(target.group(0)), html[start_offset:])
+                    if target:
+                        # Re-search in full HTML for the exact tag
+                        target = re.search(re.escape(target.group(0)), html)
+        # Priority 3: First image
+        if not target:
+            target = img_tags[0]
+
+        if not target:
+            return {"success": False, "error": "Could not find target image to replace"}
+
+        # 3. Replace src attribute
+        old_tag = target.group(0)
+        old_src = target.group(1)
+        new_tag = old_tag.replace(old_src, new_url, 1)
+        new_html = html.replace(old_tag, new_tag, 1)
+
+        logger.info(f"[SmartRefine] Image replace: swapped '{old_src[:60]}...' -> '{new_url[:60]}...'")
+        return {
+            "success": True,
+            "html_content": new_html,
+            "strategy": "image_replace",
+        }
 
     @staticmethod
     def _replace_css_root(html: str, new_root: str) -> str:
@@ -1284,9 +1376,27 @@ Return ONLY valid JSON array, no explanation."""
         """
         modification_request = sanitize_refine_input(modification_request)
 
+        # === SAFETY NET: Strip base64 data URLs from messages >10KB ===
+        if len(modification_request) > 10_000:
+            original_len = len(modification_request)
+            modification_request = re.sub(
+                r'data:image/[^;]+;base64,[A-Za-z0-9+/=]{1000,}',
+                '[image-removed]',
+                modification_request,
+            )
+            if len(modification_request) < original_len:
+                logger.info(f"[SmartRefine] Stripped base64 from message: {original_len} -> {len(modification_request)} chars")
+
         # === SMART ROUTING ===
         strategy = self._classify_refine_request(modification_request)
         logger.info(f"[SmartRefine] Request: '{modification_request[:80]}...' → Strategy: {strategy}")
+
+        # Strategy 0: Direct image replacement (no AI call)
+        if strategy == "image_replace":
+            result = self._refine_image_replace(current_html, modification_request, photo_urls)
+            if result.get("success"):
+                return result
+            logger.info("[SmartRefine] Image replace failed, falling back to structural")
 
         # Strategy 1: CSS Variables (colors, fonts, backgrounds)
         if strategy == "css_vars":

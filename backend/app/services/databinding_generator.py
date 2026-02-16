@@ -1358,7 +1358,8 @@ class DataBindingGenerator:
 
         style_hint = ""
         if style_preferences:
-            if style_preferences.get("primary_color"):
+            # When reference has exact colors, skip template color hints (they conflict)
+            if style_preferences.get("primary_color") and not has_exact_colors:
                 style_hint += f"Primary color requested: {style_preferences['primary_color']}. "
             if style_preferences.get("mood"):
                 style_hint += f"Mood/style: {style_preferences['mood']}. "
@@ -1995,26 +1996,49 @@ Return ONLY the JSON object, no explanation."""
         "timeline": "timeline-vertical-01",
     }
 
+    # Layout style keywords mapped to variant name fragments for reference-influenced selection
+    _LAYOUT_VARIANT_KEYWORDS: Dict[str, List[str]] = {
+        "clean": ["clean", "minimal", "simple"],
+        "dense": ["bento", "grid", "masonry", "cards"],
+        "spacious": ["split", "full", "hero", "centered"],
+        "asymmetric": ["bento", "creative", "split", "asymmetric"],
+        "minimal": ["minimal", "clean", "simple"],
+        "brutalist": ["bold", "creative", "brutalist"],
+    }
+
     def _select_components_deterministic(
         self,
         template_style_id: str,
         sections: List[str],
+        parsed_reference: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
         """Select component variants with randomization from curated pools.
 
         For each section, randomly picks from the STYLE_VARIANT_POOL if available.
         Falls back to the fixed STYLE_VARIANT_MAP, then to _DEFAULT_SECTION_VARIANTS.
         This ensures every generated site looks different even for the same template style.
+
+        When parsed_reference contains layout_style, prefer matching variants.
         """
         pool_map = STYLE_VARIANT_POOL.get(template_style_id, {})
         fixed_map = STYLE_VARIANT_MAP.get(template_style_id, {})
         available = self.assembler.get_variant_ids()
         selections = {}
 
+        # Reference layout preference
+        ref_layout = (parsed_reference or {}).get("layout_style", "").lower().strip()
+        ref_keywords = self._LAYOUT_VARIANT_KEYWORDS.get(ref_layout, [])
+
         for section in sections:
             # Priority 1: Randomized pool for this style + section
             pool = pool_map.get(section, [])
             if pool:
+                # If reference layout matches, prefer matching variants
+                if ref_keywords:
+                    matching = [v for v in pool if any(kw in v.lower() for kw in ref_keywords)]
+                    if matching:
+                        selections[section] = random.choice(matching)
+                        continue
                 selections[section] = random.choice(pool)
             # Priority 2: Fixed deterministic map (fallback)
             elif section in fixed_map:
@@ -2052,13 +2076,14 @@ Return ONLY the JSON object, no explanation."""
         sections: List[str],
         style_mood: str,
         template_style_id: Optional[str] = None,
+        parsed_reference: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Select component variants. Uses deterministic map if template_style_id is provided,
         otherwise falls back to Kimi AI selection."""
 
         # If we have a template_style_id with a mapping, use deterministic selection
         if template_style_id and template_style_id in STYLE_VARIANT_MAP:
-            selections = self._select_components_deterministic(template_style_id, sections)
+            selections = self._select_components_deterministic(template_style_id, sections, parsed_reference)
             return {"success": True, "parsed": selections}
 
         # Fallback: AI-based selection (for custom-free or unknown styles)
@@ -2119,6 +2144,7 @@ Return ONLY the JSON object."""
         on_progress: ProgressCallback = None,
         photo_urls: Optional[List[str]] = None,
         template_style_id: Optional[str] = None,
+        reference_urls: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Generate a website using the data-binding pipeline.
@@ -2141,6 +2167,7 @@ Return ONLY the JSON object."""
                     on_progress=on_progress,
                     photo_urls=photo_urls,
                     template_style_id=template_style_id,
+                    reference_urls=reference_urls,
                 ),
                 timeout=180.0,
             )
@@ -2161,6 +2188,7 @@ Return ONLY the JSON object."""
         on_progress: ProgressCallback = None,
         photo_urls: Optional[List[str]] = None,
         template_style_id: Optional[str] = None,
+        reference_urls: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens_in = 0
@@ -2191,17 +2219,25 @@ Return ONLY the JSON object."""
         # === ANALYZE REFERENCE URL (if provided) ===
         reference_url_context = ""
         if _has_url_analyzer:
-            # Extract URL from business_description (format: "Siti di riferimento: https://...")
-            url_match = re.search(r'Siti di riferimento:\s*(https?://\S+)', business_description)
-            if url_match:
-                ref_url = url_match.group(1).strip()
+            # Priority 1: Use dedicated reference_urls field
+            urls_to_analyze = []
+            if reference_urls:
+                urls_to_analyze = [u for u in reference_urls if u.startswith(("http://", "https://"))][:3]
+            # Priority 2: Fallback to regex extraction from description
+            if not urls_to_analyze:
+                url_match = re.search(r'Siti di riferimento:\s*(https?://\S+)', business_description)
+                if url_match:
+                    urls_to_analyze = [url_match.group(1).strip()]
+
+            for ref_url in urls_to_analyze:
                 try:
                     analysis = await analyze_reference_url(ref_url)
                     if analysis:
-                        reference_url_context = format_analysis_for_prompt(analysis)
+                        ctx = format_analysis_for_prompt(analysis)
+                        reference_url_context += ctx + "\n"
                         logger.info(f"[DataBinding] Analyzed reference URL: {ref_url}")
                 except Exception as e:
-                    logger.warning(f"[DataBinding] URL analysis failed: {e}")
+                    logger.warning(f"[DataBinding] URL analysis failed for {ref_url}: {e}")
 
         # === ANALYZE REFERENCE IMAGE (if provided but not yet analyzed) ===
         parsed_reference = {}
@@ -2238,7 +2274,7 @@ RULES:
                     image_url=reference_image_url,
                     max_tokens=500,
                     thinking=False,
-                    timeout=30.0,
+                    timeout=60.0,
                     temperature=0.3,
                 )
                 if analysis_result.get("success") and analysis_result.get("content"):
@@ -2257,8 +2293,18 @@ RULES:
                             reference_analysis = f"=== EXTRACTED HEX COLORS (use these exactly) ===\n{hex_summary}\n=== END EXTRACTED ===\n\n{reference_analysis}"
                 else:
                     logger.warning(f"[DataBinding] Reference image analysis failed: {analysis_result.get('error', 'unknown')}")
+                    if on_progress:
+                        on_progress(1, "Analisi riferimento fallita, continuo con stile predefinito...", {
+                            "phase": "reference_failed",
+                            "warning": "L'immagine di riferimento non e' stata analizzata correttamente. I colori potrebbero non corrispondere.",
+                        })
             except Exception as e:
                 logger.warning(f"[DataBinding] Reference image analysis error: {e}")
+                if on_progress:
+                    on_progress(1, "Analisi riferimento fallita, continuo con stile predefinito...", {
+                        "phase": "reference_failed",
+                        "warning": str(e)[:100],
+                    })
         elif reference_analysis:
             # If reference_analysis was passed in already, parse it too
             parsed_reference = _parse_reference_analysis(reference_analysis)
@@ -2362,6 +2408,7 @@ RULES:
             selection_coro = self._select_components(
                 business_description, sections, mood,
                 template_style_id=template_style_id,
+                parsed_reference=parsed_reference,
             )
             images_coro = generate_all_site_images(
                 business_name=business_name,
@@ -2391,6 +2438,7 @@ RULES:
             selection_result = await self._select_components(
                 business_description, sections, mood,
                 template_style_id=template_style_id,
+                parsed_reference=parsed_reference,
             )
 
         selections = selection_result.get("parsed", self._default_selections(
