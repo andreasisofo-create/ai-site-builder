@@ -1151,7 +1151,7 @@ export default function HelpChatbot() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label={strings.openLabel}
-        className="fixed bottom-6 right-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-transform hover:scale-105 hover:bg-blue-500 active:scale-95"
+        className="fixed bottom-6 left-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-transform hover:scale-105 hover:bg-blue-500 active:scale-95"
       >
         {open ? (
           <svg
@@ -1188,7 +1188,7 @@ export default function HelpChatbot() {
 
       {/* Chat window */}
       <div
-        className={`fixed bottom-24 right-6 z-[9999] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#111] shadow-2xl transition-all duration-300 ${
+        className={`fixed bottom-24 left-6 z-[9999] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#111] shadow-2xl transition-all duration-300 ${
           open
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-4 opacity-0"
