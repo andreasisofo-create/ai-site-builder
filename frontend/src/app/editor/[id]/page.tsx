@@ -557,42 +557,28 @@ export default function Editor() {
     setActivePopover(null);
   };
 
-  // Compress image to max 800px width for chat (reduces base64 size ~10x)
-  const compressImage = (dataUrl: string, maxWidth = 800): Promise<string> => {
-    return new Promise((resolve) => {
-      const img = new window.Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ratio = Math.min(1, maxWidth / img.width);
-        canvas.width = img.width * ratio;
-        canvas.height = img.height * ratio;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.8));
-      };
-      img.onerror = () => resolve(dataUrl); // fallback to original
-      img.src = dataUrl;
-    });
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !site) return;
     if (file.size > 5 * 1024 * 1024) {
       toast.error(language === "en" ? "Image too large (max 5MB)" : "Immagine troppo grande (max 5MB)");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const dataUrl = reader.result as string;
-      const compressed = await compressImage(dataUrl);
-      setPendingPhotos(prev => [...prev, compressed]);
+    // Upload via CDN to get a short server URL (instead of embedding base64)
+    const toastId = toast.loading(language === "en" ? "Uploading image..." : "Caricamento immagine...");
+    try {
+      const { url } = await uploadMedia(site.id, file);
+      toast.dismiss(toastId);
+      toast.success(language === "en" ? "Image uploaded" : "Immagine caricata");
+      setPendingPhotos(prev => [...prev, url]);
       appendToChat(language === "en"
         ? `[Insert uploaded image ${pendingPhotos.length + 1}]`
         : `[Inserisci immagine caricata ${pendingPhotos.length + 1}]`);
       setActivePopover(null);
-    };
-    reader.readAsDataURL(file);
+    } catch {
+      toast.dismiss(toastId);
+      toast.error(language === "en" ? "Upload failed, try again" : "Caricamento fallito, riprova");
+    }
     e.target.value = "";
   };
 
