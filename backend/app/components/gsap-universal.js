@@ -20,7 +20,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // === IFRAME DETECTION ===
-  var isIframe = window.self !== window.top;
+  // Note: window.top throws SecurityError in sandbox iframe without allow-same-origin
+  var isIframe = false;
+  try { isIframe = window.self !== window.top; } catch (e) { isIframe = true; }
 
   // === LENIS SMOOTH SCROLL (skip in iframes — interferes with ScrollTrigger) ===
   var lenis = null;

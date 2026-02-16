@@ -189,11 +189,11 @@ export default function Editor() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Show guide panel on first visit when site is ready/generated
+  // Show guide panel on first visit per site when site is ready/generated
   useEffect(() => {
-    if (site && (site.status === "ready" || site.status === "published") && liveHtml) {
+    if (site && siteId && (site.status === "ready" || site.status === "published") && liveHtml) {
       try {
-        const seen = localStorage.getItem("editor-guide-seen");
+        const seen = localStorage.getItem(`editor-guide-${siteId}`);
         if (!seen) {
           setShowGuidePanel(true);
         }
@@ -201,12 +201,12 @@ export default function Editor() {
         // localStorage may throw in private browsing mode
       }
     }
-  }, [site?.status, liveHtml]);
+  }, [site?.status, liveHtml, siteId]);
 
   const handleGuideDismiss = () => {
     setShowGuidePanel(false);
     setChatOpen(true);
-    try { localStorage.setItem("editor-guide-seen", "true"); } catch {}
+    try { localStorage.setItem(`editor-guide-${siteId}`, "true"); } catch {}
   };
 
   const handleGuideSuggestionClick = (chatMessage: string) => {
@@ -798,23 +798,36 @@ export default function Editor() {
             >
               {liveHtml ? (
                 <iframe
-                  srcDoc={liveHtml.replace(
-                    '</body>',
-                    `<script>
-                      document.addEventListener('click', function(e) {
-                        var a = e.target.closest('a');
-                        if (!a) return;
-                        var href = a.getAttribute('href');
-                        if (href && href.startsWith('#')) {
-                          e.preventDefault();
-                          var target = document.querySelector(href);
-                          if (target) target.scrollIntoView({ behavior: 'smooth' });
-                        } else if (href && !href.startsWith('#')) {
-                          e.preventDefault();
-                        }
-                      });
-                    </script></body>`
-                  )}
+                  srcDoc={liveHtml
+                    .replace(
+                      '</head>',
+                      `<style>
+                        /* Editor preview overrides: force all content visible */
+                        [data-animate] { opacity: 1 !important; transform: none !important; }
+                        footer { position: static !important; }
+                        section::after { display: none !important; }
+                        body::after { display: none !important; }
+                        .cursor-glow { display: none !important; }
+                      </style></head>`
+                    )
+                    .replace(
+                      '</body>',
+                      `<script>
+                        document.addEventListener('click', function(e) {
+                          var a = e.target.closest('a');
+                          if (!a) return;
+                          var href = a.getAttribute('href');
+                          if (href && href.startsWith('#')) {
+                            e.preventDefault();
+                            var target = document.querySelector(href);
+                            if (target) target.scrollIntoView({ behavior: 'smooth' });
+                          } else if (href && !href.startsWith('#')) {
+                            e.preventDefault();
+                          }
+                        });
+                      </script></body>`
+                    )
+                  }
                   className="w-full h-full border-0"
                   sandbox="allow-scripts"
                   title={`Preview - ${site.name}`}

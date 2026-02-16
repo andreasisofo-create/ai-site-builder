@@ -1147,8 +1147,8 @@ export default function HelpChatbot() {
   const quickActions = QUICK_ACTIONS[lang];
   const problemActions = PROBLEMS_QUICK_ACTIONS[lang];
 
-  // Hide on dashboard and auth pages
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/auth")) {
+  // Hide on dashboard, auth, and editor pages (editor has its own AI chat)
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/auth") || pathname.startsWith("/editor")) {
     return null;
   }
 
