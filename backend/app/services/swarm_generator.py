@@ -759,6 +759,55 @@ IMPORTANT:
         # Default: section if a section is specified, otherwise structural
         return "structural"
 
+    # Common section names in Italian and English, mapped to typical HTML IDs
+    _SECTION_NAMES = {
+        "hero": "hero", "header": "hero", "intestazione": "hero",
+        "about": "about", "chi siamo": "about", "chi-siamo": "about",
+        "servizi": "services", "services": "services",
+        "contatti": "contact", "contatto": "contact", "contact": "contact",
+        "footer": "footer", "piè di pagina": "footer",
+        "testimonial": "testimonials", "testimonianze": "testimonials",
+        "gallery": "gallery", "galleria": "gallery",
+        "portfolio": "portfolio", "lavori": "portfolio", "progetti": "portfolio",
+        "pricing": "pricing", "prezzi": "pricing",
+        "team": "team", "squadra": "team",
+        "faq": "faq", "domande": "faq",
+        "stats": "stats", "numeri": "stats", "statistiche": "stats",
+        "cta": "cta", "call to action": "cta",
+        "blog": "blog", "news": "news", "notizie": "news",
+        "features": "features", "caratteristiche": "features", "funzionalità": "features",
+    }
+
+    @staticmethod
+    def _detect_section_from_request(message: str, html: str) -> Optional[str]:
+        """Auto-detect which section the user is referring to from their message.
+        Cross-references with actual section IDs in the HTML."""
+        msg_lower = message.lower()
+
+        # Find all section IDs actually present in the HTML
+        html_section_ids = set()
+        for m in re.finditer(r'<(?:section|div|header|footer)[^>]*\bid\s*=\s*["\']([^"\']+)["\']', html, re.IGNORECASE):
+            html_section_ids.add(m.group(1).lower())
+
+        # Check each known section name against the message
+        for keyword, section_id in SwarmGenerator._SECTION_NAMES.items():
+            if keyword in msg_lower:
+                # Verify the section actually exists in the HTML
+                # Try exact match first, then partial match
+                if section_id in html_section_ids:
+                    return section_id
+                # Try partial match (e.g., "hero-section" contains "hero")
+                for html_id in html_section_ids:
+                    if section_id in html_id or html_id in section_id:
+                        return html_id
+
+        # Also try matching raw section IDs mentioned in the message
+        for html_id in html_section_ids:
+            if html_id in msg_lower:
+                return html_id
+
+        return None
+
     @staticmethod
     def _extract_css_root(html: str) -> Optional[str]:
         """Extract the :root { ... } CSS block from HTML.
@@ -1135,6 +1184,12 @@ Return ONLY valid JSON array, no explanation."""
                 logger.info("[SmartRefine] Text strategy failed, falling back to structural")
             # Fall through to structural
 
+        # === AUTO-DETECT SECTION from user message (frontend never sends it) ===
+        if not section_to_modify:
+            section_to_modify = self._detect_section_from_request(modification_request, current_html)
+            if section_to_modify:
+                logger.info(f"[SmartRefine] Auto-detected section: '{section_to_modify}'")
+
         # Strategy 3+4: Section or full structural (original approach)
         logger.info(f"[SmartRefine] Using structural strategy (section={section_to_modify})")
 
@@ -1254,12 +1309,13 @@ HTML:
                 logger.info(f"[Swarm] After truncation: ~{prompt_tokens} tokens")
 
         start_time = time.time()
-        # Hybrid strategy: use the refine client (Claude) for chat modifications
-        # This gives higher quality Italian copywriting and better instruction following
-        logger.info(f"[Swarm] Refine using model: {self.kimi_refine.model}")
+        # Hybrid strategy: use the refine client for chat modifications
+        # Use higher max_tokens for section mode (section is small), lower for full HTML
+        output_tokens = 8000 if section_only_mode else 32000
+        logger.info(f"[Swarm] Refine using model: {self.kimi_refine.model}, max_tokens={output_tokens}")
         result = await self.kimi_refine.call_stream(
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=16000,
+            max_tokens=output_tokens,
             thinking=False,
             timeout=300.0,
         )
