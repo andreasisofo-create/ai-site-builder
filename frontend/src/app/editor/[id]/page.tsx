@@ -386,12 +386,20 @@ export default function Editor() {
         setLiveHtml(result.html_content);
         setSite((prev) => prev ? { ...prev, html_content: result.html_content! } : prev);
 
+        const timeStr = `${Math.round((result.generation_time_ms || 0) / 1000)}s`;
+        const strategyLabels: Record<string, string> = {
+          css_vars: "stile",
+          text: "testo",
+          section: "sezione",
+          structural: "struttura",
+        };
+        const strategyLabel = result.strategy ? strategyLabels[result.strategy] || result.strategy : "";
         const aiMsg: ChatMessage = {
           id: (Date.now() + 1).toString(),
           role: "assistant",
           content: language === "en"
-            ? `Edit applied successfully! (${Math.round((result.generation_time_ms || 0) / 1000)}s)`
-            : `Modifica applicata con successo! (${Math.round((result.generation_time_ms || 0) / 1000)}s)`,
+            ? `Edit applied successfully! (${timeStr}${strategyLabel ? `, ${strategyLabel}` : ""})`
+            : `Modifica applicata con successo! (${timeStr}${strategyLabel ? `, ${strategyLabel}` : ""})`,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiMsg]);

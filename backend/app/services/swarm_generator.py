@@ -14,6 +14,7 @@ Fasi:
 """
 
 import asyncio
+import json
 import logging
 import time
 import re
@@ -669,7 +670,393 @@ IMPORTANT:
         return html + '\n' + gsap_block
 
     # =================================================================
-    # REFINE: Modifica via chat (Instant mode, veloce)
+    # SMART REFINE: Classifica richiesta e usa strategia ottimale
+    # =================================================================
+
+    # Request classification categories
+    _CSS_KEYWORDS = [
+        # Colors
+        "colore", "sfondo", "background", "primario", "secondario",
+        "scuro", "chiaro", "dark", "light", "tema",
+        "bianco", "nero", "grigio", "blu", "rosso", "verde", "giallo",
+        "arancione", "viola", "rosa", "azzurro", "marrone", "beige",
+        "color", "colour", "palette", "tinta", "tonalità",
+        # Fonts
+        "font", "carattere", "tipografia", "grassetto", "bold",
+        "dimensione", "size", "serif", "sans",
+        # Spacing / radius / shadow (CSS vars)
+        "bordi arrotondati", "border-radius", "ombra", "shadow",
+        "spaziatura", "spacing", "padding", "margine",
+    ]
+
+    _TEXT_KEYWORDS = [
+        "testo", "titolo", "scrivi", "riscrivi", "modifica il testo",
+        "cambia il nome", "sostituisci", "rinomina", "descrizione",
+        "sottotitolo", "paragrafo", "slogan", "frase", "headline",
+        "cambia la scritta", "modifica la scritta", "testo del",
+        "title", "text", "heading", "label", "copy",
+        "parola", "parole", "contenuto testuale",
+    ]
+
+    @staticmethod
+    def _classify_refine_request(message: str) -> str:
+        """Classify a refine request into a strategy category.
+
+        Returns one of: 'css_vars', 'text', 'section', 'structural'
+        """
+        msg_lower = message.lower().strip()
+
+        # Score-based classification
+        css_score = 0
+        text_score = 0
+
+        for kw in SwarmGenerator._CSS_KEYWORDS:
+            if kw in msg_lower:
+                css_score += 1
+
+        for kw in SwarmGenerator._TEXT_KEYWORDS:
+            if kw in msg_lower:
+                text_score += 1
+
+        # Strong CSS signals (color change requests)
+        if re.search(r'cambia.*(?:colore|sfondo|background|font|carattere)', msg_lower):
+            css_score += 3
+        if re.search(r'(?:più|piu)\s+(?:scuro|chiaro)', msg_lower):
+            css_score += 3
+        if re.search(r'(?:dark|light)\s*mode', msg_lower):
+            css_score += 5
+        if re.search(r'(?:usa|metti|applica)\s+(?:il\s+)?(?:font|colore)', msg_lower):
+            css_score += 3
+
+        # Strong text signals
+        if re.search(r'(?:cambia|modifica|riscrivi|scrivi)\s+(?:il\s+)?(?:testo|titolo|nome|descrizione)', msg_lower):
+            text_score += 3
+        if re.search(r'sostituisci\s+.+\s+con\s+', msg_lower):
+            text_score += 3
+
+        # Structural signals (override everything)
+        structural_patterns = [
+            r'(?:aggiungi|rimuovi|elimina|sposta|riordina)\s+(?:una?\s+)?(?:sezione|mappa|form|modulo|immagine|video|slider|carousel)',
+            r'(?:add|remove|delete|move)\s+(?:a\s+)?(?:section|map|form|image|video)',
+            r'layout|struttura|griglia|grid|colonne|columns',
+        ]
+        for pat in structural_patterns:
+            if re.search(pat, msg_lower):
+                logger.info(f"[SmartRefine] Classified as STRUCTURAL (pattern: {pat})")
+                return "structural"
+
+        logger.info(f"[SmartRefine] Scores - CSS: {css_score}, Text: {text_score}")
+
+        if css_score >= 2 and css_score > text_score:
+            return "css_vars"
+        if text_score >= 2 and text_score > css_score:
+            return "text"
+        if css_score == 1 and text_score == 0:
+            return "css_vars"
+        if text_score == 1 and css_score == 0:
+            return "text"
+
+        # Default: section if a section is specified, otherwise structural
+        return "structural"
+
+    @staticmethod
+    def _extract_css_root(html: str) -> Optional[str]:
+        """Extract the :root { ... } CSS block from HTML.
+        Uses balanced brace matching to handle any nested content."""
+        start = html.find(':root')
+        if start == -1:
+            return None
+        brace_start = html.find('{', start)
+        if brace_start == -1:
+            return None
+        depth = 0
+        for i in range(brace_start, len(html)):
+            if html[i] == '{':
+                depth += 1
+            elif html[i] == '}':
+                depth -= 1
+                if depth == 0:
+                    return html[start:i + 1]
+        return None
+
+    @staticmethod
+    def _replace_css_root(html: str, new_root: str) -> str:
+        """Replace the :root { ... } CSS block in HTML."""
+        old_root = SwarmGenerator._extract_css_root(html)
+        if old_root:
+            return html.replace(old_root, new_root, 1)
+        return html
+
+    async def _refine_css_vars(
+        self,
+        current_html: str,
+        modification_request: str,
+    ) -> Dict[str, Any]:
+        """Strategy 1: Modify only CSS variables. Ultra-fast, zero risk to HTML."""
+        start_time = time.time()
+
+        root_block = self._extract_css_root(current_html)
+        if not root_block:
+            logger.warning("[SmartRefine/CSS] No :root block found, falling back to structural")
+            return {"success": False, "fallback": True}
+
+        logger.info(f"[SmartRefine/CSS] Extracted :root block ({len(root_block)} chars)")
+
+        # Also extract Google Fonts link to know current fonts
+        font_links = re.findall(r'<link[^>]*fonts\.googleapis\.com[^>]*>', current_html)
+        font_context = "\n".join(font_links) if font_links else ""
+
+        prompt = f"""Modify ONLY the CSS :root variables based on the user request.
+Return ONLY the modified :root {{ ... }} block, nothing else.
+
+IMPORTANT RULES:
+- Return valid CSS :root block
+- Keep ALL existing variables, modify only the ones needed
+- For color changes, use proper hex values
+- For font changes, use Google Fonts names (e.g., 'Inter', 'Playfair Display')
+- If user asks for "dark mode", invert bg/text colors and adjust all colors
+- RGB variants (--color-primary-rgb etc.) must match their hex counterparts
+- Do NOT add any explanation, just the CSS
+
+USER REQUEST: {modification_request}
+
+{f"CURRENT FONTS: {font_context}" if font_context else ""}
+
+CURRENT :root BLOCK:
+{root_block}"""
+
+        result = await self.kimi_refine.call(
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1000,
+            thinking=False,
+            timeout=30.0,
+            temperature=0.3,
+        )
+
+        if not result["success"]:
+            logger.error(f"[SmartRefine/CSS] AI call failed: {result.get('error')}")
+            return {"success": False, "fallback": True}
+
+        new_root = result["content"].strip()
+
+        # Clean up: extract just the :root block if AI wrapped it
+        root_match = re.search(r':root\s*\{[^}]+\}', new_root, re.DOTALL)
+        if root_match:
+            new_root = root_match.group(0)
+        elif new_root.startswith('{') and new_root.endswith('}'):
+            new_root = ':root ' + new_root
+        else:
+            # Try to extract from code block
+            code_match = re.search(r'```(?:css)?\s*\n?(.*?)\n?```', new_root, re.DOTALL)
+            if code_match:
+                inner = code_match.group(1).strip()
+                root_match2 = re.search(r':root\s*\{[^}]+\}', inner, re.DOTALL)
+                if root_match2:
+                    new_root = root_match2.group(0)
+                else:
+                    logger.warning("[SmartRefine/CSS] Could not extract :root from AI response")
+                    return {"success": False, "fallback": True}
+
+        # Validate: must contain at least --color-primary
+        if "--color-" not in new_root:
+            logger.warning("[SmartRefine/CSS] AI response missing CSS vars, falling back")
+            return {"success": False, "fallback": True}
+
+        # Apply the new :root block
+        new_html = self._replace_css_root(current_html, new_root)
+
+        # If fonts changed, update Google Fonts link
+        new_heading = re.search(r"--font-heading:\s*'([^']+)'", new_root)
+        new_body = re.search(r"--font-body:\s*'([^']+)'", new_root)
+        if new_heading or new_body:
+            fonts = []
+            if new_heading:
+                fonts.append(new_heading.group(1).replace(' ', '+'))
+            if new_body:
+                fonts.append(new_body.group(1).replace(' ', '+'))
+            if fonts:
+                new_font_link = f'<link href="https://fonts.googleapis.com/css2?{"&".join("family=" + f + ":wght@300;400;500;600;700;800;900" for f in fonts)}&display=swap" rel="stylesheet">'
+                # Replace existing Google Fonts link
+                old_font_pattern = r'<link[^>]*fonts\.googleapis\.com[^>]*>'
+                if re.search(old_font_pattern, new_html):
+                    new_html = re.sub(old_font_pattern, new_font_link, new_html, count=1)
+                    # Remove additional font links (there might be multiple)
+                    new_html = re.sub(old_font_pattern, '', new_html)
+                    # Re-insert the new one before </head>
+                    if new_font_link not in new_html:
+                        new_html = new_html.replace('</head>', f'{new_font_link}\n</head>')
+
+        generation_time = int((time.time() - start_time) * 1000)
+        cost = self.kimi_refine.calculate_cost(
+            result.get("tokens_input", 0),
+            result.get("tokens_output", 0),
+        )
+
+        logger.info(f"[SmartRefine/CSS] Done in {generation_time}ms (${cost}) - CSS vars only, HTML untouched")
+
+        return {
+            "success": True,
+            "html_content": new_html,
+            "model_used": self.kimi_refine.model,
+            "tokens_input": result.get("tokens_input", 0),
+            "tokens_output": result.get("tokens_output", 0),
+            "cost_usd": cost,
+            "generation_time_ms": generation_time,
+            "strategy": "css_vars",
+        }
+
+    async def _refine_text_only(
+        self,
+        current_html: str,
+        modification_request: str,
+        section_to_modify: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Strategy 2: Modify only text content. Fast, safe — HTML structure untouched."""
+        start_time = time.time()
+
+        # Extract visible text elements with their context
+        # Target: headings, paragraphs, buttons, list items, spans with text
+        text_elements = []
+        # Match tags that typically contain visible text
+        pattern = r'<(h[1-6]|p|button|a|span|li|figcaption|blockquote|label|td|th)([^>]*)>(.*?)</\1>'
+        matches = list(re.finditer(pattern, current_html, re.DOTALL | re.IGNORECASE))
+
+        for i, m in enumerate(matches):
+            tag = m.group(1)
+            attrs = m.group(2)
+            inner = m.group(3).strip()
+            # Skip empty, icon-only, or very short content
+            clean_text = re.sub(r'<[^>]+>', '', inner).strip()
+            if len(clean_text) < 2:
+                continue
+            # Skip elements that are likely icons or SVGs
+            if '<svg' in inner.lower() or '<i ' in inner.lower():
+                if len(clean_text) < 5:
+                    continue
+            text_elements.append({
+                "index": i,
+                "tag": tag,
+                "text": clean_text,
+                "full_match": m.group(0),
+            })
+
+        if not text_elements:
+            logger.warning("[SmartRefine/Text] No text elements found, falling back")
+            return {"success": False, "fallback": True}
+
+        # Build a compact text map for the AI
+        text_map = "\n".join(
+            f"[{el['index']}] <{el['tag']}> {el['text']}"
+            for el in text_elements[:80]  # Limit to 80 elements
+        )
+
+        section_hint = f" in the {section_to_modify} section" if section_to_modify else ""
+
+        prompt = f"""Modify the website text{section_hint} based on the user request.
+
+Return a JSON array of replacements. Each replacement: {{"index": <number>, "new_text": "<new text>"}}
+Only include elements that need to change. Keep the same language (Italian).
+
+USER REQUEST: {modification_request}
+
+CURRENT TEXT ELEMENTS:
+{text_map}
+
+Return ONLY valid JSON array, no explanation."""
+
+        result = await self.kimi_refine.call(
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=2000,
+            thinking=False,
+            timeout=45.0,
+            temperature=0.4,
+            json_mode=True,
+        )
+
+        if not result["success"]:
+            logger.error(f"[SmartRefine/Text] AI call failed: {result.get('error')}")
+            return {"success": False, "fallback": True}
+
+        # Parse replacements
+        try:
+            content = result["content"].strip()
+            # Extract JSON from potential code block
+            json_match = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', content, re.DOTALL)
+            if json_match:
+                content = json_match.group(1).strip()
+            replacements = json.loads(content)
+            if not isinstance(replacements, list):
+                # Maybe it's wrapped in an object
+                if isinstance(replacements, dict) and "replacements" in replacements:
+                    replacements = replacements["replacements"]
+                else:
+                    raise ValueError("Expected JSON array")
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.warning(f"[SmartRefine/Text] Failed to parse AI response: {e}")
+            return {"success": False, "fallback": True}
+
+        if not replacements:
+            logger.info("[SmartRefine/Text] AI returned no replacements needed")
+            return {"success": False, "fallback": True}
+
+        # Apply replacements
+        new_html = current_html
+        applied = 0
+        for rep in replacements:
+            idx = rep.get("index")
+            new_text = rep.get("new_text", "")
+            if idx is None or not new_text:
+                continue
+            # Find the matching element
+            el = next((e for e in text_elements if e["index"] == idx), None)
+            if not el:
+                continue
+            old_match = el["full_match"]
+            if old_match not in new_html:
+                continue
+            # Replace the text content, preserving HTML structure inside
+            tag = el["tag"]
+            attrs_match = re.match(rf'<{re.escape(tag)}([^>]*)>', old_match, re.IGNORECASE)
+            attrs = attrs_match.group(1) if attrs_match else ""
+            # If the original had inner HTML (like <span>, <strong>), just replace the text
+            inner_html = re.search(rf'<{re.escape(tag)}[^>]*>(.*?)</{re.escape(tag)}>', old_match, re.DOTALL | re.IGNORECASE)
+            if inner_html:
+                old_inner = inner_html.group(1)
+                # Check if inner has child tags — if so, replace just the text parts
+                if '<' in old_inner:
+                    # Has nested tags — replace just the text portion (first text node)
+                    new_inner = re.sub(r'^([^<]*)', new_text, old_inner, count=1)
+                else:
+                    new_inner = new_text
+                new_element = f"<{tag}{attrs}>{new_inner}</{tag}>"
+                new_html = new_html.replace(old_match, new_element, 1)
+                applied += 1
+
+        if applied == 0:
+            logger.warning("[SmartRefine/Text] No replacements applied, falling back")
+            return {"success": False, "fallback": True}
+
+        generation_time = int((time.time() - start_time) * 1000)
+        cost = self.kimi_refine.calculate_cost(
+            result.get("tokens_input", 0),
+            result.get("tokens_output", 0),
+        )
+
+        logger.info(f"[SmartRefine/Text] Done in {generation_time}ms (${cost}) - {applied} text replacements, HTML structure untouched")
+
+        return {
+            "success": True,
+            "html_content": new_html,
+            "model_used": self.kimi_refine.model,
+            "tokens_input": result.get("tokens_input", 0),
+            "tokens_output": result.get("tokens_output", 0),
+            "cost_usd": cost,
+            "generation_time_ms": generation_time,
+            "strategy": "text",
+        }
+
+    # =================================================================
+    # REFINE: Section extraction helpers
     # =================================================================
 
     @staticmethod
@@ -716,12 +1103,40 @@ IMPORTANT:
         section_to_modify: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Modifica un sito esistente via chat.
-        Usa streaming per evitare timeout con HTML grandi.
-        Aggressively strips GSAP, <style>, SVGs, whitespace to stay under 262144 token limit.
-        When a specific section is targeted and HTML is very large, sends only that section.
+        Smart Refine: classifica la richiesta e usa la strategia ottimale.
+
+        Strategies (from fastest/safest to slowest/riskiest):
+        1. css_vars  — Only modify :root CSS variables (colors, fonts, spacing)
+        2. text      — Only modify text content (headings, paragraphs, buttons)
+        3. section   — Extract and modify a single section
+        4. structural — Full HTML modification (original approach, last resort)
         """
         modification_request = sanitize_refine_input(modification_request)
+
+        # === SMART ROUTING ===
+        strategy = self._classify_refine_request(modification_request)
+        logger.info(f"[SmartRefine] Request: '{modification_request[:80]}...' → Strategy: {strategy}")
+
+        # Strategy 1: CSS Variables (colors, fonts, backgrounds)
+        if strategy == "css_vars":
+            result = await self._refine_css_vars(current_html, modification_request)
+            if result.get("success"):
+                return result
+            if result.get("fallback"):
+                logger.info("[SmartRefine] CSS strategy failed, falling back to structural")
+            # Fall through to structural
+
+        # Strategy 2: Text-only modifications
+        if strategy == "text":
+            result = await self._refine_text_only(current_html, modification_request, section_to_modify)
+            if result.get("success"):
+                return result
+            if result.get("fallback"):
+                logger.info("[SmartRefine] Text strategy failed, falling back to structural")
+            # Fall through to structural
+
+        # Strategy 3+4: Section or full structural (original approach)
+        logger.info(f"[SmartRefine] Using structural strategy (section={section_to_modify})")
 
         # Aggressive strip: GSAP script + <style> blocks + SVGs + whitespace
         stripped_html, stash = self._strip_for_refine(current_html)
@@ -742,9 +1157,11 @@ IMPORTANT:
 - Keep all <!-- __*_PLACEHOLDER__ --> and <!-- __STYLE_*__ --> and <!-- __SVG_INNER_*__ --> comments intact - they are auto-restored after your edit.
 - Return ONLY complete HTML between ```html and ``` tags. Do NOT truncate."""
 
-        # Strategy: if section is specified AND HTML is large, extract just that section
+        # Strategy: ALWAYS use section-only mode when a section is specified
+        # This dramatically reduces token usage and improves quality
         section_only_mode = False
-        if section_to_modify and stripped_tokens > self._TRUNCATION_THRESHOLD_TOKENS:
+        section_html = None
+        if section_to_modify:
             section_html = self._extract_section_html(stripped_html, section_to_modify)
             if section_html:
                 section_tokens = self._estimate_tokens(section_html)
@@ -860,6 +1277,21 @@ HTML:
 
         html_content = self.kimi_refine.extract_html(result["content"])
 
+        # === VALIDATION GUARD: Reject if AI destroyed the site ===
+        if html_content:
+            original_len = len(stripped_html)
+            result_len = len(html_content)
+            ratio = result_len / max(original_len, 1)
+            logger.info(f"[Swarm] Structural refine size ratio: {ratio:.2f} (result {result_len} / original {original_len})")
+
+            if ratio < 0.5:
+                logger.error(f"[Swarm] AI returned truncated/destroyed HTML ({ratio:.0%} of original). Rejecting.")
+                return {
+                    "success": False,
+                    "error": "La modifica ha generato un risultato incompleto. Prova con una richiesta più specifica (es. 'cambia il colore di sfondo della hero section in blu').",
+                    "error_code": "truncated_output",
+                }
+
         # If we used section-only mode, re-integrate the modified section into the full HTML
         if section_only_mode and section_to_modify:
             original_section = self._extract_section_html(stripped_html, section_to_modify)
@@ -904,6 +1336,7 @@ HTML:
             "tokens_output": result.get("tokens_output", 0),
             "cost_usd": cost,
             "generation_time_ms": generation_time,
+            "strategy": "section" if section_only_mode else "structural",
         }
 
 

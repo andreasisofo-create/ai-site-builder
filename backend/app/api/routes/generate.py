@@ -401,15 +401,13 @@ async def refine_website(
         if not result.get("success"):
             error_msg = result.get("error", "Errore modifica")
             error_code = result.get("error_code", "")
-            # Token limit errors get a 422 with helpful message, not a 500
-            if error_code == "token_limit" or "token limit" in error_msg.lower():
-                raise HTTPException(
-                    status_code=422,
-                    detail={
-                        "message": "Il sito è troppo grande per essere modificato in una sola richiesta. Prova a specificare la sezione da modificare.",
-                        "error_code": "token_limit",
-                    },
-                )
+            # Token limit / truncated output errors get a 422 with helpful message
+            if error_code in ("token_limit", "truncated_output") or "token limit" in error_msg.lower():
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "error_code": error_code,
+                }
             raise HTTPException(status_code=500, detail=error_msg)
 
         # Aggiorna HTML del sito
@@ -439,6 +437,7 @@ async def refine_website(
             "html_content": result["html_content"],
             "model_used": result.get("model_used"),
             "generation_time_ms": result.get("generation_time_ms"),
+            "strategy": result.get("strategy"),
         }
 
     except HTTPException:

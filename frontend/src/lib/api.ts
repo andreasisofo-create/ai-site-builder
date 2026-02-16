@@ -218,6 +218,7 @@ export interface RefineResponse {
   error?: string;
   model_used?: string;
   generation_time_ms?: number;
+  strategy?: "css_vars" | "text" | "section" | "structural";
 }
 
 export async function refineWebsite(data: RefineRequest): Promise<RefineResponse> {
