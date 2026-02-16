@@ -211,6 +211,119 @@ function ConfettiParticles() {
   );
 }
 
+// ============ TYPEWRITER HOOK ============
+
+function useTypewriter(text: string, speed = 50) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  const prevTextRef = useRef("");
+
+  useEffect(() => {
+    if (!text) {
+      setDisplayed("");
+      setDone(false);
+      return;
+    }
+    // Reset if text changed
+    if (text !== prevTextRef.current) {
+      prevTextRef.current = text;
+      setDisplayed("");
+      setDone(false);
+    }
+
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx++;
+      if (idx >= text.length) {
+        setDisplayed(text);
+        setDone(true);
+        clearInterval(interval);
+      } else {
+        setDisplayed(text.slice(0, idx));
+      }
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return { displayed, done };
+}
+
+// ============ SKELETON WIREFRAME ============
+
+function SkeletonWireframe({ colors }: { colors?: PreviewData["colors"] }) {
+  const baseColor = colors?.primary || "#3b82f6";
+  const bgTint = colors?.bg ? `${colors.bg}15` : "rgba(255,255,255,0.02)";
+
+  // Generic section shapes for the wireframe
+  const sections = [
+    { type: "hero", height: "h-24 md:h-32" },
+    { type: "content", height: "h-14 md:h-18" },
+    { type: "grid", height: "h-16 md:h-20" },
+    { type: "content", height: "h-12 md:h-16" },
+    { type: "cta", height: "h-10 md:h-12" },
+  ];
+
+  return (
+    <div className="p-4 md:p-6 space-y-2.5 animate-in fade-in duration-500">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes skeletonShimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        .skeleton-shimmer {
+          background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0) 100%);
+          background-size: 200% 100%;
+          animation: skeletonShimmer 2s ease-in-out infinite;
+        }
+      `}} />
+
+      {sections.map((sec, i) => (
+        <div
+          key={i}
+          className={`${sec.height} rounded-lg overflow-hidden relative`}
+          style={{
+            background: bgTint,
+            border: "1px solid rgba(255,255,255,0.05)",
+            animationDelay: `${i * 0.15}s`,
+          }}
+        >
+          {/* Shimmer overlay */}
+          <div className="skeleton-shimmer absolute inset-0" />
+
+          {/* Wireframe content hints */}
+          {sec.type === "hero" && (
+            <div className="p-3 md:p-4 space-y-2">
+              <div className="h-3 md:h-4 rounded-sm w-2/3" style={{ backgroundColor: `${baseColor}25` }} />
+              <div className="h-2 rounded-sm w-1/2 opacity-30 bg-white/10" />
+              <div className="h-2 rounded-sm w-1/3 opacity-20 bg-white/10" />
+              <div className="mt-2 h-5 md:h-6 rounded-md w-20" style={{ backgroundColor: `${baseColor}20` }} />
+            </div>
+          )}
+          {sec.type === "grid" && (
+            <div className="p-3 flex gap-2 h-full items-center">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="flex-1 h-3/4 rounded-md" style={{ backgroundColor: `${baseColor}12` }} />
+              ))}
+            </div>
+          )}
+          {sec.type === "content" && (
+            <div className="p-3 space-y-1.5">
+              <div className="h-2.5 rounded-sm w-2/5" style={{ backgroundColor: `${baseColor}18` }} />
+              <div className="h-1.5 rounded-sm w-3/4 opacity-20 bg-white/10" />
+              <div className="h-1.5 rounded-sm w-1/2 opacity-15 bg-white/10" />
+            </div>
+          )}
+          {sec.type === "cta" && (
+            <div className="p-3 flex items-center justify-center h-full">
+              <div className="h-5 md:h-6 rounded-md w-28" style={{ backgroundColor: `${baseColor}20` }} />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ============ INNER COMPONENT ============
 
 function GeneratePageContent() {
@@ -358,6 +471,12 @@ function GeneratePageContent() {
       if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
     };
   }, [mounted, siteId, stopPolling, router, lang]);
+
+  // ---- Typewriter for hero title ----
+  const { displayed: typedHeroTitle, done: heroTypeDone } = useTypewriter(
+    previewData?.hero_title || "",
+    45
+  );
 
   // ---- Derive phase ----
   const phase = previewData?.phase || "analyzing";
@@ -593,15 +712,14 @@ function GeneratePageContent() {
             {/* Progressive Preview Section */}
             <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
 
-              {/* Phase: analyzing - Pulsing orb */}
+              {/* Phase: analyzing - Skeleton wireframe */}
               {phase === "analyzing" && !isComplete && (
-                <div className="p-6 md:p-8 flex flex-col items-center gap-4 animate-in fade-in duration-500">
-                  <div className="relative">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 animate-pulse" />
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/10 to-violet-500/10 animate-ping absolute inset-0" />
-                    <SparklesIcon className="w-8 h-8 text-blue-400 absolute inset-0 m-auto" />
+                <div className="animate-in fade-in duration-500">
+                  <div className="px-4 md:px-6 pt-4 pb-2 flex items-center gap-2">
+                    <SparklesIcon className="w-4 h-4 text-blue-400 animate-pulse" />
+                    <p className="text-xs md:text-sm text-slate-400">{t.analyzing}</p>
                   </div>
-                  <p className="text-xs md:text-sm text-slate-400 text-center">{t.analyzing}</p>
+                  <SkeletonWireframe colors={previewData?.colors} />
                 </div>
               )}
 
@@ -657,7 +775,10 @@ function GeneratePageContent() {
                         className="text-base md:text-lg font-bold mb-1"
                         style={{ color: previewData?.colors?.primary || "#3b82f6" }}
                       >
-                        {previewData.hero_title}
+                        {typedHeroTitle}
+                        {!heroTypeDone && (
+                          <span className="inline-block w-[2px] h-[1em] ml-0.5 bg-current animate-pulse align-text-bottom" />
+                        )}
                       </p>
                       {previewData.hero_subtitle && (
                         <p className="text-xs md:text-sm text-slate-400 mb-2">{previewData.hero_subtitle}</p>
