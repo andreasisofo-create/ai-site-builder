@@ -1396,10 +1396,10 @@ Pick ONE of these curated pairings based on the business personality:
 - spacing_density: "compact" for info-dense sites (news, dashboards), "normal" for balanced layouts, "generous" for luxury/minimal brands with lots of whitespace.
 
 === UNIQUENESS DIRECTIVE {'(SKIP IF REFERENCE PROVIDED)' if has_reference else '(CRITICAL)'} ===
-{'NOTE: A reference image/analysis was provided above. MATCH those colors and style instead of generating random ones.' if has_reference else f"""IMPORTANT: Generate a UNIQUE palette. Do NOT repeat common web palettes.
+{'NOTE: A reference image/analysis was provided above. MATCH those colors and style instead of generating random ones.' if has_reference else '''IMPORTANT: Generate a UNIQUE palette. Do NOT repeat common web palettes.
 Use the business personality to pick unexpected but fitting color combinations.
 Each generation must feel fresh and different from the previous ones.
-Pick a font pairing you haven't used recently. Surprise the viewer."""}
+Pick a font pairing you have not used recently. Surprise the viewer.'''}
 
 Return ONLY the JSON object"""
 
