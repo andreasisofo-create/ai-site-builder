@@ -155,6 +155,10 @@ export default function Editor() {
   // Guide panel state
   const [showGuidePanel, setShowGuidePanel] = useState(false);
 
+  // Right-side post-generation guide (per-site, shown once)
+  const [showRightGuide, setShowRightGuide] = useState(false);
+  const [rightGuideVisible, setRightGuideVisible] = useState(false);
+
   // Media panel state
   const [showMediaPanel, setShowMediaPanel] = useState(false);
   const [siteImages, setSiteImages] = useState<SiteImage[]>([]);
@@ -202,6 +206,37 @@ export default function Editor() {
       }
     }
   }, [site?.status, liveHtml]);
+
+  // Show right-side guide on first visit for this specific site
+  useEffect(() => {
+    if (site && siteId && (site.status === "ready" || site.status === "published") && liveHtml) {
+      try {
+        const dismissed = localStorage.getItem(`guide-dismissed-${siteId}`);
+        if (!dismissed) {
+          setShowRightGuide(true);
+          // Trigger fade-in after mount
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setRightGuideVisible(true);
+            });
+          });
+        }
+      } catch {
+        // localStorage may throw in private browsing mode
+      }
+    }
+  }, [site?.status, liveHtml, siteId]);
+
+  const handleRightGuideDismiss = () => {
+    setRightGuideVisible(false);
+    // Wait for fade-out animation before removing from DOM
+    setTimeout(() => {
+      setShowRightGuide(false);
+    }, 300);
+    try {
+      localStorage.setItem(`guide-dismissed-${siteId}`, "true");
+    } catch {}
+  };
 
   const handleGuideDismiss = () => {
     setShowGuidePanel(false);
@@ -1511,6 +1546,96 @@ export default function Editor() {
               </>
             )}
           </aside>
+        )}
+
+        {/* Right-side post-generation guide (floating card) */}
+        {showRightGuide && (
+          <div
+            className={`fixed right-4 top-20 z-50 w-[320px] max-h-[calc(100vh-100px)] overflow-y-auto bg-white rounded-2xl shadow-2xl shadow-black/40 transition-all duration-300 ease-out ${
+              rightGuideVisible
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 translate-x-4"
+            }`}
+          >
+            {/* Header */}
+            <div className="px-5 pt-5 pb-3">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-lg font-bold text-gray-900">Come procedere</h3>
+                <button
+                  onClick={handleRightGuideDismiss}
+                  className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <XMarkIcon className="w-5 h-5 text-gray-400" />
+                </button>
+              </div>
+              <p className="text-xs text-gray-500">Il tuo sito e' stato generato. Ecco i prossimi passi.</p>
+            </div>
+
+            {/* Steps */}
+            <div className="px-5 pb-2 space-y-3">
+              {/* Step 1 */}
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+                  1
+                </div>
+                <div className="pt-0.5">
+                  <h4 className="text-sm font-semibold text-gray-900">Esplora il tuo sito</h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                    Scorri la preview per vedere il risultato generato dall'AI
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">
+                  2
+                </div>
+                <div className="pt-0.5">
+                  <h4 className="text-sm font-semibold text-gray-900">Modifica i contenuti</h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                    Clicca su testi e immagini nella preview per modificarli direttamente
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-sm font-bold">
+                  3
+                </div>
+                <div className="pt-0.5">
+                  <h4 className="text-sm font-semibold text-gray-900">Chiedi all'AI</h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                    Usa la chat AI per richiedere modifiche specifiche al design o ai contenuti
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold">
+                  4
+                </div>
+                <div className="pt-0.5">
+                  <h4 className="text-sm font-semibold text-gray-900">Pubblica il sito</h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                    Quando sei soddisfatto, clicca Deploy per pubblicare online
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Dismiss button */}
+            <div className="px-5 pb-5 pt-3">
+              <button
+                onClick={handleRightGuideDismiss}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors"
+              >
+                Ho capito!
+              </button>
+            </div>
+          </div>
         )}
       </main>
     </div>

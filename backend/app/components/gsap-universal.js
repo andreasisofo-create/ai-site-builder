@@ -19,9 +19,12 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
-  // === LENIS SMOOTH SCROLL ===
+  // === IFRAME DETECTION ===
+  var isIframe = window.self !== window.top;
+
+  // === LENIS SMOOTH SCROLL (skip in iframes — interferes with ScrollTrigger) ===
   var lenis = null;
-  if (typeof Lenis !== 'undefined') {
+  if (typeof Lenis !== 'undefined' && !isIframe) {
     lenis = new Lenis({
       duration: 1.2,
       easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
@@ -67,8 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Safety timeout: if animations haven't started after 3s, force-show content
+  // Safety timeout: if animations haven't started, force-show content
+  // Faster fallback in iframes (editor preview) where ScrollTrigger may lag
   var _gsapInitialized = false;
+  var _fallbackDelay = isIframe ? 800 : 3000;
   setTimeout(function () {
     if (!_gsapInitialized) {
       document.querySelectorAll('[data-animate]').forEach(function (el) {
@@ -77,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     }
-  }, 3000);
+  }, _fallbackDelay);
 
   // Respect prefers-reduced-motion
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -794,5 +799,12 @@ document.addEventListener('DOMContentLoaded', function () {
       opacity: 0, duration: 0.6, delay: 0.2, ease: 'power2.inOut',
       onComplete: function () { preloader.style.display = 'none'; }
     });
+  }
+
+  // In iframe (editor preview): force ScrollTrigger refresh after all animations are set up
+  if (isIframe) {
+    setTimeout(function () {
+      ScrollTrigger.refresh(true);
+    }, 200);
   }
 });
