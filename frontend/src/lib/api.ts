@@ -223,7 +223,7 @@ export interface RefineResponse {
 export async function refineWebsite(data: RefineRequest): Promise<RefineResponse> {
   const headers = getAuthHeaders();
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 120_000); // 2 min timeout
+  const timeoutId = setTimeout(() => controller.abort(), 180_000); // 3 min timeout
   try {
     const res = await fetch(`${API_BASE}/api/generate/refine`, {
       method: "POST",

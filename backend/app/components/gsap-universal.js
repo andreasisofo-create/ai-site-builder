@@ -70,10 +70,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Safety timeout: if animations haven't started, force-show content
-  // Faster fallback in iframes (editor preview) where ScrollTrigger may lag
+  // In iframe (editor preview): skip ALL scroll-triggered animations,
+  // show all content immediately. Preview must display the full site.
+  if (isIframe) {
+    document.querySelectorAll('[data-animate]').forEach(function (el) {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+      el.style.animation = 'none';
+    });
+    console.log('[GSAP] Iframe detected: scroll animations disabled, all content visible');
+    return; // Skip everything — no scroll animations needed in editor preview
+  }
+
+  // Safety timeout: if animations haven't started after 3s, force-show content
   var _gsapInitialized = false;
-  var _fallbackDelay = isIframe ? 800 : 3000;
   setTimeout(function () {
     if (!_gsapInitialized) {
       document.querySelectorAll('[data-animate]').forEach(function (el) {
@@ -82,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     }
-  }, _fallbackDelay);
+  }, 3000);
 
   // Respect prefers-reduced-motion
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -801,10 +811,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // In iframe (editor preview): force ScrollTrigger refresh after all animations are set up
-  if (isIframe) {
-    setTimeout(function () {
-      ScrollTrigger.refresh(true);
-    }, 200);
-  }
 });

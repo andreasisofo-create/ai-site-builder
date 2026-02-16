@@ -798,7 +798,23 @@ export default function Editor() {
             >
               {liveHtml ? (
                 <iframe
-                  srcDoc={liveHtml}
+                  srcDoc={liveHtml.replace(
+                    '</body>',
+                    `<script>
+                      document.addEventListener('click', function(e) {
+                        var a = e.target.closest('a');
+                        if (!a) return;
+                        var href = a.getAttribute('href');
+                        if (href && href.startsWith('#')) {
+                          e.preventDefault();
+                          var target = document.querySelector(href);
+                          if (target) target.scrollIntoView({ behavior: 'smooth' });
+                        } else if (href && !href.startsWith('#')) {
+                          e.preventDefault();
+                        }
+                      });
+                    </script></body>`
+                  )}
                   className="w-full h-full border-0"
                   sandbox="allow-scripts"
                   title={`Preview - ${site.name}`}
