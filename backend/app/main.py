@@ -343,15 +343,18 @@ async def ping():
 
 @app.get("/debug/imports")
 async def debug_imports():
-    """Diagnostica: prova a importare ogni modulo e riporta errori. Solo in debug mode."""
-    if not settings.DEBUG:
-        return JSONResponse(status_code=403, content={"detail": "Debug endpoint disabled in production"})
+    """Diagnostica: prova a importare ogni modulo e riporta errori."""
+    import traceback as _tb
     results = {}
     modules = [
         "app.services.sanitizer",
         "app.services.kimi_client",
         "app.services.swarm_generator",
+        "app.services.quality_control",
+        "app.services.databinding_generator",
         "app.services.ai_service",
+        "app.models.global_counter",
+        "app.models.site_version",
         "app.api.routes.sites",
         "app.api.routes.generate",
         "app.api.routes.components",
@@ -362,7 +365,11 @@ async def debug_imports():
             __import__(mod_name)
             results[mod_name] = "OK"
         except Exception as e:
-            results[mod_name] = f"ERRORE: {type(e).__name__}: {e}"
+            results[mod_name] = f"ERRORE: {type(e).__name__}: {e}\n{''.join(_tb.format_exception(e)[-3:])}"
+    # Also list registered routes
+    results["_registered_routes"] = sorted(set(
+        f"{r.methods} {r.path}" for r in app.routes if hasattr(r, "methods")
+    ))
     return results
 
 @app.head("/")
