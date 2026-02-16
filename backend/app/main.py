@@ -164,7 +164,7 @@ logger.info("Creazione FastAPI app...")
 app = FastAPI(
     title="Site Builder API",
     description="API per la creazione e gestione di siti web",
-    version="0.2.2",
+    version="0.2.3",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -219,11 +219,13 @@ except Exception as e:
     logger.error(f"Errore registrazione route sites: {e}")
     logger.error(traceback.format_exc())
 
+_generate_import_error = None
 try:
     from app.api.routes import generate
     app.include_router(generate.router, prefix="/api", tags=["generate"])
     logger.info("Route generate registrate")
 except Exception as e:
+    _generate_import_error = f"{type(e).__name__}: {e}"
     logger.error(f"Errore registrazione route generate: {e}")
     logger.error(traceback.format_exc())
 
@@ -309,7 +311,7 @@ except Exception as e:
 async def root():
     return {
         "message": "Site Builder API",
-        "version": "0.2.2",
+        "version": "0.2.3",
         "docs": "/docs",
         "health": "/health",
         "status": "online"
@@ -331,11 +333,14 @@ async def health_check():
             logger.error(f"Health check DB fallito: {e}")
             db_status = f"error: {str(e)}"
     
-    return {
+    result = {
         "status": "ok",
-        "version": "0.2.2",
+        "version": "0.2.3",
         "database": db_status
     }
+    if _generate_import_error:
+        result["generate_routes_error"] = _generate_import_error
+    return result
 
 @app.get("/ping")
 async def ping():
