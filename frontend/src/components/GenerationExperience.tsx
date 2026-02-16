@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   SparklesIcon,
   PaintBrushIcon,
@@ -13,7 +13,7 @@ import { useLanguage } from "@/lib/i18n";
 
 // Preview data structure from the backend
 export interface PreviewData {
-  phase: "analyzing" | "theme_complete" | "content_complete" | "complete";
+  phase: "analyzing" | "theme_complete" | "content_complete" | "assembled" | "complete";
   colors?: {
     primary: string;
     secondary: string;
@@ -64,6 +64,7 @@ const UI_TEXT = {
     fontHeading: "Font titoli",
     fontBody: "Font corpo",
     contentPreview: "Anteprima contenuti",
+    assembling: "Assemblaggio del sito in corso...",
     siteReady: "Il tuo sito e' pronto!",
     redirecting: "Reindirizzamento all'editor...",
   },
@@ -75,10 +76,50 @@ const UI_TEXT = {
     fontHeading: "Heading font",
     fontBody: "Body font",
     contentPreview: "Content preview",
+    assembling: "Assembling your site...",
     siteReady: "Your site is ready!",
     redirecting: "Redirecting to editor...",
   },
 };
+
+// Skeleton section shapes for analyzing phase
+const SKELETON_SECTIONS = [
+  { h: "h-32", span: "col-span-full" },       // hero
+  { h: "h-16", span: "col-span-1" },           // section
+  { h: "h-16", span: "col-span-1" },           // section
+  { h: "h-20", span: "col-span-full" },        // wide section
+  { h: "h-14", span: "col-span-1" },           // section
+  { h: "h-14", span: "col-span-1" },           // section
+];
+
+// Typewriter hook
+function useTypewriter(text: string, speed = 40) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    if (!text) { setDisplayed(""); setDone(false); return; }
+    setDisplayed("");
+    setDone(false);
+    indexRef.current = 0;
+
+    const interval = setInterval(() => {
+      indexRef.current++;
+      if (indexRef.current >= text.length) {
+        setDisplayed(text);
+        setDone(true);
+        clearInterval(interval);
+      } else {
+        setDisplayed(text.slice(0, indexRef.current));
+      }
+    }, speed);
+
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return { displayed, done };
+}
 
 export default function GenerationExperience({
   step,
@@ -94,6 +135,8 @@ export default function GenerationExperience({
 
   const [animatedPercentage, setAnimatedPercentage] = useState(0);
   const [showContent, setShowContent] = useState(false);
+  const [fontLoaded, setFontLoaded] = useState(false);
+  const [colorRevealIndex, setColorRevealIndex] = useState(0);
 
   // Smooth percentage animation
   useEffect(() => {
@@ -110,6 +153,48 @@ export default function GenerationExperience({
     setShowContent(false);
   }, [previewData?.phase]);
 
+  // Staggered color reveal for theme_complete phase
+  useEffect(() => {
+    if (previewData?.phase === "theme_complete" && previewData.colors) {
+      setColorRevealIndex(0);
+      const count = Object.keys(previewData.colors).length;
+      let i = 0;
+      const interval = setInterval(() => {
+        i++;
+        setColorRevealIndex(i);
+        if (i >= count) clearInterval(interval);
+      }, 150);
+      return () => clearInterval(interval);
+    }
+  }, [previewData?.phase]);
+
+  // Load Google Font for preview
+  const loadFont = useCallback((fontName: string) => {
+    if (!fontName || typeof document === "undefined") return;
+    const id = `gen-font-${fontName.replace(/\s+/g, "-")}`;
+    if (document.getElementById(id)) { setFontLoaded(true); return; }
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@400;700&display=swap`;
+    link.onload = () => setFontLoaded(true);
+    document.head.appendChild(link);
+  }, []);
+
+  useEffect(() => {
+    if (previewData?.font_heading) {
+      setFontLoaded(false);
+      loadFont(previewData.font_heading);
+    }
+    if (previewData?.font_body) {
+      loadFont(previewData.font_body);
+    }
+  }, [previewData?.font_heading, previewData?.font_body, loadFont]);
+
+  // Typewriter for hero title in content_complete phase
+  const heroTitle = previewData?.phase === "content_complete" ? (previewData?.hero_title || "") : "";
+  const { displayed: typedTitle, done: titleDone } = useTypewriter(heroTitle);
+
   const phase = previewData?.phase || "analyzing";
 
   return (
@@ -117,7 +202,6 @@ export default function GenerationExperience({
       {/* Main Progress Circle */}
       <div className="flex flex-col items-center gap-6">
         <div className="relative w-32 h-32">
-          {/* Background circle */}
           <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
             <circle
               cx="60" cy="60" r="52"
@@ -142,14 +226,12 @@ export default function GenerationExperience({
               </linearGradient>
             </defs>
           </svg>
-          {/* Center content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-2xl font-bold">{Math.round(animatedPercentage)}%</span>
             <span className="text-xs text-slate-500">{text.stepLabel} {step}/{totalSteps}</span>
           </div>
         </div>
 
-        {/* Status message */}
         <div className="flex items-center gap-2 text-slate-300">
           <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
           <span className="text-sm">{message || text.processing}</span>
@@ -196,29 +278,62 @@ export default function GenerationExperience({
 
       {/* Progressive Preview Scenes */}
       <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
-        {/* Scene 1: Analyzing (pulsating orb) */}
+
+        {/* Scene 1: Analyzing — skeleton placeholders */}
         {phase === "analyzing" && (
-          <div className="p-8 flex flex-col items-center gap-4 animate-in fade-in duration-500">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 animate-pulse" />
-              <SparklesIcon className="w-8 h-8 text-blue-400 absolute inset-0 m-auto" />
+          <div className="p-6 space-y-4 animate-in fade-in duration-500">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 animate-pulse" />
+                <SparklesIcon className="w-5 h-5 text-blue-400 absolute inset-0 m-auto" />
+              </div>
+              <p className="text-sm text-slate-400">{text.analyzing}</p>
             </div>
-            <p className="text-sm text-slate-400 text-center">
-              {text.analyzing}
-            </p>
+            {/* Skeleton site wireframe */}
+            <div className="grid grid-cols-2 gap-2">
+              {SKELETON_SECTIONS.map((sec, i) => (
+                <div
+                  key={i}
+                  className={`${sec.h} ${sec.span} rounded-lg overflow-hidden relative`}
+                >
+                  <div
+                    className="absolute inset-0 bg-gradient-to-r from-white/[0.03] via-white/[0.06] to-white/[0.03]"
+                    style={{
+                      animation: `shimmer 1.5s ease-in-out infinite`,
+                      animationDelay: `${i * 0.15}s`,
+                      backgroundSize: "200% 100%",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+            <style>{`
+              @keyframes shimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+              }
+            `}</style>
           </div>
         )}
 
-        {/* Scene 2: Theme complete - show color palette */}
+        {/* Scene 2: Theme complete — palette, fonts, mini-mockup */}
         {phase === "theme_complete" && previewData?.colors && (
-          <div className={`p-6 space-y-4 transition-all duration-700 ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className={`p-6 space-y-5 transition-all duration-700 ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
             <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
               <PaintBrushIcon className="w-4 h-4 text-violet-400" />
               {text.paletteTitle}
             </h4>
+            {/* Color circles with staggered reveal */}
             <div className="flex gap-3">
-              {Object.entries(previewData.colors).map(([name, hex]) => (
-                <div key={name} className="flex flex-col items-center gap-1.5">
+              {Object.entries(previewData.colors).map(([name, hex], idx) => (
+                <div
+                  key={name}
+                  className="flex flex-col items-center gap-1.5 transition-all duration-500"
+                  style={{
+                    opacity: idx < colorRevealIndex ? 1 : 0,
+                    transform: idx < colorRevealIndex ? "scale(1)" : "scale(0.5)",
+                  }}
+                >
                   <div
                     className="w-12 h-12 rounded-xl shadow-lg transition-transform hover:scale-110"
                     style={{ backgroundColor: hex }}
@@ -227,30 +342,61 @@ export default function GenerationExperience({
                 </div>
               ))}
             </div>
+            {/* Font preview with actual Google Font */}
             {previewData.font_heading && (
-              <div className="flex items-center gap-4 pt-2 border-t border-white/5">
-                <div className="text-xs text-slate-500">
-                  {text.fontHeading}: <span className="text-slate-300">{previewData.font_heading}</span>
+              <div className="pt-3 border-t border-white/5 space-y-2">
+                <div className="flex items-baseline gap-4">
+                  <div className="text-xs text-slate-500">
+                    {text.fontHeading}:
+                  </div>
+                  <span
+                    className="text-lg text-slate-200 transition-opacity duration-500"
+                    style={{
+                      fontFamily: fontLoaded ? `'${previewData.font_heading}', sans-serif` : "sans-serif",
+                      opacity: fontLoaded ? 1 : 0.4,
+                    }}
+                  >
+                    {previewData.font_heading}
+                  </span>
                 </div>
-                <div className="text-xs text-slate-500">
-                  {text.fontBody}: <span className="text-slate-300">{previewData.font_body}</span>
-                </div>
+                {previewData.font_body && (
+                  <div className="flex items-baseline gap-4">
+                    <div className="text-xs text-slate-500">
+                      {text.fontBody}:
+                    </div>
+                    <span
+                      className="text-sm text-slate-400 transition-opacity duration-500"
+                      style={{
+                        fontFamily: fontLoaded ? `'${previewData.font_body}', sans-serif` : "sans-serif",
+                        opacity: fontLoaded ? 1 : 0.4,
+                      }}
+                    >
+                      {previewData.font_body}
+                    </span>
+                  </div>
+                )}
               </div>
             )}
+            {/* Mini gradient mockup with chosen colors */}
+            <div
+              className="h-16 rounded-xl border border-white/5 transition-all duration-1000"
+              style={{
+                background: `linear-gradient(135deg, ${previewData.colors.primary}20, ${previewData.colors.secondary}20, ${previewData.colors.accent}20)`,
+              }}
+            />
           </div>
         )}
 
-        {/* Scene 3: Content complete - show hero preview */}
+        {/* Scene 3: Content complete — typewriter hero + services + sections */}
         {phase === "content_complete" && (
           <div className={`transition-all duration-700 ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-            {/* Mini preview of the site layout */}
             <div className="p-6 space-y-4">
               <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
                 <DocumentTextIcon className="w-4 h-4 text-emerald-400" />
                 {text.contentPreview}
               </h4>
 
-              {/* Hero preview */}
+              {/* Hero preview with typewriter effect */}
               {previewData?.hero_title && (
                 <div
                   className="p-4 rounded-xl border border-white/10"
@@ -260,18 +406,38 @@ export default function GenerationExperience({
                       : "rgba(255,255,255,0.02)",
                   }}
                 >
-                  <p className="text-lg font-bold mb-1" style={{
-                    color: previewData?.colors?.primary || "#3b82f6"
-                  }}>
-                    {previewData.hero_title}
+                  <p
+                    className="text-lg font-bold mb-1"
+                    style={{
+                      color: previewData?.colors?.primary || "#3b82f6",
+                      fontFamily: previewData?.font_heading ? `'${previewData.font_heading}', sans-serif` : undefined,
+                    }}
+                  >
+                    {typedTitle}
+                    {!titleDone && <span className="animate-pulse">|</span>}
                   </p>
+                  {/* Subtitle appears after typewriter finishes */}
                   {previewData.hero_subtitle && (
-                    <p className="text-sm text-slate-400 mb-2">{previewData.hero_subtitle}</p>
+                    <p
+                      className="text-sm text-slate-400 mb-2 transition-all duration-500"
+                      style={{
+                        opacity: titleDone ? 1 : 0,
+                        transform: titleDone ? "translateY(0)" : "translateY(8px)",
+                        fontFamily: previewData?.font_body ? `'${previewData.font_body}', sans-serif` : undefined,
+                      }}
+                    >
+                      {previewData.hero_subtitle}
+                    </p>
                   )}
+                  {/* CTA button scales in after subtitle */}
                   {previewData.hero_cta && (
                     <span
-                      className="inline-block px-3 py-1 rounded-lg text-xs text-white"
-                      style={{ backgroundColor: previewData?.colors?.primary || "#3b82f6" }}
+                      className="inline-block px-3 py-1 rounded-lg text-xs text-white transition-all duration-500"
+                      style={{
+                        backgroundColor: previewData?.colors?.primary || "#3b82f6",
+                        opacity: titleDone ? 1 : 0,
+                        transform: titleDone ? "scale(1)" : "scale(0.8)",
+                      }}
                     >
                       {previewData.hero_cta}
                     </span>
@@ -279,13 +445,19 @@ export default function GenerationExperience({
                 </div>
               )}
 
-              {/* Services preview */}
+              {/* Services preview with stagger */}
               {previewData?.services_titles && previewData.services_titles.length > 0 && (
                 <div className="grid grid-cols-3 gap-2">
                   {previewData.services_titles.slice(0, 3).map((title, i) => (
                     <div
                       key={i}
-                      className="p-3 rounded-lg bg-white/[0.03] border border-white/5 text-center"
+                      className="p-3 rounded-lg bg-white/[0.03] border border-white/5 text-center transition-all duration-500"
+                      style={{
+                        animationDelay: `${i * 0.12}s`,
+                        opacity: titleDone ? 1 : 0,
+                        transform: titleDone ? "translateY(0)" : "translateY(12px)",
+                        transitionDelay: `${i * 120}ms`,
+                      }}
                     >
                       <p className="text-xs text-slate-300 truncate">{title}</p>
                     </div>
@@ -293,13 +465,18 @@ export default function GenerationExperience({
                 </div>
               )}
 
-              {/* Section badges */}
+              {/* Section badges with stagger */}
               {previewData?.sections && (
                 <div className="flex flex-wrap gap-1.5 pt-2">
-                  {previewData.sections.map((s) => (
+                  {previewData.sections.map((s, i) => (
                     <span
                       key={s}
-                      className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-slate-500 capitalize"
+                      className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-slate-500 capitalize transition-all duration-300"
+                      style={{
+                        opacity: titleDone ? 1 : 0,
+                        transform: titleDone ? "scale(1)" : "scale(0.7)",
+                        transitionDelay: `${i * 80}ms`,
+                      }}
                     >
                       {s}
                     </span>
@@ -310,7 +487,39 @@ export default function GenerationExperience({
           </div>
         )}
 
-        {/* Scene 4: Complete */}
+        {/* Scene 4: Assembled — mini wireframe with section blocks */}
+        {phase === "assembled" && previewData?.sections && (
+          <div className={`p-6 space-y-3 transition-all duration-700 ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
+              <CubeIcon className="w-4 h-4 text-amber-400" />
+              {text.assembling}
+            </h4>
+            <div className="space-y-1.5">
+              {previewData.sections.map((section, i) => (
+                <div
+                  key={section}
+                  className="rounded-lg border border-white/5 px-3 py-2 flex items-center gap-2 transition-all duration-500"
+                  style={{
+                    background: previewData?.colors
+                      ? `linear-gradient(90deg, ${previewData.colors.primary}08, transparent)`
+                      : "rgba(255,255,255,0.02)",
+                    opacity: showContent ? 1 : 0,
+                    transform: showContent ? "translateX(0)" : "translateX(-12px)",
+                    transitionDelay: `${i * 100}ms`,
+                  }}
+                >
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: previewData?.colors?.primary || "#3b82f6" }}
+                  />
+                  <span className="text-xs text-slate-400 capitalize">{section}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Scene 5: Complete */}
         {phase === "complete" && (
           <div className="p-8 flex flex-col items-center gap-3 animate-in fade-in duration-500">
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center">

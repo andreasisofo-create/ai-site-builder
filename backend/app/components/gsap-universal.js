@@ -161,10 +161,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     gsap.fromTo(items, from, {
       y: 0, x: 0, scale: 1, opacity: 1, filter: 'blur(0px)',
-      duration: dur, delay: delay, stagger: { each: 0.12, from: 'start' },
+      duration: dur, delay: delay, stagger: function(i) { return 0.12 * i + Math.random() * 0.08; },
       ease: easing,
       scrollTrigger: { trigger: container, start: 'top 85%', toggleActions: 'play none none none' }
     });
+  });
+
+  /* ----------------------------------------------------------
+     2b. ORGANIC ENTROPY (controlled imperfection)
+     Assigns random micro-rotation to stagger items and cards
+     ---------------------------------------------------------- */
+  document.querySelectorAll('.stagger-item, .bento-card, [data-entropy]').forEach(function (el) {
+    el.style.setProperty('--entropy', (Math.random() * 2 - 1).toFixed(3));
+    el.style.transform = 'rotate(calc(var(--entropy) * 1deg))';
   });
 
   /* ----------------------------------------------------------
@@ -351,6 +360,38 @@ document.addEventListener('DOMContentLoaded', function () {
       gsap.to(el, { rotationY: 0, rotationX: 0, duration: 0.6, ease: 'power2.out' });
     });
   });
+
+  /* ----------------------------------------------------------
+     9b. CARD BORDER GLOW (Linear-style hover glow on borders)
+     Adds a radial-gradient overlay on card borders that follows the mouse.
+     Applied to tilt and card-hover-3d elements. Desktop only.
+     ---------------------------------------------------------- */
+  if (window.matchMedia('(hover: hover)').matches && window.innerWidth > 768) {
+    document.querySelectorAll('[data-animate="tilt"], [data-animate="card-hover-3d"]').forEach(function (el) {
+      // Ensure positioning context
+      if (!el.style.position || el.style.position === 'static') {
+        el.style.position = 'relative';
+      }
+      el.style.overflow = 'hidden';
+
+      var glowEl = document.createElement('div');
+      glowEl.className = 'card-border-glow';
+      el.appendChild(glowEl);
+
+      el.addEventListener('mousemove', function (e) {
+        var rect = el.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        glowEl.style.setProperty('--mouse-x', x + 'px');
+        glowEl.style.setProperty('--mouse-y', y + 'px');
+        glowEl.style.opacity = '1';
+      });
+
+      el.addEventListener('mouseleave', function () {
+        glowEl.style.opacity = '0';
+      });
+    });
+  }
 
   /* ----------------------------------------------------------
      10. GRADIENT FLOW (data-animate="gradient-flow")

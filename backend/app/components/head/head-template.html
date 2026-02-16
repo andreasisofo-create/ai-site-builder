@@ -201,6 +201,36 @@
     img { transition: opacity 0.4s ease, transform 0.4s ease; }
     /* Gooey liquid effect - apply to containers with overlapping animated children */
     .gooey { filter: url(#gooey); }
+    /* Organic Entropy — controlled imperfection (micro-rotation on cards) */
+    .stagger-item, .bento-card, [data-entropy] {
+      --entropy: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .stagger-item, .bento-card, [data-entropy] {
+        --entropy: 0 !important;
+      }
+    }
+    /* Card Border Glow — Linear-style radial gradient on border */
+    @media (hover: hover) and (min-width: 769px) {
+      .card-border-glow {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.3s;
+        background: radial-gradient(
+          600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+          rgba(255,255,255,0.06), transparent 40%
+        );
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        padding: 1px;
+      }
+    }
   </style>
   <!-- Gooey SVG Filter (0x0, invisible, activates via .gooey class) -->
   <svg style="position:absolute;width:0;height:0;" aria-hidden="true">
