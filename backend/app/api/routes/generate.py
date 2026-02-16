@@ -60,6 +60,7 @@ class RefineRequest(BaseModel):
     site_id: int
     message: str
     section: Optional[str] = None
+    photo_urls: Optional[List[str]] = None  # Image URLs (data: or https:) to insert in the site
 
 
 class ImageAnalysisRequest(BaseModel):
@@ -402,11 +403,19 @@ async def refine_website(
         if isinstance(site.config, dict):
             reference_analysis = site.config.get("_reference_analysis")
 
+        # Validate photo_urls if provided
+        validated_photos = None
+        if data.photo_urls:
+            validated_photos = [url for url in data.photo_urls if _validate_image_url(url)]
+            if validated_photos:
+                logger.info(f"[Refine] {len(validated_photos)} photo(s) attached to refine request")
+
         result = await swarm.refine(
             current_html=site.html_content,
             modification_request=data.message,
             section_to_modify=data.section,
             reference_analysis=reference_analysis,
+            photo_urls=validated_photos,
         )
 
         if not result.get("success"):

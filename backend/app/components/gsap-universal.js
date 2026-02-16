@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
     gsap.fromTo(items, from, {
       y: 0, x: 0, scale: 1, opacity: 1, filter: 'blur(0px)',
       duration: dur, delay: delay,
-      stagger: { each: 0.12, from: 'start', onStart: function() {} },
+      stagger: function(i) { return 0.12 * i + Math.random() * 0.1; },
       ease: easing,
       scrollTrigger: { trigger: container, start: 'top 85%', toggleActions: 'play none none none' }
     });

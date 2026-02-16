@@ -1271,6 +1271,7 @@ Return ONLY valid JSON array, no explanation."""
         modification_request: str,
         section_to_modify: Optional[str] = None,
         reference_analysis: Optional[str] = None,
+        photo_urls: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Smart Refine: classifica la richiesta e usa la strategia ottimale.
@@ -1342,6 +1343,18 @@ ORIGINAL REFERENCE ANALYSIS (the user's desired look):
 
 When the user complains about colors or theme, use the reference analysis above to determine the CORRECT colors, fonts, and mood. Update :root CSS variables, Tailwind classes, and background colors to match the reference."""
 
+        # Add user-uploaded photos context
+        photo_context = ""
+        if photo_urls:
+            photo_list = "\n".join(f"  - Image {i+1}: {url[:120]}{'...' if len(url) > 120 else ''}" for i, url in enumerate(photo_urls))
+            photo_context = f"""
+USER-UPLOADED IMAGES (use these in the site where appropriate):
+{photo_list}
+
+When the user asks to insert/add/use an image, create an <img> tag with the exact src URL provided above.
+Example: <img src="{photo_urls[0][:80]}..." alt="..." class="w-full h-64 object-cover rounded-xl" loading="lazy">
+Place images in contextually appropriate locations within the HTML."""
+
         # Strategy: ALWAYS use section-only mode when a section is specified
         # This dramatically reduces token usage and improves quality
         section_only_mode = False
@@ -1361,6 +1374,7 @@ When the user complains about colors or theme, use the reference analysis above 
 
 REQUEST: {modification_request}
 {reference_context}
+{photo_context}
 
 {design_system}
 
@@ -1371,6 +1385,7 @@ SECTION HTML:
 
 REQUEST: {modification_request}
 {reference_context}
+{photo_context}
 
 {design_system}
 
@@ -1381,6 +1396,7 @@ HTML:
 
 REQUEST: {modification_request}
 {reference_context}
+{photo_context}
 
 {design_system}
 
@@ -1416,6 +1432,7 @@ HTML:
 
 REQUEST: {modification_request}
 {reference_context}
+{photo_context}
 
 {design_system}
 
@@ -1426,6 +1443,7 @@ SECTION HTML:
 
 REQUEST: {modification_request}
 {reference_context}
+{photo_context}
 
 {design_system}
 
@@ -1436,6 +1454,7 @@ HTML:
 
 REQUEST: {modification_request}
 {reference_context}
+{photo_context}
 
 {design_system}
 

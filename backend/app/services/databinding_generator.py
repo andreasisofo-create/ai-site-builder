@@ -1343,6 +1343,7 @@ class DataBindingGenerator:
         variety_context: Optional[Dict[str, Any]] = None,
         reference_analysis: Optional[str] = None,
         parsed_reference: Optional[Dict[str, Any]] = None,
+        photo_urls: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Kimi returns JSON with color palette and fonts.
 
@@ -1482,6 +1483,11 @@ The reference uses MINIMAL/CLEAN typography. Use one of these pairings:
                 for fp in shuffled_fonts
             )
 
+        # Photo context for theme: hint that real photos will be used
+        theme_photo_hint = ""
+        if photo_urls and len(photo_urls) > 0 and not has_exact_colors:
+            theme_photo_hint = f"\nThe user has uploaded {len(photo_urls)} real photo(s) of their business. Choose colors that complement real-world photography: warm tones for food/hospitality, cool tones for tech, earthy tones for nature businesses. Avoid overly saturated backgrounds that clash with photos.\n"
+
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
 {exact_colors_block}{reference_override}
@@ -1490,6 +1496,7 @@ BUSINESS: {business_name} - {business_description[:500]}
 {palette_hint}
 {variety_hint}
 {reference_font_hint}
+{theme_photo_hint}
 
 === COLOR THEORY RULES (follow these for professional palettes) ===
 - PRIMARY: The brand's emotional core. Ask: "What feeling should this business evoke?" Warm = trust/comfort (amber, coral). Cool = innovation/clarity (blue, teal). Bold = energy/passion (red, purple).
@@ -1653,6 +1660,7 @@ Return ONLY the JSON object"""
         reference_url_context: str = "",
         variety_context: Optional[Dict[str, Any]] = None,
         reference_analysis: Optional[str] = None,
+        photo_urls: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Kimi returns JSON with all text content for every section."""
         contact_str = ""
@@ -1703,6 +1711,19 @@ If the reference is bold/edgy, write bold/edgy copy. If elegant, write elegant c
             except Exception:
                 pass
 
+        # === USER PHOTOS CONTEXT ===
+        # Let AI know user has uploaded photos so it can write content that complements them
+        photo_hint = ""
+        if photo_urls and len(photo_urls) > 0:
+            photo_hint = f"""
+
+=== USER-UPLOADED PHOTOS ({len(photo_urls)} images provided) ===
+The user has uploaded {len(photo_urls)} photo(s) of their business. These will be placed in the site automatically.
+Write copy that WORKS WITH real photos: reference visual elements, create captions that complement imagery.
+Avoid generic placeholder descriptions. The site will feature REAL business photos, so texts should feel authentic and grounded.
+=== END PHOTOS CONTEXT ===
+"""
+
         # === DYNAMIC SECTION SCHEMA ASSEMBLY ===
         # Only include JSON schemas for the sections the user actually requested.
         # This cuts prompt size by 40-60% and reduces noise for the LLM.
@@ -1724,7 +1745,7 @@ If the reference is bold/edgy, write bold/edgy copy. If elegant, write elegant c
         structure_rule_parts.append(f'{rule_num}. DO NOT use short key names like "ICON", "TITLE", "DESCRIPTION" — always use the FULL prefixed key name as shown above.')
         structure_rules = "=== CRITICAL JSON STRUCTURE RULES (violating these = BROKEN website) ===\n" + "\n".join(structure_rule_parts) if structure_rule_parts else ""
 
-        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.{reference_tone_hint}{knowledge_hint}{reference_hint}
+        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.{reference_tone_hint}{knowledge_hint}{reference_hint}{photo_hint}
 Your copy must be SHARP, EVOCATIVE, and EMOTIONALLY MAGNETIC. Every word earns its place. Zero filler, zero corporate jargon.
 Return ONLY valid JSON, no markdown.
 
@@ -2264,6 +2285,7 @@ RULES:
             variety_context=variety,
             reference_analysis=reference_analysis,
             parsed_reference=parsed_reference,
+            photo_urls=photo_urls,
         )
         texts_task = self._generate_texts(
             business_name, business_description,
@@ -2272,6 +2294,7 @@ RULES:
             reference_url_context=reference_url_context,
             variety_context=variety,
             reference_analysis=reference_analysis,
+            photo_urls=photo_urls,
         )
         theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
 

@@ -210,6 +210,7 @@ export interface RefineRequest {
   message: string;
   section?: string;
   language?: string;
+  photo_urls?: string[];  // Image URLs (data: or https:) to insert in the site
 }
 
 export interface RefineResponse {

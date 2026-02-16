@@ -144,6 +144,7 @@ export default function Editor() {
   const [videoUrl, setVideoUrl] = useState("");
   const [embedCode, setEmbedCode] = useState("");
   const [videoError, setVideoError] = useState("");
+  const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);  // photo URLs waiting to be sent with next message
 
   // Live HTML for preview (updated by chat refine)
   const [liveHtml, setLiveHtml] = useState<string>("");
@@ -359,24 +360,45 @@ export default function Editor() {
 
   const handleSendMessage = async (messageText?: string) => {
     const text = messageText || chatInput.trim();
-    if (!text || !site || isRefining) return;
+    if ((!text && pendingPhotos.length === 0) || !site || isRefining) return;
+
+    // Collect pending photos and clean message from old-style inline image markers
+    const photosToSend = [...pendingPhotos];
+    // Also extract any legacy inline image markers: [Inserisci questa immagine: URL] or [Insert this image: URL]
+    const imgRegex = /\[(?:Inserisci questa immagine|Insert this image):\s*((?:data:image\/[^[\]]+|https?:\/\/[^[\]]+))\]/g;
+    let cleanMessage = text;
+    let match;
+    while ((match = imgRegex.exec(text)) !== null) {
+      if (match[1] && !photosToSend.includes(match[1])) {
+        photosToSend.push(match[1]);
+      }
+    }
+    cleanMessage = text.replace(imgRegex, "").trim();
+    // If message became empty after stripping image markers, add default instruction
+    if (!cleanMessage && photosToSend.length > 0) {
+      cleanMessage = language === "en"
+        ? "Insert the attached image(s) into the site in an appropriate position"
+        : "Inserisci le immagini allegate nel sito in una posizione appropriata";
+    }
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       role: "user",
-      content: text,
+      content: text,  // Show original text to user (with placeholders)
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
     setChatInput("");
+    setPendingPhotos([]);  // Clear pending photos after sending
     setIsRefining(true);
 
     try {
       const result = await refineWebsite({
         site_id: site.id,
-        message: text,
+        message: cleanMessage || text,
         language,
+        photo_urls: photosToSend.length > 0 ? photosToSend : undefined,
       });
 
       if (result.success && result.html_content) {
@@ -527,11 +549,30 @@ export default function Editor() {
 
   const handlePhotoUrlSubmit = () => {
     if (!photoUrl.trim()) return;
+    setPendingPhotos(prev => [...prev, photoUrl.trim()]);
     appendToChat(language === "en"
-      ? `[Insert this image: ${photoUrl.trim()}]`
-      : `[Inserisci questa immagine: ${photoUrl.trim()}]`);
+      ? `[Insert image ${pendingPhotos.length + 1}]`
+      : `[Inserisci immagine ${pendingPhotos.length + 1}]`);
     setPhotoUrl("");
     setActivePopover(null);
+  };
+
+  // Compress image to max 800px width for chat (reduces base64 size ~10x)
+  const compressImage = (dataUrl: string, maxWidth = 800): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ratio = Math.min(1, maxWidth / img.width);
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.8));
+      };
+      img.onerror = () => resolve(dataUrl); // fallback to original
+      img.src = dataUrl;
+    });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -542,11 +583,13 @@ export default function Editor() {
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const dataUrl = reader.result as string;
+      const compressed = await compressImage(dataUrl);
+      setPendingPhotos(prev => [...prev, compressed]);
       appendToChat(language === "en"
-        ? `[Insert this image: ${dataUrl}]`
-        : `[Inserisci questa immagine: ${dataUrl}]`);
+        ? `[Insert uploaded image ${pendingPhotos.length + 1}]`
+        : `[Inserisci immagine caricata ${pendingPhotos.length + 1}]`);
       setActivePopover(null);
     };
     reader.readAsDataURL(file);
@@ -1156,13 +1199,13 @@ export default function Editor() {
                     {(language === "en" ? [
                       { step: 1, title: "Review the preview", desc: "Scroll through your site on the right. Check texts, images and layout.", icon: "1" },
                       { step: 2, title: "Refine with AI Chat", desc: "Open the Chat AI to change colors, texts, add sections or fix anything.", icon: "2", action: "Cambia i colori con toni piu' moderni e professionali" },
-                      { step: 3, title: "Replace images", desc: "Click Media to upload your own photos and swap them into the site.", icon: "3" },
+                      { step: 3, title: "Replace images", desc: "Click Media, upload your photos, then use 'Replace' on any site image to swap it. You can also attach photos in the Chat to insert them via AI.", icon: "3" },
                       { step: 4, title: "Add your content", desc: "Ask the AI to add testimonials, FAQ, gallery or any new section.", icon: "4", action: "Add a testimonials section with 3 reviews and a FAQ with 5 questions" },
                       { step: 5, title: "Publish", desc: "When you're satisfied, click the green Publish button to go live!", icon: "5" },
                     ] : [
                       { step: 1, title: "Controlla l'anteprima", desc: "Scorri il sito a destra. Verifica testi, immagini e layout.", icon: "1" },
                       { step: 2, title: "Modifica con Chat AI", desc: "Apri la Chat AI per cambiare colori, testi, aggiungere sezioni o correggere.", icon: "2", action: "Cambia i colori con toni piu' moderni e professionali" },
-                      { step: 3, title: "Sostituisci le immagini", desc: "Clicca Media per caricare le tue foto e inserirle nel sito.", icon: "3" },
+                      { step: 3, title: "Sostituisci le immagini", desc: "Clicca Media, carica le tue foto, poi usa 'Sostituisci' su un'immagine del sito per scambiarla. Puoi anche allegare foto nella Chat per inserirle tramite AI.", icon: "3" },
                       { step: 4, title: "Aggiungi contenuti", desc: "Chiedi all'AI di aggiungere testimonial, FAQ, galleria o nuove sezioni.", icon: "4", action: "Aggiungi una sezione testimonials con 3 recensioni e una FAQ con 5 domande" },
                       { step: 5, title: "Pubblica", desc: "Quando sei soddisfatto, clicca il pulsante verde Pubblica per andare online!", icon: "5" },
                     ]).map((item) => (
@@ -1520,6 +1563,23 @@ export default function Editor() {
                 )}
               </div>
 
+              {/* Pending photos indicator */}
+              {pendingPhotos.length > 0 && (
+                <div className="flex items-center gap-2 px-2 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-1">
+                  <PhotoIcon className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                  <span className="text-xs text-blue-300 flex-1">
+                    {pendingPhotos.length} {language === "en" ? "image(s) attached" : "immagine/i allegata/e"}
+                  </span>
+                  <button
+                    onClick={() => setPendingPhotos([])}
+                    className="text-blue-400 hover:text-red-400 transition-colors"
+                    title={language === "en" ? "Remove all" : "Rimuovi tutte"}
+                  >
+                    <XMarkIcon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
               <div className="flex items-end gap-2">
                 <textarea
                   ref={textareaRef}
@@ -1533,7 +1593,7 @@ export default function Editor() {
                 />
                 <button
                   onClick={() => handleSendMessage()}
-                  disabled={!chatInput.trim() || isRefining}
+                  disabled={(!chatInput.trim() && pendingPhotos.length === 0) || isRefining}
                   className="flex-shrink-0 p-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl transition-colors mb-[1px]"
                 >
                   <PaperAirplaneIcon className="w-4 h-4" />
