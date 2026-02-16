@@ -164,7 +164,7 @@ logger.info("Creazione FastAPI app...")
 app = FastAPI(
     title="Site Builder API",
     description="API per la creazione e gestione di siti web",
-    version="0.2.3",
+    version="0.3.0",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -311,7 +311,7 @@ except Exception as e:
 async def root():
     return {
         "message": "Site Builder API",
-        "version": "0.2.3",
+        "version": "0.3.0",
         "docs": "/docs",
         "health": "/health",
         "status": "online"
@@ -335,7 +335,7 @@ async def health_check():
     
     result = {
         "status": "ok",
-        "version": "0.2.3",
+        "version": "0.3.0",
         "database": db_status
     }
     if _generate_import_error:
