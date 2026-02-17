@@ -93,11 +93,10 @@ interface CategoryDef {
 }
 
 const categoryDefs: CategoryDef[] = [
-  { id: "google", name: "Google Ads", description: "Guida completa operativa Google Ads", icon: FileText },
-  { id: "meta", name: "Meta Ads", description: "Guida completa operativa Meta Ads", icon: FileText },
-  { id: "meta-ads", name: "Meta Ads Avanzato", description: "Manuale operativo completo Meta/Instagram Ads con benchmark", icon: FileText },
-  { id: "strategy", name: "Strategie", description: "Strategie per settore e confronto piattaforme", icon: Target },
-  { id: "technical", name: "Tecniche", description: "Tracking, policy, dimensioni creative", icon: Code },
+  { id: "google", name: "Google Ads", description: "Manuale operativo completo Google Ads: Search, Display, Shopping, YouTube", icon: FileText },
+  { id: "meta", name: "Meta Ads", description: "Manuale operativo completo Meta/Instagram Ads: Feed, Stories, Reels, Audience", icon: FileText },
+  { id: "strategia", name: "Strategia", description: "Funnel, budget, KPI, multi-canale, copywriting e scaling", icon: Target },
+  { id: "tecnico", name: "Tecnico", description: "GTM, tracking, dimensioni creative, policy, n8n, GDPR", icon: Code },
 ];
 
 // ---------------------------------------------------------------------------
