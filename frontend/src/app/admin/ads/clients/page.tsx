@@ -13,6 +13,7 @@ import {
   AlertCircle,
   CheckCircle,
   Globe,
+  X,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -76,20 +77,62 @@ export default function ClientsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    business_name: "",
+    business_type: "",
+    city: "",
+    email: "",
+    region: "",
+    phone: "",
+    website_url: "",
+    budget_monthly: 0,
+  });
+
+  const loadClients = async () => {
+    try {
+      const data = await adminFetch("/api/ads/clients");
+      setClients(data.data || data.clients || []);
+    } catch {
+      // API not available yet
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
-      try {
-        const data = await adminFetch("/api/ads/clients");
-        setClients(data.data || data.clients || []);
-      } catch {
-        // API not available yet
-      } finally {
-        setLoading(false);
-      }
+      await loadClients();
+      setLoading(false);
     };
     load();
   }, []);
+
+  const handleCreateClient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await adminFetch("/api/ads/clients", {
+        method: "POST",
+        body: JSON.stringify(formData),
+      });
+      setShowAddModal(false);
+      setFormData({
+        business_name: "",
+        business_type: "",
+        city: "",
+        email: "",
+        region: "",
+        phone: "",
+        website_url: "",
+        budget_monthly: 0,
+      });
+      await loadClients();
+    } catch {
+      // silent
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const filtered = clients.filter((c) => {
     const matchSearch =
@@ -115,7 +158,10 @@ export default function ClientsPage() {
           <h1 className="text-2xl font-bold text-white">Clienti</h1>
           <p className="text-gray-500">Seleziona un cliente per creare campagne pubblicitarie</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors">
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors"
+        >
           <Plus className="w-4 h-4" />
           Nuovo Cliente
         </button>
@@ -187,7 +233,10 @@ export default function ClientsPage() {
             Inizia aggiungendo il tuo primo cliente. Ti servira l&apos;URL del sito web per
             permettere all&apos;AI di analizzare il business.
           </p>
-          <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors"
+          >
             <Plus className="w-4 h-4" />
             Aggiungi Primo Cliente
           </button>
@@ -311,6 +360,183 @@ export default function ClientsPage() {
           );
         })}
       </div>
+
+      {/* Add Client Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowAddModal(false)}
+          />
+          <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-[#141420] border border-white/10 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-white">Nuovo Cliente</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateClient} className="space-y-4">
+              <div>
+                <label className="text-sm text-gray-400 mb-1.5 block">
+                  Nome Azienda <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.business_name}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, business_name: e.target.value }))
+                  }
+                  placeholder="Es: Pizzeria da Mario"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-amber-500/50 focus:outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 mb-1.5 block">
+                  Tipo Business <span className="text-red-400">*</span>
+                </label>
+                <select
+                  required
+                  value={formData.business_type}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, business_type: e.target.value }))
+                  }
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#0a0a0f] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+                >
+                  <option value="" disabled>
+                    Seleziona tipo...
+                  </option>
+                  {businessTypes
+                    .filter((t) => t.id !== "all")
+                    .map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-gray-400 mb-1.5 block">
+                    Citta <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, city: e.target.value }))
+                    }
+                    placeholder="Es: Milano"
+                    className="w-full py-2.5 px-4 rounded-lg bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-amber-500/50 focus:outline-none text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-400 mb-1.5 block">Regione</label>
+                  <input
+                    type="text"
+                    value={formData.region}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, region: e.target.value }))
+                    }
+                    placeholder="Es: Lombardia"
+                    className="w-full py-2.5 px-4 rounded-lg bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-amber-500/50 focus:outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 mb-1.5 block">
+                  Email <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, email: e.target.value }))
+                  }
+                  placeholder="info@azienda.it"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-amber-500/50 focus:outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 mb-1.5 block">Telefono</label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, phone: e.target.value }))
+                  }
+                  placeholder="+39 02 1234567"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-amber-500/50 focus:outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 mb-1.5 block">URL Sito Web</label>
+                <input
+                  type="url"
+                  value={formData.website_url}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, website_url: e.target.value }))
+                  }
+                  placeholder="https://www.esempio.it"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-amber-500/50 focus:outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 mb-1.5 block">
+                  Budget Mensile (EUR)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={formData.budget_monthly || ""}
+                  onChange={(e) =>
+                    setFormData((p) => ({
+                      ...p,
+                      budget_monthly: parseInt(e.target.value) || 0,
+                    }))
+                  }
+                  placeholder="0"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-amber-500/50 focus:outline-none text-sm"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 py-2.5 rounded-lg border border-white/10 text-white text-sm font-medium hover:bg-white/5 transition-colors"
+                >
+                  Annulla
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-amber-500 text-black text-sm font-medium hover:bg-amber-400 transition-colors disabled:opacity-50"
+                >
+                  {saving ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                  {saving ? "Salvataggio..." : "Salva Cliente"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

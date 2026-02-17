@@ -2516,45 +2516,166 @@ IMPORTANTE: Rispondi in italiano. Sii specifico e concreto nelle analisi. I punt
 
 
 # =============================================================================
-# CONTENT CREATOR — Image Generation & Creative Library (stubs)
+# CONTENT CREATOR — Image Generation (Gemini) & Video Prompt Generator
 # =============================================================================
 
-class GenerateImageRequest(BaseModel):
+class GenerateImageGeminiRequest(BaseModel):
     prompt: str
-    format: str = "1:1"
-    style: str = "photographic"
-    model: str = "flux"
-    overlay_text: Optional[str] = None
+    aspect_ratio: str = "1:1"
+    style_suffix: str = ""
 
 
-@router.post("/generate-image")
-async def generate_image(
-    req: GenerateImageRequest,
+@router.post("/generate-image-gemini")
+async def generate_image_gemini(
+    req: GenerateImageGeminiRequest,
     current_user: User = Depends(require_admin),
-    db: Session = Depends(get_db),
 ):
-    """Stub endpoint for AI image generation.
-    Returns a setup message until API keys are configured."""
-    config = db.query(AdPlatformConfig).filter(
-        AdPlatformConfig.user_id == current_user.id
-    ).first()
+    """Generate an image using Gemini 2.5 Flash Image API."""
+    import httpx
+    from app.core.config import settings
 
-    has_key = False
-    if config:
-        has_key = bool(config.openai_api_key) or bool(getattr(config, "replicate_api_key", None))
+    gemini_key = settings.GEMINI_API_KEY
+    if not gemini_key:
+        raise HTTPException(
+            status_code=400,
+            detail="GEMINI_API_KEY non configurata. Aggiungi la chiave nelle variabili d'ambiente.",
+        )
 
-    if not has_key:
-        return {
-            "success": False,
-            "status": "pending",
-            "message": "La generazione immagini richiede una API key. Vai su Setup \u2192 Modelli AI per configurare Replicate o OpenAI.",
-            "setup_url": "/admin/ads/setup",
+    # Build the full prompt with optional style suffix
+    full_prompt = req.prompt.strip()
+    if req.style_suffix:
+        full_prompt = f"{full_prompt}. {req.style_suffix}"
+
+    try:
+        async with httpx.AsyncClient(timeout=90) as client:
+            resp = await client.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-image-generation:generateContent?key={gemini_key}",
+                json={
+                    "contents": [{"parts": [{"text": full_prompt}]}],
+                    "generationConfig": {
+                        "responseModalities": ["TEXT", "IMAGE"],
+                        "imageConfig": {"aspectRatio": req.aspect_ratio},
+                    },
+                },
+            )
+            if resp.status_code != 200:
+                error_body = resp.text
+                logger.error(f"Gemini API error {resp.status_code}: {error_body}")
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Gemini API error: {resp.status_code}",
+                )
+            result = resp.json()
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Timeout nella generazione immagine. Riprova.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Errore chiamata Gemini API")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    # Extract image from response
+    for candidate in result.get("candidates", []):
+        for part in candidate.get("content", {}).get("parts", []):
+            if "inlineData" in part:
+                return {
+                    "success": True,
+                    "image_data": part["inlineData"]["data"],
+                    "mime_type": part["inlineData"]["mimeType"],
+                }
+
+    raise HTTPException(status_code=502, detail="Nessuna immagine generata da Gemini.")
+
+
+class GenerateVideoPromptRequest(BaseModel):
+    description: str
+    style: str = "cinematografico"
+    duration: int = 10
+
+
+@router.post("/generate-video-prompt")
+async def generate_video_prompt(
+    req: GenerateVideoPromptRequest,
+    current_user: User = Depends(require_admin),
+):
+    """Use the AI to generate an optimized Seedance 2.0 prompt."""
+    import httpx
+    from app.core.config import settings
+
+    api_key = settings.active_api_key
+    if not api_key:
+        raise HTTPException(status_code=400, detail="Nessuna API key AI configurata.")
+
+    provider = settings.active_ai_provider
+    if provider == "openrouter":
+        api_url = f"{settings.OPENROUTER_API_URL}/chat/completions"
+        model = settings.OPENROUTER_REFINE_MODEL
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+    elif provider == "deepseek":
+        api_url = f"{settings.DEEPSEEK_API_URL}/chat/completions"
+        model = settings.DEEPSEEK_MODEL
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+    else:
+        api_url = f"{settings.KIMI_API_URL}/chat/completions"
+        model = settings.KIMI_MODEL
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
         }
 
+    system_prompt = f"""Sei un esperto di AI video generation e Seedance 2.0.
+Il tuo compito e' scrivere prompt ottimizzati per generare video con Seedance 2.0 / WaveSpeed AI.
+
+REGOLE:
+- Scrivi il prompt in INGLESE (Seedance funziona meglio in inglese)
+- Usa la sintassi @ per riferimenti: @Image1, @Video1, @Audio1
+- Specifica SEMPRE: movimento camera, illuminazione, atmosfera, durata
+- Stile richiesto: {req.style}
+- Durata target: {req.duration} secondi
+- Sii SPECIFICO e CINEMATOGRAFICO nelle descrizioni
+- Includi dettagli tecnici: tipo di lente, angolazione, transizioni
+- Il prompt deve essere pronto per essere incollato direttamente in WaveSpeed AI
+
+FORMATO OUTPUT:
+Rispondi SOLO con il prompt ottimizzato, senza spiegazioni o commenti aggiuntivi.
+Inizia sempre con "@Image1 as first frame," se il video parte da un'immagine."""
+
+    user_msg = f"Genera un prompt Seedance 2.0 per questo video: {req.description}"
+
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(
+                api_url,
+                headers=headers,
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_msg},
+                    ],
+                    "max_tokens": 1000,
+                    "temperature": 0.7,
+                },
+            )
+            resp.raise_for_status()
+            data = resp.json()
+    except Exception as e:
+        logger.exception("Errore generazione video prompt")
+        raise HTTPException(status_code=500, detail=f"Errore AI: {str(e)}")
+
+    generated_prompt = data["choices"][0]["message"]["content"].strip()
+
     return {
-        "success": False,
-        "status": "pending",
-        "message": "Generazione immagini in fase di implementazione. API key rilevata.",
+        "success": True,
+        "prompt": generated_prompt,
+        "style": req.style,
+        "duration": req.duration,
     }
 
 
@@ -2563,7 +2684,7 @@ async def list_creatives(
     current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """Stub endpoint \u2014 returns empty creative library."""
+    """Stub endpoint — returns empty creative library."""
     return {
         "success": True,
         "data": [],

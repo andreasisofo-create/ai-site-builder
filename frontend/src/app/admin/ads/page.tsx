@@ -86,7 +86,7 @@ export default function AdsDashboard() {
     const load = async () => {
       try {
         const data = await adminFetch("/api/ads/stats");
-        setStats(data);
+        setStats(data.data || data);
       } catch {
         // API not available yet -- use defaults
       } finally {

@@ -152,6 +152,9 @@ class Settings(BaseSettings):
     # fal.ai (Flux image generation) - $0.025/img schnell, $0.04/img pro
     FAL_API_KEY: str = ""  # fal.ai API key (get from https://fal.ai/dashboard/keys)
 
+    # Gemini (Google AI image generation)
+    GEMINI_API_KEY: str = ""  # Google AI API key (https://aistudio.google.com/apikey)
+
     # Generation Pipeline
     GENERATION_PIPELINE: str = "databinding"  # "databinding" | "swarm" | "n8n"
     N8N_WEBHOOK_URL: str = ""  # n8n webhook URL for external generation
