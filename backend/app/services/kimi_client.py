@@ -431,3 +431,14 @@ if _refine_model and settings.active_ai_provider == "openrouter" and _refine_mod
 else:
     kimi_refine = kimi
     logger.info("Refine client: using same model as generation")
+
+# Text generation client — dedicated model for Italian copywriting.
+# Uses Gemini 2.5 Flash: faster, cheaper, excellent for creative writing.
+# Falls back to the default client if no separate text model is configured.
+_text_model = getattr(settings, "OPENROUTER_TEXT_MODEL", "")
+if _text_model and settings.active_ai_provider == "openrouter" and _text_model != kimi.model:
+    kimi_text = KimiClient(model_override=_text_model)
+    logger.info(f"Text generation client initialized with model: {_text_model}")
+else:
+    kimi_text = kimi
+    logger.info("Text generation client: using same model as generation")

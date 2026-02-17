@@ -433,6 +433,7 @@ async def refine_website(
             section_to_modify=data.section,
             reference_analysis=reference_analysis,
             photo_urls=validated_photos,
+            site_config=site.config if isinstance(site.config, dict) else None,
         )
 
         if not result.get("success"):

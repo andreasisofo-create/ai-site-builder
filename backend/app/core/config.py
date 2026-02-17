@@ -71,6 +71,10 @@ class Settings(BaseSettings):
     # Refine: Gemini 2.5 Flash — 250 tok/s, vision, 1M context, $0.30/$2.50 per 1M
     OPENROUTER_REFINE_MODEL: str = "google/gemini-2.5-flash"
 
+    # Text generation: dedicated model for Italian copywriting (creative writing)
+    # Flash is faster, cheaper, and excellent for creative text generation
+    OPENROUTER_TEXT_MODEL: str = "google/gemini-2.5-flash"
+
     # GLM-5 direct (Z.ai / Zhipu)
     GLM5_API_KEY: str = ""
     GLM5_API_URL: str = "https://api.z.ai/api/paas/v4"

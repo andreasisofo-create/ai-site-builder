@@ -167,6 +167,62 @@ class TemplateAssembler:
                     return variant["file"]
         return None
 
+    def get_variant_info(self, variant_id: str) -> Optional[Dict]:
+        """Returns metadata for a variant (placeholders, tags, etc.)."""
+        for cat_data in self.registry["categories"].values():
+            for variant in cat_data["variants"]:
+                if variant["id"] == variant_id:
+                    return variant
+        return None
+
+    def get_default_variant_for_section(
+        self, section_type: str, style_variant_map: Optional[Dict[str, str]] = None
+    ) -> Optional[str]:
+        """Returns the default variant ID for a section type.
+
+        If style_variant_map has an entry for this section type, use it.
+        Otherwise pick the first variant from the registry category.
+        """
+        if style_variant_map and section_type in style_variant_map:
+            return style_variant_map[section_type]
+
+        cat_data = self.registry["categories"].get(section_type)
+        if cat_data and cat_data.get("variants"):
+            return cat_data["variants"][0]["id"]
+        return None
+
+    def assemble_single_component(
+        self,
+        variant_id: str,
+        data: Dict[str, Any],
+        global_data: Optional[Dict[str, Any]] = None,
+    ) -> Optional[str]:
+        """Assemble a single component from its variant ID and data.
+
+        Returns the assembled HTML string, or None if the variant is not found.
+        """
+        file_path = self._find_variant_file(variant_id)
+        if not file_path:
+            logger.warning(f"[Assembler] Variant '{variant_id}' not found for single assembly")
+            return None
+
+        try:
+            template = self._read_template(file_path)
+        except FileNotFoundError:
+            logger.warning(f"[Assembler] Template file '{file_path}' not found")
+            return None
+
+        # Merge global data (lower priority) with component data (higher priority)
+        merged = {}
+        if global_data:
+            merged.update(global_data)
+        merged.update(data)
+
+        # Expand repeats, then replace placeholders
+        html = self._expand_repeats(template, merged)
+        html = self._replace_placeholders(html, merged)
+        return html
+
     def assemble(self, site_data: Dict[str, Any]) -> str:
         """
         Assembles a complete HTML page from site_data.

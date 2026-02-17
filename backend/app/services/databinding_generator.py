@@ -30,7 +30,7 @@ import time
 from typing import Dict, Any, Optional, List, Callable
 
 from app.core.config import settings
-from app.services.kimi_client import kimi, kimi_refine
+from app.services.kimi_client import kimi, kimi_refine, kimi_text
 from app.services.template_assembler import assembler as template_assembler
 from app.services.sanitizer import sanitize_input, sanitize_output
 from app.services.quality_control import qc_pipeline
@@ -244,6 +244,433 @@ def _pick_variety_context() -> Dict[str, Any]:
         "color_mood": random.choice(COLOR_MOOD_POOL),
         "font_pairing": random.choice(FONT_PAIRING_POOL),
     }
+
+
+# =========================================================
+# CATEGORY TONE PROFILES
+# Injected into _generate_texts() prompt so the AI adapts
+# its voice to the business sector, not just the personality.
+# =========================================================
+CATEGORY_TONES: Dict[str, str] = {
+    "restaurant": (
+        "TONO: Sensoriale, intimo, poetico. Evoca profumi, consistenze, luci soffuse. "
+        "Scrivi come se il lettore potesse assaggiare le parole. Usa sinestesie "
+        "(\"un sapore che suona come jazz\"). Il cibo e' memoria, identita', rituale."
+    ),
+    "saas": (
+        "TONO: Affilato, sicuro, orientato ai risultati. Numeri specifici, "
+        "contrasti prima/dopo, promesse misurabili. Niente buzzword vuote: "
+        "ogni frase deve rispondere a 'perche' dovrei scegliere voi?'. "
+        "Pensa a Stripe, Linear, Vercel — copy che taglia."
+    ),
+    "portfolio": (
+        "TONO: Autoriale, visionario, leggermente enigmatico. "
+        "Ogni progetto e' una storia, non una voce di catalogo. "
+        "Parla del PERCHE', non del cosa. Il designer/artista ha una filosofia, "
+        "non solo competenze. Ispira curiosita'."
+    ),
+    "ecommerce": (
+        "TONO: Desiderio, identita', trasformazione. Non vendi prodotti, "
+        "vendi chi il cliente DIVENTA. Linguaggio aspirazionale ma autentico. "
+        "Dettagli sensoriali sui materiali, la fattura, l'esperienza di unboxing. "
+        "Urgenza sottile, mai aggressiva."
+    ),
+    "business": (
+        "TONO: Autorevole, visionario, concreto. Bilancia fiducia e ambizione. "
+        "Numeri che dimostrano, non che vantano. Parla del futuro del cliente, "
+        "non del passato dell'azienda. Ogni frase costruisce credibilita' "
+        "attraverso specificita', non attraverso aggettivi."
+    ),
+    "blog": (
+        "TONO: Intellettuale, curioso, provocatorio. Ogni titolo e' una domanda "
+        "che il lettore non sapeva di avere. Crea tensione tra il conosciuto e "
+        "l'inaspettato. Il blog non informa — sfida, reinterpreta, illumina."
+    ),
+    "event": (
+        "TONO: Elettrico, urgente, esperienziale. Il lettore deve sentire "
+        "l'energia PRIMA di arrivare. FOMO strategico: non 'partecipa', "
+        "ma 'non puoi permetterti di perdere questo'. Date, numeri, "
+        "countdown. Ogni parola accelera il battito."
+    ),
+    "custom": (
+        "TONO: Adatta il tono al tipo di attivita' descritto. "
+        "Se non e' chiaro, usa un mix di autorevolezza e calore. "
+        "Copy che potrebbe vincere un Awwwards: specifico, ritmato, memorabile."
+    ),
+}
+
+# =========================================================
+# FEW-SHOT EXAMPLES: Award-winning Italian copy per category.
+# Injected into _generate_texts() so the AI sees CONCRETE
+# examples of the quality level expected. 2 examples each.
+# =========================================================
+FEW_SHOT_EXAMPLES: Dict[str, List[Dict[str, Any]]] = {
+    "restaurant": [
+        {
+            "hero_title": "Dove il Tempo si Ferma a Tavola",
+            "hero_subtitle": (
+                "Ogni piatto nasce da un dialogo silenzioso tra la terra e le mani "
+                "dello chef. Non serviamo cena — creiamo il ricordo che racconterai domani. "
+                "Stagionalita' radicale, zero compromessi."
+            ),
+            "service_title": "Il Rituale del Fuoco",
+            "service_description": (
+                "Cotture lente su brace di quercia centenaria. 14 ore di pazienza per "
+                "trasformare un taglio umile in qualcosa che non dimenticherai. La fiamma "
+                "non ha fretta, e nemmeno noi."
+            ),
+            "testimonial": (
+                "Ho chiuso gli occhi al primo boccone e ho rivisto la cucina di mia nonna "
+                "a Matera. Non succedeva da vent'anni. Mia moglie dice che ho pianto — "
+                "io dico che era il pepe. Ci torniamo ogni anniversario, ormai e' tradizione."
+            ),
+        },
+        {
+            "hero_title": "Sapori Che Raccontano Storie",
+            "hero_subtitle": (
+                "Trentadue ingredienti locali, sette fornitori che conosciamo per nome, "
+                "un menu che cambia quando cambia il vento. Cucina d'autore che sa di casa, "
+                "non di pretesa."
+            ),
+            "service_title": "L'Orto Segreto",
+            "service_description": (
+                "A 400 metri dal ristorante, il nostro orto biodinamico detta il menu. "
+                "Quello che raccogliamo la mattina, lo serviamo la sera. Nessun intermediario "
+                "tra la radice e il tuo piatto."
+            ),
+            "testimonial": (
+                "Siamo arrivati per caso, sotto la pioggia, senza prenotazione. Tre ore dopo "
+                "stavamo brindando col sommelier come vecchi amici. Il risotto allo zafferano "
+                "dell'orto? Ancora ci penso, a distanza di sei mesi."
+            ),
+        },
+    ],
+    "saas": [
+        {
+            "hero_title": "Meno Caos. Piu' Risultati.",
+            "hero_subtitle": (
+                "Il tuo team perde 23 ore a settimana in task ripetitivi. "
+                "Noi le restituiamo. Automazione intelligente che si adatta al tuo flusso, "
+                "non il contrario. Setup in 4 minuti, ROI dal primo giorno."
+            ),
+            "service_title": "Automazione Predittiva",
+            "service_description": (
+                "L'AI analizza 10.000 pattern nel tuo workflow e anticipa i colli di bottiglia "
+                "prima che esistano. Non reagire ai problemi — previenili. "
+                "I nostri clienti riducono i ritardi del 67% nel primo trimestre."
+            ),
+            "testimonial": (
+                "Prima gestivamo 200 ticket al giorno con 8 persone. Ora ne gestiamo 340 "
+                "con 5. Non e' magia — e' che finalmente il software lavora PER noi, "
+                "non CONTRO di noi. Il team e' tornato a fare il lavoro che conta."
+            ),
+        },
+        {
+            "hero_title": "847 Progetti. Zero Compromessi.",
+            "hero_subtitle": (
+                "Ogni feature nasce da un problema reale, non da una slide. "
+                "Dashboard che parla la tua lingua, integrazioni che funzionano al primo click, "
+                "supporto che risponde in 90 secondi. Provalo gratis, poi decidi."
+            ),
+            "service_title": "Dashboard Viva",
+            "service_description": (
+                "Dimentica i report statici di fine mese. La nostra dashboard si aggiorna "
+                "in tempo reale, evidenzia anomalie con alert intelligenti e suggerisce "
+                "azioni correttive. I tuoi dati, finalmente, parlano chiaro."
+            ),
+            "testimonial": (
+                "Ho convinto il CEO con un solo screenshot della dashboard. In 30 secondi "
+                "ha visto quello che prima richiedeva 3 riunioni e un foglio Excel da incubo. "
+                "Budget approvato in giornata — mai successo prima."
+            ),
+        },
+    ],
+    "portfolio": [
+        {
+            "hero_title": "Ogni Pixel Ha un Perche'",
+            "hero_subtitle": (
+                "Non creo siti web. Creo sistemi visivi che trasformano visitatori distratti "
+                "in clienti convinti. 12 anni di ossessione per il dettaglio, "
+                "47 brand reinventati, zero template riciclati."
+            ),
+            "service_title": "Brand Identity Radicale",
+            "service_description": (
+                "Parto da chi sei veramente, non da chi vorresti sembrare. Interviste, "
+                "analisi competitiva, moodboard che sfidano — e poi il logo arriva come "
+                "una conseguenza naturale, non come una decorazione."
+            ),
+            "testimonial": (
+                "Gli ho detto 'voglio qualcosa di diverso' aspettandomi il solito moodboard "
+                "su Pinterest. Mi ha presentato un manifesto di 12 pagine sulla mia azienda "
+                "che nemmeno io avrei saputo scrivere. Il rebranding ha aumentato "
+                "le conversioni del 180%."
+            ),
+        },
+        {
+            "hero_title": "Design Senza Compromessi",
+            "hero_subtitle": (
+                "Tre regole: funziona, emoziona, dura. Il bello senza sostanza e' decorazione. "
+                "La sostanza senza bellezza e' un foglio Excel. "
+                "Io cerco il punto esatto dove si incontrano."
+            ),
+            "service_title": "UX Che Respira",
+            "service_description": (
+                "Ogni interfaccia che disegno viene testata con utenti reali prima di "
+                "vedere la luce. Prototipi interattivi, A/B test, heatmap. "
+                "Il design bello che nessuno usa e' solo arte — io faccio strumenti."
+            ),
+            "testimonial": (
+                "Il nostro e-commerce aveva un tasso di abbandono carrello del 78%. "
+                "Dopo il redesign, e' sceso al 31%. Non ha cambiato i colori — ha ripensato "
+                "l'intero percorso dell'utente. Numeri che parlano."
+            ),
+        },
+    ],
+    "ecommerce": [
+        {
+            "hero_title": "Non Compri un Oggetto. Scegli Chi Vuoi Essere.",
+            "hero_subtitle": (
+                "Ogni pezzo della collezione nasce da 200 ore di artigianato e una domanda: "
+                "'Lo terrai per sempre?'. Materiali che invecchiano con grazia, "
+                "design che non segue le stagioni ma le anticipa."
+            ),
+            "service_title": "Pelle Che Racconta",
+            "service_description": (
+                "Conceria toscana, concia vegetale, 18 mesi di stagionatura. "
+                "Ogni borsa porta i segni del suo viaggio — graffi, patina, carattere. "
+                "Non la sostituirai. La erediterai."
+            ),
+            "testimonial": (
+                "Ho aperto la scatola e ho sentito l'odore del cuoio prima ancora di vederla. "
+                "La uso ogni giorno da 14 mesi e la pelle ha preso un colore ambrato "
+                "che non esisteva all'inizio. E' diventata piu' bella con il tempo, come "
+                "dovrebbero essere tutte le cose."
+            ),
+        },
+        {
+            "hero_title": "Il Lusso e' nella Scelta Consapevole",
+            "hero_subtitle": (
+                "Zero fast fashion, zero sovrapproduzione. Edizioni limitate da 50 pezzi, "
+                "tessuti certificati, filiera trasparente dal filo al bottone. "
+                "Quando scegli qualita', il pianeta ringrazia."
+            ),
+            "service_title": "Spedizione Rituale",
+            "service_description": (
+                "Packaging in carta riciclata con sigillo in ceralacca, biglietto scritto "
+                "a mano, sacchetto in cotone organico. L'esperienza inizia "
+                "dall'apertura della scatola, non dall'indossare il capo."
+            ),
+            "testimonial": (
+                "Mia figlia mi ha chiesto perche' quella maglietta costava 'cosi' tanto'. "
+                "Le ho fatto toccare il tessuto, leggere l'etichetta, sentire la differenza. "
+                "Ora e' lei che non vuole piu' comprare fast fashion. "
+                "Investimento migliore della mia vita."
+            ),
+        },
+    ],
+    "business": [
+        {
+            "hero_title": "Costruiamo il Domani. Oggi.",
+            "hero_subtitle": (
+                "In 15 anni abbiamo accompagnato 340 aziende dalla visione all'esecuzione. "
+                "Non vendiamo consulenza — costruiamo ponti tra dove sei "
+                "e dove il mercato ti aspetta. Risultati misurabili, non presentazioni."
+            ),
+            "service_title": "Strategia Operativa",
+            "service_description": (
+                "Basta piani strategici che finiscono in un cassetto. Il nostro metodo "
+                "traduce la visione in sprint da 90 giorni con KPI chiari, owner definiti "
+                "e review settimanali. La strategia funziona solo se cammina."
+            ),
+            "testimonial": (
+                "Avevamo provato 3 societa' di consulenza in 5 anni. Slide bellissime, "
+                "risultati zero. Questi sono entrati in azienda il lunedi' e il venerdi' "
+                "avevamo gia' il primo processo ottimizzato. Il fatturato e' cresciuto "
+                "del 34% in 8 mesi. Niente magia — metodo."
+            ),
+        },
+        {
+            "hero_title": "Dove Nasce il Cambiamento",
+            "hero_subtitle": (
+                "Il mercato non aspetta chi esita. Analisi predittiva, "
+                "trasformazione digitale e un team che ha detto 'no' a 200 clienti "
+                "per dire 'si' a quelli giusti. La tua crescita e' la nostra reputazione."
+            ),
+            "service_title": "Digital Acceleration",
+            "service_description": (
+                "Audit completo in 72 ore, roadmap personalizzata in 2 settimane, "
+                "primi risultati in 30 giorni. Non digitalizziamo processi rotti — "
+                "li ripensiamo da zero e poi li automatizziamo."
+            ),
+            "testimonial": (
+                "Il nostro settore era fermo agli anni '90. Processi cartacei, Excel ovunque, "
+                "decisioni a intuito. In 6 mesi ci hanno portato nel 2024. "
+                "I dipendenti che resistevano al cambiamento ora sono i piu' entusiasti. "
+                "Questo vale piu' di qualsiasi ROI."
+            ),
+        },
+    ],
+    "blog": [
+        {
+            "hero_title": "Le Idee Che Cambiano le Regole",
+            "hero_subtitle": (
+                "Non un altro blog di settore. Un laboratorio di pensiero dove "
+                "le certezze vengono smontate, le tendenze anticipate e le domande "
+                "scomode trovano risposte scomode. Leggi solo se vuoi cambiare idea."
+            ),
+            "service_title": "Deep Dive Settimanale",
+            "service_description": (
+                "Ogni giovedi', un'analisi di 2.000 parole che spacca un tema in due. "
+                "Dati originali, interviste esclusive, zero riciclo di comunicati stampa. "
+                "Il tipo di articolo che salvi nei preferiti e condividi con il team."
+            ),
+            "testimonial": (
+                "Ho smesso di leggere newsletter due anni fa. Questa e' l'unica che apro "
+                "il giovedi' mattina prima del caffe'. L'articolo sulla disruption del retail "
+                "l'ho fatto leggere a tutto il board. Ha cambiato la nostra strategia Q3."
+            ),
+        },
+        {
+            "hero_title": "Pensiero Critico, Zero Filtri",
+            "hero_subtitle": (
+                "47.000 lettori che preferiscono la verita' scomoda alla rassicurazione facile. "
+                "Analisi controcorrente, dati che contraddicono i titoli, "
+                "prospettive che nessun altro osa pubblicare."
+            ),
+            "service_title": "Il Contrarian Report",
+            "service_description": (
+                "Una volta al mese prendiamo la narrativa dominante del settore "
+                "e la mettiamo alla prova dei fatti. Con dati, fonti, e il coraggio "
+                "di dire quello che tutti pensano ma nessuno scrive."
+            ),
+            "testimonial": (
+                "L'analisi sul fallimento delle startup 'purpose-driven' mi ha fatto "
+                "ripensare l'intero pitch deck. Scomodo? Si'. Necessario? Assolutamente. "
+                "E' il blog che leggo per non restare nella bolla."
+            ),
+        },
+    ],
+    "event": [
+        {
+            "hero_title": "Non Partecipare. Vivi.",
+            "hero_subtitle": (
+                "12 ore che comprimeranno 12 mesi di ispirazione. "
+                "Speaker che hanno cambiato industrie, workshop dove le idee diventano "
+                "prototipi e 800 persone che condividono la stessa urgenza di fare."
+            ),
+            "service_title": "Masterclass Immersiva",
+            "service_description": (
+                "Niente slide da 50 pagine. 90 minuti di pratica pura con chi ha costruito "
+                "aziende da zero. Gruppi da massimo 15 persone, "
+                "un progetto reale da portare a casa. Impari facendo, non ascoltando."
+            ),
+            "testimonial": (
+                "Sono andata per networking e sono tornata con un co-founder, "
+                "tre clienti e un'idea che ha raccolto 200k in seed round. "
+                "L'anno prima ho saltato l'evento. Non faro' mai piu' quell'errore."
+            ),
+        },
+        {
+            "hero_title": "Il Momento e' Adesso",
+            "hero_subtitle": (
+                "350 posti. 2.400 richieste. Una sola edizione all'anno. "
+                "Non e' esclusivita' — e' la promessa che ogni persona in sala "
+                "ha qualcosa da insegnarti. La lista d'attesa apre tra 48 ore."
+            ),
+            "service_title": "After Dark Sessions",
+            "service_description": (
+                "Quando le luci del palco si spengono, il vero evento inizia. "
+                "Conversazioni informali con gli speaker, musica live, cena condivisa. "
+                "Le connessioni migliori nascono dopo le 22."
+            ),
+            "testimonial": (
+                "Al terzo cocktail ho trovato il coraggio di parlare con lo speaker "
+                "che seguivo da anni. Mi ha dato un feedback sul mio progetto che valeva "
+                "piu' di qualsiasi corso. Quell'incontro ha cambiato la traiettoria "
+                "della mia carriera."
+            ),
+        },
+    ],
+    "custom": [
+        {
+            "hero_title": "Dove Tutto Prende Forma",
+            "hero_subtitle": (
+                "Non siamo per tutti — e va bene cosi'. Per chi cerca l'eccezionale "
+                "nel quotidiano, per chi rifiuta il 'buono abbastanza', "
+                "per chi sa che la differenza sta nei dettagli che nessuno nota. Tranne te."
+            ),
+            "service_title": "L'Approccio Sartoriale",
+            "service_description": (
+                "Niente soluzioni preconfezionate, niente template mentali. "
+                "Ascoltiamo per tre volte il tempo che parliamo. Poi costruiamo "
+                "qualcosa che non esisteva prima — su misura, come un abito "
+                "che calza solo a te."
+            ),
+            "testimonial": (
+                "Ho cercato per mesi qualcuno che capisse la mia visione senza che dovessi "
+                "spiegarla tre volte. Alla prima call hanno completato le mie frasi. "
+                "Il risultato? Esattamente quello che avevo in testa, "
+                "ma meglio di come lo immaginavo."
+            ),
+        },
+        {
+            "hero_title": "L'Eccellenza Non e' un Caso",
+            "hero_subtitle": (
+                "Ogni dettaglio e' una decisione. Ogni decisione e' una dichiarazione. "
+                "Lavoriamo con chi capisce che il valore si costruisce, "
+                "non si dichiara. I risultati parlano — noi li facciamo gridare."
+            ),
+            "service_title": "Consulenza Strategica",
+            "service_description": (
+                "Due ore che valgono sei mesi di tentativi. Analizziamo il tuo mercato, "
+                "smontiamo le assunzioni sbagliate, ricostruiamo la strategia "
+                "su fondamenta solide. Niente teoria — solo azioni concrete con deadline."
+            ),
+            "testimonial": (
+                "Ero scettico — l'ennesimo consulente, pensavo. Poi hanno trovato in 48 ore "
+                "un problema che il mio team ignorava da 2 anni. Il fix ha aumentato "
+                "la retention del 40%. A volte serve uno sguardo esterno per vedere "
+                "l'ovvio."
+            ),
+        },
+    ],
+}
+
+
+def _get_category_from_style_id(template_style_id: Optional[str]) -> str:
+    """Extract business category from template_style_id (e.g., 'restaurant-elegant' -> 'restaurant')."""
+    if template_style_id:
+        category = template_style_id.split("-")[0].lower()
+        if category in FEW_SHOT_EXAMPLES:
+            return category
+    return "custom"
+
+
+def _build_few_shot_block(category: str) -> str:
+    """Build the few-shot examples block for injection into the text generation prompt."""
+    examples = FEW_SHOT_EXAMPLES.get(category, FEW_SHOT_EXAMPLES["custom"])
+    tone = CATEGORY_TONES.get(category, CATEGORY_TONES["custom"])
+
+    lines = []
+    lines.append(f"=== TONE DI SETTORE ({category.upper()}) ===")
+    lines.append(tone)
+    lines.append("")
+    lines.append("=== ESEMPI DI COPY ECCELLENTE (studia lo STILE, non copiare il contenuto) ===")
+    lines.append("Questi esempi mostrano il LIVELLO QUALITATIVO atteso. Adatta lo stile a QUESTA azienda specifica.\n")
+
+    for i, ex in enumerate(examples, 1):
+        lines.append(f"--- Esempio {i} ---")
+        lines.append(f"Hero Title: \"{ex['hero_title']}\"")
+        lines.append(f"Hero Subtitle: \"{ex['hero_subtitle']}\"")
+        lines.append(f"Service Title: \"{ex['service_title']}\"")
+        lines.append(f"Service Description: \"{ex['service_description']}\"")
+        lines.append(f"Testimonial: \"{ex['testimonial']}\"")
+        lines.append("")
+
+    lines.append("IMPORTANTE: NON copiare questi esempi. Usa lo stesso LIVELLO di qualita', specificita' e impatto emotivo per creare contenuti ORIGINALI per QUESTA azienda.")
+    lines.append("=== FINE ESEMPI ===")
+
+    return "\n".join(lines)
 
 
 # =========================================================
@@ -1327,6 +1754,7 @@ def _parse_reference_analysis(analysis_text: str) -> Dict[str, Any]:
 class DataBindingGenerator:
     def __init__(self):
         self.kimi = kimi
+        self.kimi_text = kimi_text
         self.assembler = template_assembler
 
     # =========================================================
@@ -1668,6 +2096,7 @@ Return ONLY the JSON object"""
         variety_context: Optional[Dict[str, Any]] = None,
         reference_analysis: Optional[str] = None,
         photo_urls: Optional[List[str]] = None,
+        template_style_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Kimi returns JSON with all text content for every section."""
         contact_str = ""
@@ -1752,16 +2181,14 @@ Avoid generic placeholder descriptions. The site will feature REAL business phot
         structure_rule_parts.append(f'{rule_num}. DO NOT use short key names like "ICON", "TITLE", "DESCRIPTION" — always use the FULL prefixed key name as shown above.')
         structure_rules = "=== CRITICAL JSON STRUCTURE RULES (violating these = BROKEN website) ===\n" + "\n".join(structure_rule_parts) if structure_rule_parts else ""
 
-        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.{reference_tone_hint}{knowledge_hint}{reference_hint}{photo_hint}
-Your copy must be SHARP, EVOCATIVE, and EMOTIONALLY MAGNETIC. Every word earns its place. Zero filler, zero corporate jargon.
+        # === FEW-SHOT EXAMPLES & CATEGORY TONE ===
+        category = _get_category_from_style_id(template_style_id)
+        few_shot_block = _build_few_shot_block(category)
+
+        prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.
 Return ONLY valid JSON, no markdown.
-
-BUSINESS: {business_name}
-DESCRIPTION: {business_description[:800]}
-SECTIONS NEEDED: {sections_str}
-{contact_str}
-
-=== ABSOLUTE BANNED PHRASES (using ANY of these = failure) ===
+{reference_tone_hint}{knowledge_hint}{reference_hint}{photo_hint}
+=== ABSOLUTE BANNED PHRASES (using ANY of these = automatic failure) ===
 - "Benvenuti" / "Benvenuto" (in any form)
 - "Siamo un'azienda" / "Siamo un team" / "Siamo leader"
 - "I nostri servizi" / "Cosa offriamo" / "I nostri prodotti"
@@ -1772,39 +2199,31 @@ SECTIONS NEEDED: {sections_str}
 - "A 360 gradi" / "Chiavi in mano"
 - "Da anni nel settore"
 - "Non esitare a contattarci"
+- "Scopri di piu" / "Per saperne di piu"
 - Any text that could appear on ANY other business website. Be SPECIFIC to THIS business.
 
-=== HEADLINE RULES ===
-- Hero headline: MAX 6 words. Must be UNFORGETTABLE. Use metaphors, contrasts, provocations.
-  GREAT EXAMPLES (adapt the style, don't copy):
-  - Restaurant: "Il Futuro del Gusto" / "Dove il Tempo si Ferma" / "Sapori che Raccontano Storie"
-  - SaaS: "Meno Caos. Piu' Risultati." / "La Velocita Cambia Tutto" / "Il Tuo Prossimo Livello"
-  - Portfolio: "Creo Mondi Visivi" / "Design Senza Compromessi" / "Ogni Pixel Ha un Perche"
-  - Business: "Costruiamo il Domani" / "Oltre le Aspettative" / "Dove Nasce il Cambiamento"
-  TERRIBLE EXAMPLES (NEVER write like this):
-  - "Benvenuti nel Nostro Sito" / "La Nostra Azienda" / "Servizi Professionali" / "Chi Siamo"
-- Section headings: NEVER generic ("I Nostri Servizi"). Instead, be SPECIFIC and evocative ("Ogni Progetto, Una Rivoluzione" / "Il Metodo Dietro la Magia")
+{few_shot_block}
 
-=== COPYWRITING CRAFT ===
-- Subtitles: Poetic but clear, 1-2 sentences max. Create CURIOSITY and DESIRE. Make the reader NEED to scroll down.
-- Service/feature descriptions: Lead with the BENEFIT, not the feature. What does the customer FEEL, GAIN, BECOME? Use sensory language. Each description must be UNIQUE in tone (don't repeat the same sentence structure).
-- Testimonials: Sound like REAL humans — include specific details, emotions, a before/after story. "Mi hanno salvato 20 ore a settimana" not "Ottimo servizio, consigliato."
-- Stats/numbers: Use IMPRESSIVE, SPECIFIC numbers (not round). "847" is more believable than "800". "99.2%" is more credible than "100%".
-- Use POWER WORDS strategically: rivoluzionario, straordinario, autentico, artigianale, esclusivo, fulminante, impeccabile, visionario.
-- Vary rhythm: alternate short punchy phrases with longer flowing descriptions. Create MUSIC in the text.
-- CTA buttons: action verbs + urgency. "Inizia la Trasformazione" / "Scopri il Metodo" / "Prenota il Tuo Posto" — NOT "Contattaci" / "Scopri di Piu"
+BUSINESS: {business_name}
+DESCRIPTION: {business_description[:800]}
+SECTIONS NEEDED: {sections_str}
+{contact_str}
 
-=== ICON RULES ===
-- Each service/feature MUST have a UNIQUE, RELEVANT emoji icon
-- NEVER repeat the same emoji twice in a section
-- Choose MODERN, SPECIFIC emojis that match the content (not generic like checkmarks or stars)
-- Examples: for speed use thunderbolt, for security use shield, for analytics use chart, for design use palette
-
-=== CREATIVE PERSONALITY (CRITICAL — this defines the ENTIRE tone of the site) ===
+=== CREATIVE PERSONALITY (this defines the ENTIRE tone) ===
 {variety_context["personality"]["directive"] if variety_context else random.choice(PERSONALITY_POOL)["directive"]}
 Headline style: {variety_context["personality"]["headline_style"] if variety_context else "varied and surprising"}
-EVERY piece of text — headlines, subtitles, descriptions, CTAs — must reflect this personality.
-Do NOT write generic copy that ignores the personality. The personality is your creative brief.
+
+=== COPYWRITING RULES ===
+- Hero headline: MAX 6 words. Metaphors, contrasts, provocations. See examples above.
+- Section headings: NEVER generic. Be SPECIFIC and evocative.
+- Subtitles: 1-2 sentences. Create CURIOSITY and DESIRE.
+- Service/feature descriptions: Lead with BENEFIT, not feature. Sensory language. Each UNIQUE in tone.
+- Testimonials: REAL humans with specific details, emotions, before/after. Real Italian names (Nome Cognome).
+- Stats: SPECIFIC non-round numbers ("847" not "800", "99.2%" not "100%").
+- CTA buttons: action verb + urgency ("Inizia la Trasformazione" NOT "Contattaci").
+- Vary rhythm: alternate short punchy with longer flowing. Create MUSIC in text.
+- Icons: UNIQUE, RELEVANT emoji per service/feature. NEVER repeat in same section.
+- TESTIMONIAL_INITIAL = first letter of TESTIMONIAL_AUTHOR name.
 
 Return this JSON (include ONLY the sections listed in SECTIONS NEEDED):
 {{
@@ -1819,29 +2238,22 @@ Return this JSON (include ONLY the sections listed in SECTIONS NEEDED):
 
 {structure_rules}
 
-=== MINIMUM WORD COUNTS (MANDATORY — short text = FAILURE) ===
+=== MINIMUM WORD COUNTS (MANDATORY) ===
 - HERO_SUBTITLE: MIN 15 parole
-- ABOUT_TEXT: MIN 40 parole (racconta una storia, non una frase)
+- ABOUT_TEXT: MIN 40 parole
 - SERVICE_DESCRIPTION / FEATURE_DESCRIPTION: MIN 12 parole ciascuna
-- TESTIMONIAL_TEXT: MIN 20 parole ciascuna (storia specifica, non "ottimo servizio")
+- TESTIMONIAL_TEXT: MIN 20 parole ciascuna
 - CTA_SUBTITLE: MIN 12 parole
 - MEMBER_BIO: MIN 15 parole
 
-FINAL CHECKLIST (every point is mandatory):
-- ALL text MUST be in Italian
-- Be WILDLY creative and hyper-specific to THIS business — if you replaced the business name, the text should NOT work for any other company
-- Hero title: MAX 6 words, think Nike/Apple-level copywriting
-- ZERO generic text anywhere. Read every line and ask: "Could this appear on a random corporate site?" If yes, REWRITE IT.
-- Each service/feature icon: UNIQUE emoji, never repeated in the same section
-- TESTIMONIAL_INITIAL = first letter of TESTIMONIAL_AUTHOR name
-- Testimonials: real Italian names (Nome Cognome), specific details, emotional stories (NOT "Ottimo servizio" or "Molto professionali")
-- Generate ONLY the sections listed in SECTIONS NEEDED
-- Double-check: NO banned phrases from the list above appear ANYWHERE in your output
-- VERIFY: every SERVICES/FEATURES/TESTIMONIALS/GALLERY_ITEMS/TEAM_MEMBERS array has 3+ items with FULL key names (SERVICE_ICON not ICON)
-- COUNT WORDS: if any description has fewer words than the minimum, EXPAND it immediately
+FINAL CHECK:
+- ALL text in Italian, hyper-specific to THIS business
+- Hero title MAX 6 words, ZERO generic text anywhere
+- NO banned phrases, all arrays 3+ items with FULL key names (SERVICE_ICON not ICON)
+- COUNT WORDS: expand any text below minimum immediately
 - Return ONLY the JSON object"""
 
-        result = await self.kimi.call(
+        result = await self.kimi_text.call(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=4000, thinking=False, timeout=120.0,
             temperature=0.75, top_p=0.95, json_mode=True,
@@ -1855,7 +2267,7 @@ FINAL CHECKLIST (every point is mandatory):
                 logger.warning(f"[DataBinding] Texts JSON parse failed (attempt 1): {e}")
                 logger.debug(f"[DataBinding] Raw response: {result['content'][:500]}...")
                 # Retry with stricter prompt and lower temperature
-                retry_result = await self.kimi.call(
+                retry_result = await self.kimi_text.call(
                     messages=[{"role": "user", "content": prompt + "\n\nIMPORTANT: Your previous response had invalid JSON. Return ONLY valid JSON. No comments, no trailing commas, no explanation."}],
                     max_tokens=4000, thinking=False, timeout=120.0,
                     temperature=0.5, json_mode=True,
@@ -2357,6 +2769,7 @@ RULES:
             variety_context=variety,
             reference_analysis=reference_analysis,
             photo_urls=photo_urls,
+            template_style_id=template_style_id,
         )
         theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
 
@@ -2580,7 +2993,16 @@ RULES:
                 })
 
         generation_time = int((time.time() - start_time) * 1000)
-        cost = self.kimi.calculate_cost(total_tokens_in, total_tokens_out)
+
+        # Calculate cost per-model for accuracy (text generation may use a different model)
+        text_tok_in = texts_result.get("tokens_input", 0) if texts_result.get("success") else 0
+        text_tok_out = texts_result.get("tokens_output", 0) if texts_result.get("success") else 0
+        other_tok_in = total_tokens_in - text_tok_in
+        other_tok_out = total_tokens_out - text_tok_out
+        cost = (
+            self.kimi.calculate_cost(other_tok_in, other_tok_out)
+            + self.kimi_text.calculate_cost(text_tok_in, text_tok_out)
+        )
 
         logger.info(
             f"[DataBinding] Done in {generation_time}ms, "

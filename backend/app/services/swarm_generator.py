@@ -22,6 +22,7 @@ from typing import Dict, Any, Optional, List, Callable, Tuple
 
 from app.services.kimi_client import kimi, kimi_refine, KimiClient
 from app.services.sanitizer import sanitize_input, sanitize_output, sanitize_refine_input
+from app.services.template_assembler import assembler as _assembler, _SECTION_NAV_LABELS
 
 logger = logging.getLogger(__name__)
 
@@ -800,6 +801,22 @@ IMPORTANT:
         if re.search(r'sostituisci\s+.+\s+con\s+', msg_lower):
             text_score += 3
 
+        # === EARLY EXIT: Remove section requests (instant, no AI) ===
+        if re.search(
+            r'(?:rimuovi|elimina|togli|cancella|nascondi|remove|delete)\s+(?:la\s+|il\s+|lo\s+)?(?:sezione|section|parte|blocco)',
+            msg_lower,
+        ):
+            logger.info("[SmartRefine] Classified as REMOVE_SECTION")
+            return "remove_section"
+
+        # === EARLY EXIT: Add section requests ===
+        if re.search(
+            r'(?:aggiungi|inserisci|crea|add|insert)\s+(?:una?\s+|la\s+|il\s+)?(?:sezione|section|parte|blocco)',
+            msg_lower,
+        ):
+            logger.info("[SmartRefine] Classified as ADD_SECTION")
+            return "add_section"
+
         # Structural signals (override everything)
         structural_patterns = [
             r'(?:aggiungi|rimuovi|elimina|sposta|riordina)\s+(?:una?\s+)?(?:sezione|mappa|form|modulo|immagine|video|slider|carousel)',
@@ -875,6 +892,348 @@ IMPORTANT:
         return None
 
     @staticmethod
+    def _refine_remove_section(html: str, message: str) -> Dict[str, Any]:
+        """Remove a section from HTML without any AI calls.
+
+        Parses the user message to find which section to remove,
+        locates it in the HTML using balanced tag matching,
+        removes it and cleans up nav links.
+        Returns in <50ms, zero AI cost.
+        """
+        msg_lower = message.lower()
+
+        # 1. Extract section name from message
+        remove_match = re.search(
+            r'(?:rimuovi|elimina|togli|cancella|nascondi|remove|delete)\s+'
+            r'(?:la\s+|il\s+|lo\s+)?(?:sezione|section|parte|blocco)\s+'
+            r'(?:del\s+|di\s+|dei\s+|delle\s+|degli\s+)?["\']?([a-zA-Z\s\-àèéìòù]+)',
+            msg_lower,
+        )
+
+        section_id = None
+        if remove_match:
+            section_name = remove_match.group(1).strip().rstrip('."\'')
+            # Map to section ID via _SECTION_NAMES
+            section_id = SwarmGenerator._SECTION_NAMES.get(section_name)
+            # Also try partial matching
+            if not section_id:
+                for keyword, sid in SwarmGenerator._SECTION_NAMES.items():
+                    if keyword in section_name or section_name in keyword:
+                        section_id = sid
+                        break
+            # Try using the raw name as ID
+            if not section_id:
+                section_id = section_name.replace(' ', '-')
+
+        if not section_id:
+            return {"success": False, "error": "Could not identify which section to remove"}
+
+        logger.info(f"[RemoveSection] Removing section: '{section_id}'")
+
+        # 2. Find the section in HTML using balanced tag matching
+        # Match <section id="X">, <div id="X">, <header id="X">, <footer id="X">
+        pattern = re.compile(
+            rf'<(section|div|header|footer)(\s[^>]*?\bid\s*=\s*["\'](?:[^"\']*\b)?{re.escape(section_id)}(?:\b[^"\']*)?["\'][^>]*)>',
+            re.IGNORECASE,
+        )
+        match = pattern.search(html)
+        if not match:
+            # Try without word boundaries for hyphenated IDs
+            pattern2 = re.compile(
+                rf'<(section|div|header|footer)(\s[^>]*?\bid\s*=\s*["\'][^"\']*{re.escape(section_id)}[^"\']*["\'][^>]*)>',
+                re.IGNORECASE,
+            )
+            match = pattern2.search(html)
+
+        if not match:
+            return {"success": False, "error": f"Section '{section_id}' not found in HTML"}
+
+        tag_name = match.group(1).lower()
+        start_pos = match.start()
+
+        # 3. Balanced tag matching to find the closing tag
+        depth = 0
+        i = start_pos
+        open_tag_re = re.compile(rf'<{tag_name}[\s>/]', re.IGNORECASE)
+        close_tag_re = re.compile(rf'</{tag_name}\s*>', re.IGNORECASE)
+
+        # First, skip past the opening tag
+        depth = 1
+        i = match.end()
+
+        while i < len(html):
+            # Check for closing tag first
+            close_match = close_tag_re.match(html, i)
+            if close_match:
+                depth -= 1
+                if depth == 0:
+                    end_pos = close_match.end()
+                    break
+                i = close_match.end()
+                continue
+
+            # Check for nested opening tag
+            open_match = open_tag_re.match(html, i)
+            if open_match:
+                # Make sure it's not a self-closing tag
+                tag_end = html.find('>', i)
+                if tag_end != -1 and html[tag_end - 1] != '/':
+                    depth += 1
+                i = (tag_end + 1) if tag_end != -1 else (i + 1)
+                continue
+
+            i += 1
+        else:
+            return {"success": False, "error": f"Could not find closing tag for section '{section_id}'"}
+
+        # 4. Remove the section (including surrounding whitespace/newlines)
+        # Expand to consume blank lines around the section
+        remove_start = start_pos
+        while remove_start > 0 and html[remove_start - 1] in ' \t':
+            remove_start -= 1
+        if remove_start > 0 and html[remove_start - 1] == '\n':
+            remove_start -= 1
+
+        remove_end = end_pos
+        while remove_end < len(html) and html[remove_end] in ' \t\r':
+            remove_end += 1
+        if remove_end < len(html) and html[remove_end] == '\n':
+            remove_end += 1
+
+        new_html = html[:remove_start] + html[remove_end:]
+
+        # 5. Clean up nav links referencing this section
+        nav_link_pattern = re.compile(
+            rf'\s*<a\s[^>]*href\s*=\s*["\']#{re.escape(section_id)}["\'][^>]*>.*?</a>\s*',
+            re.IGNORECASE | re.DOTALL,
+        )
+        new_html = nav_link_pattern.sub('', new_html)
+
+        # Also clean up <li> wrappers around nav links to this section
+        nav_li_pattern = re.compile(
+            rf'\s*<li[^>]*>\s*<a\s[^>]*href\s*=\s*["\']#{re.escape(section_id)}["\'][^>]*>.*?</a>\s*</li>\s*',
+            re.IGNORECASE | re.DOTALL,
+        )
+        new_html = nav_li_pattern.sub('', new_html)
+
+        logger.info(
+            f"[RemoveSection] Removed section '{section_id}': "
+            f"{len(html)} -> {len(new_html)} chars (removed {len(html) - len(new_html)} chars)"
+        )
+
+        return {
+            "success": True,
+            "html_content": new_html,
+            "strategy": "remove_section",
+            "generation_time_ms": 1,
+        }
+
+    async def _refine_add_section(
+        self,
+        html: str,
+        message: str,
+        site_config: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Add a new section using pre-built components + small AI call for text.
+
+        1. Detect section type from message
+        2. Pick the right component variant
+        3. Small AI call to generate placeholder text content (~2000 tokens)
+        4. Assemble via TemplateAssembler
+        5. Insert before footer or </body>
+        """
+        import time as _time
+        start_time = _time.time()
+        msg_lower = message.lower()
+
+        # 1. Extract section type from message
+        add_match = re.search(
+            r'(?:aggiungi|inserisci|crea|metti|add|insert)\s+'
+            r'(?:una?\s+|la\s+|il\s+)?(?:nuova?\s+)?'
+            r'(?:sezione|section|parte|blocco)\s+'
+            r'(?:del\s+|di\s+|dei\s+|per\s+|con\s+)?["\']?([a-zA-Z\s\-àèéìòù]+)',
+            msg_lower,
+        )
+
+        section_type = None
+        if add_match:
+            section_name = add_match.group(1).strip().rstrip('."\'')
+            section_type = self._SECTION_NAMES.get(section_name)
+            if not section_type:
+                for keyword, sid in self._SECTION_NAMES.items():
+                    if keyword in section_name or section_name in keyword:
+                        section_type = sid
+                        break
+            if not section_type:
+                section_type = section_name.replace(' ', '-')
+
+        if not section_type:
+            return {"success": False, "error": "Non ho capito quale sezione aggiungere", "fallback": True}
+
+        logger.info(f"[AddSection] Adding section type: '{section_type}'")
+
+        # 2. Check if section already exists
+        if re.search(rf'<(?:section|div|header|footer)[^>]*\bid\s*=\s*["\'][^"\']*\b{re.escape(section_type)}\b', html, re.IGNORECASE):
+            return {
+                "success": False,
+                "error": f"La sezione '{section_type}' esiste già nel sito. Vuoi modificarla invece?",
+            }
+
+        # 3. Pick component variant
+        variant_id = _assembler.get_default_variant_for_section(section_type)
+        if not variant_id:
+            return {"success": False, "error": f"Nessun componente disponibile per il tipo '{section_type}'", "fallback": True}
+
+        variant_info = _assembler.get_variant_info(variant_id)
+        if not variant_info:
+            return {"success": False, "error": f"Variant '{variant_id}' non trovato", "fallback": True}
+
+        logger.info(f"[AddSection] Using variant: {variant_id}")
+
+        # 4. Analyze template to detect REPEAT blocks and placeholders
+        file_path = _assembler._find_variant_file(variant_id)
+        if not file_path:
+            return {"success": False, "error": "Template file non trovato", "fallback": True}
+        try:
+            template_content = _assembler._read_template(file_path)
+        except FileNotFoundError:
+            return {"success": False, "error": "Template file non trovato", "fallback": True}
+
+        # Detect REPEAT blocks and their inner placeholders
+        repeat_info = {}
+        for rm in re.finditer(r'<!-- REPEAT:(\w+) -->(.*?)<!-- /REPEAT:\1 -->', template_content, re.DOTALL):
+            repeat_key = rm.group(1)
+            inner = rm.group(2)
+            inner_placeholders = list(set(re.findall(r'\{\{(\w+)\}\}', inner)))
+            repeat_info[repeat_key] = inner_placeholders
+
+        # Get all placeholders from template
+        all_placeholders = list(set(re.findall(r'\{\{(\w+)\}\}', template_content)))
+        # Top-level placeholders: those not inside a repeat block
+        repeat_inner_keys = set()
+        for fields in repeat_info.values():
+            repeat_inner_keys.update(fields)
+        top_level = [p for p in all_placeholders if p not in repeat_inner_keys and p not in repeat_info]
+
+        # 5. Extract business context from existing HTML
+        title_match = re.search(r'<title>([^<]+)</title>', html)
+        hero_match = re.search(r'<h1[^>]*>(.*?)</h1>', html, re.DOTALL)
+        business_context = ""
+        if title_match:
+            business_context += f"Sito: {re.sub(r'<[^>]+>', '', title_match.group(1)).strip()}\n"
+        if hero_match:
+            business_context += f"Titolo hero: {re.sub(r'<[^>]+>', '', hero_match.group(1)).strip()}\n"
+
+        # 6. Build AI prompt for content generation
+        json_structure = {}
+        for p in top_level:
+            json_structure[p] = f"<testo per {p.lower().replace('_', ' ')}>"
+        for rk, fields in repeat_info.items():
+            item_example = {f: f"<testo per {f.lower().replace('_', ' ')}>" for f in fields}
+            # Use emoji for ICON fields
+            for f in fields:
+                if "ICON" in f:
+                    item_example[f] = "<emoji singolo>"
+            json_structure[rk] = [item_example]
+
+        repeat_note = ""
+        if repeat_info:
+            repeat_keys = list(repeat_info.keys())
+            repeat_note = f"\nPer gli array ({', '.join(repeat_keys)}), genera esattamente 3 o 4 elementi."
+
+        prompt = f"""Genera il contenuto testuale per una nuova sezione "{section_type}" di un sito web.
+{business_context}
+Rispondi SOLO con un JSON valido con questa struttura:
+{json.dumps(json_structure, indent=2, ensure_ascii=False)}
+{repeat_note}
+Regole:
+- Scrivi in italiano, tono professionale ma non banale
+- NON usare frasi generiche come "benvenuti" o "siamo un'azienda"
+- I campi ICON devono contenere un SINGOLO emoji pertinente
+- Mantieni i testi concisi ma incisivi"""
+
+        result = await self.kimi_refine.call(
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=2000,
+            thinking=False,
+            timeout=45.0,
+            temperature=0.6,
+            json_mode=True,
+        )
+
+        if not result["success"]:
+            logger.error(f"[AddSection] AI call failed: {result.get('error')}")
+            return {"success": False, "fallback": True}
+
+        # 7. Parse AI response
+        try:
+            content = result["content"].strip()
+            json_match = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', content, re.DOTALL)
+            if json_match:
+                content = json_match.group(1).strip()
+            section_data = json.loads(content)
+            if not isinstance(section_data, dict):
+                raise ValueError("Expected JSON object")
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.warning(f"[AddSection] Failed to parse AI response: {e}")
+            return {"success": False, "fallback": True}
+
+        # 8. Assemble the component
+        section_html = _assembler.assemble_single_component(variant_id, section_data)
+        if not section_html:
+            return {"success": False, "error": "Assemblaggio componente fallito", "fallback": True}
+
+        logger.info(f"[AddSection] Assembled section: {len(section_html)} chars")
+
+        # 9. Insert before footer or before </body>
+        # Try to find footer section
+        footer_match = re.search(
+            r'<(?:footer|section|div)[^>]*\bid\s*=\s*["\']footer["\']',
+            html, re.IGNORECASE,
+        )
+        if footer_match:
+            insert_pos = footer_match.start()
+            # Add a blank line for readability
+            new_html = html[:insert_pos] + section_html + "\n\n" + html[insert_pos:]
+        else:
+            # Insert before </body>
+            body_close = html.rfind("</body>")
+            if body_close != -1:
+                new_html = html[:body_close] + section_html + "\n\n" + html[body_close:]
+            else:
+                new_html = html + "\n" + section_html
+
+        # 10. Add nav link if the section type has a label
+        nav_label = _SECTION_NAV_LABELS.get(section_type)
+        if nav_label:
+            # Find the nav element and add a link
+            nav_link = f'<a href="#{section_type}" class="hover:text-[var(--color-primary)] transition-colors">{nav_label}</a>'
+            # Try to insert before the last </nav> or before the last CTA button in nav
+            # Find the last nav link pattern and add after it
+            nav_links_pattern = re.compile(
+                r'(<a\s[^>]*href\s*=\s*["\']#\w+["\'][^>]*>.*?</a>)\s*(?=\s*(?:<(?:div|button|a\b[^>]*class[^>]*btn)|</(?:div|nav|ul)))',
+                re.DOTALL | re.IGNORECASE,
+            )
+            nav_matches = list(nav_links_pattern.finditer(new_html))
+            if nav_matches:
+                last_nav_link = nav_matches[-1]
+                insert_at = last_nav_link.end()
+                new_html = new_html[:insert_at] + "\n            " + nav_link + new_html[insert_at:]
+
+        elapsed_ms = int((_time.time() - start_time) * 1000)
+        logger.info(
+            f"[AddSection] Added section '{section_type}' using {variant_id}: "
+            f"{len(html)} -> {len(new_html)} chars (+{len(new_html) - len(html)} chars) in {elapsed_ms}ms"
+        )
+
+        return {
+            "success": True,
+            "html_content": new_html,
+            "strategy": "add_section",
+            "generation_time_ms": elapsed_ms,
+        }
+
+    @staticmethod
     def _extract_css_root(html: str) -> Optional[str]:
         """Extract the :root { ... } CSS block from HTML.
         Uses balanced brace matching to handle any nested content."""
@@ -893,6 +1252,52 @@ IMPORTANT:
                 if depth == 0:
                     return html[start:i + 1]
         return None
+
+    @staticmethod
+    def _ensure_font_link(html: str) -> str:
+        """Ensure the Google Fonts <link> tag includes the fonts declared in :root CSS vars."""
+        root_block = SwarmGenerator._extract_css_root(html)
+        if not root_block:
+            return html
+
+        # Extract font names from CSS vars
+        fonts = []
+        heading_match = re.search(r"--font-heading:\s*'([^']+)'", root_block)
+        body_match = re.search(r"--font-body:\s*'([^']+)'", root_block)
+        if heading_match:
+            fonts.append(heading_match.group(1))
+        if body_match:
+            fonts.append(body_match.group(1))
+        if not fonts:
+            return html
+
+        # Check if existing font link already includes all fonts
+        existing_link = re.search(r'<link[^>]*fonts\.googleapis\.com[^>]*>', html)
+        if existing_link:
+            link_text = existing_link.group(0)
+            all_present = all(
+                font.replace(' ', '+') in link_text or font in link_text
+                for font in fonts
+            )
+            if all_present:
+                return html
+
+        # Build new font link
+        font_params = "&".join(
+            "family=" + f.replace(' ', '+') + ":wght@300;400;500;600;700;800;900"
+            for f in fonts
+        )
+        new_font_link = f'<link href="https://fonts.googleapis.com/css2?{font_params}&display=swap" rel="stylesheet">'
+
+        # Replace existing Google Fonts link(s)
+        old_font_pattern = r'<link[^>]*fonts\.googleapis\.com[^>]*>'
+        if re.search(old_font_pattern, html):
+            html = re.sub(old_font_pattern, '', html)
+        # Insert the new link before </head>
+        html = html.replace('</head>', f'{new_font_link}\n</head>')
+
+        logger.info(f"[Swarm] Font link updated to include: {fonts}")
+        return html
 
     @staticmethod
     def _refine_image_replace(
@@ -1364,6 +1769,7 @@ Return ONLY valid JSON array, no explanation."""
         section_to_modify: Optional[str] = None,
         reference_analysis: Optional[str] = None,
         photo_urls: Optional[List[str]] = None,
+        site_config: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Smart Refine: classifica la richiesta e usa la strategia ottimale.
@@ -1397,6 +1803,23 @@ Return ONLY valid JSON array, no explanation."""
             if result.get("success"):
                 return result
             logger.info("[SmartRefine] Image replace failed, falling back to structural")
+
+        # Strategy 0b: Direct section removal (no AI call)
+        if strategy == "remove_section":
+            result = self._refine_remove_section(current_html, modification_request)
+            if result.get("success"):
+                return result
+            logger.info("[SmartRefine] Remove section failed, falling back to structural")
+
+        # Strategy 0c: Add section via component library (small AI call for text)
+        if strategy == "add_section":
+            result = await self._refine_add_section(current_html, modification_request, site_config)
+            if result.get("success"):
+                return result
+            # If section already exists, return the error (don't fallback)
+            if result.get("error") and not result.get("fallback"):
+                return result
+            logger.info("[SmartRefine] Add section failed, falling back to structural")
 
         # Strategy 1: CSS Variables (colors, fonts, backgrounds)
         if strategy == "css_vars":
@@ -1624,6 +2047,9 @@ HTML:
         # Re-inject everything that was stripped: SVGs, <style> blocks, GSAP script
         html_content = self._reinject_after_refine(html_content, stash)
 
+        # Ensure Google Fonts link matches the fonts declared in CSS vars
+        html_content = self._ensure_font_link(html_content)
+
         html_content = sanitize_output(html_content)
 
         # Validate HTML completeness - check for closing tags
@@ -1638,8 +2064,20 @@ HTML:
                 logger.info("[Swarm] Auto-repaired truncated HTML (added </html>)")
 
         # Validate CSS variables are preserved (critical for theme consistency)
-        if html_content and "--color-primary" not in html_content:
-            logger.warning("[Swarm] Refine stripped CSS variables - this may break theme styling")
+        critical_vars = ["--color-primary", "--color-bg", "--color-text", "--font-heading"]
+        if html_content and any(var not in html_content for var in critical_vars):
+            missing = [v for v in critical_vars if v not in html_content]
+            logger.warning(f"[Swarm] Refine lost critical CSS vars: {missing}")
+            original_root = self._extract_css_root(current_html)
+            if original_root:
+                html_content = self._replace_css_root(html_content, original_root)
+                # If there was no :root at all in the output, inject it into <style>
+                if original_root not in html_content:
+                    style_inject = f"<style>{original_root}</style>\n</head>"
+                    html_content = html_content.replace("</head>", style_inject)
+                logger.info(f"[Swarm] Restored original :root CSS vars ({len(original_root)} chars)")
+                # Also fix font link after restoring vars
+                html_content = self._ensure_font_link(html_content)
 
         generation_time = int((time.time() - start_time) * 1000)
         cost = self.kimi_refine.calculate_cost(

@@ -414,6 +414,9 @@ export default function Editor() {
           text: "testo",
           section: "sezione",
           structural: "struttura",
+          image_replace: "immagine",
+          remove_section: "rimossa",
+          add_section: "aggiunta",
         };
         const strategyLabel = result.strategy ? strategyLabels[result.strategy] || result.strategy : "";
         const aiMsg: ChatMessage = {
