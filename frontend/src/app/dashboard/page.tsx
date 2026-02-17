@@ -76,6 +76,17 @@ function Dashboard() {
   const [isCheckingOut, setIsCheckingOut] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("all");
   const [showAllTemplates, setShowAllTemplates] = useState(false);
+  const [hoveredTemplate, setHoveredTemplate] = useState<string | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // Detect desktop (hover-capable) device for template hover preview
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover)");
+    setIsDesktop(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   // Mostra notifica dopo pagamento riuscito
   useEffect(() => {
@@ -707,13 +718,21 @@ function Dashboard() {
                         router.push(`/dashboard/new?style=${style.id}`);
                       }}
                       className="group relative rounded-xl border border-white/10 bg-[#111] overflow-hidden cursor-pointer transition-all hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-900/10 hover:scale-[1.02]"
+                      onMouseEnter={() => { if (isDesktop) setHoveredTemplate(style.id); }}
+                      onMouseLeave={() => { if (isDesktop) setHoveredTemplate(null); }}
                     >
                       {/* Iframe Preview */}
                       <div className="relative aspect-[16/9] overflow-hidden bg-[#0a0a0a]">
                         <iframe
                           srcDoc={generateStylePreviewHtml(style, categoryLabel)}
                           className="w-[1200px] h-[800px] border-0 pointer-events-none"
-                          style={{ transform: "scale(0.35)", transformOrigin: "top left" }}
+                          style={{
+                            transform: `scale(0.35) translateY(${hoveredTemplate === style.id ? -200 : 0}px)`,
+                            transformOrigin: "top left",
+                            transition: hoveredTemplate === style.id
+                              ? "transform 3s ease-in-out"
+                              : "transform 0.5s ease-out",
+                          }}
                           title={style.label}
                           loading="lazy"
                           sandbox="allow-same-origin"

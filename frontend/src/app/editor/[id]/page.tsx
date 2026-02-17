@@ -115,6 +115,59 @@ const GUIDE_SUGGESTIONS = {
   ],
 };
 
+function renderMessageContent(content: string) {
+  const lines = content.split("\n");
+  const elements: React.ReactNode[] = [];
+  let buffer: string[] = [];
+
+  const flushBuffer = () => {
+    if (buffer.length > 0) {
+      elements.push(
+        <span key={`text-${elements.length}`}>{buffer.join("\n")}</span>
+      );
+      buffer = [];
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const tipMatch = line.match(/^>\s*TIP:\s*(.*)/);
+    const noteMatch = line.match(/^>\s*NOTE:\s*(.*)/);
+    const warnMatch = line.match(/^>\s*WARNING:\s*(.*)/);
+
+    if (tipMatch) {
+      flushBuffer();
+      elements.push(
+        <div key={`callout-${i}`} className="border-l-2 border-green-500/50 bg-green-500/5 pl-3 py-1 rounded-r-lg my-1 flex items-start gap-1.5">
+          <span className="text-green-400 flex-shrink-0 mt-0.5">&#9679;</span>
+          <span className="text-green-300">{tipMatch[1]}</span>
+        </div>
+      );
+    } else if (noteMatch) {
+      flushBuffer();
+      elements.push(
+        <div key={`callout-${i}`} className="border-l-2 border-blue-500/50 bg-blue-500/5 pl-3 py-1 rounded-r-lg my-1 flex items-start gap-1.5">
+          <span className="text-blue-400 flex-shrink-0 mt-0.5">&#9679;</span>
+          <span className="text-blue-300">{noteMatch[1]}</span>
+        </div>
+      );
+    } else if (warnMatch) {
+      flushBuffer();
+      elements.push(
+        <div key={`callout-${i}`} className="border-l-2 border-yellow-500/50 bg-yellow-500/5 pl-3 py-1 rounded-r-lg my-1 flex items-start gap-1.5">
+          <span className="text-yellow-400 flex-shrink-0 mt-0.5">&#9679;</span>
+          <span className="text-yellow-300">{warnMatch[1]}</span>
+        </div>
+      );
+    } else {
+      buffer.push(line);
+    }
+  }
+  flushBuffer();
+
+  return elements.length === 1 ? elements[0] : <>{elements}</>;
+}
+
 export default function Editor() {
   const params = useParams();
   const router = useRouter();
@@ -1363,7 +1416,7 @@ export default function Editor() {
                         : "bg-white/5 text-slate-300 rounded-bl-md"
                     }`}
                   >
-                    {msg.content}
+                    {msg.role === "assistant" ? renderMessageContent(msg.content) : msg.content}
                   </div>
                 </div>
               ))}

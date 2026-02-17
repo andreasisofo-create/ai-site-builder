@@ -294,18 +294,27 @@ export default function GenerationExperience({
               {SKELETON_SECTIONS.map((sec, i) => (
                 <div
                   key={i}
-                  className={`${sec.h} ${sec.span} rounded-lg overflow-hidden relative`}
+                  className={`${sec.h} ${sec.span} rounded-lg overflow-hidden relative border border-white/[0.06]`}
                 >
                   <div
-                    className="absolute inset-0 bg-gradient-to-r from-white/[0.03] via-white/[0.06] to-white/[0.03]"
+                    className="absolute inset-0 bg-gradient-to-r from-white/[0.03] via-white/[0.12] to-white/[0.03]"
                     style={{
-                      animation: `shimmer 1.5s ease-in-out infinite`,
+                      animation: `shimmer 1.2s linear infinite`,
                       animationDelay: `${i * 0.15}s`,
                       backgroundSize: "200% 100%",
                     }}
                   />
                 </div>
               ))}
+            </div>
+            {/* Font name placeholder skeletons */}
+            <div className="flex items-center gap-4 mt-3">
+              <div className="h-3 w-28 rounded bg-white/[0.04] overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-white/[0.03] via-white/[0.12] to-white/[0.03]" style={{ animation: "shimmer 1.2s linear infinite", backgroundSize: "200% 100%" }} />
+              </div>
+              <div className="h-3 w-20 rounded bg-white/[0.04] overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-white/[0.03] via-white/[0.12] to-white/[0.03]" style={{ animation: "shimmer 1.2s linear infinite", animationDelay: "0.3s", backgroundSize: "200% 100%" }} />
+              </div>
             </div>
             <style>{`
               @keyframes shimmer {
