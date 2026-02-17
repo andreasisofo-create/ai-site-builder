@@ -202,7 +202,7 @@ const STEPS: StepConfig[] = [
 function StatusBadge({ status }: { status: PlatformStatus }) {
   const config: Record<PlatformStatus, { label: string; bg: string; text: string; icon: typeof CheckCircle }> = {
     not_configured: { label: "Non configurato", bg: "bg-gray-500/10", text: "text-gray-400", icon: Clock },
-    pending_approval: { label: "In attesa", bg: "bg-amber-500/10", text: "text-amber-400", icon: AlertTriangle },
+    pending_approval: { label: "In attesa", bg: "bg-violet-500/10", text: "text-violet-400", icon: AlertTriangle },
     test_mode: { label: "Test Mode", bg: "bg-blue-500/10", text: "text-blue-400", icon: TestTube },
     active: { label: "Attivo", bg: "bg-emerald-500/10", text: "text-emerald-400", icon: CheckCircle },
   };
@@ -328,7 +328,7 @@ export default function SetupWizardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
       </div>
     );
   }
@@ -336,12 +336,12 @@ export default function SetupWizardPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/20 via-[#141420] to-[#0a0a0f] border border-amber-500/20 p-8">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500/20 via-[#141420] to-[#0a0a0f] border border-violet-500/20 p-8">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl" />
         <div className="relative">
           <div className="flex items-center gap-3 mb-4">
-            <Settings className="w-5 h-5 text-amber-400" />
-            <span className="text-amber-400 text-sm font-medium uppercase tracking-wider">
+            <Settings className="w-5 h-5 text-violet-400" />
+            <span className="text-violet-400 text-sm font-medium uppercase tracking-wider">
               Setup Integrazioni
             </span>
           </div>
@@ -354,11 +354,11 @@ export default function SetupWizardPage() {
           <div className="flex items-center gap-4">
             <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-violet-500 to-emerald-500 rounded-full transition-all duration-500"
                 style={{ width: `${(configuredCount / STEPS.length) * 100}%` }}
               />
             </div>
-            <span className="text-sm font-medium text-amber-400">
+            <span className="text-sm font-medium text-violet-400">
               {configuredCount}/{STEPS.length} configurati
             </span>
           </div>
@@ -385,7 +385,7 @@ export default function SetupWizardPage() {
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-left text-sm ${
                     isActive
-                      ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                      ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
                       : "text-gray-400 hover:bg-white/5 hover:text-white"
                   }`}
                 >
@@ -393,13 +393,13 @@ export default function SetupWizardPage() {
                     isConfigured
                       ? "bg-emerald-500/10"
                       : isActive
-                      ? "bg-amber-500/10"
+                      ? "bg-violet-500/10"
                       : "bg-white/5"
                   }`}>
                     {isConfigured ? (
                       <CheckCircle className="w-4 h-4 text-emerald-400" />
                     ) : (
-                      <Icon className={`w-4 h-4 ${isActive ? "text-amber-400" : "text-gray-500"}`} />
+                      <Icon className={`w-4 h-4 ${isActive ? "text-violet-400" : "text-gray-500"}`} />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -423,8 +423,8 @@ export default function SetupWizardPage() {
             {/* Step header */}
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                  {(() => { const Icon = currentStep.icon; return <Icon className="w-6 h-6 text-amber-400" />; })()}
+                <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                  {(() => { const Icon = currentStep.icon; return <Icon className="w-6 h-6 text-violet-400" />; })()}
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-white">{currentStep.label}</h2>
@@ -449,13 +449,13 @@ export default function SetupWizardPage() {
             {/* Instructions */}
             <div className="p-4 rounded-lg bg-[#0a0a0f] border border-white/5">
               <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+                <Sparkles className="w-4 h-4 text-violet-400" />
                 Come configurare
               </h3>
               <ol className="space-y-2">
                 {currentStep.instructions.map((instruction, idx) => (
                   <li key={idx} className="flex gap-3 text-sm text-gray-400">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-violet-500/10 text-violet-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
                       {idx + 1}
                     </span>
                     <span>{instruction}</span>
@@ -466,7 +466,7 @@ export default function SetupWizardPage() {
                 href={currentStep.docUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-4 text-sm text-amber-400 hover:text-amber-300 transition-colors"
+                className="inline-flex items-center gap-1.5 mt-4 text-sm text-violet-400 hover:text-violet-300 transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 Documentazione ufficiale
@@ -487,7 +487,7 @@ export default function SetupWizardPage() {
                   <div key={field.key}>
                     <label className="block text-sm text-gray-400 mb-1.5">
                       {field.label}
-                      {field.required && <span className="text-amber-400 ml-1">*</span>}
+                      {field.required && <span className="text-violet-400 ml-1">*</span>}
                     </label>
                     <div className="relative">
                       <input
@@ -495,7 +495,7 @@ export default function SetupWizardPage() {
                         value={currentValue}
                         onChange={(e) => updateField(currentStep.platform, field.key, e.target.value)}
                         placeholder={savedValue ? `Salvato: ${savedValue}` : field.placeholder}
-                        className="w-full px-4 py-2.5 rounded-lg bg-[#0a0a0f] border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-colors pr-10"
+                        className="w-full px-4 py-2.5 rounded-lg bg-[#0a0a0f] border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-colors pr-10"
                       />
                       {isPasswordField && (
                         <button
@@ -543,7 +543,7 @@ export default function SetupWizardPage() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

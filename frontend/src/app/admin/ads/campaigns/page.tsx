@@ -116,7 +116,7 @@ export default function CampaignsPage() {
   const statusBadge = (status: string) => {
     const map: Record<string, { label: string; cls: string }> = {
       active: { label: "Attiva", cls: "bg-emerald-500/10 text-emerald-400" },
-      pending: { label: "In Attesa", cls: "bg-amber-500/10 text-amber-400" },
+      pending: { label: "In Attesa", cls: "bg-violet-500/10 text-violet-400" },
       paused: { label: "In Pausa", cls: "bg-white/5 text-gray-400" },
       completed: { label: "Completata", cls: "bg-blue-500/10 text-blue-400" },
       error: { label: "Errore", cls: "bg-red-500/10 text-red-400" },
@@ -145,7 +145,7 @@ export default function CampaignsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
       </div>
     );
   }
@@ -160,7 +160,7 @@ export default function CampaignsPage() {
         </div>
         <button
           onClick={() => router.push("/admin/ads/wizard")}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors"
         >
           <Plus className="w-4 h-4" />
           Nuova Campagna
@@ -176,7 +176,7 @@ export default function CampaignsPage() {
             placeholder="Cerca campagna..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50 focus:outline-none text-sm"
+            className="w-full pl-12 pr-4 py-3 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-500 focus:border-violet-500/50 focus:outline-none text-sm"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -184,7 +184,7 @@ export default function CampaignsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-3 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+            className="px-4 py-3 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-violet-500/50 focus:outline-none"
           >
             <option value="all">Tutti gli stati</option>
             <option value="active">Attive</option>
@@ -235,8 +235,8 @@ export default function CampaignsPage() {
       {/* Empty State */}
       {campaigns.length === 0 && (
         <div className="rounded-xl border-2 border-dashed border-white/10 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-8 h-8 text-amber-400" />
+          <div className="w-16 h-16 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-violet-400" />
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">Nessuna campagna trovata</h3>
           <p className="text-gray-400 max-w-md mx-auto mb-6">
@@ -246,7 +246,7 @@ export default function CampaignsPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => router.push("/admin/ads/wizard")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Crea Prima Campagna
@@ -277,7 +277,7 @@ export default function CampaignsPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-10 h-10 rounded-lg bg-[#1a1a2e] flex items-center justify-center">
-                      <PlatformIcon className="w-5 h-5 text-amber-400" />
+                      <PlatformIcon className="w-5 h-5 text-violet-400" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">{campaign.name}</h3>
@@ -310,7 +310,7 @@ export default function CampaignsPage() {
                         bp > 90
                           ? "bg-red-500"
                           : bp > 70
-                          ? "bg-amber-500"
+                          ? "bg-violet-500"
                           : "bg-emerald-500"
                       }`}
                       style={{ width: `${bp}%` }}
@@ -336,7 +336,7 @@ export default function CampaignsPage() {
                         <p className="text-xs text-gray-500">Click</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-lg font-semibold text-amber-400">
+                        <p className="text-lg font-semibold text-violet-400">
                           {campaign.metrics.ctr || 0}%
                         </p>
                         <p className="text-xs text-gray-500">CTR</p>
@@ -360,7 +360,7 @@ export default function CampaignsPage() {
                   <div className="flex items-center gap-2">
                     {campaign.status === "active" && (
                       <button
-                        className="p-2 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors"
+                        className="p-2 rounded-lg bg-violet-500/10 text-violet-400 hover:bg-violet-500/20 transition-colors"
                         onClick={() => handlePauseResume(campaign.id, campaign.status)}
                         title="Metti in pausa"
                       >

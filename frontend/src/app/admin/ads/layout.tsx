@@ -48,7 +48,7 @@ export default function AdsLayout({ children }: { children: React.ReactNode }) {
             Torna ad Admin
           </Link>
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-500 to-blue-600 flex items-center justify-center">
               <Cpu className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -72,14 +72,14 @@ export default function AdsLayout({ children }: { children: React.ReactNode }) {
                 href={item.path}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm ${
                   isActive
-                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                    ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
                     : "text-gray-400 hover:bg-white/5 hover:text-white"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-amber-400" : ""}`} />
+                <Icon className={`w-4 h-4 ${isActive ? "text-violet-400" : ""}`} />
                 <span className="font-medium">{item.label}</span>
                 {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-violet-400" />
                 )}
               </Link>
             );

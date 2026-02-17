@@ -169,7 +169,7 @@ export default function SupervisionPage() {
       case "critical":
         return "bg-red-500/10 border-red-500/20";
       case "warning":
-        return "bg-amber-500/10 border-amber-500/20";
+        return "bg-violet-500/10 border-violet-500/20";
       case "info":
         return "bg-blue-500/10 border-blue-500/20";
       default:
@@ -182,7 +182,7 @@ export default function SupervisionPage() {
       case "critical":
         return <AlertTriangle className="w-5 h-5 text-red-400" />;
       case "warning":
-        return <AlertTriangle className="w-5 h-5 text-amber-400" />;
+        return <AlertTriangle className="w-5 h-5 text-violet-400" />;
       case "info":
         return <CheckCircle className="w-5 h-5 text-blue-400" />;
       default:
@@ -193,7 +193,7 @@ export default function SupervisionPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
       </div>
     );
   }
@@ -207,9 +207,9 @@ export default function SupervisionPage() {
           <p className="text-gray-500">Approva decisioni AI e monitora alert</p>
         </div>
         {pending.length > 0 && (
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
-            <Shield className="w-5 h-5 text-amber-400" />
-            <span className="text-amber-400 font-medium text-sm">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500/10 border border-violet-500/20">
+            <Shield className="w-5 h-5 text-violet-400" />
+            <span className="text-violet-400 font-medium text-sm">
               {pending.length} in attesa
             </span>
           </div>
@@ -220,8 +220,8 @@ export default function SupervisionPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="rounded-xl bg-[#141420] border border-white/5 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-violet-400" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{pending.length}</p>
@@ -255,8 +255,8 @@ export default function SupervisionPage() {
         </div>
         <div className="rounded-xl bg-[#141420] border border-white/5 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-              <User className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
+              <User className="w-5 h-5 text-violet-400" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{stats.overrides}</p>
@@ -285,18 +285,18 @@ export default function SupervisionPage() {
               return (
                 <div
                   key={activity.id}
-                  className="rounded-xl bg-[#141420] border border-amber-500/20 p-6"
+                  className="rounded-xl bg-[#141420] border border-violet-500/20 p-6"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-                      <ModuleIcon className="w-6 h-6 text-amber-400" />
+                    <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
+                      <ModuleIcon className="w-6 h-6 text-violet-400" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="text-sm font-medium text-amber-400">
+                        <span className="text-sm font-medium text-violet-400">
                           {moduleLabels[activity.module] || activity.module}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400">
                           Richiede Approvazione
                         </span>
                       </div>
@@ -306,7 +306,7 @@ export default function SupervisionPage() {
                       <p className="text-gray-400 mb-3">{activity.description}</p>
                       {activity.reasoning && (
                         <p className="text-sm text-gray-500 mb-3">
-                          <span className="text-amber-400">Motivazione:</span>{" "}
+                          <span className="text-violet-400">Motivazione:</span>{" "}
                           {activity.reasoning}
                         </p>
                       )}
@@ -318,7 +318,7 @@ export default function SupervisionPage() {
                               className={`h-full rounded-full ${
                                 activity.confidence >= 70
                                   ? "bg-emerald-400"
-                                  : "bg-amber-400"
+                                  : "bg-violet-400"
                               }`}
                               style={{ width: `${activity.confidence}%` }}
                             />
@@ -331,7 +331,7 @@ export default function SupervisionPage() {
                       <div className="flex gap-3">
                         <button
                           onClick={() => handleApprove(activity.id)}
-                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors"
                         >
                           <CheckCircle className="w-4 h-4" />
                           Approva
@@ -374,14 +374,14 @@ export default function SupervisionPage() {
                         alert.type === "critical"
                           ? "bg-red-500/10 text-red-400"
                           : alert.type === "warning"
-                          ? "bg-amber-500/10 text-amber-400"
+                          ? "bg-violet-500/10 text-violet-400"
                           : "bg-white/5 text-gray-500"
                       }`}
                     >
                       {alert.type}
                     </span>
                     {!alert.read && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400">
                         Nuovo
                       </span>
                     )}

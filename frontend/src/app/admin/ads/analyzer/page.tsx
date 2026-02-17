@@ -276,7 +276,7 @@ export default function WebsiteAnalyzerPage() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-orange-600 flex items-center justify-center">
             <Globe className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -303,13 +303,13 @@ export default function WebsiteAnalyzerPage() {
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !loading && handleAnalyze()}
               disabled={loading}
-              className="w-full bg-[#0a0a0f] border border-white/10 rounded-lg pl-11 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-colors disabled:opacity-50"
+              className="w-full bg-[#0a0a0f] border border-white/10 rounded-lg pl-11 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-colors disabled:opacity-50"
             />
           </div>
           <button
             onClick={handleAnalyze}
             disabled={loading || !url.trim()}
-            className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
+            className="px-6 py-3 bg-gradient-to-r from-violet-500 to-orange-600 text-white font-semibold rounded-lg hover:from-violet-600 hover:to-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -324,11 +324,11 @@ export default function WebsiteAnalyzerPage() {
         {loading && (
           <div className="mt-6 flex items-center gap-3">
             <div className="flex gap-1">
-              <div className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-              <div className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-              <div className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="w-2 h-2 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-amber-400 text-sm font-medium animate-pulse">
+            <span className="text-violet-400 text-sm font-medium animate-pulse">
               {loadingMsg}
             </span>
           </div>
@@ -347,10 +347,10 @@ export default function WebsiteAnalyzerPage() {
       {result && (
         <div ref={resultRef} className="space-y-4">
           {/* Analyzed URL banner */}
-          <div className="flex items-center justify-between bg-[#141420] border border-amber-500/20 rounded-xl px-5 py-3">
+          <div className="flex items-center justify-between bg-[#141420] border border-violet-500/20 rounded-xl px-5 py-3">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-amber-400 font-medium text-sm">
+              <Sparkles className="w-4 h-4 text-violet-400" />
+              <span className="text-violet-400 font-medium text-sm">
                 Report per: {result.analyzed_url}
               </span>
             </div>
@@ -364,7 +364,7 @@ export default function WebsiteAnalyzerPage() {
             {/* Business Profile */}
             <div className={cardClass(0)}>
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="w-4 h-4 text-amber-400" />
+                <Building2 className="w-4 h-4 text-violet-400" />
                 <h3 className="text-white font-semibold text-sm">Profilo Business</h3>
               </div>
               <div className="space-y-3">
@@ -372,7 +372,7 @@ export default function WebsiteAnalyzerPage() {
                   <span className="text-2xl font-bold text-white">{result.business_name}</span>
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  <span className="px-2 py-1 bg-amber-500/10 text-amber-400 rounded text-xs font-medium">
+                  <span className="px-2 py-1 bg-violet-500/10 text-violet-400 rounded text-xs font-medium">
                     {result.business_type}
                   </span>
                   <span className="px-2 py-1 bg-white/5 text-gray-300 rounded text-xs">
@@ -545,15 +545,15 @@ export default function WebsiteAnalyzerPage() {
           {/* Row 5 - AI Suggestions */}
           <div className={cardClass(4)}>
             <div className="flex items-center gap-2 mb-4">
-              <Lightbulb className="w-4 h-4 text-amber-400" />
+              <Lightbulb className="w-4 h-4 text-violet-400" />
               <h3 className="text-white font-semibold text-sm">Suggerimenti AI per le Ads</h3>
             </div>
 
             <div className="flex gap-2 mb-4">
-              <span className="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-lg text-xs font-medium border border-amber-500/10">
+              <span className="px-3 py-1 bg-violet-500/10 text-violet-400 rounded-lg text-xs font-medium border border-violet-500/10">
                 Tipo: {result.suggested_campaign_type}
               </span>
-              <span className="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-lg text-xs font-medium border border-amber-500/10">
+              <span className="px-3 py-1 bg-violet-500/10 text-violet-400 rounded-lg text-xs font-medium border border-violet-500/10">
                 Piattaforma: {result.suggested_platform}
               </span>
             </div>
@@ -561,8 +561,8 @@ export default function WebsiteAnalyzerPage() {
             <ol className="space-y-2">
               {result.ai_suggestions.map((sugg, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm">
-                  <span className="w-6 h-6 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-xs text-amber-400 font-bold">{i + 1}</span>
+                  <span className="w-6 h-6 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-xs text-violet-400 font-bold">{i + 1}</span>
                   </span>
                   <span className="text-gray-300">{sugg}</span>
                 </li>
@@ -572,7 +572,7 @@ export default function WebsiteAnalyzerPage() {
             <div className="mt-5 pt-4 border-t border-white/5">
               <button
                 onClick={() => router.push("/admin/ads/wizard")}
-                className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-semibold rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-gradient-to-r from-violet-500 to-orange-600 text-white text-sm font-semibold rounded-lg hover:from-violet-600 hover:to-orange-700 transition-all flex items-center gap-2"
               >
                 <Sparkles className="w-4 h-4" />
                 Crea Campagna

@@ -142,7 +142,7 @@ export default function AdsDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
       </div>
     );
   }
@@ -150,12 +150,12 @@ export default function AdsDashboard() {
   return (
     <div className="space-y-8">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/20 via-[#141420] to-[#0a0a0f] border border-amber-500/20 p-8">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500/20 via-[#141420] to-[#0a0a0f] border border-violet-500/20 p-8">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl" />
         <div className="relative">
           <div className="flex items-center gap-3 mb-4">
-            <Sparkles className="w-5 h-5 text-amber-400" />
-            <span className="text-amber-400 text-sm font-medium uppercase tracking-wider">
+            <Sparkles className="w-5 h-5 text-violet-400" />
+            <span className="text-violet-400 text-sm font-medium uppercase tracking-wider">
               AI ADS Ecosystem
             </span>
           </div>
@@ -167,7 +167,7 @@ export default function AdsDashboard() {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => router.push("/admin/ads/clients")}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Aggiungi Cliente
@@ -197,7 +197,7 @@ export default function AdsDashboard() {
                   <p className="text-gray-500 text-sm mb-1">{s.label}</p>
                   <p className="text-3xl font-bold text-white">{s.value}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-[#1a1a2e] text-amber-400">
+                <div className="p-3 rounded-xl bg-[#1a1a2e] text-violet-400">
                   <Icon className="w-6 h-6" />
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function AdsDashboard() {
                     {m.status === "completed" ? (
                       <CheckCircle className="w-5 h-5 text-emerald-400" />
                     ) : m.status === "running" ? (
-                      <Loader2 className="w-5 h-5 text-amber-400 animate-spin" />
+                      <Loader2 className="w-5 h-5 text-violet-400 animate-spin" />
                     ) : (
                       <Icon className="w-5 h-5 text-gray-400" />
                     )}
@@ -240,7 +240,7 @@ export default function AdsDashboard() {
                         m.status === "completed"
                           ? "bg-emerald-500/10 text-emerald-400"
                           : m.status === "running"
-                          ? "bg-amber-500/10 text-amber-400"
+                          ? "bg-violet-500/10 text-violet-400"
                           : "bg-white/5 text-gray-500"
                       }`}
                     >
@@ -260,8 +260,8 @@ export default function AdsDashboard() {
 
       {/* Empty state for campaigns */}
       <div className="rounded-xl border-2 border-dashed border-white/10 p-12 text-center">
-        <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-          <Megaphone className="w-8 h-8 text-amber-400" />
+        <div className="w-16 h-16 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto mb-4">
+          <Megaphone className="w-8 h-8 text-violet-400" />
         </div>
         <h3 className="text-xl font-semibold text-white mb-2">Nessuna campagna attiva</h3>
         <p className="text-gray-400 max-w-md mx-auto mb-6">
@@ -269,7 +269,7 @@ export default function AdsDashboard() {
         </p>
         <button
           onClick={() => router.push("/admin/ads/clients")}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors"
         >
           <Plus className="w-4 h-4" />
           Aggiungi Primo Cliente
@@ -280,56 +280,56 @@ export default function AdsDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <button
           onClick={() => router.push("/admin/ads/supervision")}
-          className="rounded-xl bg-[#141420] border border-white/5 p-5 text-left hover:border-amber-500/30 transition-colors group"
+          className="rounded-xl bg-[#141420] border border-white/5 p-5 text-left hover:border-violet-500/30 transition-colors group"
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-violet-400" />
             </div>
             <div>
-              <p className="font-medium text-white group-hover:text-amber-400 transition-colors">
+              <p className="font-medium text-white group-hover:text-violet-400 transition-colors">
                 Supervisione
               </p>
               <p className="text-xs text-gray-500">Decisioni in attesa</p>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-amber-400 transition-colors" />
+          <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-violet-400 transition-colors" />
         </button>
 
         <button
           onClick={() => router.push("/admin/ads/knowledge")}
-          className="rounded-xl bg-[#141420] border border-white/5 p-5 text-left hover:border-amber-500/30 transition-colors group"
+          className="rounded-xl bg-[#141420] border border-white/5 p-5 text-left hover:border-violet-500/30 transition-colors group"
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <p className="font-medium text-white group-hover:text-amber-400 transition-colors">
+              <p className="font-medium text-white group-hover:text-violet-400 transition-colors">
                 Knowledge Base
               </p>
               <p className="text-xs text-gray-500">Articoli e benchmark</p>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-amber-400 transition-colors" />
+          <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-violet-400 transition-colors" />
         </button>
 
         <button
           onClick={() => router.push("/admin/ads/campaigns")}
-          className="rounded-xl bg-[#141420] border border-white/5 p-5 text-left hover:border-amber-500/30 transition-colors group"
+          className="rounded-xl bg-[#141420] border border-white/5 p-5 text-left hover:border-violet-500/30 transition-colors group"
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <p className="font-medium text-white group-hover:text-amber-400 transition-colors">
+              <p className="font-medium text-white group-hover:text-violet-400 transition-colors">
                 Campagne
               </p>
               <p className="text-xs text-gray-500">Gestisci e monitora</p>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-amber-400 transition-colors" />
+          <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-violet-400 transition-colors" />
         </button>
       </div>
     </div>

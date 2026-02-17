@@ -484,12 +484,12 @@ export default function CampaignWizardPage() {
 
         {loading ? (
           <div className="flex items-center justify-center h-48">
-            <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+            <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
           </div>
         ) : clients.length === 0 ? (
           <div className="rounded-xl border-2 border-dashed border-white/10 p-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-              <Users className="w-8 h-8 text-amber-400" />
+            <div className="w-16 h-16 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto mb-4">
+              <Users className="w-8 h-8 text-violet-400" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">Nessun cliente</h3>
             <p className="text-gray-400 max-w-md mx-auto mb-6">
@@ -497,7 +497,7 @@ export default function CampaignWizardPage() {
             </p>
             <button
               onClick={() => router.push("/admin/ads/clients")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Vai ai Clienti
@@ -509,14 +509,14 @@ export default function CampaignWizardPage() {
               <button
                 key={client.id}
                 onClick={() => setSelectedClient(client)}
-                className="rounded-xl bg-[#141420] border border-white/5 p-6 text-left hover:border-amber-500/30 transition-all group"
+                className="rounded-xl bg-[#141420] border border-white/5 p-6 text-left hover:border-violet-500/30 transition-all group"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 flex items-center justify-center text-2xl font-bold text-amber-300 shrink-0">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500/20 to-violet-500/10 flex items-center justify-center text-2xl font-bold text-violet-300 shrink-0">
                     {(client.businessName || "C").charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-white group-hover:text-amber-400 transition-colors">
+                    <h3 className="font-semibold text-white group-hover:text-violet-400 transition-colors">
                       {client.businessName}
                     </h3>
                     <p className="text-sm text-gray-500 capitalize">{client.businessType}</p>
@@ -527,7 +527,7 @@ export default function CampaignWizardPage() {
                       </div>
                     )}
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-amber-400 transition-colors" />
+                  <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-violet-400 transition-colors" />
                 </div>
               </button>
             ))}
@@ -549,13 +549,13 @@ export default function CampaignWizardPage() {
             Cambia Cliente
           </button>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-lg font-bold text-amber-300">
+            <div className="w-10 h-10 rounded-lg bg-violet-500/20 flex items-center justify-center text-lg font-bold text-violet-300">
               {selectedClient.businessName.charAt(0).toUpperCase()}
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Scegli la Modalita</h1>
               <p className="text-gray-500">
-                Campagna per <span className="text-amber-400">{selectedClient.businessName}</span>
+                Campagna per <span className="text-violet-400">{selectedClient.businessName}</span>
               </p>
             </div>
           </div>
@@ -565,15 +565,15 @@ export default function CampaignWizardPage() {
           {/* Guided */}
           <button
             onClick={() => startWizard("guided")}
-            className="rounded-xl bg-[#141420] border border-white/5 p-8 text-left hover:border-amber-500/30 transition-all group relative overflow-hidden"
+            className="rounded-xl bg-[#141420] border border-white/5 p-8 text-left hover:border-violet-500/30 transition-all group relative overflow-hidden"
           >
-            <div className="absolute top-0 right-0 px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-medium rounded-bl-lg">
+            <div className="absolute top-0 right-0 px-3 py-1 bg-violet-500/20 text-violet-400 text-xs font-medium rounded-bl-lg">
               Consigliato
             </div>
-            <div className="w-14 h-14 rounded-xl bg-amber-500/10 flex items-center justify-center mb-5">
-              <Sparkles className="w-7 h-7 text-amber-400" />
+            <div className="w-14 h-14 rounded-xl bg-violet-500/10 flex items-center justify-center mb-5">
+              <Sparkles className="w-7 h-7 text-violet-400" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors">
+            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-violet-400 transition-colors">
               Guidata
             </h3>
             <p className="text-sm text-gray-500 mb-4">
@@ -584,7 +584,7 @@ export default function CampaignWizardPage() {
               {["Spiegazioni dettagliate", "Suggerimenti AI", "Best practice integrate"].map(
                 (item) => (
                   <li key={item} className="flex items-center gap-2 text-sm text-gray-400">
-                    <CheckCircle className="w-4 h-4 text-amber-400/60" />
+                    <CheckCircle className="w-4 h-4 text-violet-400/60" />
                     {item}
                   </li>
                 )
@@ -595,12 +595,12 @@ export default function CampaignWizardPage() {
           {/* Assisted */}
           <button
             onClick={() => startWizard("assisted")}
-            className="rounded-xl bg-[#141420] border border-white/5 p-8 text-left hover:border-amber-500/30 transition-all group"
+            className="rounded-xl bg-[#141420] border border-white/5 p-8 text-left hover:border-violet-500/30 transition-all group"
           >
             <div className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-5">
               <Wand2 className="w-7 h-7 text-blue-400" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors">
+            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-violet-400 transition-colors">
               Assistita
             </h3>
             <p className="text-sm text-gray-500 mb-4">
@@ -622,12 +622,12 @@ export default function CampaignWizardPage() {
           {/* Manual */}
           <button
             onClick={() => startWizard("manual")}
-            className="rounded-xl bg-[#141420] border border-white/5 p-8 text-left hover:border-amber-500/30 transition-all group"
+            className="rounded-xl bg-[#141420] border border-white/5 p-8 text-left hover:border-violet-500/30 transition-all group"
           >
             <div className="w-14 h-14 rounded-xl bg-gray-500/10 flex items-center justify-center mb-5">
               <Wrench className="w-7 h-7 text-gray-400" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors">
+            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-violet-400 transition-colors">
               Manuale
             </h3>
             <p className="text-sm text-gray-500 mb-4">
@@ -688,7 +688,7 @@ export default function CampaignWizardPage() {
           <span
             className={`text-xs px-3 py-1 rounded-full ${
               mode === "guided"
-                ? "bg-amber-500/10 text-amber-400"
+                ? "bg-violet-500/10 text-violet-400"
                 : mode === "assisted"
                 ? "bg-blue-500/10 text-blue-400"
                 : "bg-white/5 text-gray-400"
@@ -710,7 +710,7 @@ export default function CampaignWizardPage() {
               <div
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all flex-1 ${
                   isActive
-                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                    ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
                     : isCompleted
                     ? "bg-emerald-500/5 text-emerald-400"
                     : "bg-white/5 text-gray-600"
@@ -734,7 +734,7 @@ export default function CampaignWizardPage() {
         {stepId === "objective" && (
           <div className="space-y-6">
             {mode === "guided" && (
-              <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/10">
+              <div className="p-4 rounded-lg bg-violet-500/5 border border-violet-500/10">
                 <p className="text-sm text-gray-300">
                   Scegli l&apos;obiettivo principale della campagna. Questo determina come
                   l&apos;algoritmo ottimizzera la distribuzione degli annunci.
@@ -756,7 +756,7 @@ export default function CampaignWizardPage() {
                     onClick={() => setSelectedObjective(obj.id)}
                     className={`rounded-xl border p-5 text-left transition-all relative ${
                       isSelected
-                        ? "border-amber-500 ring-2 ring-amber-500/20 bg-amber-500/5"
+                        ? "border-violet-500 ring-2 ring-violet-500/20 bg-violet-500/5"
                         : "border-white/5 hover:border-white/10 bg-[#1a1a2e]"
                     }`}
                   >
@@ -768,18 +768,18 @@ export default function CampaignWizardPage() {
                     <div className="flex items-center gap-3 mb-3">
                       <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          isSelected ? "bg-amber-500/20" : "bg-white/5"
+                          isSelected ? "bg-violet-500/20" : "bg-white/5"
                         }`}
                       >
                         <ObjIcon
                           className={`w-5 h-5 ${
-                            isSelected ? "text-amber-400" : "text-gray-400"
+                            isSelected ? "text-violet-400" : "text-gray-400"
                           }`}
                         />
                       </div>
                       <h3
                         className={`font-semibold ${
-                          isSelected ? "text-amber-400" : "text-white"
+                          isSelected ? "text-violet-400" : "text-white"
                         }`}
                       >
                         {obj.name}
@@ -798,7 +798,7 @@ export default function CampaignWizardPage() {
             {mode === "guided" && selectedObjective && (
               <div className="p-4 rounded-lg bg-[#1a1a2e] border border-white/5">
                 <p className="text-sm text-gray-300">
-                  <span className="text-amber-400 font-medium">Consiglio: </span>
+                  <span className="text-violet-400 font-medium">Consiglio: </span>
                   Scegli sempre l&apos;obiettivo piu vicino alla tua meta finale. Se vuoi
                   prenotazioni, scegli &quot;Messaggi&quot; non &quot;Follower&quot;.
                 </p>
@@ -811,7 +811,7 @@ export default function CampaignWizardPage() {
         {stepId === "budget" && (
           <div className="space-y-6">
             {mode === "guided" && (
-              <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/10">
+              <div className="p-4 rounded-lg bg-violet-500/5 border border-violet-500/10">
                 <p className="text-sm text-gray-300">
                   Il budget giornaliero determina quante persone vedranno i tuoi annunci.
                   Un budget piu alto = piu visibilita e risultati piu rapidi.
@@ -828,14 +828,14 @@ export default function CampaignWizardPage() {
                     onClick={() => setSelectedBudget(tpl.id)}
                     className={`rounded-xl border p-5 text-left transition-all ${
                       isSelected
-                        ? "border-amber-500 ring-2 ring-amber-500/20 bg-amber-500/5"
+                        ? "border-violet-500 ring-2 ring-violet-500/20 bg-violet-500/5"
                         : "border-white/5 hover:border-white/10 bg-[#1a1a2e]"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h3
                         className={`font-semibold ${
-                          isSelected ? "text-amber-400" : "text-white"
+                          isSelected ? "text-violet-400" : "text-white"
                         }`}
                       >
                         {tpl.name}
@@ -892,7 +892,7 @@ export default function CampaignWizardPage() {
                         }))
                       }
                       min={3}
-                      className="w-24 text-center py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-lg font-semibold focus:border-amber-500/50 focus:outline-none"
+                      className="w-24 text-center py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-lg font-semibold focus:border-violet-500/50 focus:outline-none"
                     />
                     <button
                       onClick={() =>
@@ -922,7 +922,7 @@ export default function CampaignWizardPage() {
                       }))
                     }
                     min={7}
-                    className="w-24 text-center py-2 rounded-lg bg-[#141420] border border-white/10 text-white focus:border-amber-500/50 focus:outline-none"
+                    className="w-24 text-center py-2 rounded-lg bg-[#141420] border border-white/10 text-white focus:border-violet-500/50 focus:outline-none"
                   />
                 </div>
                 <p className="text-sm text-gray-500">
@@ -930,7 +930,7 @@ export default function CampaignWizardPage() {
                   per {customBudget.duration} giorni
                 </p>
                 {customBudget.daily < 5 && (
-                  <div className="flex items-center gap-2 text-xs text-amber-400">
+                  <div className="flex items-center gap-2 text-xs text-violet-400">
                     <AlertTriangle className="w-3.5 h-3.5" />
                     Budget sotto 5&euro;/giorno puo dare risultati limitati.
                   </div>
@@ -944,7 +944,7 @@ export default function CampaignWizardPage() {
         {stepId === "audience" && (
           <div className="space-y-6">
             {mode === "guided" && (
-              <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/10">
+              <div className="p-4 rounded-lg bg-violet-500/5 border border-violet-500/10">
                 <p className="text-sm text-gray-300">
                   Definisci chi vedra i tuoi annunci. Non restringere troppo -
                   lascia che l&apos;algoritmo trovi le persone giuste.
@@ -969,7 +969,7 @@ export default function CampaignWizardPage() {
                     }
                     min={18}
                     max={65}
-                    className="w-20 text-center py-2 rounded-lg bg-[#141420] border border-white/10 text-white focus:border-amber-500/50 focus:outline-none text-sm"
+                    className="w-20 text-center py-2 rounded-lg bg-[#141420] border border-white/10 text-white focus:border-violet-500/50 focus:outline-none text-sm"
                   />
                 </div>
                 <span className="text-gray-600 mt-5">-</span>
@@ -986,7 +986,7 @@ export default function CampaignWizardPage() {
                     }
                     min={18}
                     max={65}
-                    className="w-20 text-center py-2 rounded-lg bg-[#141420] border border-white/10 text-white focus:border-amber-500/50 focus:outline-none text-sm"
+                    className="w-20 text-center py-2 rounded-lg bg-[#141420] border border-white/10 text-white focus:border-violet-500/50 focus:outline-none text-sm"
                   />
                 </div>
                 <span className="text-sm text-gray-500 mt-5">anni</span>
@@ -1011,7 +1011,7 @@ export default function CampaignWizardPage() {
                   }
                   min={1}
                   max={80}
-                  className="flex-1 accent-amber-500"
+                  className="flex-1 accent-violet-500"
                 />
                 <span className="text-white font-semibold w-16 text-right">
                   {audience.radius} km
@@ -1031,7 +1031,7 @@ export default function CampaignWizardPage() {
                       onClick={() => setAudience((prev) => ({ ...prev, gender: g }))}
                       className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
                         audience.gender === g
-                          ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                          ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
                           : "bg-white/5 text-gray-400 hover:bg-white/10"
                       }`}
                     >
@@ -1049,7 +1049,7 @@ export default function CampaignWizardPage() {
                 {audience.interests.map((interest, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 text-sm"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 text-violet-400 text-sm"
                   >
                     {interest}
                     <button
@@ -1086,7 +1086,7 @@ export default function CampaignWizardPage() {
             {mode === "guided" && (
               <div className="p-4 rounded-lg bg-[#1a1a2e] border border-white/5">
                 <p className="text-sm text-gray-300">
-                  <span className="text-amber-400 font-medium">Consiglio: </span>
+                  <span className="text-violet-400 font-medium">Consiglio: </span>
                   Non restringere troppo il pubblico! Lascia fare all&apos;algoritmo di Meta,
                   che ottimizzera automaticamente la distribuzione.
                 </p>
@@ -1099,7 +1099,7 @@ export default function CampaignWizardPage() {
         {stepId === "content" && (
           <div className="space-y-6">
             {mode === "guided" && (
-              <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/10">
+              <div className="p-4 rounded-lg bg-violet-500/5 border border-violet-500/10">
                 <p className="text-sm text-gray-300">
                   Scegli il tipo di contenuto per il tuo annuncio. I Reel hanno le migliori
                   performance nel 2026!
@@ -1141,7 +1141,7 @@ export default function CampaignWizardPage() {
                     onClick={() => setContentType(ct.id)}
                     className={`rounded-xl border p-5 text-left transition-all relative ${
                       isSelected
-                        ? "border-amber-500 ring-2 ring-amber-500/20 bg-amber-500/5"
+                        ? "border-violet-500 ring-2 ring-violet-500/20 bg-violet-500/5"
                         : "border-white/5 hover:border-white/10 bg-[#1a1a2e]"
                     }`}
                   >
@@ -1152,7 +1152,7 @@ export default function CampaignWizardPage() {
                     )}
                     <h3
                       className={`font-semibold mb-1 ${
-                        isSelected ? "text-amber-400" : "text-white"
+                        isSelected ? "text-violet-400" : "text-white"
                       }`}
                     >
                       {ct.name}
@@ -1168,7 +1168,7 @@ export default function CampaignWizardPage() {
             {mode === "guided" && (
               <div className="p-4 rounded-lg bg-[#1a1a2e] border border-white/5">
                 <p className="text-sm text-gray-300">
-                  <span className="text-amber-400 font-medium">Regola d&apos;oro: </span>
+                  <span className="text-violet-400 font-medium">Regola d&apos;oro: </span>
                   Mai promuovere un post che ha avuto meno di 10 interazioni organiche.
                   Promuovi contenuti che funzionano gia!
                 </p>
@@ -1181,19 +1181,19 @@ export default function CampaignWizardPage() {
         {stepId === "ad_copy" && (
           <div className="space-y-6">
             {mode === "guided" && (
-              <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/10">
+              <div className="p-4 rounded-lg bg-violet-500/5 border border-violet-500/10">
                 <div className="space-y-2 text-sm text-gray-300">
                   <p>
-                    <span className="text-amber-400 font-medium">Hook: </span>
+                    <span className="text-violet-400 font-medium">Hook: </span>
                     La prima frase deve fermare lo scrolling. Parla del beneficio per il
                     cliente.
                   </p>
                   <p>
-                    <span className="text-amber-400 font-medium">Body: </span>
+                    <span className="text-violet-400 font-medium">Body: </span>
                     Spiega chiaramente cosa offri e perche sei diverso.
                   </p>
                   <p>
-                    <span className="text-amber-400 font-medium">CTA: </span>
+                    <span className="text-violet-400 font-medium">CTA: </span>
                     Il Call to Action deve essere chiaro e urgente.
                   </p>
                   <p className="text-xs text-gray-500">
@@ -1210,7 +1210,7 @@ export default function CampaignWizardPage() {
                 onClick={() => setUseCustomCopy(false)}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   !useCustomCopy
-                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                    ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
                     : "bg-white/5 text-gray-400 hover:bg-white/10"
                 }`}
               >
@@ -1220,7 +1220,7 @@ export default function CampaignWizardPage() {
                 onClick={() => setUseCustomCopy(true)}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   useCustomCopy
-                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                    ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
                     : "bg-white/5 text-gray-400 hover:bg-white/10"
                 }`}
               >
@@ -1238,7 +1238,7 @@ export default function CampaignWizardPage() {
                       onClick={() => setSelectedAdCopy(idx)}
                       className={`w-full rounded-xl border p-5 text-left transition-all ${
                         isSelected
-                          ? "border-amber-500 ring-2 ring-amber-500/20 bg-amber-500/5"
+                          ? "border-violet-500 ring-2 ring-violet-500/20 bg-violet-500/5"
                           : "border-white/5 hover:border-white/10 bg-[#1a1a2e]"
                       }`}
                     >
@@ -1249,7 +1249,7 @@ export default function CampaignWizardPage() {
                         <span
                           className={`text-xs px-2 py-0.5 rounded-full ${
                             isSelected
-                              ? "bg-amber-500/10 text-amber-400"
+                              ? "bg-violet-500/10 text-violet-400"
                               : "bg-white/5 text-gray-500"
                           }`}
                         >
@@ -1258,7 +1258,7 @@ export default function CampaignWizardPage() {
                       </div>
                       <h4
                         className={`font-semibold mb-2 ${
-                          isSelected ? "text-amber-400" : "text-white"
+                          isSelected ? "text-violet-400" : "text-white"
                         }`}
                       >
                         {selectedClient?.businessName
@@ -1281,7 +1281,7 @@ export default function CampaignWizardPage() {
                       setCustomAdCopy((prev) => ({ ...prev, headline: e.target.value }))
                     }
                     placeholder="Es: Scrivici ora per info!"
-                    className="w-full py-2.5 px-4 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50 focus:outline-none text-sm"
+                    className="w-full py-2.5 px-4 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-500 focus:border-violet-500/50 focus:outline-none text-sm"
                   />
                 </div>
                 <div>
@@ -1298,7 +1298,7 @@ export default function CampaignWizardPage() {
                     }
                     placeholder="Descrivi la tua offerta..."
                     rows={4}
-                    className="w-full py-2.5 px-4 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50 focus:outline-none text-sm resize-none"
+                    className="w-full py-2.5 px-4 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-500 focus:border-violet-500/50 focus:outline-none text-sm resize-none"
                   />
                   <p className="text-xs text-gray-600 mt-1">
                     {customAdCopy.primaryText.length}/125 caratteri (prima riga visibile)
@@ -1313,7 +1313,7 @@ export default function CampaignWizardPage() {
                     onChange={(e) =>
                       setCustomAdCopy((prev) => ({ ...prev, cta: e.target.value }))
                     }
-                    className="w-full py-2.5 px-4 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+                    className="w-full py-2.5 px-4 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-violet-500/50 focus:outline-none"
                   >
                     <option value="Messaggio">Messaggio</option>
                     <option value="Scopri di piu">Scopri di piu</option>
@@ -1435,7 +1435,7 @@ export default function CampaignWizardPage() {
                       <p className="text-sm text-gray-400 mt-1">
                         {copy?.primaryText}
                       </p>
-                      <span className="inline-block mt-2 text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">
+                      <span className="inline-block mt-2 text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400">
                         CTA: {copy?.cta}
                       </span>
                     </>
@@ -1488,10 +1488,10 @@ export default function CampaignWizardPage() {
                       {c.ok ? (
                         <CheckCircle className="w-4 h-4 text-emerald-400" />
                       ) : (
-                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                        <AlertTriangle className="w-4 h-4 text-violet-400" />
                       )}
                       <span
-                        className={`text-sm ${c.ok ? "text-gray-300" : "text-amber-400"}`}
+                        className={`text-sm ${c.ok ? "text-gray-300" : "text-violet-400"}`}
                       >
                         {c.msg}
                       </span>
@@ -1519,7 +1519,7 @@ export default function CampaignWizardPage() {
           <button
             onClick={completeWizard}
             disabled={submitting}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors disabled:opacity-50"
           >
             {submitting ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -1532,7 +1532,7 @@ export default function CampaignWizardPage() {
           <button
             onClick={handleNext}
             disabled={!canAdvance()}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-amber-500 text-black font-medium text-sm hover:bg-amber-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-violet-500 text-white font-medium text-sm hover:bg-violet-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Avanti
             <ChevronRight className="w-4 h-4" />

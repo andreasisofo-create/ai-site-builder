@@ -244,10 +244,10 @@ function getModuleColors(color: string) {
       glow: "shadow-emerald-500/10",
     },
     amber: {
-      bg: "bg-amber-500/10",
-      text: "text-amber-400",
-      border: "border-amber-500/30",
-      glow: "shadow-amber-500/10",
+      bg: "bg-violet-500/10",
+      text: "text-violet-400",
+      border: "border-violet-500/30",
+      glow: "shadow-violet-500/10",
     },
     purple: {
       bg: "bg-purple-500/10",
@@ -263,7 +263,7 @@ function getModuleBadgeColor(moduleId: string) {
   const map: Record<string, string> = {
     investigator: "bg-blue-500/10 text-blue-400",
     analyst: "bg-emerald-500/10 text-emerald-400",
-    architect: "bg-amber-500/10 text-amber-400",
+    architect: "bg-violet-500/10 text-violet-400",
     broker: "bg-purple-500/10 text-purple-400",
   };
   return map[moduleId] || "bg-white/5 text-gray-400";
@@ -287,13 +287,13 @@ function ConfidenceScore({ score }: { score: number }) {
     score >= 70
       ? "text-emerald-400"
       : score >= 40
-      ? "text-amber-400"
+      ? "text-violet-400"
       : "text-red-400";
   const bgColor =
     score >= 70
       ? "bg-emerald-500"
       : score >= 40
-      ? "bg-amber-500"
+      ? "bg-violet-500"
       : "bg-red-500";
 
   return (
@@ -453,12 +453,12 @@ export default function AIModulesPage() {
       {/* ================================================================= */}
       {/* HEADER                                                            */}
       {/* ================================================================= */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/15 via-[#141420] to-[#0a0a0f] border border-amber-500/20 p-8">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500/15 via-[#141420] to-[#0a0a0f] border border-violet-500/20 p-8">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl" />
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
-            <Sparkles className="w-5 h-5 text-amber-400" />
-            <span className="text-amber-400 text-sm font-medium uppercase tracking-wider">
+            <Sparkles className="w-5 h-5 text-violet-400" />
+            <span className="text-violet-400 text-sm font-medium uppercase tracking-wider">
               AI ADS - Autonomous Media Buyer
             </span>
           </div>
@@ -475,8 +475,8 @@ export default function AIModulesPage() {
       {/* ================================================================= */}
       <div className="rounded-2xl bg-[#141420] border border-white/5 p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-amber-400" />
+          <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+            <Zap className="w-5 h-5 text-violet-400" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">Quick Start</h2>
@@ -495,13 +495,13 @@ export default function AIModulesPage() {
               placeholder="https://www.esempio.it"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-xl bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-amber-500/50 focus:outline-none text-base"
+              className="w-full pl-12 pr-4 py-4 rounded-xl bg-[#0a0a0f] border border-white/10 text-white placeholder-gray-600 focus:border-violet-500/50 focus:outline-none text-base"
             />
           </div>
           <button
             onClick={runPipeline}
             disabled={!url || pipelineRunning}
-            className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber-500 text-black font-semibold text-sm hover:bg-amber-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-violet-500 text-white font-semibold text-sm hover:bg-violet-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
           >
             {pipelineRunning ? (
               <>
@@ -612,7 +612,7 @@ export default function AIModulesPage() {
 
         {/* Pipeline connection line (desktop) */}
         <div className="relative">
-          <div className="absolute top-24 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-blue-500/20 via-emerald-500/20 via-amber-500/20 to-purple-500/20 hidden lg:block" />
+          <div className="absolute top-24 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-blue-500/20 via-emerald-500/20 via-violet-500/20 to-purple-500/20 hidden lg:block" />
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 relative">
             {modules.map((module, index) => {
@@ -668,7 +668,7 @@ export default function AIModulesPage() {
                         status === "completed"
                           ? "bg-emerald-400"
                           : status === "running"
-                          ? "bg-amber-400 animate-pulse"
+                          ? "bg-violet-400 animate-pulse"
                           : status === "error"
                           ? "bg-red-400"
                           : "bg-gray-600"
@@ -731,7 +731,7 @@ export default function AIModulesPage() {
                                   key={row.scenario}
                                   className="flex items-center gap-2 text-xs"
                                 >
-                                  <RowIcon className="w-3 h-3 text-amber-400 shrink-0" />
+                                  <RowIcon className="w-3 h-3 text-violet-400 shrink-0" />
                                   <span className="text-gray-300 font-medium min-w-0 truncate">
                                     {row.scenario}
                                   </span>
@@ -752,7 +752,7 @@ export default function AIModulesPage() {
                             <div className="flex items-center gap-3">
                               <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden flex">
                                 <div className="h-full bg-red-500" style={{ width: "40%" }} />
-                                <div className="h-full bg-amber-500" style={{ width: "30%" }} />
+                                <div className="h-full bg-violet-500" style={{ width: "30%" }} />
                                 <div className="h-full bg-emerald-500" style={{ width: "30%" }} />
                               </div>
                             </div>
@@ -760,7 +760,7 @@ export default function AIModulesPage() {
                               <span className="text-[10px] text-red-400">
                                 &lt;40 Blocco
                               </span>
-                              <span className="text-[10px] text-amber-400">
+                              <span className="text-[10px] text-violet-400">
                                 40-70 Review
                               </span>
                               <span className="text-[10px] text-emerald-400">
@@ -799,8 +799,8 @@ export default function AIModulesPage() {
         {/* Guardrails Header */}
         <div className="p-6 border-b border-white/5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-              <Shield className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+              <Shield className="w-5 h-5 text-violet-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">Guardrail di Sicurezza</h2>
@@ -827,7 +827,7 @@ export default function AIModulesPage() {
                 onClick={() => setGuardrailTab(tab.id)}
                 className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-medium transition-colors border-b-2 ${
                   guardrailTab === tab.id
-                    ? "border-amber-500 text-amber-400 bg-amber-500/5"
+                    ? "border-violet-500 text-violet-400 bg-violet-500/5"
                     : "border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5"
                 }`}
               >
@@ -846,7 +846,7 @@ export default function AIModulesPage() {
               {/* Budget Cap Assoluto */}
               <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/5">
                 <div className="flex items-center gap-2 mb-4">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <DollarSign className="w-4 h-4 text-violet-400" />
                   <h3 className="font-semibold text-white text-sm">Budget Cap Assoluto</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -867,7 +867,7 @@ export default function AIModulesPage() {
                             dailyBudgetCap: Number(e.target.value),
                           }))
                         }
-                        className="w-full pl-8 pr-4 py-2.5 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+                        className="w-full pl-8 pr-4 py-2.5 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-violet-500/50 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -888,7 +888,7 @@ export default function AIModulesPage() {
                             monthlyBudgetCap: Number(e.target.value),
                           }))
                         }
-                        className="w-full pl-8 pr-4 py-2.5 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+                        className="w-full pl-8 pr-4 py-2.5 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-violet-500/50 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -921,7 +921,7 @@ export default function AIModulesPage() {
                               gradualMax24h: Number(e.target.value),
                             }))
                           }
-                          className="w-full pr-8 pl-3 py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+                          className="w-full pr-8 pl-3 py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-violet-500/50 focus:outline-none"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
                           %
@@ -942,7 +942,7 @@ export default function AIModulesPage() {
                               gradualMax7d: Number(e.target.value),
                             }))
                           }
-                          className="w-full pr-8 pl-3 py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+                          className="w-full pr-8 pl-3 py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-violet-500/50 focus:outline-none"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
                           %
@@ -979,7 +979,7 @@ export default function AIModulesPage() {
                               circuitBreakerCpaPercent: Number(e.target.value),
                             }))
                           }
-                          className="w-full pr-8 pl-3 py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+                          className="w-full pr-8 pl-3 py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-violet-500/50 focus:outline-none"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
                           %
@@ -1000,7 +1000,7 @@ export default function AIModulesPage() {
                               circuitBreakerHours: Number(e.target.value),
                             }))
                           }
-                          className="w-full pr-8 pl-3 py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-amber-500/50 focus:outline-none"
+                          className="w-full pr-8 pl-3 py-2 rounded-lg bg-[#141420] border border-white/10 text-white text-sm focus:border-violet-500/50 focus:outline-none"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
                           h
@@ -1052,7 +1052,7 @@ export default function AIModulesPage() {
                       Sotto questa soglia, l&apos;AI richiede conferma umana
                     </p>
                   </div>
-                  <span className="text-lg font-bold text-amber-400">
+                  <span className="text-lg font-bold text-violet-400">
                     {guardrails.confidenceThreshold}%
                   </span>
                 </div>
@@ -1067,7 +1067,7 @@ export default function AIModulesPage() {
                       confidenceThreshold: Number(e.target.value),
                     }))
                   }
-                  className="w-full h-2 rounded-full appearance-none bg-white/10 accent-amber-500 cursor-pointer"
+                  className="w-full h-2 rounded-full appearance-none bg-white/10 accent-violet-500 cursor-pointer"
                 />
                 <div className="flex justify-between mt-1">
                   <span className="text-[10px] text-gray-600">0 - Approva tutto</span>
@@ -1130,7 +1130,7 @@ export default function AIModulesPage() {
                   }
                   placeholder="Es: Non usare 'il migliore', evitare confronti diretti con competitor, tono professionale ma accessibile..."
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-600 text-sm focus:border-amber-500/50 focus:outline-none resize-none"
+                  className="w-full px-4 py-3 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-600 text-sm focus:border-violet-500/50 focus:outline-none resize-none"
                 />
               </div>
 
@@ -1155,8 +1155,8 @@ export default function AIModulesPage() {
       <div className="rounded-2xl bg-[#141420] border border-white/5 overflow-hidden">
         <div className="p-6 border-b border-white/5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-              <Activity className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+              <Activity className="w-5 h-5 text-violet-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">AI Activity Log</h2>
@@ -1180,7 +1180,7 @@ export default function AIModulesPage() {
                     entry.status === "auto" || entry.status === "approved"
                       ? "bg-emerald-400"
                       : entry.status === "pending"
-                      ? "bg-amber-400 animate-pulse"
+                      ? "bg-violet-400 animate-pulse"
                       : "bg-red-400"
                   }`}
                 />
@@ -1221,7 +1221,7 @@ export default function AIModulesPage() {
                   )}
                   {entry.status === "pending" && (
                     <div className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 flex items-center gap-1">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 flex items-center gap-1">
                         <Eye className="w-3 h-3" /> In attesa di approvazione
                       </span>
                       <button

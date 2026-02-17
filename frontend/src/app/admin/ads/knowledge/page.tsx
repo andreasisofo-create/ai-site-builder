@@ -154,7 +154,7 @@ export default function KnowledgePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
       </div>
     );
   }
@@ -167,9 +167,9 @@ export default function KnowledgePage() {
           <h1 className="text-2xl font-bold text-white">Knowledge Base</h1>
           <p className="text-gray-500">Manuale Operativo Ads — Aggiornato Febbraio 2026</p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
-          <BookOpen className="w-5 h-5 text-amber-400" />
-          <span className="text-amber-400 font-medium text-sm">{totalArticles} articoli</span>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500/10 border border-violet-500/20">
+          <BookOpen className="w-5 h-5 text-violet-400" />
+          <span className="text-violet-400 font-medium text-sm">{totalArticles} articoli</span>
         </div>
       </div>
 
@@ -181,7 +181,7 @@ export default function KnowledgePage() {
           placeholder='Cerca nella knowledge base... (es: "keyword negative", "consent mode")'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50 focus:outline-none text-sm"
+          className="w-full pl-12 pr-4 py-3 rounded-lg bg-[#141420] border border-white/10 text-white placeholder-gray-500 focus:border-violet-500/50 focus:outline-none text-sm"
         />
       </div>
 
@@ -213,10 +213,10 @@ export default function KnowledgePage() {
                 <button
                   key={article.id}
                   onClick={() => setSelectedArticle(article)}
-                  className="w-full text-left rounded-xl bg-[#141420] border border-white/5 p-4 hover:border-amber-500/30 transition-colors"
+                  className="w-full text-left rounded-xl bg-[#141420] border border-white/5 p-4 hover:border-violet-500/30 transition-colors"
                 >
                   <div className="flex items-start gap-3">
-                    <FileText className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                    <FileText className="w-5 h-5 text-violet-400 shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <h3 className="font-medium text-white">{article.title}</h3>
                       <p className="text-sm text-gray-500 mt-1 line-clamp-2">
@@ -256,14 +256,14 @@ export default function KnowledgePage() {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className="rounded-xl bg-[#141420] border border-white/5 p-6 text-left hover:border-amber-500/30 transition-colors group"
+                    className="rounded-xl bg-[#141420] border border-white/5 p-6 text-left hover:border-violet-500/30 transition-colors group"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-amber-400" />
+                      <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                        <Icon className="w-6 h-6 text-violet-400" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-white group-hover:text-amber-400 transition-colors mb-1">
+                        <h3 className="font-semibold text-white group-hover:text-violet-400 transition-colors mb-1">
                           {cat.name}
                         </h3>
                         <p className="text-sm text-gray-500 mb-2">{cat.description}</p>
@@ -271,7 +271,7 @@ export default function KnowledgePage() {
                           {count} articoli
                         </span>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-amber-400 group-hover:translate-x-1 transition-all shrink-0" />
+                      <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-violet-400 group-hover:translate-x-1 transition-all shrink-0" />
                     </div>
                   </button>
                 );
@@ -281,7 +281,7 @@ export default function KnowledgePage() {
 
           {/* Category articles */}
           {selectedCategory && (
-            <div className="rounded-xl bg-[#141420] border border-amber-500/30 p-6">
+            <div className="rounded-xl bg-[#141420] border border-violet-500/30 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-white text-lg">
                   {categoryDefs.find((c) => c.id === selectedCategory)?.name}
@@ -337,11 +337,11 @@ export default function KnowledgePage() {
 
             <button
               onClick={() => setShowProblemSolving(!showProblemSolving)}
-              className="rounded-xl bg-[#141420] border border-white/5 p-6 text-left hover:border-amber-500/30 transition-colors"
+              className="rounded-xl bg-[#141420] border border-white/5 p-6 text-left hover:border-violet-500/30 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                  <Wrench className="w-6 h-6 text-amber-400" />
+                <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                  <Wrench className="w-6 h-6 text-violet-400" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">Problem Solving</h3>
@@ -414,10 +414,10 @@ export default function KnowledgePage() {
 
           {/* Problem Solving Panel */}
           {showProblemSolving && problems.length > 0 && (
-            <div className="rounded-xl bg-[#141420] border border-amber-500/30 p-6">
+            <div className="rounded-xl bg-[#141420] border border-violet-500/30 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-white text-lg flex items-center gap-2">
-                  <Wrench className="w-5 h-5 text-amber-400" />
+                  <Wrench className="w-5 h-5 text-violet-400" />
                   Matrice Problem Solving
                 </h3>
                 <button
@@ -431,7 +431,7 @@ export default function KnowledgePage() {
                 {problems.map((p, idx) => (
                   <div key={idx} className="p-4 rounded-lg bg-[#1a1a2e]/50">
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                      <AlertTriangle className="w-5 h-5 text-violet-400 shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <h4 className="font-medium text-white">{p.symptom}</h4>
                         <p className="text-sm text-gray-500 mt-1">{p.diagnosis}</p>
@@ -461,17 +461,17 @@ export default function KnowledgePage() {
                   <button
                     key={v.id}
                     onClick={() => setSelectedVertical(v)}
-                    className="rounded-xl bg-[#141420] border border-white/5 p-4 text-left hover:border-amber-500/30 transition-colors group"
+                    className="rounded-xl bg-[#141420] border border-white/5 p-4 text-left hover:border-violet-500/30 transition-colors group"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{v.icon}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white text-sm group-hover:text-amber-400 transition-colors truncate">
+                        <p className="font-medium text-white text-sm group-hover:text-violet-400 transition-colors truncate">
                           {v.name}
                         </p>
                         <p className="text-xs text-gray-500">Budget: €{v.budget.min}/mese</p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-amber-400 transition-colors shrink-0" />
+                      <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-violet-400 transition-colors shrink-0" />
                     </div>
                   </button>
                 ))}
@@ -481,7 +481,7 @@ export default function KnowledgePage() {
 
           {/* Vertical Detail */}
           {selectedVertical && (
-            <div className="rounded-xl bg-[#141420] border border-amber-500/30 p-6 space-y-6">
+            <div className="rounded-xl bg-[#141420] border border-violet-500/30 p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-white text-lg flex items-center gap-2">
                   <span className="text-2xl">{selectedVertical.icon}</span>
@@ -589,9 +589,9 @@ export default function KnowledgePage() {
                   <p className="text-xs text-gray-500">CPL Target</p>
                   <p className="text-lg font-bold text-purple-400">€{selectedVertical.kpi.cpl}</p>
                 </div>
-                <div className="p-3 rounded-lg bg-amber-500/10">
+                <div className="p-3 rounded-lg bg-violet-500/10">
                   <p className="text-xs text-gray-500">Conv. Rate</p>
-                  <p className="text-lg font-bold text-amber-400">{(selectedVertical.kpi.conversionRate * 100).toFixed(1)}%</p>
+                  <p className="text-lg font-bold text-violet-400">{(selectedVertical.kpi.conversionRate * 100).toFixed(1)}%</p>
                 </div>
               </div>
             </div>
@@ -613,7 +613,7 @@ export default function KnowledgePage() {
                       <p className="font-medium text-white text-sm">{item.rule}</p>
                       <p className="text-xs text-gray-500">{item.desc}</p>
                     </div>
-                    <Shield className="w-4 h-4 text-amber-400" />
+                    <Shield className="w-4 h-4 text-violet-400" />
                   </div>
                 ))}
               </div>
@@ -635,10 +635,10 @@ export default function KnowledgePage() {
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-3 rounded-lg bg-[#1a1a2e]/50 hover:bg-[#1a1a2e] transition-colors group"
                   >
-                    <span className="text-white text-sm group-hover:text-amber-400 transition-colors">
+                    <span className="text-white text-sm group-hover:text-violet-400 transition-colors">
                       {item.name}
                     </span>
-                    <ExternalLink className="w-4 h-4 text-gray-500 group-hover:text-amber-400 transition-colors" />
+                    <ExternalLink className="w-4 h-4 text-gray-500 group-hover:text-violet-400 transition-colors" />
                   </a>
                 ))}
               </div>

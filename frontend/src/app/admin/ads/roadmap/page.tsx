@@ -208,7 +208,7 @@ export default function RoadmapPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
       </div>
     );
   }
@@ -234,9 +234,9 @@ export default function RoadmapPage() {
               Fase {currentPhase} di 4 &mdash; Foundation
             </p>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-            <Play className="w-4 h-4 text-amber-400" />
-            <span className="text-amber-400 text-sm font-medium">In Corso</span>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-500/10 border border-violet-500/20">
+            <Play className="w-4 h-4 text-violet-400" />
+            <span className="text-violet-400 text-sm font-medium">In Corso</span>
           </div>
         </div>
 
@@ -248,7 +248,7 @@ export default function RoadmapPage() {
           </div>
           <div className="h-3 bg-[#1a1a2e] rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-violet-500 to-orange-500 rounded-full transition-all duration-500"
               style={{ width: `${overallProgress}%` }}
             />
           </div>
@@ -307,7 +307,7 @@ export default function RoadmapPage() {
                 key={phase.number}
                 className={`rounded-xl border p-5 transition-all ${
                   isActive
-                    ? "bg-[#141420] border-amber-500/20"
+                    ? "bg-[#141420] border-violet-500/20"
                     : "bg-[#141420]/50 border-white/5"
                 }`}
               >
@@ -316,7 +316,7 @@ export default function RoadmapPage() {
                   <div
                     className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
                       isActive
-                        ? "bg-amber-500/10 text-amber-400"
+                        ? "bg-violet-500/10 text-violet-400"
                         : "bg-white/5 text-gray-500"
                     }`}
                   >
@@ -336,7 +336,7 @@ export default function RoadmapPage() {
                       <span
                         className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
                           isActive
-                            ? "bg-amber-500/10 text-amber-400"
+                            ? "bg-violet-500/10 text-violet-400"
                             : "bg-white/5 text-gray-500"
                         }`}
                       >
@@ -377,11 +377,11 @@ export default function RoadmapPage() {
                           <span className="text-gray-500">
                             {completedTasks}/{phase.tasks.length} completate
                           </span>
-                          <span className="text-amber-400">{taskProgress}%</span>
+                          <span className="text-violet-400">{taskProgress}%</span>
                         </div>
                         <div className="h-1.5 bg-[#1a1a2e] rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-amber-500 rounded-full transition-all"
+                            className="h-full bg-violet-500 rounded-full transition-all"
                             style={{ width: `${taskProgress}%` }}
                           />
                         </div>
@@ -440,17 +440,17 @@ export default function RoadmapPage() {
                   </tr>
                 ))}
                 {/* AI ADS highlighted row */}
-                <tr className="bg-amber-500/5 border-t border-amber-500/20">
-                  <td className="px-5 py-3 text-amber-400 font-bold">
+                <tr className="bg-violet-500/5 border-t border-violet-500/20">
+                  <td className="px-5 py-3 text-violet-400 font-bold">
                     AI ADS
                   </td>
-                  <td className="px-5 py-3 text-amber-300 font-medium">
+                  <td className="px-5 py-3 text-violet-300 font-medium">
                     End-to-end
                   </td>
-                  <td className="px-5 py-3 text-amber-300" colSpan={2}>
+                  <td className="px-5 py-3 text-violet-300" colSpan={2}>
                     URL &rarr; Strategia &rarr; Lancio &rarr; Ottimizzazione
                   </td>
-                  <td className="px-5 py-3 text-amber-300 font-medium">
+                  <td className="px-5 py-3 text-violet-300 font-medium">
                     SaaS
                   </td>
                 </tr>
@@ -465,7 +465,7 @@ export default function RoadmapPage() {
       {/* ================================================================== */}
       <div>
         <h2 className="text-xl font-semibold text-white mb-4">
-          <DollarSign className="w-5 h-5 inline-block mr-2 text-amber-400" />
+          <DollarSign className="w-5 h-5 inline-block mr-2 text-violet-400" />
           Budget Stimato MVP
         </h2>
         <div className="rounded-xl bg-[#141420] border border-white/5 overflow-hidden">
@@ -497,12 +497,12 @@ export default function RoadmapPage() {
                 </tr>
               ))}
               {/* Total row */}
-              <tr className="bg-amber-500/5 border-t border-amber-500/20">
-                <td className="px-5 py-3 text-amber-400 font-bold">TOTALE</td>
-                <td className="px-5 py-3 text-amber-300 font-bold">
+              <tr className="bg-violet-500/5 border-t border-violet-500/20">
+                <td className="px-5 py-3 text-violet-400 font-bold">TOTALE</td>
+                <td className="px-5 py-3 text-violet-300 font-bold">
                   $800 - $3.500
                 </td>
-                <td className="px-5 py-3 text-amber-300">
+                <td className="px-5 py-3 text-violet-300">
                   Escluso costi team
                 </td>
               </tr>
