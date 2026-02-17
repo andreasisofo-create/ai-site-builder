@@ -82,12 +82,12 @@ export default function LandingPage() {
   // ==================== RENDER ====================
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* ===== NAVBAR ===== */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm"
+            ? "bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-lg"
             : "bg-transparent"
         }`}
       >
@@ -95,7 +95,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-between h-16 lg:h-20">
             <Link href="/" className="flex items-center">
               <Image
-                src="/e-quipe-logo-dark.png"
+                src="/e-quipe-logo.png"
                 alt="E-quipe"
                 width={140}
                 height={40}
@@ -106,38 +106,38 @@ export default function LandingPage() {
             <div className="hidden lg:flex items-center gap-8">
               <a
                 href="#come-funziona"
-                className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
               >
                 {tx.nav.howItWorks}
               </a>
               <a
                 href="#funzionalita"
-                className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
               >
                 {tx.nav.features}
               </a>
               <a
                 href="#ads-service"
-                className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
               >
                 {tx.nav.ads}
               </a>
               <a
                 href="#prezzi"
-                className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
               >
                 {tx.nav.pricing}
               </a>
               <a
                 href="#faq"
-                className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
               >
                 {tx.nav.faq}
               </a>
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
-              <LanguageSwitcher variant="light" />
+              <LanguageSwitcher variant="dark" />
               <Link
                 href="/auth"
                 className="px-5 py-2.5 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:opacity-90 shadow-md shadow-indigo-500/25"
@@ -150,13 +150,13 @@ export default function LandingPage() {
             </div>
 
             <button
-              className="lg:hidden p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6 text-slate-700" />
+                <X className="w-6 h-6 text-gray-300" />
               ) : (
-                <Menu className="w-6 h-6 text-slate-700" />
+                <Menu className="w-6 h-6 text-gray-300" />
               )}
             </button>
           </div>
@@ -168,49 +168,49 @@ export default function LandingPage() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-white/95 backdrop-blur-xl border-b border-slate-200 overflow-hidden"
+              className="lg:hidden bg-black/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
             >
               <div className="px-6 py-4 space-y-4">
                 <a
                   href="#come-funziona"
-                  className="block text-slate-600 hover:text-slate-900 py-2"
+                  className="block text-gray-400 hover:text-white py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {tx.nav.howItWorks}
                 </a>
                 <a
                   href="#funzionalita"
-                  className="block text-slate-600 hover:text-slate-900 py-2"
+                  className="block text-gray-400 hover:text-white py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {tx.nav.features}
                 </a>
                 <a
                   href="#ads-service"
-                  className="block text-slate-600 hover:text-slate-900 py-2"
+                  className="block text-gray-400 hover:text-white py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {tx.nav.ads}
                 </a>
                 <a
                   href="#prezzi"
-                  className="block text-slate-600 hover:text-slate-900 py-2"
+                  className="block text-gray-400 hover:text-white py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {tx.nav.pricing}
                 </a>
                 <a
                   href="#faq"
-                  className="block text-slate-600 hover:text-slate-900 py-2"
+                  className="block text-gray-400 hover:text-white py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {tx.nav.faq}
                 </a>
-                <hr className="border-slate-200" />
+                <hr className="border-white/10" />
                 <div className="flex justify-center">
-                  <LanguageSwitcher variant="light" />
+                  <LanguageSwitcher variant="dark" />
                 </div>
-                <hr className="border-slate-200" />
+                <hr className="border-white/10" />
                 <Link
                   href="/auth"
                   className="block w-full py-3 text-white rounded-full font-semibold text-center"
@@ -228,7 +228,7 @@ export default function LandingPage() {
 
       {/* ===== HERO ===== */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden"
-        style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.04) 40%, white 70%)" }}
+        style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(79,70,229,0.15) 0%, rgba(124,58,237,0.08) 40%, #000 70%)" }}
       >
         {/* Decorative gradient orbs */}
         <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] rounded-full opacity-[0.15] pointer-events-none"
@@ -247,7 +247,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-slate-900 mb-4"
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-white mb-4"
             >
               {tx.hero.title}
             </motion.h1>
@@ -271,7 +271,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.24, ease: "easeOut" }}
-              className="text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed"
+              className="text-lg text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
             >
               {tx.hero.description}
             </motion.p>
@@ -295,7 +295,7 @@ export default function LandingPage() {
               </Link>
               <a
                 href="#come-funziona"
-                className="group w-full sm:w-auto px-8 py-4 text-slate-700 bg-white border border-slate-200 rounded-full font-semibold text-lg hover:border-indigo-200 hover:bg-indigo-50/50 transition-all flex items-center justify-center gap-2"
+                className="group w-full sm:w-auto px-8 py-4 text-gray-300 bg-white/5 border border-white/10 rounded-full font-semibold text-lg hover:border-violet-500/30 hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                 style={{ boxShadow: "0 4px 16px rgba(0, 0, 0, 0.06)" }}
               >
                 <Play className="w-5 h-5 text-indigo-600" />
@@ -336,7 +336,7 @@ export default function LandingPage() {
       <section
         id="come-funziona"
         className="py-20 lg:py-28 relative"
-        style={{ background: "linear-gradient(180deg, #F8FAFC 0%, rgba(238, 242, 255, 0.3) 50%, #F8FAFC 100%)" }}
+        style={{ background: "linear-gradient(180deg, #050510 0%, rgba(20, 15, 40, 0.5) 50%, #050510 100%)" }}
         ref={howRef}
       >
         {/* Subtle decorative line */}
@@ -360,7 +360,7 @@ export default function LandingPage() {
             >
               {tx.howItWorks.label}
             </span>
-            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-slate-900">
+            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white">
               {tx.howItWorks.title}
             </h2>
           </motion.div>
@@ -374,7 +374,7 @@ export default function LandingPage() {
                   initial={{ opacity: 0, y: 32 }}
                   animate={howInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5, delay: idx * 0.15 }}
-                  className="relative bg-white rounded-2xl p-8 group hover:-translate-y-1 transition-all duration-300"
+                  className="relative bg-[#0a0a12] rounded-2xl p-8 group hover:-translate-y-1 transition-all duration-300"
                   style={{
                     border: "1px solid rgba(79, 70, 229, 0.1)",
                     boxShadow: "0 4px 24px rgba(79, 70, 229, 0.06)",
@@ -391,7 +391,7 @@ export default function LandingPage() {
                       WebkitMaskComposite: "xor",
                     }}
                   />
-                  <span className="absolute top-6 right-6 text-5xl font-black text-slate-100/80">
+                  <span className="absolute top-6 right-6 text-5xl font-black white/10">
                     {stepNumbers[idx]}
                   </span>
                   <div
@@ -402,10 +402,10 @@ export default function LandingPage() {
                   >
                     <Icon className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">
+                  <h3 className="text-lg font-bold text-white mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">
+                  <p className="text-gray-400 text-sm leading-relaxed">
                     {step.description}
                   </p>
                 </motion.div>
@@ -416,7 +416,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== FUNZIONALITA' ===== */}
-      <section id="funzionalita" className="py-20 lg:py-28 bg-white relative" ref={featRef}>
+      <section id="funzionalita" className="py-20 lg:py-28 bg-[#0a0a12] relative" ref={featRef}>
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -425,7 +425,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-2xl mx-auto mb-12"
           >
-            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-slate-900 mb-6">
+            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white mb-6">
               {tx.features.title}
             </h2>
 
@@ -442,7 +442,7 @@ export default function LandingPage() {
                 className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
                   activeTab === "site"
                     ? "text-white shadow-md"
-                    : "text-slate-500 hover:text-slate-700"
+                    : "text-gray-400 hover:text-gray-300"
                 }`}
                 style={
                   activeTab === "site"
@@ -457,7 +457,7 @@ export default function LandingPage() {
                 className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
                   activeTab === "clients"
                     ? "text-white shadow-md"
-                    : "text-slate-500 hover:text-slate-700"
+                    : "text-gray-400 hover:text-gray-300"
                 }`}
                 style={
                   activeTab === "clients"
@@ -481,7 +481,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.4, delay: idx * 0.08 }}
                   className="group relative rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1"
                   style={{
-                    background: "rgba(255, 255, 255, 0.8)",
+                    background: "rgba(10, 10, 20, 0.8)",
                     backdropFilter: "blur(12px)",
                     border: "1px solid rgba(79, 70, 229, 0.08)",
                     boxShadow: "0 4px 24px rgba(79, 70, 229, 0.04)",
@@ -506,10 +506,10 @@ export default function LandingPage() {
                   >
                     <Icon className="w-5 h-5 text-indigo-600" />
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 mb-1.5">
+                  <h3 className="text-base font-bold text-white mb-1.5">
                     {feat.title}
                   </h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">
+                  <p className="text-gray-400 text-sm leading-relaxed">
                     {feat.description}
                   </p>
                 </motion.div>
@@ -578,7 +578,7 @@ export default function LandingPage() {
                 {tx.ads.titleHighlight}
               </span>
             </h2>
-            <p className="text-lg text-slate-300">
+            <p className="text-lg text-gray-300">
               {tx.ads.subtitle}
             </p>
           </motion.div>
@@ -615,7 +615,7 @@ export default function LandingPage() {
                     {col.items.map((item, iIdx) => (
                       <li key={iIdx} className="flex items-start gap-2.5">
                         <Check className="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-slate-300">{item}</span>
+                        <span className="text-sm text-gray-300">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -684,7 +684,7 @@ export default function LandingPage() {
       <section
         className="py-20 lg:py-28 relative"
         style={{
-          background: "linear-gradient(180deg, #F8FAFC 0%, rgba(248, 250, 252, 0.5) 50%, white 100%)",
+          background: "linear-gradient(180deg, #050510 0%, rgba(15, 10, 30, 0.5) 50%, #000 100%)",
         }}
         ref={proofRef}
       >
@@ -704,10 +704,10 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-2xl mx-auto mb-16"
           >
-            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white mb-4">
               {tx.socialProof.title}
             </h2>
-            <p className="text-lg text-slate-500">{tx.socialProof.subtitle}</p>
+            <p className="text-lg text-gray-400">{tx.socialProof.subtitle}</p>
           </motion.div>
 
           {/* Demo Site Cards */}
@@ -718,13 +718,13 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={proofInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: idx * 0.08 }}
-                className="bg-white rounded-2xl overflow-hidden group hover:-translate-y-1 transition-all duration-300"
+                className="bg-[#0a0a12] rounded-2xl overflow-hidden group hover:-translate-y-1 transition-all duration-300"
                 style={{
                   border: "1px solid rgba(79, 70, 229, 0.08)",
                   boxShadow: "0 8px 32px rgba(79, 70, 229, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)",
                 }}
               >
-                <div className="aspect-[4/3] bg-slate-50 overflow-hidden">
+                <div className="aspect-[4/3] bg-white/5 overflow-hidden">
                   <Image
                     src={demo.image}
                     alt={demo.name}
@@ -734,10 +734,10 @@ export default function LandingPage() {
                   />
                 </div>
                 <div className="p-4">
-                  <p className="font-semibold text-sm text-slate-900">
+                  <p className="font-semibold text-sm text-white">
                     {demo.name}
                   </p>
-                  <p className="text-xs text-slate-400">{demo.category}</p>
+                  <p className="text-xs text-gray-500">{demo.category}</p>
                 </div>
               </motion.div>
             ))}
@@ -751,7 +751,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={proofInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.4 + idx * 0.12 }}
-                className="bg-white rounded-2xl p-6"
+                className="bg-[#0a0a12] rounded-2xl p-6"
                 style={{
                   border: "1px solid rgba(79, 70, 229, 0.08)",
                   boxShadow: "0 8px 32px rgba(79, 70, 229, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)",
@@ -765,7 +765,7 @@ export default function LandingPage() {
                     />
                   ))}
                 </div>
-                <p className="text-slate-700 text-sm leading-relaxed mb-5">
+                <p className="text-gray-300 text-sm leading-relaxed mb-5">
                   &ldquo;{t.quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
@@ -782,10 +782,10 @@ export default function LandingPage() {
                       .join("")}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-white">
                       {t.author}
                     </p>
-                    <p className="text-xs text-slate-400">{t.role}</p>
+                    <p className="text-xs text-gray-500">{t.role}</p>
                   </div>
                 </div>
               </motion.div>
@@ -795,7 +795,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== PRICING ===== */}
-      <section id="prezzi" className="py-20 lg:py-28 bg-white relative" ref={priceRef}>
+      <section id="prezzi" className="py-20 lg:py-28 bg-[#0a0a12] relative" ref={priceRef}>
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -804,10 +804,10 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-2xl mx-auto mb-16"
           >
-            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white mb-4">
               {tx.pricing.title}
             </h2>
-            <p className="text-lg text-slate-500">{tx.pricing.subtitle}</p>
+            <p className="text-lg text-gray-400">{tx.pricing.subtitle}</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
@@ -818,7 +818,7 @@ export default function LandingPage() {
                 animate={priceInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
                 className={`relative rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 ${
-                  plan.popular ? "bg-white" : "bg-white"
+                  plan.popular ? "bg-[#0a0a15]" : "bg-[#0a0a15]"
                 }`}
                 style={
                   plan.popular
@@ -858,17 +858,17 @@ export default function LandingPage() {
                 )}
 
                 <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                  <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">
                     {plan.name}
                   </h3>
-                  <p className="text-xs text-slate-400">{plan.description}</p>
+                  <p className="text-xs text-gray-500">{plan.description}</p>
                 </div>
 
                 <div className="mb-5">
-                  <span className="text-4xl font-bold text-slate-900">
+                  <span className="text-4xl font-bold text-white">
                     &euro;{plan.price}
                   </span>
-                  <span className="text-slate-400 ml-1 text-sm">
+                  <span className="text-gray-500 ml-1 text-sm">
                     {plan.period}
                   </span>
                 </div>
@@ -890,7 +890,7 @@ export default function LandingPage() {
                   className={`block w-full py-3 rounded-full font-semibold text-sm text-center transition-all ${
                     plan.popular
                       ? "text-white hover:opacity-90"
-                      : "text-slate-700 hover:bg-slate-100"
+                      : "text-gray-300 hover:bg-white/10"
                   }`}
                   style={
                     plan.popular
@@ -899,7 +899,7 @@ export default function LandingPage() {
                           boxShadow: "0 4px 16px rgba(79, 70, 229, 0.35)",
                         }
                       : {
-                          background: "rgba(248, 250, 252, 0.8)",
+                          background: "rgba(20, 15, 40, 0.6)",
                           border: "1px solid rgba(79, 70, 229, 0.1)",
                         }
                   }
@@ -910,7 +910,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <p className="text-center text-sm text-slate-400 mt-8">
+          <p className="text-center text-sm text-gray-500 mt-8">
             {tx.pricing.adBudgetNote}
           </p>
         </div>
@@ -921,12 +921,12 @@ export default function LandingPage() {
         id="faq"
         className="py-20 lg:py-28 relative"
         style={{
-          background: "linear-gradient(180deg, #F8FAFC 0%, rgba(238, 242, 255, 0.2) 50%, #F8FAFC 100%)",
+          background: "linear-gradient(180deg, #050510 0%, rgba(20, 15, 40, 0.2) 50%, #050510 100%)",
         }}
       >
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-slate-900">
+            <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white">
               {tx.faq.title}
             </h2>
           </div>
@@ -935,7 +935,7 @@ export default function LandingPage() {
             {tx.faq.items.map((faq, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl bg-white overflow-hidden transition-all"
+                className="rounded-2xl bg-[#0a0a12] overflow-hidden transition-all"
                 style={{
                   border: "1px solid rgba(79, 70, 229, 0.08)",
                   boxShadow: openFaq === idx ? "0 8px 32px rgba(79, 70, 229, 0.08)" : "0 2px 8px rgba(0, 0, 0, 0.02)",
@@ -943,13 +943,13 @@ export default function LandingPage() {
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-indigo-50/30 transition-colors"
+                  className="w-full flex items-center justify-between p-5 text-left hover:bg-white/5 transition-colors"
                 >
-                  <span className="font-medium text-slate-900 pr-4">
+                  <span className="font-medium text-white pr-4">
                     {faq.q}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-300 ${
+                    className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform duration-300 ${
                       openFaq === idx ? "rotate-180" : ""
                     }`}
                   />
@@ -963,7 +963,7 @@ export default function LandingPage() {
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden"
                     >
-                      <p className="px-5 pb-5 text-slate-500 leading-relaxed text-sm">
+                      <p className="px-5 pb-5 text-gray-400 leading-relaxed text-sm">
                         {faq.a}
                       </p>
                     </motion.div>
@@ -976,7 +976,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== FINAL CTA ===== */}
-      <section className="py-20 lg:py-28 bg-white">
+      <section className="py-20 lg:py-28 bg-black">
         <div className="max-w-4xl mx-auto px-6">
           <div
             className="relative p-12 lg:p-20 rounded-3xl overflow-hidden text-center"
@@ -1001,7 +1001,7 @@ export default function LandingPage() {
               </p>
               <Link
                 href="/auth"
-                className="group inline-flex items-center gap-2 px-8 py-4 text-slate-900 rounded-full font-semibold text-lg hover:-translate-y-0.5 transition-all duration-200"
+                className="group inline-flex items-center gap-2 px-8 py-4 text-black rounded-full font-semibold text-lg hover:-translate-y-0.5 transition-all duration-200"
                 style={{
                   background: "linear-gradient(135deg, #ffffff, #e0e7ff)",
                   boxShadow: "0 8px 32px rgba(255, 255, 255, 0.25), 0 2px 8px rgba(255, 255, 255, 0.15)",
@@ -1016,35 +1016,35 @@ export default function LandingPage() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-16 border-t border-slate-200 bg-white">
+      <footer className="py-16 border-t border-white/10 bg-black">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-5 gap-8 mb-12">
             {/* Brand */}
             <div className="md:col-span-2">
               <Link href="/" className="flex items-center mb-4">
                 <Image
-                  src="/e-quipe-logo-dark.png"
+                  src="/e-quipe-logo.png"
                   alt="E-quipe"
                   width={120}
                   height={36}
                   className="h-8 w-auto"
                 />
               </Link>
-              <p className="text-slate-500 text-sm max-w-sm">
+              <p className="text-gray-400 text-sm max-w-sm">
                 {tx.footer.description}
               </p>
             </div>
 
             {/* Prodotto */}
             <div>
-              <h4 className="font-semibold text-slate-900 mb-4 text-sm">
+              <h4 className="font-semibold text-white mb-4 text-sm">
                 {tx.footer.product}
               </h4>
-              <ul className="space-y-2.5 text-slate-500 text-sm">
+              <ul className="space-y-2.5 text-gray-400 text-sm">
                 <li>
                   <a
                     href="#come-funziona"
-                    className="hover:text-slate-900 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {tx.footer.productLinks.howItWorks}
                   </a>
@@ -1052,7 +1052,7 @@ export default function LandingPage() {
                 <li>
                   <a
                     href="#funzionalita"
-                    className="hover:text-slate-900 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {tx.footer.productLinks.features}
                   </a>
@@ -1060,7 +1060,7 @@ export default function LandingPage() {
                 <li>
                   <a
                     href="#prezzi"
-                    className="hover:text-slate-900 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {tx.footer.productLinks.pricing}
                   </a>
@@ -1068,7 +1068,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/dashboard"
-                    className="hover:text-slate-900 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {tx.footer.productLinks.dashboard}
                   </Link>
@@ -1078,22 +1078,22 @@ export default function LandingPage() {
 
             {/* Azienda */}
             <div>
-              <h4 className="font-semibold text-slate-900 mb-4 text-sm">
+              <h4 className="font-semibold text-white mb-4 text-sm">
                 {tx.footer.company}
               </h4>
-              <ul className="space-y-2.5 text-slate-500 text-sm">
+              <ul className="space-y-2.5 text-gray-400 text-sm">
                 <li>
-                  <a href="#" className="hover:text-slate-900 transition-colors">
+                  <a href="#" className="hover:text-white transition-colors">
                     {tx.footer.companyLinks.about}
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-900 transition-colors">
+                  <a href="#" className="hover:text-white transition-colors">
                     {tx.footer.companyLinks.contact}
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-900 transition-colors">
+                  <a href="#" className="hover:text-white transition-colors">
                     {tx.footer.companyLinks.blog}
                   </a>
                 </li>
@@ -1102,14 +1102,14 @@ export default function LandingPage() {
 
             {/* Legale */}
             <div>
-              <h4 className="font-semibold text-slate-900 mb-4 text-sm">
+              <h4 className="font-semibold text-white mb-4 text-sm">
                 {tx.footer.legal}
               </h4>
-              <ul className="space-y-2.5 text-slate-500 text-sm">
+              <ul className="space-y-2.5 text-gray-400 text-sm">
                 <li>
                   <Link
                     href="/privacy"
-                    className="hover:text-slate-900 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {tx.footer.legalLinks.privacy}
                   </Link>
@@ -1117,7 +1117,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/terms"
-                    className="hover:text-slate-900 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {tx.footer.legalLinks.terms}
                   </Link>
@@ -1125,7 +1125,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/cookies"
-                    className="hover:text-slate-900 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {tx.footer.legalLinks.cookies}
                   </Link>
@@ -1134,24 +1134,24 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-slate-400 text-sm">{tx.footer.copyright}</p>
-            <div className="flex items-center gap-6 text-sm text-slate-400">
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-500 text-sm">{tx.footer.copyright}</p>
+            <div className="flex items-center gap-6 text-sm text-gray-500">
               <Link
                 href="/privacy"
-                className="hover:text-slate-700 transition-colors"
+                className="hover:text-gray-300 transition-colors"
               >
                 {tx.footer.bottomLinks.privacy}
               </Link>
               <Link
                 href="/terms"
-                className="hover:text-slate-700 transition-colors"
+                className="hover:text-gray-300 transition-colors"
               >
                 {tx.footer.bottomLinks.terms}
               </Link>
               <Link
                 href="/cookies"
-                className="hover:text-slate-700 transition-colors"
+                className="hover:text-gray-300 transition-colors"
               >
                 {tx.footer.bottomLinks.cookies}
               </Link>
