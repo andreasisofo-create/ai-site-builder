@@ -42,8 +42,8 @@ class Settings(BaseSettings):
     
     # Admin
     ADMIN_EMAILS: str = ""  # Comma-separated list of admin emails for auto-premium
-    ADMIN_USERNAME: str = "E-quipe!"
-    ADMIN_PASSWORD: str = "E-quipe!"
+    ADMIN_USERNAME: str = "E-quipe"
+    ADMIN_PASSWORD: str = "E-quipe"
 
     # JWT
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 giorni
