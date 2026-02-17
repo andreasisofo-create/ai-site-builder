@@ -344,8 +344,9 @@ function Testimonials() {
 
 // ============ PRICING ============
 // Slug mapping for the AI builder plans (order matches translations.aiPage.pricing.plans)
+// Maps to actual service catalog slugs: pack-presenza, pack-clienti, pack-crescita
 const AI_BASE_SLUG = "homepage-ai";
-const AI_PLAN_SLUGS = ["ai-business", "ai-crescita", "ai-premium"];
+const AI_PLAN_SLUGS = ["pack-presenza", "pack-clienti", "pack-crescita"];
 
 function AiPricing() {
     const { language } = useLanguage();
