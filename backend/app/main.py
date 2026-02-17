@@ -109,6 +109,11 @@ async def lifespan(app: FastAPI):
             migrations = [
                 "ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR",
                 "ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token_expires TIMESTAMP WITH TIME ZONE",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS refines_used INTEGER DEFAULT 0",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS refines_limit INTEGER DEFAULT 3",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS pages_used INTEGER DEFAULT 0",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS pages_limit INTEGER DEFAULT 1",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS plan VARCHAR DEFAULT 'free'",
                 "ALTER TABLE sites ADD COLUMN IF NOT EXISTS qc_score FLOAT",
                 "ALTER TABLE sites ADD COLUMN IF NOT EXISTS qc_report JSON",
                 "ALTER TABLE sites ADD COLUMN IF NOT EXISTS generation_cost FLOAT",
@@ -166,6 +171,7 @@ app = FastAPI(
     description="API per la creazione e gestione di siti web",
     version="0.3.0",
     lifespan=lifespan,
+    redirect_slashes=True,
     docs_url="/docs",
     redoc_url="/redoc",
 )

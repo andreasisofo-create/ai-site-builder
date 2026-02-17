@@ -126,14 +126,18 @@ class User(Base):
         """Controlla se l'utente ha ancora modifiche chat AI."""
         if self.is_premium or self.is_superuser:
             return True
-        return self.refines_used < self.refines_limit
+        used = self.refines_used or 0
+        limit = self.refines_limit if self.refines_limit is not None else 3
+        return used < limit
 
     @property
     def remaining_refines(self) -> int:
         """Ritorna il numero di modifiche chat AI rimanenti."""
         if self.is_premium or self.is_superuser:
             return -1
-        return max(0, self.refines_limit - self.refines_used)
+        used = self.refines_used or 0
+        limit = self.refines_limit if self.refines_limit is not None else 3
+        return max(0, limit - used)
 
     @property
     def has_remaining_pages(self) -> bool:

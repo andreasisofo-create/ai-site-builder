@@ -61,6 +61,7 @@ class RefineRequest(BaseModel):
     site_id: int
     message: str
     section: Optional[str] = None
+    language: Optional[str] = None  # Language code (e.g. "it", "en") from frontend
     photo_urls: Optional[List[str]] = None  # Image URLs (data: or https:) to insert in the site
 
 
@@ -376,17 +377,21 @@ async def refine_website(
     Carica l'HTML attuale, applica le modifiche richieste, salva nuova versione.
     Rate limit: 10 refinement per ora per IP.
     """
-    # Controlla limite modifiche chat AI
-    if not current_user.has_remaining_refines:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "message": "Hai esaurito le modifiche chat AI disponibili",
-                "refines_used": current_user.refines_used,
-                "refines_limit": current_user.refines_limit,
-                "upgrade_required": True,
-            },
-        )
+    # Controlla limite modifiche chat AI (NULL-safe for legacy users)
+    try:
+        if not current_user.has_remaining_refines:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={
+                    "message": "Hai esaurito le modifiche chat AI disponibili",
+                    "refines_used": current_user.refines_used,
+                    "refines_limit": current_user.refines_limit,
+                    "upgrade_required": True,
+                },
+            )
+    except TypeError:
+        # refines_used or refines_limit is NULL (legacy user without migration)
+        logger.warning(f"[Refine] User {current_user.id} has NULL refine counters, allowing request")
 
     # Carica il sito
     site = db.query(Site).filter(
@@ -395,6 +400,15 @@ async def refine_website(
     ).first()
 
     if not site:
+        # Log details for debugging 404
+        any_site = db.query(Site).filter(Site.id == data.site_id).first()
+        if any_site:
+            logger.warning(
+                f"[Refine] 404: site_id={data.site_id} exists (owner={any_site.owner_id}) "
+                f"but current_user.id={current_user.id} doesn't match"
+            )
+        else:
+            logger.warning(f"[Refine] 404: site_id={data.site_id} does not exist in DB")
         raise HTTPException(status_code=404, detail="Sito non trovato")
 
     if not site.html_content:
