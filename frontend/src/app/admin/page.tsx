@@ -688,6 +688,31 @@ function OverviewTab() {
         </Card>
       )}
 
+      {/* AI ADS Manager — Quick Access */}
+      <a
+        href="/admin/ads"
+        className="block rounded-xl bg-gradient-to-br from-amber-500/10 via-[#141420] to-[#0a0a0f] border border-amber-500/20 p-6 hover:border-amber-500/40 transition-all group"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shrink-0">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z" /></svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
+                AI ADS Manager
+              </h3>
+              <p className="text-sm text-gray-400">
+                {language === "en"
+                  ? "Autonomous Media Buyer — Manage Google & Meta campaigns with AI"
+                  : "Autonomous Media Buyer — Gestisci campagne Google e Meta con AI"}
+              </p>
+            </div>
+          </div>
+          <svg className="w-5 h-5 text-gray-600 group-hover:text-amber-400 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+        </div>
+      </a>
+
       {/* Quick metrics */}
       <Card className="p-5">
         <h3 className="text-sm font-semibold text-gray-300 mb-4">{language === "en" ? "Quick Metrics" : "Metriche Rapide"}</h3>
