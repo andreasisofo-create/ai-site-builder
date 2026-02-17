@@ -33,6 +33,10 @@ function adminFetch(path: string, options: RequestInit = {}) {
       ...options.headers,
     },
   }).then((res) => {
+    if (res.status === 401) {
+      sessionStorage.removeItem("admin_token");
+      throw new Error("SESSION_EXPIRED");
+    }
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return res.json();
   });

@@ -53,6 +53,8 @@ interface AdsStats {
   activeCampaigns: number;
   monthlyBudget: number;
   avgCtr: number;
+  totalLeads: number;
+  totalSpent: number;
 }
 
 interface ModuleInfo {
@@ -72,6 +74,8 @@ export default function AdsDashboard() {
     activeCampaigns: 0,
     monthlyBudget: 0,
     avgCtr: 0,
+    totalLeads: 0,
+    totalSpent: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -85,8 +89,16 @@ export default function AdsDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await adminFetch("/api/ads/stats");
-        setStats(data.data || data);
+        const data = await adminFetch("/api/ads/stats/dashboard");
+        const d = data.data || data;
+        setStats({
+          activeClients: d.total_clients ?? d.activeClients ?? 0,
+          activeCampaigns: d.active_campaigns ?? d.activeCampaigns ?? 0,
+          monthlyBudget: d.total_monthly_budget ?? d.monthlyBudget ?? 0,
+          avgCtr: d.avgCtr ?? 0,
+          totalLeads: d.total_leads ?? d.totalLeads ?? 0,
+          totalSpent: d.total_spent ?? d.totalSpent ?? 0,
+        });
       } catch {
         // API not available yet -- use defaults
       } finally {

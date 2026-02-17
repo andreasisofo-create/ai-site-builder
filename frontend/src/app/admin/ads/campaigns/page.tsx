@@ -29,6 +29,10 @@ function adminFetch(path: string, options: RequestInit = {}) {
       ...options.headers,
     },
   }).then((res) => {
+    if (res.status === 401) {
+      sessionStorage.removeItem("admin_token");
+      throw new Error("SESSION_EXPIRED");
+    }
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return res.json();
   });
@@ -77,7 +81,18 @@ export default function CampaignsPage() {
     const load = async () => {
       try {
         const data = await adminFetch("/api/ads/campaigns");
-        setCampaigns(data.data || data.campaigns || []);
+        const raw = data.data || data.campaigns || [];
+        setCampaigns(
+          raw.map((c: any) => ({
+            id: String(c.id),
+            name: c.name || "",
+            platform: c.platform || "meta",
+            status: c.status || "pending",
+            budget: c.budget || { total: c.budget_total || 0, spent: c.spent || 0 },
+            metrics: c.metrics || undefined,
+            externalId: c.external_id || c.externalId || undefined,
+          }))
+        );
       } catch {
         // API not available yet
       } finally {
@@ -115,7 +130,7 @@ export default function CampaignsPage() {
   const handlePauseResume = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "paused" : "active";
     try {
-      await adminFetch(`/api/ads/campaigns/${id}/status`, {
+      await adminFetch(`/api/ads/campaigns/${id}`, {
         method: "PUT",
         body: JSON.stringify({ status: newStatus }),
       });
@@ -364,7 +379,7 @@ export default function CampaignsPage() {
                     <button
                       className="p-2 rounded-lg bg-[#1a1a2e] hover:bg-white/10 transition-colors"
                       title="Dettagli"
-                      onClick={() => router.push(`/admin/ads/campaigns/${campaign.id}`)}
+                      onClick={() => router.push("/admin/ads/supervision")}
                     >
                       <ArrowRight className="w-5 h-5 text-gray-400" />
                     </button>

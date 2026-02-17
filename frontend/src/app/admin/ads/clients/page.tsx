@@ -29,6 +29,10 @@ function adminFetch(path: string, options: RequestInit = {}) {
       ...options.headers,
     },
   }).then((res) => {
+    if (res.status === 401) {
+      sessionStorage.removeItem("admin_token");
+      throw new Error("SESSION_EXPIRED");
+    }
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return res.json();
   });
@@ -93,7 +97,21 @@ export default function ClientsPage() {
   const loadClients = async () => {
     try {
       const data = await adminFetch("/api/ads/clients");
-      setClients(data.data || data.clients || []);
+      const raw = data.data || data.clients || [];
+      setClients(
+        raw.map((c: any) => ({
+          id: String(c.id),
+          name: c.business_name || c.name || "",
+          businessName: c.business_name || c.businessName || c.name || "",
+          businessType: c.business_type || c.businessType || "",
+          city: c.city || "",
+          region: c.region || "",
+          website: c.website_url || c.website || "",
+          websiteUrl: c.website_url || c.websiteUrl || "",
+          isActive: c.is_active ?? c.isActive ?? true,
+          monthlyBudget: c.budget_monthly || c.monthlyBudget || 0,
+        }))
+      );
     } catch {
       // API not available yet
     }

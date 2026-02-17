@@ -10,7 +10,6 @@ import {
   Play,
   Target,
   Shield,
-  Zap,
   Rocket,
   TrendingUp,
   DollarSign,
@@ -30,6 +29,10 @@ function adminFetch(path: string) {
       Authorization: `Bearer ${token}`,
     },
   }).then((res) => {
+    if (res.status === 401) {
+      sessionStorage.removeItem("admin_token");
+      throw new Error("SESSION_EXPIRED");
+    }
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return res.json();
   });

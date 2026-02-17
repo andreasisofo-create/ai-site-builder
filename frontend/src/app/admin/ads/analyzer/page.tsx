@@ -14,13 +14,11 @@ import {
   CheckCircle,
   AlertTriangle,
   Cpu,
-  LayoutList,
   Lightbulb,
   Sparkles,
   ArrowRight,
   RotateCcw,
   Download,
-  Save,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------

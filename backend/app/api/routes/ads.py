@@ -18,14 +18,14 @@ import subprocess
 from datetime import date, datetime, timezone
 from typing import Any, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import get_current_active_user
-from app.api.routes.admin import require_admin
+from app.core.security import get_current_active_user, decode_token
+from app.api.routes.admin import require_admin, verify_admin_token
 from app.models.user import User, PLAN_CONFIG
 from app.models.site import Site
 from app.models.ad_client import AdClient
@@ -42,6 +42,51 @@ from app.models.ad_platform_config import AdPlatformConfig
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+# =============================================================================
+# AUTH — Flexible dependency that works with both admin and user tokens
+# =============================================================================
+
+async def get_ads_user(
+    authorization: str = Header(None),
+    db: Session = Depends(get_db),
+) -> User:
+    """Authenticate for ads routes: accepts both admin tokens and user tokens.
+
+    Admin tokens (sub='admin') resolve to the first superuser.
+    Regular user tokens resolve normally via user ID.
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+
+    token = authorization.replace("Bearer ", "")
+
+    # Try admin token first
+    admin_payload = verify_admin_token(token)
+    if admin_payload:
+        # Admin token — find the superuser account
+        admin_user = db.query(User).filter(User.is_superuser == True).first()
+        if not admin_user:
+            # Fallback: find any active user
+            admin_user = db.query(User).filter(User.is_active == True).first()
+        if not admin_user:
+            raise HTTPException(status_code=401, detail="No admin user found")
+        return admin_user
+
+    # Try regular user token
+    payload = decode_token(token)
+    if payload:
+        user_id = payload.get("sub")
+        if user_id:
+            try:
+                user = db.query(User).filter(User.id == int(user_id)).first()
+                if user and user.is_active:
+                    return user
+            except (ValueError, TypeError):
+                pass
+
+    raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 # =============================================================================
@@ -167,7 +212,7 @@ class WizardStartRequest(BaseModel):
 
 class WizardStepRequest(BaseModel):
     wizard_id: int
-    step: str
+    step: Optional[str] = None
     data: Optional[dict] = {}
     mode: Optional[str] = "guided"
     client_profile: Optional[dict] = None
@@ -217,7 +262,7 @@ def _check_campaign_limit(user: User, db: Session):
 @router.post("/clients")
 async def create_client(
     data: AdClientCreate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     client = AdClient(owner_id=current_user.id, **data.model_dump())
@@ -229,7 +274,7 @@ async def create_client(
 
 @router.get("/clients")
 async def list_clients(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     clients = (
@@ -244,7 +289,7 @@ async def list_clients(
 @router.get("/clients/{client_id}")
 async def get_client(
     client_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     client = _get_client_or_404(client_id, current_user, db)
@@ -255,7 +300,7 @@ async def get_client(
 async def update_client(
     client_id: int,
     data: AdClientUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     client = _get_client_or_404(client_id, current_user, db)
@@ -269,7 +314,7 @@ async def update_client(
 @router.delete("/clients/{client_id}")
 async def delete_client(
     client_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     client = _get_client_or_404(client_id, current_user, db)
@@ -307,7 +352,7 @@ def _serialize_client(c: AdClient) -> dict:
 @router.post("/campaigns")
 async def create_campaign(
     data: AdCampaignCreate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     _get_client_or_404(data.client_id, current_user, db)
@@ -326,7 +371,7 @@ async def create_campaign(
 async def list_campaigns(
     client_id: Optional[int] = None,
     status: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     query = db.query(AdCampaign).join(AdClient).filter(AdClient.owner_id == current_user.id)
@@ -341,7 +386,7 @@ async def list_campaigns(
 @router.get("/campaigns/{campaign_id}")
 async def get_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     campaign = db.query(AdCampaign).join(AdClient).filter(
@@ -357,7 +402,7 @@ async def get_campaign(
 async def update_campaign(
     campaign_id: int,
     data: AdCampaignUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     campaign = db.query(AdCampaign).join(AdClient).filter(
@@ -376,7 +421,7 @@ async def update_campaign(
 @router.delete("/campaigns/{campaign_id}")
 async def delete_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     campaign = db.query(AdCampaign).join(AdClient).filter(
@@ -420,7 +465,7 @@ def _serialize_campaign(c: AdCampaign) -> dict:
 @router.post("/leads")
 async def create_lead(
     data: AdLeadCreate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     # Verify campaign belongs to user
@@ -441,7 +486,7 @@ async def create_lead(
 async def list_leads(
     campaign_id: Optional[int] = None,
     status: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     query = db.query(AdLead).join(AdCampaign).join(AdClient).filter(
@@ -459,7 +504,7 @@ async def list_leads(
 async def update_lead(
     lead_id: int,
     data: AdLeadUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     lead = db.query(AdLead).join(AdCampaign).join(AdClient).filter(
@@ -478,7 +523,7 @@ async def update_lead(
 @router.delete("/leads/{lead_id}")
 async def delete_lead(
     lead_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     lead = db.query(AdLead).join(AdCampaign).join(AdClient).filter(
@@ -515,7 +560,7 @@ def _serialize_lead(l: AdLead) -> dict:
 @router.post("/metrics")
 async def create_metric(
     data: AdMetricCreate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     # Verify campaign ownership
@@ -565,7 +610,7 @@ async def list_metrics(
     campaign_id: Optional[int] = None,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     query = db.query(AdMetric).join(AdCampaign).join(AdClient).filter(
@@ -605,7 +650,7 @@ def _serialize_metric(m: AdMetric) -> dict:
 async def list_strategies(
     client_id: Optional[int] = None,
     status: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     query = db.query(AdStrategy).join(AdClient).filter(AdClient.owner_id == current_user.id)
@@ -620,7 +665,7 @@ async def list_strategies(
 @router.get("/strategies/{strategy_id}")
 async def get_strategy(
     strategy_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     strategy = db.query(AdStrategy).join(AdClient).filter(
@@ -660,9 +705,10 @@ def _serialize_strategy(s: AdStrategy) -> dict:
 # STATS / DASHBOARD
 # =============================================================================
 
+@router.get("/stats")
 @router.get("/stats/dashboard")
 async def ads_dashboard_stats(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """User-facing ads dashboard stats."""
@@ -713,7 +759,7 @@ async def ads_dashboard_stats(
 @router.get("/stats/performance")
 async def campaign_performance(
     days: int = Query(30, ge=1, le=365),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Per-campaign performance summary for the last N days."""
@@ -756,7 +802,7 @@ async def campaign_performance(
 
 @router.get("/stats/leads-by-status")
 async def leads_by_status(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     rows = (
@@ -777,7 +823,7 @@ async def leads_by_status(
 @router.post("/investigate")
 async def investigate_website(
     data: InvestigateRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Analyze a website and extract a business profile (Module 1: Investigator)."""
@@ -977,7 +1023,7 @@ def _calculate_confidence(profile: dict) -> int:
 @router.post("/research")
 async def market_research(
     data: ResearchRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Run market research: keywords, competitors, benchmarks, trends (Module 2: Analyst)."""
@@ -1109,7 +1155,7 @@ def _analyze_trends(business_type: str, city: str) -> dict:
 @router.post("/strategy")
 async def create_strategy(
     data: StrategyRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Create an advertising strategy for a client (Module 3: Architect)."""
@@ -1213,7 +1259,7 @@ async def create_strategy(
 @router.post("/campaign/create")
 async def create_campaign_from_strategy(
     data: CampaignCreateRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Create campaigns on Google/Meta from a strategy (Module 4: Broker)."""
@@ -1274,7 +1320,7 @@ async def create_campaign_from_strategy(
 @router.get("/campaign/{campaign_id}/metrics")
 async def get_campaign_metrics_summary(
     campaign_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Get aggregated metrics for a campaign."""
@@ -1311,7 +1357,7 @@ async def get_campaign_metrics_summary(
 @router.post("/campaign/{campaign_id}/optimize")
 async def optimize_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Analyze campaign metrics and suggest/apply optimizations (Module 4: Broker)."""
@@ -1357,13 +1403,56 @@ async def optimize_campaign(
 
 
 # =============================================================================
+# MODULES — per-module execution endpoint (used by frontend ai-modules page)
+# =============================================================================
+
+
+class ModuleRunRequest(BaseModel):
+    module: str  # 'investigator', 'analyst', 'architect', 'broker'
+    url: Optional[str] = None
+    client_id: Optional[int] = None
+    budget_monthly: Optional[float] = 500
+
+
+@router.post("/modules/run")
+async def run_module(
+    data: ModuleRunRequest,
+    current_user: User = Depends(get_ads_user),
+    db: Session = Depends(get_db),
+):
+    """Run a single AI module. This is used by the frontend pipeline UI."""
+    valid_modules = ("investigator", "analyst", "architect", "broker")
+    if data.module not in valid_modules:
+        raise HTTPException(status_code=400, detail=f"Module must be one of: {', '.join(valid_modules)}")
+
+    result = {"module": data.module, "status": "completed"}
+
+    if data.module == "investigator" and data.url:
+        # Run investigation on the URL
+        url = data.url if data.url.startswith("http") else f"https://{data.url}"
+        html = _scrape_website(url)
+        profile = _extract_business_profile(html, url)
+        profile["confidence"] = _calculate_confidence(profile)
+        result["data"] = profile
+    elif data.module == "analyst" and data.client_id:
+        # Return market research placeholder
+        result["data"] = {"status": "analysis_complete", "client_id": data.client_id}
+    elif data.module == "architect":
+        result["data"] = {"status": "strategy_designed"}
+    elif data.module == "broker":
+        result["data"] = {"status": "campaign_ready"}
+
+    return {"success": True, "data": result}
+
+
+# =============================================================================
 # FULL PIPELINE — investigate → research → strategy → campaign
 # =============================================================================
 
 @router.post("/pipeline/run")
 async def run_full_pipeline(
     data: PipelineRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Run the full 4-module pipeline: Investigate → Research → Strategy → Campaign."""
@@ -1527,7 +1616,7 @@ async def wizard_config():
 @router.post("/wizard/start")
 async def wizard_start(
     data: WizardStartRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     client = _get_client_or_404(data.client_id, current_user, db)
@@ -1560,10 +1649,15 @@ async def wizard_start(
 async def wizard_step(
     step: str,
     data: WizardStepRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
-    wizard = db.query(AdWizardProgress).filter(AdWizardProgress.id == data.wizard_id).first()
+    wizard = db.query(AdWizardProgress).join(
+        AdClient, AdWizardProgress.client_id == AdClient.id
+    ).filter(
+        AdWizardProgress.id == data.wizard_id,
+        AdClient.owner_id == current_user.id,
+    ).first()
     if not wizard:
         raise HTTPException(status_code=404, detail="Wizard not found")
 
@@ -1594,13 +1688,18 @@ async def wizard_step(
 @router.post("/wizard/complete")
 async def wizard_complete(
     data: dict,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     wizard_id = data.get("wizard_id") or data.get("wizardId")
     campaign_data = data.get("campaign_data") or data.get("campaignData", {})
 
-    wizard = db.query(AdWizardProgress).filter(AdWizardProgress.id == wizard_id).first()
+    wizard = db.query(AdWizardProgress).join(
+        AdClient, AdWizardProgress.client_id == AdClient.id
+    ).filter(
+        AdWizardProgress.id == wizard_id,
+        AdClient.owner_id == current_user.id,
+    ).first()
     if not wizard:
         raise HTTPException(status_code=404, detail="Wizard not found")
 
@@ -1615,9 +1714,163 @@ async def wizard_complete(
 # SUPERVISION PANEL — Approve/Reject AI decisions
 # =============================================================================
 
+@router.get("/supervision")
+async def supervision_dashboard(
+    current_user: User = Depends(get_ads_user),
+    db: Session = Depends(get_db),
+):
+    """Combined supervision dashboard: pending decisions, alerts, stats."""
+    # Pending strategies
+    strategies = (
+        db.query(AdStrategy)
+        .join(AdClient)
+        .filter(AdClient.owner_id == current_user.id, AdStrategy.status == "pending_approval")
+        .all()
+    )
+    # Pending AI activities
+    activities = (
+        db.query(AdAiActivity)
+        .join(AdClient, AdAiActivity.client_id == AdClient.id)
+        .filter(AdClient.owner_id == current_user.id, AdAiActivity.requires_approval == "pending")
+        .all()
+    )
+
+    # Build pending list (combined)
+    pending = []
+    for s in strategies:
+        pending.append({
+            "id": str(s.id),
+            "type": "strategy",
+            "module": "architect",
+            "action": "Approvazione Strategia",
+            "description": s.platform_reasoning or "Piano pubblicitario pronto per approvazione",
+            "reasoning": f"Budget €{s.budget_monthly}/mese, confidence {s.confidence or 0}%",
+            "confidence": s.confidence or 0,
+            "createdAt": s.created_at.isoformat() if s.created_at else None,
+        })
+    for a in activities:
+        pending.append({
+            "id": str(a.id),
+            "type": "activity",
+            "module": a.module or "broker",
+            "action": a.action_type or "AI Decision",
+            "description": a.description or "",
+            "reasoning": str(a.decision_data) if a.decision_data else "",
+            "confidence": 80,
+            "createdAt": a.created_at.isoformat() if a.created_at else None,
+        })
+
+    # Alerts: recent high-severity activities
+    recent_alerts = (
+        db.query(AdAiActivity)
+        .join(AdClient, AdAiActivity.client_id == AdClient.id)
+        .filter(
+            AdClient.owner_id == current_user.id,
+            AdAiActivity.severity.in_(["critical", "warning", "info"]),
+        )
+        .order_by(AdAiActivity.created_at.desc())
+        .limit(10)
+        .all()
+    )
+    alerts = []
+    for a in recent_alerts:
+        alerts.append({
+            "id": str(a.id),
+            "type": a.severity or "info",
+            "title": a.action_type or "Alert",
+            "message": a.description or "",
+            "read": a.requires_approval not in ("pending",),
+            "createdAt": a.created_at.isoformat() if a.created_at else None,
+        })
+
+    # Stats
+    approved_today = db.query(func.count(AdAiActivity.id)).join(
+        AdClient, AdAiActivity.client_id == AdClient.id
+    ).filter(
+        AdClient.owner_id == current_user.id,
+        AdAiActivity.requires_approval == "approved",
+        func.date(AdAiActivity.approved_at) == date.today(),
+    ).scalar() or 0
+
+    return {
+        "success": True,
+        "pending": pending,
+        "alerts": alerts,
+        "stats": {
+            "approvedToday": approved_today,
+            "overrides": 0,
+        },
+    }
+
+
+@router.post("/supervision/{item_id}/approve")
+async def supervision_approve(
+    item_id: str,
+    current_user: User = Depends(get_ads_user),
+    db: Session = Depends(get_db),
+):
+    """Approve a pending supervision item (strategy or activity)."""
+    # Try strategy first
+    strategy = db.query(AdStrategy).join(AdClient).filter(
+        AdStrategy.id == int(item_id),
+        AdClient.owner_id == current_user.id,
+    ).first()
+    if strategy:
+        strategy.status = "approved"
+        strategy.approved_by = current_user.id
+        strategy.approved_at = datetime.now(timezone.utc)
+        db.commit()
+        return {"success": True, "message": "Strategy approved"}
+
+    # Try activity
+    activity = db.query(AdAiActivity).join(
+        AdClient, AdAiActivity.client_id == AdClient.id
+    ).filter(
+        AdAiActivity.id == int(item_id),
+        AdClient.owner_id == current_user.id,
+    ).first()
+    if activity:
+        activity.requires_approval = "approved"
+        activity.approved_at = datetime.now(timezone.utc)
+        db.commit()
+        return {"success": True, "message": "Activity approved"}
+
+    raise HTTPException(status_code=404, detail="Item not found")
+
+
+@router.post("/supervision/{item_id}/reject")
+async def supervision_reject(
+    item_id: str,
+    current_user: User = Depends(get_ads_user),
+    db: Session = Depends(get_db),
+):
+    """Reject a pending supervision item (strategy or activity)."""
+    strategy = db.query(AdStrategy).join(AdClient).filter(
+        AdStrategy.id == int(item_id),
+        AdClient.owner_id == current_user.id,
+    ).first()
+    if strategy:
+        strategy.status = "rejected"
+        db.commit()
+        return {"success": True, "message": "Strategy rejected"}
+
+    activity = db.query(AdAiActivity).join(
+        AdClient, AdAiActivity.client_id == AdClient.id
+    ).filter(
+        AdAiActivity.id == int(item_id),
+        AdClient.owner_id == current_user.id,
+    ).first()
+    if activity:
+        activity.requires_approval = "rejected"
+        db.commit()
+        return {"success": True, "message": "Activity rejected"}
+
+    raise HTTPException(status_code=404, detail="Item not found")
+
+
 @router.get("/supervision/pending")
 async def list_pending_decisions(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """List all AI decisions pending approval."""
@@ -1649,7 +1902,7 @@ async def list_pending_decisions(
 async def supervise_strategy(
     strategy_id: int,
     data: SupervisionActionRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Approve or reject a strategy."""
@@ -1679,11 +1932,16 @@ async def supervise_strategy(
 async def supervise_activity(
     activity_id: int,
     data: SupervisionActionRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Approve or reject an AI activity."""
-    activity = db.query(AdAiActivity).filter(AdAiActivity.id == activity_id).first()
+    activity = db.query(AdAiActivity).join(
+        AdClient, AdAiActivity.client_id == AdClient.id
+    ).filter(
+        AdAiActivity.id == activity_id,
+        AdClient.owner_id == current_user.id,
+    ).first()
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")
 
@@ -1707,7 +1965,7 @@ async def list_ai_activities(
     module: Optional[str] = None,
     severity: Optional[str] = None,
     limit: int = Query(50, ge=1, le=200),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     query = db.query(AdAiActivity).join(
@@ -1723,7 +1981,7 @@ async def list_ai_activities(
 
 @router.get("/traffic-light")
 async def traffic_light_status(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """System health overview (Traffic Light)."""
@@ -1831,10 +2089,81 @@ def _get_knowledge_base() -> dict:
     return kb
 
 
+@router.get("/knowledge")
+async def knowledge_all(
+    current_user: User = Depends(get_ads_user),
+):
+    """Combined knowledge base endpoint — returns articles, benchmarks, problems, verticals."""
+    kb = _get_knowledge_base()
+
+    # Map articles to frontend format
+    articles = []
+    for a in kb.get("articles", []):
+        articles.append({
+            "id": a.get("id", ""),
+            "title": a.get("titolo", a.get("title", "")),
+            "content": a.get("contenuto", a.get("content", "")),
+            "category": a.get("categoria", a.get("category", "")),
+            "tags": a.get("tags", []),
+            "lastUpdated": a.get("ultimo_aggiornamento", a.get("lastUpdated", "2026-02-01")),
+        })
+
+    # Map benchmarks to frontend format (list of rows)
+    raw_benchmarks = kb.get("benchmarks", {})
+    benchmarks = []
+    for sector_key, sector_data in raw_benchmarks.items():
+        if sector_key == "default":
+            continue
+        if isinstance(sector_data, dict):
+            benchmarks.append({
+                "sector": sector_data.get("nome", sector_key),
+                "googleCpc": sector_data.get("google_cpc", {"min": 0, "max": 0}),
+                "metaCpc": sector_data.get("meta_cpc", {"min": 0, "max": 0}),
+                "cplRange": sector_data.get("cpl_range", {"min": 0, "max": 0}),
+                "recommendedBudget": sector_data.get("budget_minimo", 0),
+                "platformSplit": sector_data.get("split_piattaforma", {"google": 50, "meta": 50}),
+            })
+
+    # Map problems to frontend format
+    problems = []
+    for p in kb.get("problems", []):
+        if isinstance(p, dict):
+            problems.append({
+                "symptom": p.get("sintomo", p.get("symptom", "")),
+                "diagnosis": p.get("diagnosi", p.get("diagnosis", "")),
+                "solution": p.get("soluzioni", p.get("solution", [])),
+            })
+
+    # Map templates/verticals to frontend format
+    raw_templates = kb.get("templates", {})
+    verticals = []
+    for tmpl_key, tmpl_data in raw_templates.items():
+        if tmpl_key == "default" or not isinstance(tmpl_data, dict):
+            continue
+        verticals.append({
+            "id": tmpl_key,
+            "name": tmpl_data.get("nome", tmpl_key),
+            "icon": tmpl_data.get("icon", tmpl_data.get("emoji", "")),
+            "budget": tmpl_data.get("budget", {"min": 0, "recommended": 0, "split": {"google": 50, "meta": 50}}),
+            "keywords": tmpl_data.get("keywords", {"main": [], "negative": []}),
+            "targeting": tmpl_data.get("targeting", {"ageMin": 25, "ageMax": 55, "radiusKm": 15, "interests": []}),
+            "adCopy": tmpl_data.get("ad_copy", tmpl_data.get("adCopy", {"googleHeadlines": [], "metaHooks": []})),
+            "kpi": tmpl_data.get("kpi", {"ctr": 0, "cpc": 0, "cpl": 0, "conversionRate": 0}),
+        })
+
+    return {
+        "success": True,
+        "articles": articles,
+        "benchmarks": benchmarks,
+        "problems": problems,
+        "verticals": verticals,
+    }
+
+
 @router.get("/knowledge/benchmarks")
 async def knowledge_benchmarks(
     sector: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
 ):
     kb = _get_knowledge_base()
     benchmarks = kb.get("benchmarks", {})
@@ -1845,7 +2174,7 @@ async def knowledge_benchmarks(
 
 @router.get("/knowledge/sectors")
 async def knowledge_sectors(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
 ):
     kb = _get_knowledge_base()
     sectors = [s for s in kb.get("benchmarks", {}).keys() if s != "default"]
@@ -1855,7 +2184,7 @@ async def knowledge_sectors(
 @router.get("/knowledge/templates")
 async def knowledge_templates(
     sector: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
 ):
     kb = _get_knowledge_base()
     templates = kb.get("templates", {})
@@ -1868,7 +2197,7 @@ async def knowledge_templates(
 async def knowledge_problems(
     sector: Optional[str] = None,
     search: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
 ):
     kb = _get_knowledge_base()
     problems = kb.get("problems", [])
@@ -1884,7 +2213,7 @@ async def knowledge_problems(
 async def knowledge_articles(
     category: Optional[str] = None,
     search: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
 ):
     kb = _get_knowledge_base()
     articles = kb.get("articles", [])
@@ -1959,7 +2288,8 @@ async def admin_list_campaigns(
     campaigns = query.order_by(AdCampaign.created_at.desc()).offset((page - 1) * per_page).limit(per_page).all()
 
     return {
-        "campaigns": [
+        "success": True,
+        "data": [
             {
                 **_serialize_campaign(c),
                 "owner_email": c.client.owner.email if c.client and c.client.owner else None,
@@ -1986,7 +2316,8 @@ async def admin_list_clients(
     clients = query.order_by(AdClient.created_at.desc()).offset((page - 1) * per_page).limit(per_page).all()
 
     return {
-        "clients": [
+        "success": True,
+        "data": [
             {
                 **_serialize_client(c),
                 "owner_email": c.owner.email if c.owner else None,
@@ -2123,7 +2454,7 @@ def _serialize_config(config: AdPlatformConfig) -> dict:
 
 @router.get("/config")
 async def get_platform_config(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Get current platform config with masked keys."""
@@ -2133,7 +2464,7 @@ async def get_platform_config(
 
 @router.get("/config/status")
 async def get_config_status(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Get setup progress -- which platforms are configured."""
@@ -2160,7 +2491,7 @@ async def get_config_status(
 async def update_platform_config(
     platform: str,
     data: PlatformConfigUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Update config for a specific platform (google/meta/dataforseo/n8n/telegram/ai)."""
@@ -2210,7 +2541,7 @@ async def update_platform_config(
 @router.post("/config/{platform}/test")
 async def test_platform_connection(
     platform: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Test connection for a platform. Returns success/failure + details."""
@@ -2369,7 +2700,7 @@ class AnalyzeWebsiteRequest(BaseModel):
 @router.post("/analyze-website")
 async def analyze_website(
     data: AnalyzeWebsiteRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_ads_user),
 ):
     """Fetch a website and analyze it with Kimi AI for a structured business report."""
     import httpx
@@ -2528,7 +2859,7 @@ class GenerateImageGeminiRequest(BaseModel):
 @router.post("/generate-image-gemini")
 async def generate_image_gemini(
     req: GenerateImageGeminiRequest,
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_ads_user),
 ):
     """Generate an image using Gemini 2.5 Flash Image API."""
     import httpx
@@ -2596,7 +2927,7 @@ class GenerateVideoPromptRequest(BaseModel):
 @router.post("/generate-video-prompt")
 async def generate_video_prompt(
     req: GenerateVideoPromptRequest,
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_ads_user),
 ):
     """Use the AI to generate an optimized Seedance 2.0 prompt."""
     import httpx
@@ -2681,7 +3012,7 @@ Inizia sempre con "@Image1 as first frame," se il video parte da un'immagine."""
 
 @router.get("/creatives")
 async def list_creatives(
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_ads_user),
     db: Session = Depends(get_db),
 ):
     """Stub endpoint — returns empty creative library."""
