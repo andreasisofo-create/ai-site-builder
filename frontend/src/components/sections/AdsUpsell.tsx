@@ -1,67 +1,58 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BarChart3, Target, MousePointerClick } from "lucide-react";
-import Link from "next/link";
-
-const cards = [
-    {
-        icon: Target,
-        title: "Meta Ads",
-        description: "Campagne Instagram e Facebook, targeting avanzato, A/B testing per massimizzare le conversioni."
-    },
-    {
-        icon: MousePointerClick,
-        title: "Google Ads",
-        description: "Campagne Search e Display, ottimizzazione keyword e bidding automatico per intercettare chi cerca te."
-    },
-    {
-        icon: BarChart3,
-        title: "Report Mensile",
-        description: "Dashboard con metriche chiare, costo per lead e suggerimenti dell'AI per migliorare costantemente."
-    }
-];
+import { Megaphone, TrendingUp, Target } from "lucide-react";
+import { useLanguage, translations } from "@/lib/i18n";
 
 export default function AdsUpsell() {
+    const { language } = useLanguage();
+    const txt = translations[language].adsUpsell;
+
     return (
-        <section id="ads-service" className="py-20 bg-[#0f0f23]">
-            <div className="container mx-auto px-6">
-                <div className="max-w-4xl mx-auto text-center mb-12">
-                    <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Vuoi anche i clienti? Ci pensiamo noi.</h2>
-                    <p className="text-lg text-gray-400">
-                        Il nostro team gestisce le tue campagne Meta e Google Ads con il supporto dell'intelligenza artificiale.
-                        Tu pensi alla tua attività, noi ti portiamo i clienti.
-                    </p>
-                </div>
+        <section className="py-20 bg-[#0a0a1a] relative overflow-hidden">
+            {/* Background blobs */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0090FF]/5 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#0090FF]/5 rounded-full blur-[100px] pointer-events-none" />
 
-                <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-10">
-                    {cards.map((card, idx) => {
-                        const Icon = card.icon;
-                        return (
-                            <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: idx * 0.1 }}
-                                className="bg-[#1a1a2e] p-6 rounded-2xl border border-white/5"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 text-blue-400">
-                                    <Icon className="w-5 h-5" />
-                                </div>
-                                <h3 className="font-bold text-white mb-2">{card.title}</h3>
-                                <p className="text-sm text-gray-400">{card.description}</p>
-                            </motion.div>
-                        );
-                    })}
-                </div>
+            <div className="container mx-auto px-6 relative z-10">
+                <div className="max-w-4xl mx-auto bg-gradient-to-br from-[#16162a] to-[#0f0f1a] border border-[#0090FF]/20 rounded-3xl p-8 lg:p-12 text-center shadow-[0_0_50px_-20px_rgba(0,144,255,0.15)]">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                    >
+                        <div className="w-16 h-16 bg-[#0090FF]/10 text-[#0090FF] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <Megaphone className="w-8 h-8" />
+                        </div>
 
-                <div className="text-center">
-                    <Link href="#" className="text-blue-400 hover:text-blue-300 text-sm font-medium hover:underline">
-                        Scopri di più sul servizio Ads
-                    </Link>
-                </div>
+                        <h2 className="text-3xl font-bold text-white mb-4">{txt.title}</h2>
+                        <p className="text-gray-400 mb-10 max-w-2xl mx-auto">
+                            {txt.description}
+                        </p>
 
+                        <div className="grid sm:grid-cols-3 gap-6 mb-10 text-left">
+                            <div className="bg-[#0a0a1a] p-5 rounded-xl border border-white/5">
+                                <Target className="w-6 h-6 text-[#0090FF] mb-3" />
+                                <h3 className="font-bold text-white mb-1">{txt.feature1Title}</h3>
+                                <p className="text-xs text-gray-500">{txt.feature1Desc}</p>
+                            </div>
+                            <div className="bg-[#0a0a1a] p-5 rounded-xl border border-white/5">
+                                <TrendingUp className="w-6 h-6 text-[#0090FF] mb-3" />
+                                <h3 className="font-bold text-white mb-1">{txt.feature2Title}</h3>
+                                <p className="text-xs text-gray-500">{txt.feature2Desc}</p>
+                            </div>
+                            <div className="bg-[#0a0a1a] p-5 rounded-xl border border-white/5">
+                                <Megaphone className="w-6 h-6 text-[#0090FF] mb-3" />
+                                <h3 className="font-bold text-white mb-1">{txt.feature3Title}</h3>
+                                <p className="text-xs text-gray-500">{txt.feature3Desc}</p>
+                            </div>
+                        </div>
+
+                        <a href="/ads" className="inline-block px-8 py-3 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-900/30">
+                            {txt.cta}
+                        </a>
+                    </motion.div>
+                </div>
             </div>
         </section>
     );

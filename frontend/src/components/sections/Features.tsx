@@ -2,39 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Smartphone, PenTool, Server, Search, MessageSquare, Layout } from "lucide-react";
+import { useLanguage, translations } from "@/lib/i18n";
 
-const features = [
-    {
-        icon: Layout,
-        title: "Sito professionale su misura",
-        description: "Design personalizzato per la tua attività. Non un template generico."
-    },
-    {
-        icon: Smartphone,
-        title: "Perfetto su ogni dispositivo",
-        description: "Il sito si adatta a telefono, tablet e computer automaticamente."
-    },
-    {
-        icon: PenTool,
-        title: "Testi scritti dall'AI",
-        description: "Copy persuasivi generati dall'intelligenza artificiale per la tua attività."
-    },
-    {
-        icon: Server,
-        title: "Hosting e SSL inclusi",
-        description: "Il tuo sito è online e protetto. Nessun costo aggiuntivo."
-    },
-    {
-        icon: Search,
-        title: "Ottimizzato per Google",
-        description: "Codice SEO-friendly. I tuoi clienti ti trovano più facilmente."
-    },
-    {
-        icon: MessageSquare,
-        title: "Modifiche via chat",
-        description: "Vuoi cambiare qualcosa? Scrivici e aggiorniamo il sito per te."
-    }
-];
+const icons = [Layout, Smartphone, PenTool, Server, Search, MessageSquare];
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -42,6 +12,9 @@ const fadeUp = {
 };
 
 export default function Features() {
+    const { language } = useLanguage();
+    const txt = translations[language].featuresAgency;
+
     const scrollToForm = () => {
         document.getElementById("form-contatto")?.scrollIntoView({ behavior: "smooth" });
     };
@@ -56,12 +29,12 @@ export default function Features() {
                     variants={fadeUp}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">Cosa ottieni, senza spendere un centesimo</h2>
+                    <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">{txt.title}</h2>
                 </motion.div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-16">
-                    {features.map((feat, idx) => {
-                        const Icon = feat.icon;
+                    {txt.items.map((feat, idx) => {
+                        const Icon = icons[idx];
                         return (
                             <motion.div
                                 key={idx}
@@ -93,7 +66,7 @@ export default function Features() {
                         onClick={scrollToForm}
                         className="px-8 py-4 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:-translate-y-0.5"
                     >
-                        Contattaci — è gratis
+                        {txt.cta}
                     </button>
                 </motion.div>
 

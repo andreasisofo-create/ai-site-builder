@@ -2,24 +2,9 @@
 
 import { motion } from "framer-motion";
 import { MessageSquare, Layout, ThumbsUp } from "lucide-react";
+import { useLanguage, translations } from "@/lib/i18n";
 
-const steps = [
-    {
-        icon: MessageSquare,
-        title: "1. Contattaci",
-        description: "Raccontaci cosa fai e che stile ti piace. Bastano 2 minuti. Compila il form o scrivici su WhatsApp.",
-    },
-    {
-        icon: Layout,
-        title: "2. Noi creiamo il sito",
-        description: "Il nostro team + intelligenza artificiale costruisce il tuo sito su misura. Design, testi, immagini: tutto incluso.",
-    },
-    {
-        icon: ThumbsUp,
-        title: "3. Vedi e decidi",
-        description: "Ti mostriamo il risultato. Ti piace? Scegli un piano e vai online. Non ti piace? Nessun costo, nessun obbligo.",
-    },
-];
+const icons = [MessageSquare, Layout, ThumbsUp];
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -27,6 +12,9 @@ const fadeUp = {
 };
 
 export default function HowItWorks() {
+    const { language } = useLanguage();
+    const txt = translations[language].howItWorksAgency;
+
     const scrollToForm = () => {
         document.getElementById("form-contatto")?.scrollIntoView({ behavior: "smooth" });
     };
@@ -42,13 +30,13 @@ export default function HowItWorks() {
                     transition={{ duration: 0.5 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">Come funziona? Semplice.</h2>
-                    <p className="text-xl text-gray-400">Dal primo contatto al tuo sito online in 3 passaggi.</p>
+                    <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">{txt.title}</h2>
+                    <p className="text-xl text-gray-400">{txt.subtitle}</p>
                 </motion.div>
 
                 <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
-                    {steps.map((step, idx) => {
-                        const Icon = step.icon;
+                    {txt.steps.map((step, idx) => {
+                        const Icon = icons[idx];
                         return (
                             <motion.div
                                 key={idx}
@@ -86,7 +74,7 @@ export default function HowItWorks() {
                         onClick={scrollToForm}
                         className="px-8 py-4 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-bold text-lg transition-all shadow-[0_4px_14px_0_rgba(0,144,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,144,255,0.23)] hover:-translate-y-0.5"
                     >
-                        Contattaci ora — è gratis
+                        {txt.cta}
                     </button>
                 </motion.div>
             </div>

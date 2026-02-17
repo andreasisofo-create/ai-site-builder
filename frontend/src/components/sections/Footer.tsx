@@ -2,11 +2,28 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage, translations } from "@/lib/i18n";
 
 export default function Footer() {
+    const { language } = useLanguage();
+    const txt = translations[language].footer;
+
     return (
         <footer className="bg-[#050510] pt-20 pb-10 border-t border-white/5">
             <div className="container mx-auto px-6">
+
+                {/* Distinction Note */}
+                <div className="mb-12 p-6 bg-[#0a0a1a] border border-white/5 rounded-xl text-center max-w-3xl mx-auto">
+                    <h4 className="text-white font-bold mb-2">{txt.chooseYourPath}</h4>
+                    <p className="text-gray-400 text-sm">
+                        {language === "it" ? (
+                            <>Offriamo due soluzioni distinte: <Link href="/" className="text-[#0090FF] hover:underline">{txt.customSite}</Link> (sviluppato dai nostri esperti) oppure <Link href="/ai-website-builder" className="text-[#0090FF] hover:underline">{txt.aiTechnology}</Link> (fai-da-te in autonomia). I prezzi e i servizi sono specifici per ogni soluzione.</>
+                        ) : (
+                            <>We offer two distinct solutions: <Link href="/" className="text-[#0090FF] hover:underline">{txt.customSite}</Link> (built by our experts) or <Link href="/ai-website-builder" className="text-[#0090FF] hover:underline">{txt.aiTechnology}</Link> (do-it-yourself). Pricing and services are specific to each solution.</>
+                        )}
+                    </p>
+                </div>
+
                 <div className="grid md:grid-cols-4 gap-12 mb-16">
                     <div className="col-span-1 md:col-span-1">
                         <Link href="/" className="inline-block mb-6 relative w-32 h-8">
@@ -18,44 +35,43 @@ export default function Footer() {
                             />
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            E-quipe crea il tuo sito web con l'intelligenza artificiale e gestisce le campagne pubblicitarie per portarti clienti reali.
+                            {txt.description}
                             <br /><br />
-                            Documento interno — Uso riservato
+                            {txt.internalDoc}
                         </p>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-white mb-6">Prodotto</h4>
+                        <h4 className="font-bold text-white mb-6">{txt.product}</h4>
                         <ul className="space-y-4 text-sm text-gray-400">
-                            <li><a href="#come-funziona" className="hover:text-[#0090FF] transition-colors">Come Funziona</a></li>
-                            <li><a href="#portfolio" className="hover:text-[#0090FF] transition-colors">Portfolio</a></li>
-                            <li><a href="#prezzi" className="hover:text-[#0090FF] transition-colors">Prezzi</a></li>
-                            <li><Link href="/auth" className="hover:text-[#0090FF] transition-colors">App AI</Link></li>
+                            <li><Link href="/ai-website-builder" className="hover:text-[#0090FF] transition-colors">{txt.aiBuilder}</Link></li>
+                            <li><a href="/#portfolio" className="hover:text-[#0090FF] transition-colors">{txt.agencyPortfolio}</a></li>
+                            <li><a href="/#prezzi" className="hover:text-[#0090FF] transition-colors">{txt.agencyPricing}</a></li>
+                            <li><Link href="/auth" className="hover:text-[#0090FF] transition-colors">Login</Link></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-white mb-6">Azienda</h4>
+                        <h4 className="font-bold text-white mb-6">{txt.company}</h4>
                         <ul className="space-y-4 text-sm text-gray-400">
-                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">Chi Siamo</a></li>
-                            <li><a href="#form-contatto" className="hover:text-[#0090FF] transition-colors">Contatti</a></li>
-                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">Blog</a></li>
+                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">{txt.companyLinks.about}</a></li>
+                            <li><a href="/#form-contatto" className="hover:text-[#0090FF] transition-colors">{txt.companyLinks.contact}</a></li>
+                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">{txt.companyLinks.blog}</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-white mb-6">Legale</h4>
+                        <h4 className="font-bold text-white mb-6">{txt.legal}</h4>
                         <ul className="space-y-4 text-sm text-gray-400">
-                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">Privacy Policy</a></li>
-                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">Termini di Servizio</a></li>
-                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">Cookie Policy</a></li>
+                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">{txt.legalLinks.privacy}</a></li>
+                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">{txt.legalLinks.terms}</a></li>
+                            <li><a href="#" className="hover:text-[#0090FF] transition-colors">{txt.legalLinks.cookies}</a></li>
                         </ul>
                     </div>
                 </div>
 
                 <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-center md:text-left text-gray-500">
-                    <p>© 2026 E-quipe S.r.l.s. Tutti i diritti riservati.</p>
-                    <p>P.IVA: 00000000000</p>
+                    <p>{txt.copyright}</p>
                 </div>
             </div>
         </footer>

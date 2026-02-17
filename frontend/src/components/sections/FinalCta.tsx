@@ -3,8 +3,12 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useLanguage, translations } from "@/lib/i18n";
 
 export default function FinalCta() {
+    const { language } = useLanguage();
+    const txt = translations[language].finalCta;
+
     const scrollToForm = () => {
         document.getElementById("form-contatto")?.scrollIntoView({ behavior: "smooth" });
     };
@@ -26,7 +30,7 @@ export default function FinalCta() {
                     viewport={{ once: true }}
                     className="text-3xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight"
                 >
-                    Pronto a portare la tua attività online?
+                    {txt.title}
                 </motion.h2>
 
                 <motion.p
@@ -36,7 +40,7 @@ export default function FinalCta() {
                     transition={{ delay: 0.1 }}
                     className="text-xl text-white/90 mb-10 font-medium"
                 >
-                    Contattaci oggi. Ti creiamo il sito gratis, senza impegno.
+                    {txt.subtitle}
                 </motion.p>
 
                 <motion.div
@@ -50,14 +54,14 @@ export default function FinalCta() {
                         onClick={scrollToForm}
                         className="px-8 py-4 bg-white text-[#0090FF] rounded-full font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl"
                     >
-                        Contattaci — è gratis
+                        {txt.cta}
                     </button>
 
                     <Link
                         href="/auth"
                         className="flex items-center gap-2 text-white font-semibold hover:text-white/80 transition-colors group"
                     >
-                        Oppure crealo da solo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        {txt.ctaSecondary} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </motion.div>
             </div>

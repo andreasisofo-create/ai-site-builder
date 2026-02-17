@@ -2,14 +2,26 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
+import { useLanguage, translations } from "@/lib/i18n";
 
-const items = [
-    { name: "Demo Ristorante", sector: "Ristorante", image: "/images/demos/ristorante.webp" },
-    { name: "Demo Parrucchiere", sector: "Parrucchiere", image: "/images/demos/parrucchiere.webp" },
-    { name: "Demo Dentista", sector: "Studio Dentistico", image: "/images/demos/dentista.webp" },
-    { name: "Demo Palestra", sector: "Palestra", image: "/images/demos/palestra.webp" },
-    { name: "Demo Avvocato", sector: "Studio Professionale", image: "/images/demos/avvocato.webp" },
-    { name: "Demo E-commerce", sector: "E-commerce", image: "/images/demos/ecommerce.webp" },
+const images = [
+    "/images/demos/professionalforce.png",
+    "/images/demos/restinone.png",
+    "/images/demos/fondazione.png",
+    "/images/demos/nownow.png",
+    "/images/demos/rallyroma.png",
+    "/images/demos/maxrendina.png",
+];
+
+const urls = [
+    "https://www.professionalforce.it/",
+    "https://www.restinone.com/",
+    "https://www.fondazioneitalianasport.it/",
+    "https://www.now-now.it/",
+    "https://www.rallydiromacapitale.it/",
+    "https://www.maxrendina.it/",
 ];
 
 const fadeUp = {
@@ -18,6 +30,9 @@ const fadeUp = {
 };
 
 export default function Portfolio() {
+    const { language } = useLanguage();
+    const txt = translations[language].portfolio;
+
     return (
         <section id="portfolio" className="py-20 lg:py-28 bg-[#0f0f23]">
             <div className="container mx-auto px-6">
@@ -28,12 +43,12 @@ export default function Portfolio() {
                     variants={fadeUp}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">Esempi di siti realizzati</h2>
-                    <p className="text-xl text-gray-400">Guarda la qualità che possiamo offrire alla tua attività.</p>
+                    <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">{txt.title}</h2>
+                    <p className="text-xl text-gray-400">{txt.subtitle}</p>
                 </motion.div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                    {items.map((item, idx) => (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                    {txt.items.map((item, idx) => (
                         <motion.div
                             key={idx}
                             initial="hidden"
@@ -41,24 +56,33 @@ export default function Portfolio() {
                             viewport={{ once: true, margin: "-50px" }}
                             variants={fadeUp}
                             transition={{ duration: 0.5, delay: idx * 0.1 }}
-                            className="group relative rounded-xl overflow-hidden aspect-[4/3] bg-gray-800 border border-white/5"
+                            className="group relative rounded-xl overflow-hidden bg-[#16162a] border border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
                         >
-                            {/* Fallback color if image is missing */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] to-[#0f0f23] group-hover:scale-105 transition-transform duration-500" />
-
-                            {/* Try to load image if available, otherwise show placeholder text */}
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-2xl font-bold text-white/10 group-hover:text-white/20 transition-colors uppercase tracking-widest">{item.sector}</span>
+                            {/* Image Container with Aspect Ratio */}
+                            <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-800">
+                                <Image
+                                    src={images[idx]}
+                                    alt={`${item.name} website`}
+                                    fill
+                                    className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                />
+                                {/* Overlay on Hover */}
+                                <div className="absolute inset-0 bg-[#0090FF]/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                                    <Link
+                                        href={urls[idx]}
+                                        target="_blank"
+                                        className="px-6 py-3 bg-white text-[#0090FF] rounded-full font-bold text-sm hover:bg-gray-100 transition-colors flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 duration-300"
+                                    >
+                                        {txt.visitSite} <ExternalLink className="w-4 h-4" />
+                                    </Link>
+                                </div>
                             </div>
 
-                            <div className="absolute inset-0 bg-[#0090FF]/80 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                            {/* Content Below Image */}
+                            <div className="p-6">
                                 <h3 className="text-white font-bold text-lg mb-1">{item.name}</h3>
-                                <span className="text-white/80 text-sm mb-4">{item.sector}</span>
-                                <button className="px-6 py-2 bg-white text-[#0090FF] rounded-full font-bold text-sm hover:bg-gray-100 transition-colors">
-                                    Vedi Anteprima
-                                </button>
+                                <p className="text-[#0090FF] text-sm font-medium">{item.sector}</p>
                             </div>
                         </motion.div>
                     ))}

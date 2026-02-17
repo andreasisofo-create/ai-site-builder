@@ -42,10 +42,24 @@ import {
   NewAdsVideoComposition,
   NEW_ADS_VIDEO_CONFIG,
 } from "./NewAdsVideo";
+import {
+  HeroTutorialVideoComposition,
+  HERO_TUTORIAL_VIDEO_CONFIG,
+} from "./HeroTutorialVideo";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* Hero Tutorial Video */}
+      <Composition
+        id="HeroTutorialVideo"
+        component={HeroTutorialVideoComposition}
+        durationInFrames={HERO_TUTORIAL_VIDEO_CONFIG.durationInFrames}
+        fps={HERO_TUTORIAL_VIDEO_CONFIG.fps}
+        width={HERO_TUTORIAL_VIDEO_CONFIG.width}
+        height={HERO_TUTORIAL_VIDEO_CONFIG.height}
+      />
+
       {/* NEW light-themed videos */}
       <Composition
         id="NewHeroVideo"

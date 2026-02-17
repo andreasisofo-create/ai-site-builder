@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Star, Clock, MonitorPlay } from "lucide-react";
+import { ArrowRight, Check, Star, Clock } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { useLanguage, translations } from "@/lib/i18n";
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -11,9 +11,14 @@ const fadeUp = {
 };
 
 export default function MainHero() {
+    const { language } = useLanguage();
+    const txt = translations[language].heroAgency;
+
     const scrollToForm = () => {
         document.getElementById("form-contatto")?.scrollIntoView({ behavior: "smooth" });
     };
+
+    const videoSrc = language === "en" ? "/videos/hero-en.mp4" : "/videos/hero-tutorial.mp4";
 
     return (
         <section id="hero" className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#0a0a1a] text-white pt-24 pb-12 lg:pt-32">
@@ -38,7 +43,7 @@ export default function MainHero() {
                 >
                     <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0090FF]/10 border border-[#0090FF]/30 text-[#0090FF] text-xs uppercase font-bold tracking-widest backdrop-blur-sm">
                         <Star className="w-3 h-3 fill-current" />
-                        Creazione sito gratuita
+                        {txt.badge}
                     </span>
                 </motion.div>
 
@@ -50,8 +55,8 @@ export default function MainHero() {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6 max-w-5xl mx-auto"
                 >
-                    Ti creiamo il sito.{" "}
-                    <span className="text-white">Gratis.</span>
+                    {txt.title}{" "}
+                    <span className="text-white">{txt.titleHighlight}</span>
                 </motion.h1>
 
                 {/* Subtitle */}
@@ -62,7 +67,7 @@ export default function MainHero() {
                     transition={{ duration: 0.7, delay: 0.4 }}
                     className="text-xl sm:text-2xl lg:text-3xl font-medium text-white/80 mb-6 max-w-3xl mx-auto"
                 >
-                    Paghi solo se ti piace. Zero rischi, zero obblighi.
+                    {txt.subtitle}
                 </motion.p>
 
                 {/* Description */}
@@ -73,8 +78,8 @@ export default function MainHero() {
                     transition={{ duration: 0.7, delay: 0.5 }}
                     className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
                 >
-                    Raccontaci la tua attività e il nostro team crea il tuo sito professionale su misura.
-                    Se non ti convince, non spendi un centesimo.
+                    {txt.description}
+                    {" "}{txt.descriptionLine2}
                 </motion.p>
 
                 {/* CTA Buttons */}
@@ -90,7 +95,7 @@ export default function MainHero() {
                         onClick={scrollToForm}
                         className="w-full sm:w-auto px-10 py-5 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-bold text-xl transition-all duration-300 transform hover:-translate-y-1 shadow-[0_10px_40px_-10px_rgba(0,144,255,0.4)] flex items-center justify-center gap-3"
                     >
-                        Contattaci — è gratis
+                        {txt.cta}
                     </button>
 
                     {/* Secondary CTA */}
@@ -98,7 +103,7 @@ export default function MainHero() {
                         href="/auth"
                         className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group py-2"
                     >
-                        Oppure crealo da solo in 60 secondi <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        {txt.ctaSecondary} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </motion.div>
 
@@ -112,21 +117,19 @@ export default function MainHero() {
                 >
                     <div className="flex items-center gap-2">
                         <Star className="w-5 h-5 text-[#0090FF] fill-[#0090FF]" />
-                        <span className="text-gray-300 text-sm font-medium">200+ attività già online</span>
+                        <span className="text-gray-300 text-sm font-medium">{txt.trustBadges[0]}</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="bg-green-500/10 p-1 rounded-full"><Check className="w-3 h-3 text-green-500" /></div>
-                        <span className="text-gray-300 text-sm font-medium">Senza carta di credito</span>
+                        <span className="text-gray-300 text-sm font-medium">{txt.trustBadges[1]}</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <Clock className="w-5 h-5 text-[#0090FF]" />
-                        <span className="text-gray-300 text-sm font-medium">Risposta entro 24h</span>
+                        <span className="text-gray-300 text-sm font-medium">{txt.trustBadges[2]}</span>
                     </div>
                 </motion.div>
 
-                {/* Visual Mockup/Video - Placeholder or user provided if available. 
-                     Using code-based placeholder since I don't have the "ofot generale te". 
-                     I will try to use the generate_image tool in a real scenario, but here I'll stick to a nice placeholder. */}
+                {/* Video */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -134,16 +137,16 @@ export default function MainHero() {
                     className="mt-16 w-full max-w-5xl mx-auto"
                 >
                     <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#0f0f23]/50 aspect-video group">
-                        {/* Placeholder generic business image if video not present */}
-                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-800 to-black">
-                            <MonitorPlay className="w-20 h-20 text-white/20" />
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a] via-transparent to-transparent opacity-60" />
-
-                        {/* Text Overlay */}
-                        <div className="absolute bottom-10 left-0 right-0 text-center px-4">
-                            <p className="text-white/60 text-sm font-mono">E-QUIPE WEB AGENCY DASHBOARD</p>
-                        </div>
+                        <video
+                            key={videoSrc}
+                            src={videoSrc}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a] via-transparent to-transparent opacity-20 pointer-events-none" />
                     </div>
                 </motion.div>
 

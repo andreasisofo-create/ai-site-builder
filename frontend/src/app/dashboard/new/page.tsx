@@ -94,7 +94,6 @@ function NewProjectContent() {
     step: 0, totalSteps: 3, message: "", percentage: 0,
   });
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
-  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
 
@@ -225,43 +224,7 @@ function NewProjectContent() {
     setSelectedStyle(style);
   };
 
-  // Progress polling
-  const startProgressPolling = (siteId: number) => {
-    if (pollingRef.current) clearInterval(pollingRef.current);
-    pollingRef.current = setInterval(async () => {
-      try {
-        const genStatus = await getGenerationStatus(siteId);
-        setGenerationProgress({
-          step: genStatus.step,
-          totalSteps: genStatus.total_steps,
-          message: genStatus.message,
-          percentage: genStatus.percentage,
-        });
-        if (genStatus.preview_data) setPreviewData(genStatus.preview_data);
-
-        if (!genStatus.is_generating && genStatus.status === "ready") {
-          stopProgressPolling();
-          setGenerationProgress({ step: 3, totalSteps: 3, message: language === "en" ? "Complete!" : "Completato!", percentage: 100 });
-          toast.success(language === "en" ? "Site generated successfully!" : "Sito generato con successo!");
-          setTimeout(() => router.push(`/editor/${siteId}`), 1000);
-        }
-        if (!genStatus.is_generating && genStatus.status === "draft" && genStatus.message) {
-          stopProgressPolling();
-          setIsGenerating(false);
-          toast.error(genStatus.message || (language === "en" ? "Generation error" : "Errore nella generazione"));
-        }
-      } catch { /* ignore */ }
-    }, 3000);
-  };
-
-  const stopProgressPolling = () => {
-    if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
-  };
-
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => { stopProgressPolling(); };
-  }, []);
+  // Polling is handled by the /generate/[id] page after navigation
 
   // Generate
   const handleGenerate = async () => {
@@ -300,7 +263,6 @@ function NewProjectContent() {
       };
       const site = await createSite(siteData);
       setCreatedSiteId(site.id);
-      startProgressPolling(site.id);
 
       setGenerationProgress({ step: 1, totalSteps: 3, message: language === "en" ? "Starting AI generation..." : "Avvio generazione AI...", percentage: 10 });
 
@@ -405,10 +367,8 @@ function NewProjectContent() {
       // Navigate immediately to the immersive generation experience page.
       // generateWebsite() returns fast (generation runs in background on backend).
       // The /generate page handles progress polling, so no need to wait here.
-      stopProgressPolling();
       router.push(`/generate/${site.id}`);
     } catch (error: any) {
-      stopProgressPolling();
       if (error.isQuotaError || error.quota?.upgrade_required) {
         setShowUpgradeModal(true);
       } else {
