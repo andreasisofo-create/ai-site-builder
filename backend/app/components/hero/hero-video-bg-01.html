@@ -1,5 +1,5 @@
 <!-- Hero Video Background: fullscreen with dark overlay, centered text, flip-up title -->
-<section id="hero" class="min-h-screen relative overflow-hidden bg-black">
+<section id="hero" class="min-h-screen relative overflow-hidden bg-[var(--color-text)]">
   <!-- Video/Image Background -->
   <div class="absolute inset-0 z-0">
     <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full h-full object-cover scale-105" loading="eager">
@@ -7,8 +7,8 @@
   </div>
 
   <!-- Multi-layer dark overlay -->
-  <div class="absolute inset-0 z-[1] bg-black/50"></div>
-  <div class="absolute inset-0 z-[2]" style="background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.8) 100%);"></div>
+  <div class="absolute inset-0 z-[1]" style="background: rgba(var(--color-bg-rgb, 0,0,0), 0.5);"></div>
+  <div class="absolute inset-0 z-[2]" style="background: linear-gradient(180deg, rgba(var(--color-bg-rgb, 0,0,0),0.7) 0%, rgba(var(--color-bg-rgb, 0,0,0),0.3) 30%, rgba(var(--color-bg-rgb, 0,0,0),0.3) 70%, rgba(var(--color-bg-rgb, 0,0,0),0.8) 100%);"></div>
   <!-- Color accent overlay -->
   <div class="absolute inset-0 z-[3]" style="background: linear-gradient(135deg, var(--color-primary), transparent 50%); opacity: 0.15;"></div>
 

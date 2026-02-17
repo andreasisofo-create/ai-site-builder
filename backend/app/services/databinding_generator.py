@@ -1361,6 +1361,8 @@ class DataBindingGenerator:
             # When reference has exact colors, skip template color hints (they conflict)
             if style_preferences.get("primary_color") and not has_exact_colors:
                 style_hint += f"Primary color requested: {style_preferences['primary_color']}. "
+            if style_preferences.get("secondary_color") and not has_exact_colors:
+                style_hint += f"Secondary color requested: {style_preferences['secondary_color']}. "
             if style_preferences.get("mood"):
                 style_hint += f"Mood/style: {style_preferences['mood']}. "
 
@@ -1424,12 +1426,16 @@ STRICT RULES:
         if variety_context and not has_reference and not has_exact_colors:
             color_mood = variety_context.get("color_mood", {})
             font_pair = variety_context.get("font_pairing", {})
-            variety_hint = f"""
+            # Only inject color mood if it has actual content (disabled when user specified colors)
+            color_mood_block = ""
+            if color_mood.get("mood"):
+                color_mood_block = f"""
 === COLOR MOOD DIRECTION (follow this closely) ===
 Design mood: "{color_mood.get('mood', 'Modern Bold')}"
 {color_mood.get('hint', '')}
 Adapt this mood to the business, but keep the color FEELING.
-
+"""
+            variety_hint = f"""{color_mood_block}
 === SUGGESTED FONT PAIRING (use this unless it clashes with the business) ===
 Heading: "{font_pair.get('heading', 'Space Grotesk')}" ({font_pair.get('personality', 'MODERN')})
 Body: "{font_pair.get('body', 'DM Sans')}"
@@ -2311,11 +2317,21 @@ RULES:
 
         # === PICK VARIETY CONTEXT (random personality, color mood, font pairing) ===
         variety = _pick_variety_context()
-        logger.info(
-            f"[DataBinding] Variety: personality={variety['personality']['name']}, "
-            f"color_mood={variety['color_mood']['mood']}, "
-            f"font={variety['font_pairing']['heading']}/{variety['font_pairing']['body']}"
-        )
+        # When user specified colors, disable color_mood to avoid contradictions
+        user_has_colors = bool(style_preferences and style_preferences.get("primary_color"))
+        if user_has_colors:
+            variety["color_mood"] = {}  # Nullify — user colors take priority over random mood
+            logger.info(
+                f"[DataBinding] Variety: personality={variety['personality']['name']}, "
+                f"color_mood=DISABLED (user specified colors), "
+                f"font={variety['font_pairing']['heading']}/{variety['font_pairing']['body']}"
+            )
+        else:
+            logger.info(
+                f"[DataBinding] Variety: personality={variety['personality']['name']}, "
+                f"color_mood={variety['color_mood']['mood']}, "
+                f"font={variety['font_pairing']['heading']}/{variety['font_pairing']['body']}"
+            )
 
         # === STEP 1+2 PARALLEL: Theme + Texts ===
         if on_progress:
@@ -2346,6 +2362,36 @@ RULES:
 
         # Extract results (use reference colors in fallback if available)
         theme = theme_result.get("parsed", self._fallback_theme(style_preferences, reference_colors=parsed_reference))
+
+        # === FORCE-OVERRIDE: User-specified colors ALWAYS win ===
+        # This runs AFTER AI generation. Reference image colors (parsed_reference)
+        # were already forced inside _generate_theme(), so skip when reference exists.
+        has_exact_ref = bool(parsed_reference and parsed_reference.get("primary_color"))
+        if style_preferences and not has_exact_ref:
+            overridden_fields = []
+            if style_preferences.get("primary_color"):
+                old_val = theme.get("primary_color")
+                theme["primary_color"] = style_preferences["primary_color"]
+                if old_val != style_preferences["primary_color"]:
+                    overridden_fields.append(f"primary: {old_val} -> {style_preferences['primary_color']}")
+            if style_preferences.get("secondary_color"):
+                old_val = theme.get("secondary_color")
+                theme["secondary_color"] = style_preferences["secondary_color"]
+                if old_val != style_preferences["secondary_color"]:
+                    overridden_fields.append(f"secondary: {old_val} -> {style_preferences['secondary_color']}")
+            if overridden_fields:
+                logger.info(f"[DataBinding] User color force-override: {', '.join(overridden_fields)}")
+                # Recalculate derived colors for harmony with forced primary/secondary
+                theme["accent_color"] = self._derive_accent(
+                    theme.get("primary_color", "#3b82f6"),
+                    theme.get("bg_color", "#FAF7F2"),
+                )
+                theme["bg_alt_color"] = self._derive_alt_bg(theme.get("bg_color", "#FAF7F2"))
+                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#1A1A2E"))
+                logger.info(
+                    f"[DataBinding] Recalculated harmony: accent={theme['accent_color']}, "
+                    f"bg_alt={theme['bg_alt_color']}, text_muted={theme['text_muted_color']}"
+                )
 
         if not texts_result.get("success") or not texts_result.get("parsed"):
             logger.warning(f"[DataBinding] AI texts failed, using fallback: {texts_result.get('error', 'unknown')}")
@@ -3996,8 +4042,18 @@ RULES:
                 "spacing_density": "normal",
             }
         theme = random.choice(FALLBACK_THEME_POOL).copy()
-        if style_preferences and style_preferences.get("primary_color"):
-            theme["primary_color"] = style_preferences["primary_color"]
+        if style_preferences:
+            if style_preferences.get("primary_color"):
+                theme["primary_color"] = style_preferences["primary_color"]
+            if style_preferences.get("secondary_color"):
+                theme["secondary_color"] = style_preferences["secondary_color"]
+            # Recalculate derived colors if user overrode primary or secondary
+            if style_preferences.get("primary_color") or style_preferences.get("secondary_color"):
+                theme["accent_color"] = self._derive_accent(
+                    theme["primary_color"], theme.get("bg_color", "#FAF7F2")
+                )
+                theme["bg_alt_color"] = self._derive_alt_bg(theme.get("bg_color", "#FAF7F2"))
+                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#1A1A2E"))
         return theme
 
     @staticmethod
@@ -4084,6 +4140,28 @@ RULES:
             return self._hsl_to_hex(h, new_s, new_l)
         except (ValueError, IndexError):
             return "#6B7280"
+
+    def _derive_accent(self, primary_hex: str, bg_hex: str) -> str:
+        """Derive a complementary accent color from primary that pops against bg.
+
+        Uses split-complementary logic: shifts hue by ~150 degrees from primary,
+        keeps high saturation, and adjusts lightness to contrast with background.
+        """
+        try:
+            h, s, l = self._hex_to_hsl(primary_hex)
+            bg_l = self._hex_lightness(bg_hex)
+            # Split-complementary: 150 degree hue shift
+            accent_h = (h + 150) % 360
+            # Keep saturation high for a vibrant accent
+            accent_s = max(60, min(90, s + 10))
+            # Lightness: contrast with background
+            if bg_l > 50:
+                accent_l = max(35, min(55, l))  # Darker accent on light bg
+            else:
+                accent_l = max(50, min(70, l + 15))  # Brighter accent on dark bg
+            return self._hsl_to_hex(accent_h, accent_s, accent_l)
+        except (ValueError, IndexError):
+            return "#F59E0B"  # Safe fallback: amber
 
     def _validate_theme_against_reference(self, theme: Dict[str, str], reference_colors: Dict[str, Any]) -> Dict[str, str]:
         """Post-generation validation: force-correct theme if it deviates from reference."""
