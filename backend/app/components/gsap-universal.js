@@ -6,7 +6,7 @@
    marquee, counter, stagger, scroll-progress, text-reveal,
    stagger-scale, clip-reveal, blur-slide, rotate-3d, image-zoom,
    card-hover-3d, draw-svg, split-screen, scroll-fade, pin-hero,
-   section-reveal, data-parallax (standalone)
+   section-reveal, text-rotate, sticky-cta, data-parallax (standalone)
    Supports: data-delay, data-duration, data-ease, data-scrub
    Respects prefers-reduced-motion
    Skips heavy scroll effects on mobile/touch
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('[data-animate]').forEach(function (el) {
     var type = el.getAttribute('data-animate');
-    if (['stagger', 'parallax', 'text-split', 'typewriter', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal'].indexOf(type) !== -1) return;
+    if (['stagger', 'parallax', 'text-split', 'typewriter', 'text-rotate', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal', 'sticky-cta'].indexOf(type) !== -1) return;
     var config = animations[type];
     if (!config) { el.style.opacity = 1; return; }
 
@@ -395,6 +395,33 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ----------------------------------------------------------
+     5b. TEXT ROTATE (data-animate="text-rotate")
+     Cycles through phrases with fade in/out loop.
+     Reads data-rotate-texts="phrase1|phrase2|phrase3"
+     Supports data-rotate-speed for hold duration (default 2.5s)
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="text-rotate"]').forEach(function (el) {
+    var raw = el.getAttribute('data-rotate-texts') || el.textContent;
+    var phrases = raw.split('|').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
+    if (phrases.length === 0) return;
+    el.textContent = phrases[0];
+    el.style.opacity = 1;
+    if (phrases.length < 2) return;
+
+    var hold = parseFloat(el.getAttribute('data-rotate-speed') || 2.5);
+    var tl = gsap.timeline({ repeat: -1 });
+    for (var i = 0; i < phrases.length; i++) {
+      (function (index) {
+        tl.to(el, { opacity: 1, duration: 0.4, ease: 'power2.out',
+          onStart: function () { el.textContent = phrases[index]; }
+        });
+        tl.to({}, { duration: hold });
+        tl.to(el, { opacity: 0, duration: 0.4, ease: 'power2.in' });
+      })(i);
+    }
+  });
+
+  /* ----------------------------------------------------------
      6. FLOATING ELEMENTS (data-animate="float")
      Continuous gentle floating motion (reduced on mobile)
      ---------------------------------------------------------- */
@@ -422,9 +449,25 @@ document.addEventListener('DOMContentLoaded', function () {
      7. COUNTER ANIMATION (data-counter="NUMBER")
      ---------------------------------------------------------- */
   document.querySelectorAll('[data-counter]').forEach(function (el) {
-    var target = parseFloat(el.getAttribute('data-counter'));
-    var suffix = el.getAttribute('data-counter-suffix') || '';
-    var prefix = el.getAttribute('data-counter-prefix') || '';
+    var rawAttr = el.getAttribute('data-counter');
+    var target, suffix, prefix;
+
+    // Auto-parse: if data-counter is empty or "auto", extract number from textContent
+    if (!rawAttr || rawAttr === '' || rawAttr === 'auto') {
+      var content = el.textContent.trim();
+      var numMatch = content.match(/[\d.,]+/);
+      if (!numMatch) { el.style.opacity = '1'; return; }
+      target = parseFloat(numMatch[0].replace(/\./g, '').replace(',', '.'));
+      // Detect prefix (before the number) and suffix (after the number)
+      var numIdx = content.indexOf(numMatch[0]);
+      prefix = content.substring(0, numIdx).trim();
+      suffix = content.substring(numIdx + numMatch[0].length).trim();
+    } else {
+      target = parseFloat(rawAttr);
+      suffix = el.getAttribute('data-counter-suffix') || '';
+      prefix = el.getAttribute('data-counter-prefix') || '';
+    }
+
     var decimals = parseInt(el.getAttribute('data-counter-decimals') || 0);
     var dur = parseFloat(el.getAttribute('data-counter-duration') || 2);
     var useSeparator = el.getAttribute('data-counter-separator') !== 'false';
@@ -912,6 +955,37 @@ document.addEventListener('DOMContentLoaded', function () {
         if (mobileMenu && !mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
       }
     });
+  });
+
+  /* ----------------------------------------------------------
+     28b. STICKY CTA BUTTON (data-animate="sticky-cta")
+     Fixed button appears after scrolling 50vh, hides near footer.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="sticky-cta"]').forEach(function (el) {
+    el.style.position = 'fixed';
+    el.style.bottom = isMobile ? '1rem' : '2rem';
+    el.style.right = isMobile ? '1rem' : '2rem';
+    if (isMobile) { el.style.left = '1rem'; el.style.textAlign = 'center'; }
+    el.style.zIndex = '50';
+    el.style.backdropFilter = 'blur(8px)';
+    el.style.webkitBackdropFilter = 'blur(8px)';
+    gsap.set(el, { opacity: 0, y: 20 });
+
+    ScrollTrigger.create({
+      start: '50vh top',
+      onEnter: function () { gsap.to(el, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }); },
+      onLeaveBack: function () { gsap.to(el, { opacity: 0, y: 20, duration: 0.3, ease: 'power2.in' }); }
+    });
+
+    var footer = document.querySelector('footer');
+    if (footer) {
+      ScrollTrigger.create({
+        trigger: footer,
+        start: 'top bottom-=100',
+        onEnter: function () { gsap.to(el, { opacity: 0, y: 20, duration: 0.3, ease: 'power2.in' }); },
+        onLeaveBack: function () { gsap.to(el, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }); }
+      });
+    }
   });
 
   /* ----------------------------------------------------------

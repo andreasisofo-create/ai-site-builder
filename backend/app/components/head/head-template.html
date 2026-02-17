@@ -69,10 +69,14 @@
       --radius-sm: {{RADIUS_SM}};
       --radius-md: {{RADIUS_MD}};
       --radius-lg: {{RADIUS_LG}};
+      --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+      --shadow-xl: 0 16px 48px rgba(0,0,0,0.14);
+      --shadow-2xl: 0 24px 64px rgba(0,0,0,0.18);
       --space-section: {{SPACE_SECTION}};
+      --space-content: clamp(2rem, 4vw, 4rem);
       --max-width: {{MAX_WIDTH}};
       --transition-speed: 0.3s;
     }
@@ -154,9 +158,9 @@
     section:first-of-type {
       z-index: 0;
     }
-    /* Section Overlap - breaks stacked blocks feel */
+    /* Section spacing - generous breathing room */
     section + section {
-      margin-top: -2rem;
+      margin-top: 0;
       position: relative;
       z-index: 1;
     }
@@ -314,6 +318,25 @@
         padding: 1px;
       }
     }
+    /* 6-Level Elevation Utilities */
+    .elevation-1 { box-shadow: var(--shadow-xs); transition: box-shadow 0.3s; }
+    .elevation-2 { box-shadow: var(--shadow-sm); transition: box-shadow 0.3s; }
+    .elevation-3 { box-shadow: var(--shadow-md); transition: box-shadow 0.3s; }
+    .elevation-4 { box-shadow: var(--shadow-lg); transition: box-shadow 0.3s; }
+    .elevation-5 { box-shadow: var(--shadow-xl); transition: box-shadow 0.3s; }
+    .elevation-6 { box-shadow: var(--shadow-2xl); transition: box-shadow 0.3s; }
+    .elevation-1:hover { box-shadow: var(--shadow-sm); }
+    .elevation-2:hover { box-shadow: var(--shadow-md); }
+    .elevation-3:hover { box-shadow: var(--shadow-lg); }
+    .elevation-4:hover { box-shadow: var(--shadow-xl); }
+    .elevation-5:hover { box-shadow: var(--shadow-2xl); }
+    /* Stagger CSS Delay Classes */
+    .delay-50 { transition-delay: 50ms; }
+    .delay-100 { transition-delay: 100ms; }
+    .delay-150 { transition-delay: 150ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+    .delay-500 { transition-delay: 500ms; }
   </style>
   <!-- Gooey SVG Filter (0x0, invisible, activates via .gooey class) -->
   <svg style="position:absolute;width:0;height:0;" aria-hidden="true">

@@ -57,15 +57,15 @@ export default function HowItWorks() {
                                 viewport={{ once: true, margin: "-50px" }}
                                 variants={fadeUp}
                                 transition={{ duration: 0.5, delay: idx * 0.2 }}
-                                className="bg-[#16162a] rounded-2xl p-8 border border-white/5 relative group hover:border-[#FF6B35]/30 transition-colors"
+                                className="bg-[#16162a] rounded-2xl p-8 border border-white/5 relative group hover:border-[#0090FF]/30 transition-colors"
                             >
                                 {/* Number Watermark */}
                                 <span className="absolute top-4 right-6 text-6xl font-black text-white/5 pointer-events-none group-hover:text-white/10 transition-colors">
                                     0{idx + 1}
                                 </span>
 
-                                <div className="w-14 h-14 rounded-xl bg-[#FF6B35]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                                    <Icon className="w-7 h-7 text-[#FF6B35]" />
+                                <div className="w-14 h-14 rounded-xl bg-[#0090FF]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <Icon className="w-7 h-7 text-[#0090FF]" />
                                 </div>
 
                                 <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
@@ -84,7 +84,7 @@ export default function HowItWorks() {
                 >
                     <button
                         onClick={scrollToForm}
-                        className="px-8 py-4 bg-[#FF6B35] hover:bg-[#FF8B5E] text-white rounded-xl font-bold text-lg transition-all shadow-[0_4px_14px_0_rgba(255,107,53,0.39)] hover:shadow-[0_6px_20px_rgba(255,107,53,0.23)] hover:-translate-y-0.5"
+                        className="px-8 py-4 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-bold text-lg transition-all shadow-[0_4px_14px_0_rgba(0,144,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,144,255,0.23)] hover:-translate-y-0.5"
                     >
                         Contattaci ora — è gratis
                     </button>

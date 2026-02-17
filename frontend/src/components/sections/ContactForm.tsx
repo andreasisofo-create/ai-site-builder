@@ -28,14 +28,14 @@ export default function ContactForm() {
             id="form-contatto"
             className="py-20 lg:py-28 relative overflow-hidden"
         >
-            {/* Special Gradient Background */}
+            {/* Special Gradient Background - BLUE */}
             <div
                 className="absolute inset-0 z-0"
                 style={{
                     background: "linear-gradient(135deg, #1a1a3e 0%, #0f0f23 100%)"
                 }}
             />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-50 pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 via-transparent to-transparent opacity-50 pointer-events-none" />
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="max-w-2xl mx-auto text-center mb-12">
@@ -68,8 +68,8 @@ export default function ContactForm() {
                     transition={{ delay: 0.2 }}
                     className="max-w-xl mx-auto bg-[#1a1a2e]/80 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl relative"
                 >
-                    {/* Glow Effect around form */}
-                    <div className="absolute -inset-1 bg-gradient-to-r from-[#FF6B35] to-[#7C3AED] rounded-2xl opacity-20 blur-lg -z-10" />
+                    {/* Glow Effect around form - BLUE */}
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#0090FF] to-[#3B82F6] rounded-2xl opacity-20 blur-lg -z-10" />
 
                     {submitted ? (
                         <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -88,7 +88,7 @@ export default function ContactForm() {
                                     id="name"
                                     required
                                     placeholder="Il tuo nome"
-                                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0090FF] focus:border-transparent transition-all"
                                 />
                             </div>
 
@@ -99,7 +99,7 @@ export default function ContactForm() {
                                     id="activity"
                                     required
                                     placeholder="Che attività hai? (es: ristorante, studio legale...)"
-                                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0090FF] focus:border-transparent transition-all"
                                 />
                             </div>
 
@@ -110,7 +110,7 @@ export default function ContactForm() {
                                     id="contact"
                                     required
                                     placeholder="Email o numero di telefono"
-                                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0090FF] focus:border-transparent transition-all"
                                 />
                             </div>
 
@@ -118,7 +118,7 @@ export default function ContactForm() {
                                 <label htmlFor="hasSite" className="block text-sm font-medium text-gray-300 mb-2">Hai già un sito?</label>
                                 <select
                                     id="hasSite"
-                                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#0090FF] focus:border-transparent transition-all"
                                 >
                                     <option value="no">No, è il primo sito</option>
                                     <option value="yes">Sì, voglio rifarlo</option>
@@ -128,7 +128,7 @@ export default function ContactForm() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4 bg-[#FF6B35] hover:bg-[#FF8B5E] text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full py-4 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? "Invio in corso..." : "Voglio il mio sito gratis"}
                             </button>

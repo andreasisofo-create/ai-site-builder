@@ -164,6 +164,7 @@ class Settings(BaseSettings):
     N8N_WEBHOOK_URL: str = ""  # n8n webhook URL for external generation
     N8N_CALLBACK_SECRET: str = ""  # Shared secret for n8n callback auth
     GENERATION_REFLEXION: bool = False  # Enable AI self-critique step for text quality
+    ART_DIRECTOR_QC: bool = False  # Enable enhanced AI critique with section flow + visual coherence
 
     # VPS Deploy (Hostinger)
     VPS_DEPLOY_URL: str = ""            # e.g., "http://72.62.42.113:8090"

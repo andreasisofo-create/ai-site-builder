@@ -71,6 +71,7 @@ class QualityControlPipeline:
         style_id: str,
         site_id: str = "",
         on_progress: ProgressCallback = None,
+        variant_selections: Optional[Dict[str, str]] = None,
     ) -> QCReport:
         """
         Run complete QC pipeline: validate -> critique -> fix -> re-validate.
@@ -94,7 +95,10 @@ class QualityControlPipeline:
         # PHASE 1: Automated Checks
         # ===============================
         logger.info("[QC] Phase 1: Automated validation")
-        automated_issues = self.run_automated_checks(html, theme_config, requested_sections)
+        automated_issues = self.run_automated_checks(
+            html, theme_config, requested_sections,
+            variant_selections=variant_selections,
+        )
         report.automated_issues = automated_issues
 
         critical_count = sum(1 for i in automated_issues if i.severity == "critical")
@@ -115,7 +119,9 @@ class QualityControlPipeline:
         # PHASE 2: AI Critique
         # ===============================
         logger.info("[QC] Phase 2: AI critique")
-        ai_critique = await self.run_ai_critique(html, style_id)
+        ai_critique = await self.run_ai_critique(
+            html, style_id, variant_selections=variant_selections,
+        )
         report.ai_critique = ai_critique
         report.overall_score = ai_critique.get("overall_score", 5.0)
 
@@ -213,6 +219,7 @@ class QualityControlPipeline:
         html: str,
         theme_config: Dict[str, Any],
         requested_sections: List[str],
+        variant_selections: Optional[Dict[str, str]] = None,
     ) -> List[QCIssue]:
         """Phase 1: Fast automated validation (no AI). Should complete <1 second."""
         issues: List[QCIssue] = []
@@ -227,6 +234,12 @@ class QualityControlPipeline:
         issues.extend(self._check_accessibility(html))
         issues.extend(self._check_heading_hierarchy(html))
         issues.extend(self._check_banned_phrases(html))
+
+        # Art Director checks (always active, instant, no AI)
+        issues.extend(self._check_animation_density(html))
+        issues.extend(self._check_section_flow(html))
+        if variant_selections:
+            issues.extend(self._check_visual_harmony(variant_selections))
 
         return issues
 
@@ -535,15 +548,142 @@ class QualityControlPipeline:
         return issues
 
     # =========================================================
+    # Art Director Checks (instant, no AI)
+    # =========================================================
+
+    # Expected narrative flow — sections that should appear before others
+    _FLOW_RULES = [
+        ("about", "testimonials"),
+        ("services", "pricing"),
+        ("about", "team"),
+        ("hero", "about"),
+        ("features", "pricing"),
+        ("services", "cta"),
+    ]
+
+    # Visual families — variants from different families clash
+    _VISUAL_FAMILIES: Dict[str, List[str]] = {
+        "bento": ["bento", "masonry"],
+        "minimal": ["minimal", "zen", "clean"],
+        "editorial": ["magazine", "editorial", "spotlight", "split-scroll"],
+        "bold": ["brutalist", "neon", "dark-bold", "animated-shapes"],
+    }
+
+    def _check_animation_density(self, html: str) -> List[QCIssue]:
+        """Warn if too many different scroll-entrance animation types are used.
+        More than 6 distinct types creates visual chaos."""
+        issues = []
+        used_types = set(re.findall(r'data-animate="([^"]*)"', html))
+        # Only count scroll-entrance animations, not interactive ones
+        entrance_types = {
+            "fade-up", "fade-down", "fade-left", "fade-right",
+            "scale-in", "scale-up", "rotate-in", "flip-up", "blur-in",
+            "slide-up", "reveal-left", "reveal-right", "reveal-up", "reveal-down",
+            "bounce-in", "zoom-out", "clip-reveal", "blur-slide", "rotate-3d",
+        }
+        entrance_used = used_types & entrance_types
+        if len(entrance_used) > 6:
+            issues.append(QCIssue(
+                type="animation", severity="warning",
+                element="data-animate",
+                description=(
+                    f"Animation overload: {len(entrance_used)} distinct entrance types "
+                    f"({', '.join(sorted(entrance_used))}). "
+                    f"Consider limiting to 4-5 for visual cohesion."
+                ),
+                auto_fixable=False,
+            ))
+        return issues
+
+    def _check_section_flow(self, html: str) -> List[QCIssue]:
+        """Verify logical section ordering (about before testimonials, etc.)."""
+        issues = []
+        # Extract section IDs from HTML in order
+        section_ids = re.findall(r'id="([a-z]+)(?:-section)?"', html.lower())
+        if not section_ids:
+            return issues
+
+        # Build position map
+        positions: Dict[str, int] = {}
+        for i, sid in enumerate(section_ids):
+            if sid not in positions:
+                positions[sid] = i
+
+        for before, after in self._FLOW_RULES:
+            if before in positions and after in positions:
+                if positions[before] > positions[after]:
+                    issues.append(QCIssue(
+                        type="layout", severity="info",
+                        element=f"section#{after}",
+                        description=(
+                            f"Section flow: '{after}' appears before '{before}'. "
+                            f"Consider placing '{before}' first for better narrative."
+                        ),
+                        auto_fixable=False,
+                    ))
+        return issues
+
+    def _check_visual_harmony(self, variant_selections: Dict[str, str]) -> List[QCIssue]:
+        """Detect clashing visual families across selected component variants."""
+        issues = []
+        # Map each selected variant to its visual family
+        families_used: Dict[str, List[str]] = {}
+        for section, variant_id in variant_selections.items():
+            if section in ("nav", "footer"):
+                continue
+            variant_lower = variant_id.lower()
+            for family_name, keywords in self._VISUAL_FAMILIES.items():
+                if any(kw in variant_lower for kw in keywords):
+                    families_used.setdefault(family_name, []).append(section)
+                    break
+
+        # If 3+ different families are represented, flag it
+        if len(families_used) >= 3:
+            family_summary = ", ".join(
+                f"{name}({'+'.join(secs)})"
+                for name, secs in families_used.items()
+            )
+            issues.append(QCIssue(
+                type="layout", severity="info",
+                element="variant-selection",
+                description=(
+                    f"Visual harmony: {len(families_used)} different style families "
+                    f"detected ({family_summary}). Consider using fewer families "
+                    f"for a more cohesive look."
+                ),
+                auto_fixable=False,
+            ))
+        return issues
+
+    # =========================================================
     # Phase 2: AI Critique
     # =========================================================
-    async def run_ai_critique(self, html: str, style_id: str) -> Dict[str, Any]:
-        """Phase 2: AI self-critique using Kimi. Returns structured evaluation."""
+    async def run_ai_critique(
+        self, html: str, style_id: str,
+        variant_selections: Optional[Dict[str, str]] = None,
+    ) -> Dict[str, Any]:
+        """Phase 2: AI self-critique using Kimi. Returns structured evaluation.
+        When ART_DIRECTOR_QC is enabled, adds section_flow and visual_coherence dimensions."""
+
+        from app.core.config import settings as _settings
 
         # Truncate HTML to save tokens (keep first ~8000 chars)
         html_excerpt = html[:8000]
         if len(html) > 8000:
             html_excerpt += "\n... [HTML truncated for review] ..."
+
+        # Enhanced dimensions when Art Director QC is on
+        art_director_block = ""
+        art_director_scores = ""
+        if _settings.ART_DIRECTOR_QC:
+            variant_context = ""
+            if variant_selections:
+                variant_context = f"\nVarianti selezionate: {json.dumps(variant_selections)}\n"
+            art_director_block = f"""
+9. section_flow - Le sezioni seguono un ordine narrativo logico? (identita' → offerta → prova sociale → azione)
+10. visual_coherence - I componenti selezionati appartengono alla stessa famiglia visiva? Coesione cross-sezione?
+{variant_context}"""
+            art_director_scores = ',\n    "section_flow": 7,\n    "visual_coherence": 7'
 
         prompt = f"""Sei un Senior Web Designer con 15 anni di esperienza. Valuta questo sito generato automaticamente.
 Il template style e' "{style_id}".
@@ -562,7 +702,7 @@ Valuta queste categorie (1-10 ciascuna):
 6. cta_effectiveness - CTA visibili, persuasivi, ben posizionati?
 7. whitespace_balance - Spaziatura equilibrata? Non troppo denso ne' troppo vuoto?
 8. mobile_readiness - Grid responsive? Classi Tailwind mobile-first?
-
+{art_director_block}
 Rispondi con questo JSON:
 {{
   "overall_score": 7.5,
@@ -574,7 +714,7 @@ Rispondi con questo JSON:
     "content_quality": 6,
     "cta_effectiveness": 8,
     "whitespace_balance": 7,
-    "mobile_readiness": 8
+    "mobile_readiness": 8{art_director_scores}
   }},
   "strengths": [
     "Punto di forza 1",

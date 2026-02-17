@@ -1090,7 +1090,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     # --- SaaS / Landing Page ---
     "saas-gradient": {
         "nav": ["nav-minimal-01", "nav-classic-01"],
-        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01"],
+        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01", "hero-rotating-01"],
         "about": ["about-timeline-02", "about-bento-01", "about-split-cards-01"],
         "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01"],
         "features": ["features-bento-01", "features-bento-grid-01", "features-hover-cards-01", "features-tabs-01"],
@@ -1112,7 +1112,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "saas-dark": {
         "nav": ["nav-minimal-01", "nav-classic-01"],
-        "hero": ["hero-linear-01", "hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01"],
+        "hero": ["hero-linear-01", "hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01", "hero-rotating-01"],
         "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01"],
         "services": ["services-bento-02", "services-hover-expand-01", "services-hover-reveal-01"],
         "features": ["features-bento-01", "features-hover-cards-01", "features-bento-grid-01", "features-tabs-01"],
@@ -1192,7 +1192,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "business-fresh": {
         "nav": ["nav-centered-01", "nav-minimal-01"],
-        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01"],
+        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-rotating-01"],
         "about": ["about-split-cards-01", "about-bento-01", "about-timeline-02"],
         "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02"],
         "features": ["features-bento-01", "features-alternating-01", "features-bento-grid-01", "features-hover-cards-01"],
@@ -1223,7 +1223,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     # --- Evento / Community ---
     "event-vibrant": {
         "nav": ["nav-minimal-01", "nav-centered-01"],
-        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01", "hero-physics-01"],
+        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01", "hero-physics-01", "hero-rotating-01"],
         "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01"],
         "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02"],
         "team": ["team-carousel-01", "team-grid-01"],
@@ -1253,6 +1253,74 @@ _DEFAULT_SECTION_VARIANT_POOLS: Dict[str, List[str]] = {
 }
 
 # =========================================================
+# BLUEPRINTS: Optimal section ordering per business category.
+# Each blueprint defines the narrative flow that converts best
+# for that business type. Sections not in the blueprint are
+# kept but placed before the footer. Hero always first, footer last.
+# =========================================================
+BLUEPRINTS: Dict[str, List[str]] = {
+    "restaurant": [
+        "hero", "about", "gallery", "services", "testimonials",
+        "team", "faq", "contact",
+    ],
+    "saas": [
+        "hero", "features", "about", "services", "testimonials",
+        "pricing", "cta", "faq", "contact",
+    ],
+    "portfolio": [
+        "hero", "gallery", "about", "services", "testimonials",
+        "contact",
+    ],
+    "ecommerce": [
+        "hero", "services", "gallery", "about", "testimonials",
+        "pricing", "cta", "faq", "contact",
+    ],
+    "business": [
+        "hero", "about", "services", "features", "team",
+        "testimonials", "cta", "contact",
+    ],
+    "blog": [
+        "hero", "about", "services", "gallery", "contact",
+    ],
+    "event": [
+        "hero", "about", "services", "team", "gallery",
+        "cta", "faq", "contact",
+    ],
+    "custom": [
+        "hero", "about", "services", "gallery", "testimonials",
+        "contact",
+    ],
+}
+
+# =========================================================
+# HARMONY GROUPS: Visual families for cross-section cohesion.
+# When generating a site, one harmony group is selected and
+# component variants are preferentially chosen from it.
+# =========================================================
+HARMONY_GROUPS: Dict[str, List[str]] = {
+    "bento": [
+        "bento", "masonry", "hover-expand", "grid", "split-cards",
+    ],
+    "editorial": [
+        "alternating", "magazine", "spotlight", "editorial", "image-showcase",
+        "split-scroll",
+    ],
+    "interactive": [
+        "hover-expand", "hover-reveal", "tabs", "hover-cards", "card-stack",
+    ],
+    "classic": [
+        "classic", "centered", "grid", "cards", "carousel", "form",
+        "process-steps", "icon-list", "icons-grid",
+    ],
+    "dark-bold": [
+        "dark-bold", "neon", "brutalist", "gradient", "animated-shapes",
+    ],
+    "organic": [
+        "organic", "zen", "scroll", "minimal", "typewriter", "parallax",
+    ],
+}
+
+# =========================================================
 # SECTION SCHEMAS: JSON template for each section type.
 # _generate_texts() assembles only the schemas for the
 # sections the user actually requested, cutting prompt size
@@ -1265,7 +1333,8 @@ _SECTION_SCHEMAS: Dict[str, str] = {
     "HERO_CTA_TEXT": "Testo bottone CTA (3-5 parole, verbo d'azione)",
     "HERO_CTA_URL": "#contact",
     "HERO_IMAGE_URL": "",
-    "HERO_IMAGE_ALT": "Descrizione immagine specifica per il business"
+    "HERO_IMAGE_ALT": "Descrizione immagine specifica per il business",
+    "HERO_ROTATING_TEXTS": "3-4 frasi alternative per il titolo hero, separate da | (es: Frase Uno|Frase Due|Frase Tre)"
   }}''',
     "about": '''"about": {{
     "ABOUT_TITLE": "Titolo sezione (evocativo, NO 'Chi Siamo')",
@@ -1756,6 +1825,96 @@ class DataBindingGenerator:
         self.kimi = kimi
         self.kimi_text = kimi_text
         self.assembler = template_assembler
+
+    # =========================================================
+    # Blueprint Ordering
+    # =========================================================
+    @staticmethod
+    def _apply_blueprint_ordering(
+        sections: List[str], template_style_id: Optional[str]
+    ) -> List[str]:
+        """Reorder sections according to the category blueprint.
+
+        Rules:
+        - Hero always first, footer always last (hard constraint).
+        - Sections in the blueprint are ordered by their blueprint position.
+        - Sections NOT in the blueprint are kept and placed just before footer.
+        - Never adds or removes sections.
+        """
+        if not template_style_id or not sections:
+            return sections
+
+        category = template_style_id.split("-")[0] if "-" in template_style_id else template_style_id
+        blueprint = BLUEPRINTS.get(category)
+        if not blueprint:
+            return sections
+
+        # Separate fixed anchors
+        has_hero = "hero" in sections
+        has_footer = "footer" in sections
+        middle = [s for s in sections if s not in ("hero", "footer", "nav")]
+
+        # Split into blueprint-ordered and extras
+        in_blueprint = [s for s in blueprint if s in middle]
+        extras = [s for s in middle if s not in blueprint]
+
+        ordered = []
+        if has_hero:
+            ordered.append("hero")
+        ordered.extend(in_blueprint)
+        ordered.extend(extras)
+        if has_footer:
+            ordered.append("footer")
+
+        logger.info(
+            f"[Blueprint] {category}: {sections} -> {ordered}"
+        )
+        return ordered
+
+    # =========================================================
+    # Harmony Group Selection
+    # =========================================================
+    @staticmethod
+    def _pick_harmony_group(
+        template_style_id: Optional[str],
+        pool_map: Dict[str, List[str]],
+    ) -> Optional[List[str]]:
+        """Select a visual harmony group based on overlap with the style pool.
+
+        Returns the chosen group's keyword list, or None if no pool is available.
+        The selection is random but weighted — groups with more matching variants
+        in the pool have a higher probability.
+        """
+        if not pool_map:
+            return None
+
+        # Collect all variant IDs from the pool
+        all_variants = []
+        for variants in pool_map.values():
+            all_variants.extend(variants)
+
+        # Calculate overlap score for each harmony group
+        scores: Dict[str, int] = {}
+        for group_name, keywords in HARMONY_GROUPS.items():
+            overlap = sum(
+                1 for v in all_variants
+                if any(kw in v.lower() for kw in keywords)
+            )
+            if overlap > 0:
+                scores[group_name] = overlap
+
+        if not scores:
+            return None
+
+        # Weighted random selection
+        groups = list(scores.keys())
+        weights = [scores[g] for g in groups]
+        chosen = random.choices(groups, weights=weights, k=1)[0]
+
+        logger.info(
+            f"[Harmony] Scores: {scores}, chosen: {chosen}"
+        )
+        return HARMONY_GROUPS[chosen]
 
     # =========================================================
     # Step 1: Generate Theme JSON (colors, fonts)
@@ -2429,6 +2588,7 @@ Return ONLY the JSON object, no explanation."""
         template_style_id: str,
         sections: List[str],
         parsed_reference: Optional[Dict[str, Any]] = None,
+        harmony_keywords: Optional[List[str]] = None,
     ) -> Dict[str, str]:
         """Select component variants with randomization from curated pools.
 
@@ -2436,6 +2596,8 @@ Return ONLY the JSON object, no explanation."""
         Falls back to the fixed STYLE_VARIANT_MAP, then to _DEFAULT_SECTION_VARIANTS.
         This ensures every generated site looks different even for the same template style.
 
+        When harmony_keywords is provided, prefer variants matching the harmony group
+        to ensure cross-section visual cohesion.
         When parsed_reference contains layout_style, prefer matching variants.
         """
         pool_map = STYLE_VARIANT_POOL.get(template_style_id, {})
@@ -2457,6 +2619,17 @@ Return ONLY the JSON object, no explanation."""
                     if matching:
                         selections[section] = random.choice(matching)
                         continue
+
+                # If harmony group set, prefer variants matching the harmony keywords
+                if harmony_keywords:
+                    harmonious = [
+                        v for v in pool
+                        if any(kw in v.lower() for kw in harmony_keywords)
+                    ]
+                    if harmonious:
+                        selections[section] = random.choice(harmonious)
+                        continue
+
                 selections[section] = random.choice(pool)
             # Priority 2: Fixed deterministic map (fallback)
             elif section in fixed_map:
@@ -2495,13 +2668,17 @@ Return ONLY the JSON object, no explanation."""
         style_mood: str,
         template_style_id: Optional[str] = None,
         parsed_reference: Optional[Dict[str, Any]] = None,
+        harmony_keywords: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Select component variants. Uses deterministic map if template_style_id is provided,
         otherwise falls back to Kimi AI selection."""
 
         # If we have a template_style_id with a mapping, use deterministic selection
         if template_style_id and template_style_id in STYLE_VARIANT_MAP:
-            selections = self._select_components_deterministic(template_style_id, sections, parsed_reference)
+            selections = self._select_components_deterministic(
+                template_style_id, sections, parsed_reference,
+                harmony_keywords=harmony_keywords,
+            )
             return {"success": True, "parsed": selections}
 
         # Fallback: AI-based selection (for custom-free or unknown styles)
@@ -2616,6 +2793,13 @@ Return ONLY the JSON object."""
         business_name, business_description, sections = sanitize_input(
             business_name, business_description, sections
         )
+
+        # === BLUEPRINT ORDERING: reorder sections by category narrative flow ===
+        sections = self._apply_blueprint_ordering(sections, template_style_id)
+
+        # === HARMONY GROUP: pick a visual family for cross-section cohesion ===
+        pool_map = STYLE_VARIANT_POOL.get(template_style_id, {}) if template_style_id else {}
+        harmony_keywords = self._pick_harmony_group(template_style_id, pool_map)
 
         # === QUERY DESIGN KNOWLEDGE (local, instant) ===
         creative_context = ""
@@ -2868,6 +3052,7 @@ RULES:
                 business_description, sections, mood,
                 template_style_id=template_style_id,
                 parsed_reference=parsed_reference,
+                harmony_keywords=harmony_keywords,
             )
             images_coro = generate_all_site_images(
                 business_name=business_name,
@@ -2898,6 +3083,7 @@ RULES:
                 business_description, sections, mood,
                 template_style_id=template_style_id,
                 parsed_reference=parsed_reference,
+                harmony_keywords=harmony_keywords,
             )
 
         selections = selection_result.get("parsed", self._default_selections(
@@ -2967,6 +3153,7 @@ RULES:
                 requested_sections=sections,
                 style_id=template_style_id or "custom-free",
                 on_progress=on_progress,
+                variant_selections=selections,
             )
             qc_report_data = qc_report.to_dict()
 

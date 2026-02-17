@@ -5,36 +5,69 @@ import { Check } from "lucide-react";
 
 const plans = [
     {
-        name: "Starter",
-        price: "€199",
-        period: "una tantum",
-        description: "Per iniziare",
-        features: ["1 pagina", "Sottodominio gratuito", "Certificato SSL", "3 modifiche via chat"],
+        name: "Pack Presenza",
+        price: "€499",
+        setup: "una tantum",
+        subscription: "+ €39/mese",
+        description: "Per chi vuole essere online con un sito professionale.",
+        features: [
+            "Homepage AI completa",
+            "3 pagine extra incluse (4 totali)",
+            "Dominio personalizzato (1° anno)",
+            "Hosting + SSL + Backup",
+            "Modifiche illimitate via chat"
+        ],
         highlight: false,
     },
     {
-        name: "Business",
-        price: "€49",
-        period: "/mese",
-        description: "Per professionisti",
-        features: ["Multi-pagina", "Dominio personalizzato", "Modifiche illimitate", "2 campagne Meta/mese (setup)"],
+        name: "Pack Clienti",
+        price: "€499",
+        setup: "una tantum",
+        subscription: "+ €199/mese",
+        description: "Per iniziare subito a ricevere clienti da Instagram e Facebook.",
+        features: [
+            "Tutto del Pack Presenza",
+            "Meta Ads (Instagram & Facebook)",
+            "Contenuti Base (8 post AI/mese)",
+            "Report mensile performance",
+            "Supporto via chat"
+        ],
         highlight: false,
     },
     {
-        name: "Growth",
-        price: "€99",
-        period: "/mese",
-        description: "Per crescere veloce",
-        features: ["Tutto di Business", "Google Ads inclusi", "5 contenuti AI/mese", "DM automatici", "Report settimanale"],
+        name: "Pack Crescita",
+        price: "€499",
+        setup: "SETUP GRATUITO",
+        subscription: "+ €399/mese",
+        description: "Per crescere seriamente con Google e Meta insieme.",
+        features: [
+            "Sito Web Custom completo (8 pagine)",
+            "Dominio personalizzato incluso",
+            "Full Ads: Meta Pro + Google Ads",
+            "DM automatici ai lead",
+            "Contenuti Pro (illimitati)",
+            "Report settimanale dettagliato",
+            "Manutenzione inclusa",
+            "Supporto prioritario"
+        ],
         highlight: true,
         tag: "CONSIGLIATO"
     },
     {
-        name: "Premium",
-        price: "€199",
-        period: "/mese",
-        description: "Tutto incluso",
-        features: ["Tutto illimitato", "Account manager dedicato", "Supporto 24/7", "Strategia personalizzata"],
+        name: "Pack Premium",
+        price: "€1.499",
+        setup: "SETUP GRATUITO",
+        subscription: "+ €999/mese",
+        description: "Per attività ambiziose. Un’agenzia digitale dedicata.",
+        features: [
+            "Tutto del Pack Crescita",
+            "Pagine sito illimitate",
+            "Campagne illimitate su tutti i canali",
+            "Account manager dedicato",
+            "Strategia marketing mensile",
+            "Report personalizzato e call mensile",
+            "Supporto 24/7 dedicato"
+        ],
         highlight: false,
     }
 ];
@@ -59,9 +92,9 @@ export default function Pricing() {
                     variants={fadeUp}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">Prezzi chiari. Nessuna sorpresa.</h2>
+                    <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">Pack Completi</h2>
                     <p className="text-xl text-gray-400">
-                        Il sito te lo creiamo gratis. Paghi solo se decidi di tenerlo online.
+                        Soluzioni tutto-incluso con risparmio garantito.
                     </p>
                 </motion.div>
 
@@ -75,22 +108,25 @@ export default function Pricing() {
                             variants={fadeUp}
                             transition={{ duration: 0.4, delay: idx * 0.1 }}
                             className={`relative p-6 rounded-2xl flex flex-col h-full bg-[#16162a] border transition-all ${plan.highlight
-                                    ? "border-[#7C3AED] shadow-[0_0_30px_-10px_rgba(124,58,237,0.3)] scale-[1.02] z-10"
+                                    ? "border-[#0090FF] shadow-[0_0_30px_-10px_rgba(0,144,255,0.3)] scale-[1.02] z-10"
                                     : "border-white/5 hover:border-white/20"
                                 }`}
                         >
                             {plan.highlight && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#7C3AED] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0090FF] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                                     {plan.tag}
                                 </div>
                             )}
 
                             <div className="mb-6">
                                 <h3 className="text-lg font-bold text-white mb-1">{plan.name}</h3>
-                                <p className="text-sm text-gray-400 mb-4">{plan.description}</p>
-                                <div className="flex items-baseline">
-                                    <span className="text-3xl font-bold text-white tracking-tight">{plan.price}</span>
-                                    <span className="text-gray-500 ml-1 text-sm">{plan.period}</span>
+                                <p className="text-sm text-gray-400 mb-4 h-10">{plan.description}</p>
+                                <div className="flex flex-col">
+                                    <div className="flex items-baseline">
+                                        <span className="text-3xl font-bold text-white tracking-tight">{plan.price}</span>
+                                        <span className="text-gray-500 ml-1 text-sm">{plan.subscription}</span>
+                                    </div>
+                                    <span className="text-xs text-[#0090FF] font-semibold uppercase tracking-wide mt-1">{plan.setup}</span>
                                 </div>
                             </div>
 
@@ -106,18 +142,23 @@ export default function Pricing() {
                             <button
                                 onClick={scrollToForm}
                                 className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${plan.highlight
-                                        ? "bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-lg"
+                                        ? "bg-[#0090FF] hover:bg-[#0070C9] text-white shadow-lg"
                                         : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                                     }`}
                             >
-                                Richiedi il tuo sito
+                                Scegli {plan.name}
                             </button>
                         </motion.div>
                     ))}
                 </div>
 
                 <div className="text-center">
-                    <p className="text-sm text-gray-500">* Il budget pubblicitario (da dare a Meta/Google) è separato e lo decidi tu.</p>
+                    <span className="text-sm text-gray-500 bg-[#16162a] px-4 py-2 rounded-full border border-white/5 mx-2">
+                        * Budget pubblicitario esclusi
+                    </span>
+                    <span className="text-sm text-gray-500 bg-[#16162a] px-4 py-2 rounded-full border border-white/5 mx-2">
+                        ** Sconto 15% pagamento annuale
+                    </span>
                 </div>
 
             </div>

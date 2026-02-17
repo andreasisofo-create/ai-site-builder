@@ -72,7 +72,7 @@ export default function Features() {
                                 transition={{ duration: 0.4, delay: idx * 0.1 }}
                                 className="p-6 rounded-2xl bg-[#16162a] border border-white/5 hover:bg-[#1a1a2e] transition-colors"
                             >
-                                <div className="w-12 h-12 rounded-lg bg-[#7C3AED]/10 flex items-center justify-center mb-4 text-[#7C3AED]">
+                                <div className="w-12 h-12 rounded-lg bg-[#0090FF]/10 flex items-center justify-center mb-4 text-[#0090FF]">
                                     <Icon className="w-6 h-6" />
                                 </div>
                                 <h3 className="text-lg font-bold text-white mb-2">{feat.title}</h3>
@@ -91,7 +91,7 @@ export default function Features() {
                 >
                     <button
                         onClick={scrollToForm}
-                        className="px-8 py-4 bg-[#FF6B35] hover:bg-[#FF8B5E] text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:-translate-y-0.5"
+                        className="px-8 py-4 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:-translate-y-0.5"
                     >
                         Contattaci — è gratis
                     </button>

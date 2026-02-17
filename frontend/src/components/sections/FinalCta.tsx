@@ -11,11 +11,11 @@ export default function FinalCta() {
 
     return (
         <section className="py-24 relative overflow-hidden">
-            {/* Bold Gradient Background */}
+            {/* Bold Gradient Background - BLUE */}
             <div
                 className="absolute inset-0 z-0"
                 style={{
-                    background: "linear-gradient(135deg, #FF6B35 0%, #7C3AED 100%)"
+                    background: "linear-gradient(135deg, #0090FF 0%, #1e40af 100%)"
                 }}
             />
 
@@ -48,7 +48,7 @@ export default function FinalCta() {
                 >
                     <button
                         onClick={scrollToForm}
-                        className="px-8 py-4 bg-white text-[#FF6B35] rounded-full font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl"
+                        className="px-8 py-4 bg-white text-[#0090FF] rounded-full font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl"
                     >
                         Contattaci — è gratis
                     </button>

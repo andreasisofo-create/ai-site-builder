@@ -140,6 +140,14 @@
           "description": "Hero interattivo con Matter.js: elementi fisici che cadono e l'utente può trascinare, effetto playground creativo",
           "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
           "tags": ["bold", "modern", "tech"]
+        },
+        {
+          "id": "hero-rotating-01",
+          "file": "hero/hero-rotating-01.html",
+          "name": "Rotating Text Hero",
+          "description": "Hero minimale stile Shopify con titolo a rotazione automatica, tipografia grande centrata e CTA magnetico",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_ROTATING_TEXTS"],
+          "tags": ["modern", "tech", "bold"]
         }
       ]
     },
