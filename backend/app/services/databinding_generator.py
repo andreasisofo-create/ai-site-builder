@@ -3359,7 +3359,14 @@ RULES:
         """
         data = dict(data)  # shallow copy to avoid mutating original
 
-        if section == "services":
+        if section == "hero":
+            # Ensure HERO_IMAGE_URL has a placeholder so stock/AI image injection can find and replace it
+            if "HERO_IMAGE_URL" not in data or not data["HERO_IMAGE_URL"]:
+                data["HERO_IMAGE_URL"] = f"https://placehold.co/1200x800/1a1a2e/white?text={business_name}"
+            if "HERO_IMAGE_ALT" not in data or not data["HERO_IMAGE_ALT"]:
+                data["HERO_IMAGE_ALT"] = business_name
+
+        elif section == "services":
             data = self._normalize_repeat_array(
                 data,
                 canonical_key="SERVICES",
