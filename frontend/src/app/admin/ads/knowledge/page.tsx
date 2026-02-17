@@ -91,6 +91,7 @@ interface CategoryDef {
 const categoryDefs: CategoryDef[] = [
   { id: "google", name: "Google Ads", description: "Guida completa operativa Google Ads", icon: FileText },
   { id: "meta", name: "Meta Ads", description: "Guida completa operativa Meta Ads", icon: FileText },
+  { id: "meta-ads", name: "Meta Ads Avanzato", description: "Manuale operativo completo Meta/Instagram Ads con benchmark", icon: FileText },
   { id: "strategy", name: "Strategie", description: "Strategie per settore e confronto piattaforme", icon: Target },
   { id: "technical", name: "Tecniche", description: "Tracking, policy, dimensioni creative", icon: Code },
 ];

@@ -37,6 +37,7 @@ from app.models.ad_market_research import AdMarketResearch
 from app.models.ad_wizard_progress import AdWizardProgress
 from app.models.ad_optimization_log import AdOptimizationLog
 from app.models.ad_ai_activity import AdAiActivity
+from app.models.ad_platform_config import AdPlatformConfig
 
 logger = logging.getLogger(__name__)
 
@@ -2016,3 +2017,342 @@ async def admin_list_activities(
         query = query.filter(AdAiActivity.severity == severity)
     activities = query.order_by(AdAiActivity.created_at.desc()).limit(limit).all()
     return {"success": True, "count": len(activities), "data": [_serialize_ai_activity(a) for a in activities]}
+
+
+# =============================================================================
+# PLATFORM CONFIG — Setup Wizard endpoints
+# =============================================================================
+
+class PlatformConfigUpdate(BaseModel):
+    """Generic schema for updating a platform's config fields."""
+    fields: dict  # e.g. {"developer_token": "xxx", "client_id": "yyy"}
+
+
+PLATFORM_FIELDS = {
+    "google": [
+        "google_developer_token", "google_client_id", "google_client_secret",
+        "google_refresh_token", "google_mcc_id",
+    ],
+    "meta": [
+        "meta_system_user_token", "meta_app_id", "meta_app_secret",
+        "meta_business_id", "meta_pixel_id",
+    ],
+    "dataforseo": ["dataforseo_login", "dataforseo_password"],
+    "n8n": ["n8n_base_url", "n8n_api_key"],
+    "telegram": ["telegram_bot_token", "telegram_chat_id"],
+    "ai": ["claude_api_key", "openai_api_key"],
+}
+
+PLATFORM_STATUS_FIELD = {
+    "google": "google_status",
+    "meta": "meta_status",
+    "dataforseo": "dataforseo_status",
+    "n8n": "n8n_status",
+    "telegram": "telegram_status",
+    "ai": "ai_status",
+}
+
+
+def _mask_key(value: Optional[str]) -> Optional[str]:
+    """Mask sensitive keys, showing only last 4 chars."""
+    if not value:
+        return None
+    if len(value) <= 8:
+        return "****" + value[-2:]
+    return "****" + value[-4:]
+
+
+def _get_or_create_config(user: User, db: Session) -> AdPlatformConfig:
+    """Get existing config or create a new one for the user."""
+    config = db.query(AdPlatformConfig).filter(
+        AdPlatformConfig.owner_id == user.id
+    ).first()
+    if not config:
+        config = AdPlatformConfig(owner_id=user.id)
+        db.add(config)
+        db.commit()
+        db.refresh(config)
+    return config
+
+
+def _serialize_config(config: AdPlatformConfig) -> dict:
+    """Serialize config with masked secrets."""
+    return {
+        "id": config.id,
+        "google": {
+            "developer_token": _mask_key(config.google_developer_token),
+            "client_id": _mask_key(config.google_client_id),
+            "client_secret": _mask_key(config.google_client_secret),
+            "refresh_token": _mask_key(config.google_refresh_token),
+            "mcc_id": config.google_mcc_id,
+            "status": config.google_status or "not_configured",
+        },
+        "meta": {
+            "system_user_token": _mask_key(config.meta_system_user_token),
+            "app_id": _mask_key(config.meta_app_id),
+            "app_secret": _mask_key(config.meta_app_secret),
+            "business_id": config.meta_business_id,
+            "pixel_id": config.meta_pixel_id,
+            "status": config.meta_status or "not_configured",
+        },
+        "dataforseo": {
+            "login": _mask_key(config.dataforseo_login),
+            "password": _mask_key(config.dataforseo_password),
+            "status": config.dataforseo_status or "not_configured",
+        },
+        "n8n": {
+            "base_url": config.n8n_base_url,
+            "api_key": _mask_key(config.n8n_api_key),
+            "status": config.n8n_status or "not_configured",
+        },
+        "telegram": {
+            "bot_token": _mask_key(config.telegram_bot_token),
+            "chat_id": config.telegram_chat_id,
+            "status": config.telegram_status or "not_configured",
+        },
+        "ai": {
+            "claude_api_key": _mask_key(config.claude_api_key),
+            "openai_api_key": _mask_key(config.openai_api_key),
+            "kimi_status": "active",
+            "status": config.ai_status or "not_configured",
+        },
+        "created_at": config.created_at.isoformat() if config.created_at else None,
+        "updated_at": config.updated_at.isoformat() if config.updated_at else None,
+    }
+
+
+@router.get("/config")
+async def get_platform_config(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Get current platform config with masked keys."""
+    config = _get_or_create_config(current_user, db)
+    return {"success": True, "data": _serialize_config(config)}
+
+
+@router.get("/config/status")
+async def get_config_status(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Get setup progress -- which platforms are configured."""
+    config = _get_or_create_config(current_user, db)
+    platforms = {}
+    configured_count = 0
+    for platform, status_field in PLATFORM_STATUS_FIELD.items():
+        status = getattr(config, status_field, "not_configured") or "not_configured"
+        platforms[platform] = status
+        if status not in ("not_configured",):
+            configured_count += 1
+    return {
+        "success": True,
+        "data": {
+            "platforms": platforms,
+            "configured": configured_count,
+            "total": len(PLATFORM_STATUS_FIELD),
+            "progress_pct": round(configured_count / len(PLATFORM_STATUS_FIELD) * 100),
+        },
+    }
+
+
+@router.put("/config/{platform}")
+async def update_platform_config(
+    platform: str,
+    data: PlatformConfigUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Update config for a specific platform (google/meta/dataforseo/n8n/telegram/ai)."""
+    if platform not in PLATFORM_FIELDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown platform: {platform}. Valid: {', '.join(PLATFORM_FIELDS.keys())}",
+        )
+
+    config = _get_or_create_config(current_user, db)
+    allowed_fields = PLATFORM_FIELDS[platform]
+
+    updated = []
+    for key, value in data.fields.items():
+        # Build column name: e.g. "developer_token" -> "google_developer_token"
+        if platform == "ai":
+            col_name = key
+        else:
+            col_name = f"{platform}_{key}" if not key.startswith(platform) else key
+
+        if col_name not in allowed_fields:
+            continue
+
+        setattr(config, col_name, value if value else None)
+        updated.append(col_name)
+
+    # Auto-update status if any credential was set
+    status_field = PLATFORM_STATUS_FIELD[platform]
+    has_any = any(getattr(config, f) for f in allowed_fields)
+    if has_any:
+        current_status = getattr(config, status_field)
+        if current_status == "not_configured":
+            setattr(config, status_field, "pending_approval")
+    else:
+        setattr(config, status_field, "not_configured")
+
+    db.commit()
+    db.refresh(config)
+
+    return {
+        "success": True,
+        "message": f"{platform} config updated ({len(updated)} fields)",
+        "data": _serialize_config(config),
+    }
+
+
+@router.post("/config/{platform}/test")
+async def test_platform_connection(
+    platform: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Test connection for a platform. Returns success/failure + details."""
+    if platform not in PLATFORM_FIELDS:
+        raise HTTPException(status_code=400, detail=f"Unknown platform: {platform}")
+
+    config = _get_or_create_config(current_user, db)
+    status_field = PLATFORM_STATUS_FIELD[platform]
+    result = {"platform": platform, "success": False, "message": "", "details": {}}
+
+    try:
+        if platform == "google":
+            token = config.google_developer_token
+            if not token:
+                result["message"] = "Developer Token mancante"
+                return {"success": True, "data": result}
+            if len(token) < 10:
+                result["message"] = "Developer Token troppo corto"
+                return {"success": True, "data": result}
+            result["success"] = True
+            result["message"] = "Credenziali Google Ads salvate. Lo stato verra aggiornato dopo la verifica del Developer Token da parte di Google."
+            result["details"] = {"mcc_id": config.google_mcc_id or "Non configurato"}
+            setattr(config, status_field, "test_mode")
+
+        elif platform == "meta":
+            token = config.meta_system_user_token
+            if not token:
+                result["message"] = "System User Token mancante"
+                return {"success": True, "data": result}
+            import urllib.request
+            try:
+                url = f"https://graph.facebook.com/v21.0/me?access_token={token}"
+                req = urllib.request.Request(url, method="GET")
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    resp_data = json.loads(resp.read().decode())
+                    result["success"] = True
+                    result["message"] = f"Connessione Meta riuscita. User: {resp_data.get('name', 'OK')}"
+                    result["details"] = {"user_id": resp_data.get("id")}
+                    setattr(config, status_field, "active")
+            except Exception as e:
+                result["message"] = f"Errore connessione Meta: {str(e)[:100]}"
+                setattr(config, status_field, "pending_approval")
+
+        elif platform == "dataforseo":
+            login = config.dataforseo_login
+            pwd = config.dataforseo_password
+            if not login or not pwd:
+                result["message"] = "Login o Password mancanti"
+                return {"success": True, "data": result}
+            import urllib.request
+            import base64
+            try:
+                creds = base64.b64encode(f"{login}:{pwd}".encode()).decode()
+                req = urllib.request.Request(
+                    "https://api.dataforseo.com/v3/serp/google/organic/live",
+                    method="GET",
+                    headers={"Authorization": f"Basic {creds}"},
+                )
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    result["success"] = True
+                    result["message"] = "Connessione DataForSEO riuscita"
+                    setattr(config, status_field, "active")
+            except Exception as e:
+                err_msg = str(e)[:100]
+                if "401" in err_msg:
+                    result["message"] = "Credenziali DataForSEO non valide"
+                else:
+                    result["message"] = f"Errore DataForSEO: {err_msg}"
+                setattr(config, status_field, "pending_approval")
+
+        elif platform == "n8n":
+            base_url = config.n8n_base_url
+            api_key = config.n8n_api_key
+            if not base_url:
+                result["message"] = "Base URL mancante"
+                return {"success": True, "data": result}
+            import urllib.request
+            try:
+                url = f"{base_url.rstrip('/')}/api/v1/workflows?limit=1"
+                headers_dict = {}
+                if api_key:
+                    headers_dict["X-N8N-API-KEY"] = api_key
+                req = urllib.request.Request(url, method="GET", headers=headers_dict)
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    resp_data = json.loads(resp.read().decode())
+                    result["success"] = True
+                    result["message"] = "Connessione n8n riuscita"
+                    result["details"] = {"workflows": len(resp_data.get("data", []))}
+                    setattr(config, status_field, "active")
+            except Exception as e:
+                result["message"] = f"Errore connessione n8n: {str(e)[:100]}"
+                setattr(config, status_field, "pending_approval")
+
+        elif platform == "telegram":
+            bot_token = config.telegram_bot_token
+            chat_id = config.telegram_chat_id
+            if not bot_token or not chat_id:
+                result["message"] = "Bot Token o Chat ID mancanti"
+                return {"success": True, "data": result}
+            import urllib.request
+            try:
+                msg = "Test connessione AI ADS Platform - Funziona!"
+                url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                payload = json.dumps({"chat_id": chat_id, "text": msg}).encode()
+                req = urllib.request.Request(
+                    url, data=payload, method="POST",
+                    headers={"Content-Type": "application/json"},
+                )
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    resp_data = json.loads(resp.read().decode())
+                    if resp_data.get("ok"):
+                        result["success"] = True
+                        result["message"] = "Messaggio di test inviato su Telegram!"
+                        setattr(config, status_field, "active")
+                    else:
+                        result["message"] = "Telegram ha risposto ma il messaggio non e stato inviato"
+                        setattr(config, status_field, "pending_approval")
+            except Exception as e:
+                result["message"] = f"Errore Telegram: {str(e)[:100]}"
+                setattr(config, status_field, "pending_approval")
+
+        elif platform == "ai":
+            claude_key = config.claude_api_key
+            openai_key = config.openai_api_key
+            tested = []
+            if claude_key:
+                tested.append("Claude")
+            if openai_key:
+                tested.append("OpenAI")
+            if not tested:
+                result["message"] = "Nessuna API key inserita (Kimi K2.5 e sempre integrato)"
+                setattr(config, status_field, "not_configured")
+                return {"success": True, "data": result}
+            result["success"] = True
+            result["message"] = f"API keys salvate per: {', '.join(tested)}. Kimi K2.5 sempre attivo."
+            result["details"] = {"models": ["kimi-k2.5"] + [m.lower() for m in tested]}
+            setattr(config, status_field, "active")
+
+        db.commit()
+
+    except Exception as e:
+        logger.error(f"Error testing {platform}: {e}")
+        result["message"] = f"Errore imprevisto: {str(e)[:100]}"
+
+    return {"success": True, "data": result}

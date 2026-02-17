@@ -14,3 +14,4 @@ from app.models.ad_market_research import AdMarketResearch
 from app.models.ad_wizard_progress import AdWizardProgress
 from app.models.ad_optimization_log import AdOptimizationLog
 from app.models.ad_ai_activity import AdAiActivity
+from app.models.ad_platform_config import AdPlatformConfig

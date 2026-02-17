@@ -11,6 +11,8 @@ import {
   BookOpen,
   ChevronLeft,
   Wand2,
+  Settings,
+  Map,
 } from "lucide-react";
 
 const navItems = [
@@ -21,6 +23,8 @@ const navItems = [
   { path: "/admin/ads/wizard", label: "Crea Campagna", icon: Wand2 },
   { path: "/admin/ads/supervision", label: "Supervisione", icon: Shield },
   { path: "/admin/ads/knowledge", label: "Knowledge Base", icon: BookOpen },
+  { path: "/admin/ads/setup", label: "Setup", icon: Settings },
+  { path: "/admin/ads/roadmap", label: "Roadmap", icon: Map },
 ];
 
 export default function AdsLayout({ children }: { children: React.ReactNode }) {
