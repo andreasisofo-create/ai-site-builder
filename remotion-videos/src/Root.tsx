@@ -46,6 +46,10 @@ import {
   HeroTutorialVideoComposition,
   HERO_TUTORIAL_VIDEO_CONFIG,
 } from "./HeroTutorialVideo";
+import {
+  HeroTutorialVideoENComposition,
+  HERO_TUTORIAL_VIDEO_EN_CONFIG,
+} from "./HeroTutorialVideoEN";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -58,6 +62,16 @@ export const RemotionRoot: React.FC = () => {
         fps={HERO_TUTORIAL_VIDEO_CONFIG.fps}
         width={HERO_TUTORIAL_VIDEO_CONFIG.width}
         height={HERO_TUTORIAL_VIDEO_CONFIG.height}
+      />
+
+      {/* Hero Tutorial Video EN */}
+      <Composition
+        id="HeroTutorialVideoEN"
+        component={HeroTutorialVideoENComposition}
+        durationInFrames={HERO_TUTORIAL_VIDEO_EN_CONFIG.durationInFrames}
+        fps={HERO_TUTORIAL_VIDEO_EN_CONFIG.fps}
+        width={HERO_TUTORIAL_VIDEO_EN_CONFIG.width}
+        height={HERO_TUTORIAL_VIDEO_EN_CONFIG.height}
       />
 
       {/* NEW light-themed videos */}
