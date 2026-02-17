@@ -10,6 +10,7 @@ Usage:
 """
 
 import json
+import os
 import re
 import logging
 from typing import Dict, Any, List, Optional
@@ -313,6 +314,24 @@ class TemplateAssembler:
         head_data["MAX_WIDTH"] = sp_max
 
         head_html = self._replace_placeholders(head_template, head_data)
+
+        # Inject ConsentManager GDPR cookie consent script (if configured)
+        cmp_cdid = (
+            site_data.get("consentmanager_cdid")
+            or global_data.get("CONSENTMANAGER_CDID")
+            or os.environ.get("CONSENTMANAGER_CDID", "")
+        )
+        if cmp_cdid:
+            consentmanager_tag = (
+                f'<script type="text/javascript" data-cmp-ab="1" '
+                f'src="https://cdn.consentmanager.net/delivery/autoblocking/{cmp_cdid}.js" '
+                f'data-cmp-host="c.delivery.consentmanager.net" '
+                f'data-cmp-cdn="cdn.consentmanager.net" '
+                f'data-cmp-codesrc="0"></script>'
+            )
+        else:
+            consentmanager_tag = ""
+        head_html = head_html.replace("<!-- CONSENTMANAGER_SCRIPT -->", consentmanager_tag)
 
         # 2. Build body sections
         sections_html = []
