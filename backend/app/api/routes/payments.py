@@ -44,8 +44,8 @@ PLAN_LABELS = {
 def _revolut_base_url() -> str:
     """URL base Revolut Merchant API (sandbox o produzione)."""
     if settings.REVOLUT_SANDBOX:
-        return "https://sandbox-merchant.revolut.com/api/orders"
-    return "https://merchant.revolut.com/api/orders"
+        return "https://sandbox-merchant.revolut.com/api/1.0/orders"
+    return "https://merchant.revolut.com/api/1.0/orders"
 
 
 def _revolut_headers() -> dict:
@@ -177,8 +177,12 @@ async def create_checkout_session(
             )
 
         if resp.status_code not in (200, 201):
+            error_detail = resp.text[:200] if resp.text else "No response body"
             logger.error(f"Revolut create order error: {resp.status_code} - {resp.text}")
-            raise HTTPException(status_code=502, detail="Errore creazione ordine di pagamento")
+            raise HTTPException(
+                status_code=502,
+                detail=f"Errore creazione ordine: Revolut ha risposto {resp.status_code} - {error_detail}"
+            )
 
         order = resp.json()
         order_id = order.get("id", "")
