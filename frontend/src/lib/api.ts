@@ -624,7 +624,8 @@ export async function checkoutService(serviceSlug: string): Promise<CheckoutServ
 export async function getMySubscriptions(): Promise<UserSubscription[]> {
   const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/payments/my-subscriptions`, { headers });
-  return handleResponse<UserSubscription[]>(res);
+  const data = await handleResponse<{ subscriptions: UserSubscription[]; total: number }>(res);
+  return data.subscriptions || [];
 }
 
 export async function getPaymentHistory(limit = 20, offset = 0): Promise<PaymentRecord[]> {
@@ -633,7 +634,8 @@ export async function getPaymentHistory(limit = 20, offset = 0): Promise<Payment
     `${API_BASE}/api/payments/history?limit=${limit}&offset=${offset}`,
     { headers }
   );
-  return handleResponse<PaymentRecord[]>(res);
+  const data = await handleResponse<{ payments: PaymentRecord[]; total: number; limit: number; offset: number }>(res);
+  return data.payments || [];
 }
 
 export async function cancelSubscription(subscriptionId: number): Promise<void> {
