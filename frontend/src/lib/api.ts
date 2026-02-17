@@ -608,7 +608,26 @@ export async function getServiceCatalog(): Promise<CatalogResponse> {
   const res = await fetch(`${API_BASE}/api/payments/catalog`, {
     headers: { "Content-Type": "application/json" },
   });
-  return handleResponse<CatalogResponse>(res);
+  const data = await handleResponse<{ catalog: Record<string, ServiceCatalogItem[]>; total: number }>(res);
+  // Backend returns {catalog: {pack: [...], site: [...], ...}} grouped by category
+  // Flatten into a single array and map field names for frontend use
+  const services: ServiceCatalogItem[] = [];
+  if (data.catalog && typeof data.catalog === "object") {
+    for (const items of Object.values(data.catalog)) {
+      if (Array.isArray(items)) {
+        for (const item of items) {
+          services.push({
+            ...item,
+            // Backend returns parsed arrays as "features"/"features_en",
+            // frontend expects JSON strings as "features_json"/"features_en_json"
+            features_json: item.features_json ?? (Array.isArray((item as any).features) ? JSON.stringify((item as any).features) : null),
+            features_en_json: item.features_en_json ?? (Array.isArray((item as any).features_en) ? JSON.stringify((item as any).features_en) : null),
+          });
+        }
+      }
+    }
+  }
+  return { services };
 }
 
 export async function checkoutService(serviceSlug: string): Promise<CheckoutServiceResponse> {
