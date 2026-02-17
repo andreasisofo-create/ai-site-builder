@@ -33,9 +33,10 @@ import {
   StarIcon,
   ShoppingCartIcon,
   LockClosedIcon,
+  CreditCardIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import { fetchSites, deleteSite, Site, createCheckoutSession } from "@/lib/api";
+import { fetchSites, deleteSite, Site, createCheckoutSession, getMySubscriptions, cancelSubscription, UserSubscription } from "@/lib/api";
 import GenerationCounter from "@/components/GenerationCounter";
 import { TEMPLATE_CATEGORIES, generateStylePreviewHtml } from "@/lib/templates";
 import { useLanguage } from "@/lib/i18n";
@@ -43,6 +44,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const SIDEBAR_ITEMS = (language: string) => [
   { icon: FolderIcon, label: language === "en" ? "Projects" : "Progetti", active: true },
+  { icon: CreditCardIcon, label: language === "en" ? "My Services" : "I Miei Servizi", active: false },
   { icon: Squares2X2Icon, label: "Templates", active: false },
   { icon: ShoppingCartIcon, label: language === "en" ? "Cart" : "Carrello", active: false },
 ];
@@ -78,6 +80,9 @@ function Dashboard() {
   const [showAllTemplates, setShowAllTemplates] = useState(false);
   const [hoveredTemplate, setHoveredTemplate] = useState<string | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [subscriptions, setSubscriptions] = useState<UserSubscription[]>([]);
+  const [subscriptionsLoading, setSubscriptionsLoading] = useState(false);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
 
   // Detect desktop (hover-capable) device for template hover preview
   useEffect(() => {
@@ -92,7 +97,15 @@ function Dashboard() {
   useEffect(() => {
     const paymentStatus = searchParams.get("payment");
     const planName = searchParams.get("plan");
-    if (paymentStatus === "success") {
+    const serviceName = searchParams.get("service");
+    if (paymentStatus === "success" && serviceName) {
+      // Service checkout success
+      const displayName = serviceName.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      toast.success(language === "en" ? `Service ${displayName} activated!` : `Servizio ${displayName} attivato!`);
+      router.replace("/dashboard");
+      // Reload subscriptions
+      loadSubscriptions();
+    } else if (paymentStatus === "success") {
       const planText = language === "en"
         ? (planName === "premium" ? "Premium" : "Site Creation")
         : (planName === "premium" ? "Premium" : "Creazione Sito");
@@ -108,6 +121,7 @@ function Dashboard() {
   useEffect(() => {
     if (isAuthenticated) {
       loadSites();
+      loadSubscriptions();
     }
   }, [isAuthenticated]);
 
@@ -120,6 +134,37 @@ function Dashboard() {
       toast.error(error.message || (language === "en" ? "Error loading sites" : "Errore nel caricamento siti"));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSubscriptions = async () => {
+    try {
+      setSubscriptionsLoading(true);
+      const data = await getMySubscriptions();
+      setSubscriptions(data);
+    } catch (error: any) {
+      // Silently fail - subscriptions section will show empty state
+      console.error("Failed to load subscriptions:", error);
+    } finally {
+      setSubscriptionsLoading(false);
+    }
+  };
+
+  const handleCancelSubscription = async (sub: UserSubscription) => {
+    const confirmMsg = language === "en"
+      ? `Are you sure you want to cancel "${sub.service_name_en}"? This action cannot be undone.`
+      : `Sei sicuro di voler annullare "${sub.service_name}"? Questa azione non puo' essere annullata.`;
+    if (!confirm(confirmMsg)) return;
+
+    try {
+      setCancellingId(sub.id);
+      await cancelSubscription(sub.id);
+      toast.success(language === "en" ? "Subscription cancelled" : "Abbonamento annullato");
+      await loadSubscriptions();
+    } catch (error: any) {
+      toast.error(error.message || (language === "en" ? "Error cancelling subscription" : "Errore nell'annullamento"));
+    } finally {
+      setCancellingId(null);
     }
   };
 
@@ -239,11 +284,14 @@ function Dashboard() {
               key={item.label}
               onClick={() => {
                 const projectLabel = language === "en" ? "Projects" : "Progetti";
+                const servicesLabel = language === "en" ? "My Services" : "I Miei Servizi";
                 const cartLabel = language === "en" ? "Cart" : "Carrello";
                 const comingSoon = language === "en" ? "Coming Soon" : "Prossimamente";
 
                 if (item.label === projectLabel) {
                   document.getElementById("section-progetti")?.scrollIntoView({ behavior: "smooth" });
+                } else if (item.label === servicesLabel) {
+                  document.getElementById("section-servizi")?.scrollIntoView({ behavior: "smooth" });
                 } else if (item.label === "Templates") {
                   document.getElementById("section-templates")?.scrollIntoView({ behavior: "smooth" });
                 } else if (item.label === cartLabel) {
@@ -625,6 +673,148 @@ function Dashboard() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </section>
+
+          {/* My Services Section */}
+          <section id="section-servizi">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white">
+                {language === "en" ? "My Services" : "I Miei Servizi"}
+              </h3>
+            </div>
+
+            {subscriptionsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : subscriptions.length === 0 ? (
+              <div className="text-center py-16 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+                <div className="w-14 h-14 rounded-full bg-white/5 mx-auto flex items-center justify-center mb-4">
+                  <CreditCardIcon className="w-7 h-7 text-slate-500" />
+                </div>
+                <h3 className="text-base font-medium text-white mb-1">
+                  {language === "en" ? "No active services" : "Nessun servizio attivo"}
+                </h3>
+                <p className="text-slate-500 text-sm mb-5">
+                  {language === "en"
+                    ? "Explore our services and find the right one for your business"
+                    : "Esplora i nostri servizi e trova quello giusto per la tua attivita'"}
+                </p>
+                <Link
+                  href="/prezzi"
+                  className="inline-flex px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-medium transition-all"
+                >
+                  {language === "en" ? "Explore Services" : "Esplora Servizi"}
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {subscriptions.map((sub) => {
+                  const name = language === "en" ? sub.service_name_en : sub.service_name;
+                  const priceEuros = (sub.monthly_amount_cents / 100).toFixed(sub.monthly_amount_cents % 100 === 0 ? 0 : 2);
+                  const priceLabel = language === "en" ? `\u20AC${priceEuros}/month` : `\u20AC${priceEuros}/mese`;
+
+                  let statusBadge: { text: string; className: string };
+                  switch (sub.status) {
+                    case "active":
+                      statusBadge = {
+                        text: language === "en" ? "Active" : "Attivo",
+                        className: "bg-emerald-500/10 border-emerald-500/30 text-emerald-400",
+                      };
+                      break;
+                    case "pending_setup":
+                      statusBadge = {
+                        text: language === "en" ? "Pending" : "In attesa",
+                        className: "bg-amber-500/10 border-amber-500/30 text-amber-400",
+                      };
+                      break;
+                    case "cancelled":
+                      statusBadge = {
+                        text: language === "en" ? "Cancelled" : "Annullato",
+                        className: "bg-red-500/10 border-red-500/30 text-red-400",
+                      };
+                      break;
+                    default:
+                      statusBadge = {
+                        text: sub.status,
+                        className: "bg-white/5 border-white/10 text-slate-400",
+                      };
+                  }
+
+                  let features: string[] = [];
+                  try {
+                    const raw = language === "en" ? sub.features_en_json : sub.features_json;
+                    if (raw) features = JSON.parse(raw);
+                  } catch {
+                    // ignore parse errors
+                  }
+
+                  const nextBilling = sub.next_billing_date
+                    ? new Intl.DateTimeFormat(language === "en" ? "en-US" : "it-IT", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      }).format(new Date(sub.next_billing_date))
+                    : "\u2014";
+
+                  return (
+                    <div
+                      key={sub.id}
+                      className="bg-[#161616] border border-white/5 rounded-xl p-5 flex flex-col"
+                    >
+                      {/* Header: name + status */}
+                      <div className="flex items-start justify-between mb-4">
+                        <h4 className="font-semibold text-white text-base">{name}</h4>
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusBadge.className}`}
+                        >
+                          {statusBadge.text}
+                        </span>
+                      </div>
+
+                      {/* Price */}
+                      <div className="mb-4">
+                        <span className="text-2xl font-bold text-white">{priceLabel}</span>
+                      </div>
+
+                      {/* Next billing */}
+                      <div className="mb-4 text-sm">
+                        <span className="text-slate-500">
+                          {language === "en" ? "Next billing:" : "Prossimo rinnovo:"}
+                        </span>{" "}
+                        <span className="text-slate-300">{nextBilling}</span>
+                      </div>
+
+                      {/* Features */}
+                      {features.length > 0 && (
+                        <ul className="space-y-2 mb-5 flex-1">
+                          {features.map((feat, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-sm text-slate-400">
+                              <CheckCircleIcon className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                              <span>{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {/* Cancel button - only for active subscriptions */}
+                      {sub.status === "active" && (
+                        <button
+                          onClick={() => handleCancelSubscription(sub)}
+                          disabled={cancellingId === sub.id}
+                          className="mt-auto w-full py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {cancellingId === sub.id ? (
+                            <div className="w-4 h-4 border-2 border-red-400/40 border-t-red-400 rounded-full animate-spin" />
+                          ) : null}
+                          {language === "en" ? "Cancel" : "Annulla"}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </section>

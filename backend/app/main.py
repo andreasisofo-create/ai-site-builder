@@ -135,6 +135,13 @@ async def lifespan(app: FastAPI):
     else:
         logger.warning("Database non disponibile - skip inizializzazione tabelle")
 
+    # Seed service catalog if empty
+    try:
+        from app.services.seed_services import seed_service_catalog
+        seed_service_catalog()
+    except Exception as e:
+        logger.warning(f"Seed catalogo servizi fallito: {e}")
+
     # Seed design knowledge (ChromaDB) if empty
     try:
         from app.services.design_knowledge import get_collection_stats

@@ -2,16 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
     Megaphone, TrendingUp, BarChart3, Search, Target, Zap,
     Check, ChevronDown, Star, ArrowRight, Shield, Brain,
     Rocket, MessageSquare, ImagePlus, Video, Globe,
-    Smartphone, DollarSign, Users, Clock, Eye
+    Smartphone, DollarSign, Users, Clock, Eye, Loader2
 } from "lucide-react";
+import toast from "react-hot-toast";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/sections/Footer";
 import { useLanguage, translations } from "@/lib/i18n";
+import { checkoutService } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
+
+// Pack slug mapping (order matches translations.adsPage.pricing.packs)
+const PACK_SLUGS = ["pack-presenza", "pack-clienti", "pack-crescita", "pack-premium"];
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -306,6 +313,33 @@ function ContentCreation() {
 function AdsPricing() {
     const { language } = useLanguage();
     const txt = translations[language].adsPage;
+    const router = useRouter();
+    const { isAuthenticated } = useAuth();
+    const [loadingSlug, setLoadingSlug] = useState<string | null>(null);
+
+    const handleCheckout = async (slug: string) => {
+        if (!isAuthenticated) {
+            router.push(`/auth?redirect=/ads&service=${slug}`);
+            return;
+        }
+
+        setLoadingSlug(slug);
+        try {
+            const result = await checkoutService(slug);
+            if (result.checkout_url) {
+                window.location.href = result.checkout_url;
+            } else if (result.activated) {
+                toast.success(language === "it" ? "Servizio attivato con successo!" : "Service activated successfully!");
+                router.push("/dashboard");
+            } else {
+                toast.success(language === "it" ? "Ordine creato. Completa il pagamento." : "Order created. Complete the payment.");
+            }
+        } catch (error: any) {
+            toast.error(error.message || (language === "it" ? "Errore durante il checkout. Riprova." : "Checkout error. Please try again."));
+        } finally {
+            setLoadingSlug(null);
+        }
+    };
 
     return (
         <section id="prezzi-ads" className="py-20 lg:py-28 bg-[#0f0f23]">
@@ -323,6 +357,7 @@ function AdsPricing() {
                     {txt.pricing.packs.map((plan, idx) => {
                         const highlight = idx === 2;
                         const tag = "tag" in plan ? plan.tag : undefined;
+                        const slug = PACK_SLUGS[idx];
                         return (
                             <motion.div
                                 key={idx}
@@ -357,15 +392,23 @@ function AdsPricing() {
                                         </li>
                                     ))}
                                 </ul>
-                                <Link
-                                    href="/#form-contatto"
-                                    className={`w-full py-3 rounded-xl font-bold text-sm text-center transition-all block ${highlight
+                                <button
+                                    onClick={() => handleCheckout(slug)}
+                                    disabled={loadingSlug !== null}
+                                    className={`w-full py-3 rounded-xl font-bold text-sm text-center transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed ${highlight
                                         ? "bg-[#22C55E] hover:bg-[#16A34A] text-white shadow-lg"
                                         : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                                         }`}
                                 >
-                                    {txt.pricing.packs[idx].cta}
-                                </Link>
+                                    {loadingSlug === slug ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            {language === "it" ? "Caricamento..." : "Loading..."}
+                                        </>
+                                    ) : (
+                                        txt.pricing.packs[idx].cta
+                                    )}
+                                </button>
                             </motion.div>
                         );
                     })}

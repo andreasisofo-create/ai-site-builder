@@ -548,6 +548,103 @@ export async function analyzeImage(imageUrl: string): Promise<{ analysis: string
   }
 }
 
+// ============ SERVICE CATALOG / SUBSCRIPTIONS ============
+
+export interface ServiceCatalogItem {
+  slug: string;
+  name: string;
+  name_en: string;
+  category: string;
+  setup_price_cents: number;
+  monthly_price_cents: number;
+  features_json: string | null;
+  features_en_json: string | null;
+  is_highlighted: boolean;
+  display_order: number;
+  generations_limit: number | null;
+  refines_limit: number | null;
+  pages_limit: number | null;
+}
+
+export interface CatalogResponse {
+  services: ServiceCatalogItem[];
+}
+
+export interface CheckoutServiceResponse {
+  checkout_url?: string;
+  order_id?: string;
+  subscription_id: number;
+  activated?: boolean;
+}
+
+export interface UserSubscription {
+  id: number;
+  service_slug: string;
+  service_name: string;
+  service_name_en: string;
+  service_category: string;
+  status: string;
+  monthly_amount_cents: number;
+  setup_paid: boolean;
+  next_billing_date: string | null;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  created_at: string;
+  features_json: string | null;
+  features_en_json: string | null;
+}
+
+export interface PaymentRecord {
+  id: number;
+  amount_cents: number;
+  currency: string;
+  payment_type: string;
+  status: string;
+  description: string | null;
+  created_at: string;
+}
+
+export async function getServiceCatalog(): Promise<CatalogResponse> {
+  const res = await fetch(`${API_BASE}/api/payments/catalog`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  return handleResponse<CatalogResponse>(res);
+}
+
+export async function checkoutService(serviceSlug: string): Promise<CheckoutServiceResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/payments/checkout-service`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ service_slug: serviceSlug }),
+  });
+  return handleResponse<CheckoutServiceResponse>(res);
+}
+
+export async function getMySubscriptions(): Promise<UserSubscription[]> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/payments/my-subscriptions`, { headers });
+  return handleResponse<UserSubscription[]>(res);
+}
+
+export async function getPaymentHistory(limit = 20, offset = 0): Promise<PaymentRecord[]> {
+  const headers = getAuthHeaders();
+  const res = await fetch(
+    `${API_BASE}/api/payments/history?limit=${limit}&offset=${offset}`,
+    { headers }
+  );
+  return handleResponse<PaymentRecord[]>(res);
+}
+
+export async function cancelSubscription(subscriptionId: number): Promise<void> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/payments/cancel-subscription/${subscriptionId}`, {
+    method: "POST",
+    headers,
+  });
+  await handleResponse(res);
+}
+
 // ============ UTILS ============
 
 /** Genera uno slug dal nome (senza suffissi random) */

@@ -1,5 +1,6 @@
 """Admin Panel API Routes"""
 
+import json
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from pydantic import BaseModel
@@ -13,6 +14,7 @@ from app.core.database import get_db
 from app.models.user import User, PLAN_CONFIG
 from app.models.site import Site
 from app.models.site_version import SiteVersion
+from app.models.service import ServiceCatalog, UserSubscription, PaymentHistory
 
 router = APIRouter()
 
@@ -40,6 +42,12 @@ class UserUpdateRequest(BaseModel):
     generations_limit: Optional[int] = None
     refines_limit: Optional[int] = None
     pages_limit: Optional[int] = None
+
+
+class SubscriptionUpdateRequest(BaseModel):
+    status: Optional[str] = None
+    monthly_amount_cents: Optional[int] = None
+    notes: Optional[str] = None
 
 
 # ============= AUTH =============
@@ -125,6 +133,30 @@ async def admin_stats(
     sites_with_cost = db.query(func.count(Site.id)).filter(Site.generation_cost > 0).scalar() or 0
     avg_cost = (total_ai_cost / sites_with_cost) if sites_with_cost > 0 else 0
 
+    # ---- Subscription & Revenue stats ----
+    active_subscriptions = db.query(func.count(UserSubscription.id)).filter(
+        UserSubscription.status == "active"
+    ).scalar() or 0
+
+    # MRR: somma monthly_amount_cents di tutte le subscription attive (in centesimi)
+    mrr_cents = db.query(func.sum(UserSubscription.monthly_amount_cents)).filter(
+        UserSubscription.status == "active",
+        UserSubscription.monthly_amount_cents > 0,
+    ).scalar() or 0
+
+    # Total revenue: somma di tutti i pagamenti completati (in centesimi)
+    total_revenue_cents = db.query(func.sum(PaymentHistory.amount_cents)).filter(
+        PaymentHistory.status == "completed"
+    ).scalar() or 0
+
+    # Subscription distribution by status
+    sub_statuses = {}
+    for st in ["pending_setup", "active", "paused", "cancelled", "expired"]:
+        count = db.query(func.count(UserSubscription.id)).filter(
+            UserSubscription.status == st
+        ).scalar() or 0
+        sub_statuses[st] = count
+
     return {
         "users": {
             "total": total_users,
@@ -146,6 +178,14 @@ async def admin_stats(
             "total_tokens_input": total_tokens_in,
             "total_tokens_output": total_tokens_out,
             "sites_tracked": sites_with_cost,
+        },
+        "revenue": {
+            "mrr_cents": mrr_cents,
+            "mrr_eur": round(mrr_cents / 100, 2),
+            "total_revenue_cents": total_revenue_cents,
+            "total_revenue_eur": round(total_revenue_cents / 100, 2),
+            "active_subscriptions": active_subscriptions,
+            "subscription_statuses": sub_statuses,
         },
     }
 
@@ -438,3 +478,164 @@ async def admin_delete_site(
     db.commit()
 
     return {"message": "Site deleted"}
+
+
+# ============= SUBSCRIPTIONS =============
+
+@router.get("/subscriptions")
+async def admin_list_subscriptions(
+    page: int = 1,
+    per_page: int = 50,
+    status: Optional[str] = None,
+    category: Optional[str] = None,
+    user_id: Optional[int] = None,
+    admin=Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """List all subscriptions with user info and service details.
+
+    Filterable by status, category (from ServiceCatalog), and user_id.
+    """
+    query = db.query(UserSubscription)
+
+    # Filter by status
+    if status:
+        query = query.filter(UserSubscription.status == status)
+
+    # Filter by user_id
+    if user_id:
+        query = query.filter(UserSubscription.user_id == user_id)
+
+    # Filter by category requires a join with ServiceCatalog
+    if category:
+        # Get slugs for services in this category
+        category_slugs = [
+            s.slug for s in
+            db.query(ServiceCatalog.slug).filter(ServiceCatalog.category == category).all()
+        ]
+        if category_slugs:
+            query = query.filter(UserSubscription.service_slug.in_(category_slugs))
+        else:
+            # No services in this category, return empty
+            return {
+                "subscriptions": [],
+                "total": 0,
+                "page": page,
+                "per_page": per_page,
+                "pages": 0,
+            }
+
+    total = query.count()
+    subscriptions = (
+        query.order_by(UserSubscription.created_at.desc())
+        .offset((page - 1) * per_page)
+        .limit(per_page)
+        .all()
+    )
+
+    result = []
+    for sub in subscriptions:
+        # Load user info
+        user = db.query(User).filter(User.id == sub.user_id).first()
+        # Load service info
+        service = db.query(ServiceCatalog).filter(ServiceCatalog.slug == sub.service_slug).first()
+
+        result.append({
+            "id": sub.id,
+            "user_id": sub.user_id,
+            "user_email": user.email if user else None,
+            "user_full_name": user.full_name if user else None,
+            "service_slug": sub.service_slug,
+            "service_name": service.name if service else sub.service_slug,
+            "service_category": service.category if service else None,
+            "status": sub.status,
+            "setup_paid": sub.setup_paid or False,
+            "setup_order_id": sub.setup_order_id,
+            "monthly_amount_cents": sub.monthly_amount_cents or 0,
+            "current_period_start": sub.current_period_start.isoformat() if sub.current_period_start else None,
+            "current_period_end": sub.current_period_end.isoformat() if sub.current_period_end else None,
+            "next_billing_date": sub.next_billing_date.isoformat() if sub.next_billing_date else None,
+            "activated_by": sub.activated_by,
+            "notes": sub.notes,
+            "created_at": sub.created_at.isoformat() if sub.created_at else None,
+            "updated_at": sub.updated_at.isoformat() if sub.updated_at else None,
+            "cancelled_at": sub.cancelled_at.isoformat() if sub.cancelled_at else None,
+        })
+
+    return {
+        "subscriptions": result,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "pages": (total + per_page - 1) // per_page,
+    }
+
+
+@router.put("/subscriptions/{subscription_id}")
+async def admin_update_subscription(
+    subscription_id: int,
+    data: SubscriptionUpdateRequest,
+    admin=Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Update a subscription (status, monthly amount, notes).
+
+    Admin can force-activate a subscription by setting status="active".
+    """
+    subscription = db.query(UserSubscription).filter(
+        UserSubscription.id == subscription_id
+    ).first()
+
+    if not subscription:
+        raise HTTPException(status_code=404, detail="Subscription not found")
+
+    update_data = data.model_dump(exclude_unset=True)
+    now = datetime.now(timezone.utc)
+
+    # Handle status changes
+    new_status = update_data.get("status")
+    if new_status:
+        # Force activate: set period dates and activated_by
+        if new_status == "active" and subscription.status != "active":
+            subscription.status = "active"
+            subscription.activated_by = "admin"
+            subscription.setup_paid = True
+            if not subscription.current_period_start:
+                subscription.current_period_start = now
+            if not subscription.current_period_end:
+                subscription.current_period_end = now + timedelta(days=30)
+            # Set next billing if there is a monthly amount
+            if (subscription.monthly_amount_cents or 0) > 0 and not subscription.next_billing_date:
+                subscription.next_billing_date = now + timedelta(days=30)
+
+            # Apply service limits to user
+            service = db.query(ServiceCatalog).filter(
+                ServiceCatalog.slug == subscription.service_slug
+            ).first()
+            if service:
+                user = db.query(User).filter(User.id == subscription.user_id).first()
+                if user:
+                    from app.api.routes.payments import _apply_service_limits
+                    _apply_service_limits(user, service, db, commit=False)
+
+        elif new_status == "cancelled":
+            subscription.status = "cancelled"
+            subscription.cancelled_at = now
+        else:
+            subscription.status = new_status
+
+    # Update other fields
+    if "monthly_amount_cents" in update_data:
+        subscription.monthly_amount_cents = update_data["monthly_amount_cents"]
+    if "notes" in update_data:
+        subscription.notes = update_data["notes"]
+
+    db.commit()
+    db.refresh(subscription)
+
+    return {
+        "message": "Subscription updated",
+        "subscription_id": subscription.id,
+        "status": subscription.status,
+        "activated_by": subscription.activated_by,
+    }

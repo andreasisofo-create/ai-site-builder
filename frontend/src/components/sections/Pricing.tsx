@@ -1,19 +1,25 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { checkoutService } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 
 const plans = [
     {
         name: "Pack Presenza",
-        price: "€499",
+        slug: "pack-presenza",
+        price: "\u20AC499",
         setup: "una tantum",
-        subscription: "+ €39/mese",
+        subscription: "+ \u20AC39/mese",
         description: "Per chi vuole essere online con un sito professionale.",
         features: [
             "Homepage AI completa",
             "3 pagine extra incluse (4 totali)",
-            "Dominio personalizzato (1° anno)",
+            "Dominio personalizzato (1\u00B0 anno)",
             "Hosting + SSL + Backup",
             "Modifiche illimitate via chat"
         ],
@@ -21,9 +27,10 @@ const plans = [
     },
     {
         name: "Pack Clienti",
-        price: "€499",
+        slug: "pack-clienti",
+        price: "\u20AC499",
         setup: "una tantum",
-        subscription: "+ €199/mese",
+        subscription: "+ \u20AC199/mese",
         description: "Per iniziare subito a ricevere clienti da Instagram e Facebook.",
         features: [
             "Tutto del Pack Presenza",
@@ -36,9 +43,10 @@ const plans = [
     },
     {
         name: "Pack Crescita",
-        price: "€499",
+        slug: "pack-crescita",
+        price: "\u20AC499",
         setup: "SETUP GRATUITO",
-        subscription: "+ €399/mese",
+        subscription: "+ \u20AC399/mese",
         description: "Per crescere seriamente con Google e Meta insieme.",
         features: [
             "Sito Web Custom completo (8 pagine)",
@@ -55,10 +63,11 @@ const plans = [
     },
     {
         name: "Pack Premium",
-        price: "€1.499",
+        slug: "pack-premium",
+        price: "\u20AC1.499",
         setup: "SETUP GRATUITO",
-        subscription: "+ €999/mese",
-        description: "Per attività ambiziose. Un’agenzia digitale dedicata.",
+        subscription: "+ \u20AC999/mese",
+        description: "Per attivita' ambiziose. Un'agenzia digitale dedicata.",
         features: [
             "Tutto del Pack Crescita",
             "Pagine sito illimitate",
@@ -78,8 +87,33 @@ const fadeUp = {
 };
 
 export default function Pricing() {
-    const scrollToForm = () => {
-        document.getElementById("form-contatto")?.scrollIntoView({ behavior: "smooth" });
+    const router = useRouter();
+    const { isAuthenticated } = useAuth();
+    const [loadingSlug, setLoadingSlug] = useState<string | null>(null);
+
+    const handleCheckout = async (slug: string) => {
+        // If not logged in, redirect to auth with return parameters
+        if (!isAuthenticated) {
+            router.push(`/auth?redirect=/prezzi&service=${slug}`);
+            return;
+        }
+
+        setLoadingSlug(slug);
+        try {
+            const result = await checkoutService(slug);
+            if (result.checkout_url) {
+                window.location.href = result.checkout_url;
+            } else if (result.activated) {
+                toast.success("Servizio attivato con successo!");
+                router.push("/dashboard");
+            } else {
+                toast.success("Ordine creato. Completa il pagamento.");
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Errore durante il checkout. Riprova.");
+        } finally {
+            setLoadingSlug(null);
+        }
     };
 
     return (
@@ -140,13 +174,21 @@ export default function Pricing() {
                             </ul>
 
                             <button
-                                onClick={scrollToForm}
-                                className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${plan.highlight
+                                onClick={() => handleCheckout(plan.slug)}
+                                disabled={loadingSlug !== null}
+                                className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed ${plan.highlight
                                         ? "bg-[#0090FF] hover:bg-[#0070C9] text-white shadow-lg"
                                         : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                                     }`}
                             >
-                                Scegli {plan.name}
+                                {loadingSlug === plan.slug ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Caricamento...
+                                    </>
+                                ) : (
+                                    `Scegli ${plan.name}`
+                                )}
                             </button>
                         </motion.div>
                     ))}

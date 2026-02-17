@@ -4,6 +4,9 @@ from app.models.component import Component
 from app.models.site_version import SiteVersion
 from app.models.global_counter import GlobalCounter
 
+# Services & Payments
+from app.models.service import ServiceCatalog, UserSubscription, PaymentHistory
+
 # Ads AI Platform models
 from app.models.ad_client import AdClient
 from app.models.ad_campaign import AdCampaign

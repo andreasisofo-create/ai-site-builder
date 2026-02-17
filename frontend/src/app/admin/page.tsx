@@ -20,6 +20,14 @@ interface AdminStats {
     total_tokens_output: number;
     sites_tracked: number;
   };
+  revenue?: {
+    mrr_cents: number;
+    mrr_eur: number;
+    total_revenue_cents: number;
+    total_revenue_eur: number;
+    active_subscriptions: number;
+    subscription_statuses: Record<string, number>;
+  };
 }
 
 interface UserRecord {
@@ -66,6 +74,36 @@ interface PaginatedUsers {
 
 interface PaginatedSites {
   sites: SiteRecord[];
+  total: number;
+  page: number;
+  per_page: number;
+  pages: number;
+}
+
+interface SubscriptionRecord {
+  id: number;
+  user_id: number;
+  user_email: string | null;
+  user_full_name: string | null;
+  service_slug: string;
+  service_name: string;
+  service_category: string | null;
+  status: string;
+  setup_paid: boolean;
+  setup_order_id: string | null;
+  monthly_amount_cents: number;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  next_billing_date: string | null;
+  activated_by: string | null;
+  notes: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  cancelled_at: string | null;
+}
+
+interface PaginatedSubscriptions {
+  subscriptions: SubscriptionRecord[];
   total: number;
   page: number;
   per_page: number;
@@ -198,6 +236,27 @@ function BoolBadge({ value, trueLabel, falseLabel, lang = "it" }: { value: boole
       )}
     >
       {value ? yes : no}
+    </span>
+  );
+}
+
+function SubscriptionStatusBadge({ status }: { status: string }) {
+  const map: Record<string, { bg: string; label: string }> = {
+    active: { bg: "bg-green-900/50 text-green-400 border-green-800", label: "Attivo" },
+    pending_setup: { bg: "bg-yellow-900/50 text-yellow-400 border-yellow-800", label: "In attesa" },
+    paused: { bg: "bg-orange-900/50 text-orange-400 border-orange-800", label: "In pausa" },
+    cancelled: { bg: "bg-red-900/50 text-red-400 border-red-800", label: "Annullato" },
+    expired: { bg: "bg-gray-800 text-gray-400 border-gray-700", label: "Scaduto" },
+  };
+  const info = map[status] || { bg: "bg-gray-800 text-gray-400 border-gray-700", label: status };
+  return (
+    <span
+      className={classNames(
+        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border",
+        info.bg
+      )}
+    >
+      {info.label}
     </span>
   );
 }
@@ -584,16 +643,36 @@ function OverviewTab() {
   return (
     <div className="space-y-6">
       {/* Stats cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label={language === "en" ? "Total Users" : "Utenti Totali"} value={stats.users.total} sub={language === "en" ? `${stats.users.recent_30d} last 30d` : `${stats.users.recent_30d} ultimi 30g`} />
         <StatCard label={language === "en" ? "Premium Users" : "Utenti Premium"} value={stats.users.premium} sub={language === "en" ? `${stats.users.active} active` : `${stats.users.active} attivi`} accent />
         <StatCard label={language === "en" ? "Total Sites" : "Siti Totali"} value={stats.sites.total} sub={language === "en" ? `${stats.sites.published} published` : `${stats.sites.published} pubblicati`} />
         <StatCard label={language === "en" ? "Generations" : "Generazioni"} value={stats.generations_total} sub={language === "en" ? `${stats.sites.generating} in progress` : `${stats.sites.generating} in corso`} accent />
+      </div>
+
+      {/* Revenue & Cost cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          label="MRR"
+          value={stats.revenue ? `${stats.revenue.mrr_eur.toFixed(2)} \u20AC` : "0.00 \u20AC"}
+          sub={language === "en" ? "Monthly Recurring Revenue" : "Ricavo Mensile Ricorrente"}
+          accent
+        />
+        <StatCard
+          label={language === "en" ? "Active Subscriptions" : "Abbonamenti Attivi"}
+          value={stats.revenue?.active_subscriptions ?? 0}
+          sub={stats.revenue?.subscription_statuses ? `${stats.revenue.subscription_statuses.pending_setup ?? 0} ${language === "en" ? "pending" : "in attesa"}` : "---"}
+          accent
+        />
+        <StatCard
+          label={language === "en" ? "Total Revenue" : "Revenue Totale"}
+          value={stats.revenue ? `${stats.revenue.total_revenue_eur.toFixed(2)} \u20AC` : "0.00 \u20AC"}
+          sub={language === "en" ? "All completed payments" : "Tutti i pagamenti completati"}
+        />
         <StatCard
           label={language === "en" ? "AI Cost" : "Costo AI"}
           value={stats.ai_costs ? `$${stats.ai_costs.total_usd.toFixed(2)}` : "$0.00"}
           sub={stats.ai_costs ? (language === "en" ? `~$${stats.ai_costs.avg_per_site_usd.toFixed(3)}/site` : `~$${stats.ai_costs.avg_per_site_usd.toFixed(3)}/sito`) : "---"}
-          accent
         />
       </div>
 
@@ -655,6 +734,37 @@ function OverviewTab() {
           </div>
         </Card>
       </div>
+
+      {/* Subscription status distribution */}
+      {stats.revenue && (
+        <Card className="p-5">
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">
+            {language === "en" ? "Subscription Status" : "Stato Abbonamenti"}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            {[
+              { key: "active", label: language === "en" ? "Active" : "Attivi", dot: "bg-green-400" },
+              { key: "pending_setup", label: language === "en" ? "Pending" : "In attesa", dot: "bg-yellow-400" },
+              { key: "paused", label: language === "en" ? "Paused" : "In pausa", dot: "bg-orange-400" },
+              { key: "cancelled", label: language === "en" ? "Cancelled" : "Annullati", dot: "bg-red-400" },
+              { key: "expired", label: language === "en" ? "Expired" : "Scaduti", dot: "bg-gray-400" },
+            ].map((s) => (
+              <div
+                key={s.key}
+                className="flex items-center gap-3 bg-[#0a0a0a] rounded-lg p-3 border border-[#2a2a2a]"
+              >
+                <span className={classNames("w-2.5 h-2.5 rounded-full flex-shrink-0", s.dot)} />
+                <div>
+                  <p className="text-lg font-bold text-white leading-none">
+                    {stats.revenue!.subscription_statuses[s.key] ?? 0}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* AI Cost breakdown */}
       {stats.ai_costs && stats.ai_costs.sites_tracked > 0 && (
@@ -1600,10 +1710,254 @@ function SettingsTab() {
 }
 
 // ---------------------------------------------------------------------------
+// TAB: SERVICES (Subscriptions)
+// ---------------------------------------------------------------------------
+
+function ServicesTab() {
+  const { language } = useLanguage();
+  const [data, setData] = useState<PaginatedSubscriptions | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [actionLoading, setActionLoading] = useState<number | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const params = new URLSearchParams({ page: String(page), per_page: "30" });
+      if (statusFilter) params.set("status", statusFilter);
+      const d = await adminFetch(`/api/admin/subscriptions?${params}`);
+      setData(d);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, statusFilter]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const handleStatusChange = async (subId: number, newStatus: string) => {
+    setActionLoading(subId);
+    try {
+      await adminFetch(`/api/admin/subscriptions/${subId}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: newStatus }),
+      });
+      load();
+    } catch (err: any) {
+      alert(
+        (language === "en" ? "Error updating subscription: " : "Errore aggiornamento abbonamento: ") +
+          err.message
+      );
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const formatAmount = (cents: number) => {
+    return `${(cents / 100).toFixed(2)} \u20AC`;
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <h2 className="text-lg font-semibold text-white flex-1">
+          {language === "en" ? "Client Services & Subscriptions" : "Servizi e Abbonamenti Clienti"}
+        </h2>
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
+          className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
+        >
+          <option value="">{language === "en" ? "All statuses" : "Tutti"}</option>
+          <option value="active">{language === "en" ? "Active" : "Attivi"}</option>
+          <option value="pending_setup">{language === "en" ? "Pending setup" : "In attesa"}</option>
+          <option value="paused">{language === "en" ? "Paused" : "In pausa"}</option>
+          <option value="cancelled">{language === "en" ? "Cancelled" : "Annullati"}</option>
+          <option value="expired">{language === "en" ? "Expired" : "Scaduti"}</option>
+        </select>
+      </div>
+
+      {/* Table */}
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button onClick={load} className="text-sm text-indigo-400 hover:underline">
+            {language === "en" ? "Retry" : "Riprova"}
+          </button>
+        </div>
+      ) : !data || data.subscriptions.length === 0 ? (
+        <Card className="p-8 text-center">
+          <p className="text-gray-500">
+            {language === "en" ? "No subscriptions found" : "Nessun abbonamento trovato"}
+          </p>
+        </Card>
+      ) : (
+        <>
+          <Card className="overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[#2a2a2a] text-left">
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {language === "en" ? "User" : "Utente"}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                      {language === "en" ? "Service" : "Servizio"}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {language === "en" ? "Status" : "Stato"}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                      {language === "en" ? "Monthly" : "Importo mensile"}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                      {language === "en" ? "Next billing" : "Prossimo rinnovo"}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                      {language === "en" ? "Created" : "Creato"}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
+                      {language === "en" ? "Actions" : "Azioni"}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#2a2a2a]">
+                  {data.subscriptions.map((sub) => (
+                    <tr key={sub.id} className="hover:bg-[#222] transition-colors">
+                      <td className="px-4 py-3">
+                        <div>
+                          <span className="text-white text-sm truncate block max-w-[200px]">
+                            {sub.user_email || `User #${sub.user_id}`}
+                          </span>
+                          {sub.user_full_name && (
+                            <span className="text-xs text-gray-500">{sub.user_full_name}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        <div>
+                          <span className="text-gray-300 text-sm">{sub.service_name}</span>
+                          {sub.service_category && (
+                            <span className="block text-xs text-gray-600">{sub.service_category}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <SubscriptionStatusBadge status={sub.status} />
+                      </td>
+                      <td className="px-4 py-3 text-gray-300 hidden sm:table-cell">
+                        {sub.monthly_amount_cents > 0 ? formatAmount(sub.monthly_amount_cents) : "---"}
+                      </td>
+                      <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">
+                        {formatDate(sub.next_billing_date, language)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">
+                        {formatDate(sub.created_at, language)}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {actionLoading === sub.id ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            <>
+                              {sub.status === "pending_setup" && (
+                                <button
+                                  onClick={() => handleStatusChange(sub.id, "active")}
+                                  className="px-2.5 py-1 text-xs rounded-md bg-green-900/40 text-green-400 border border-green-800/50 hover:bg-green-900/60 transition-colors"
+                                  title={language === "en" ? "Activate" : "Attiva"}
+                                >
+                                  {language === "en" ? "Activate" : "Attiva"}
+                                </button>
+                              )}
+                              {sub.status === "active" && (
+                                <>
+                                  <button
+                                    onClick={() => handleStatusChange(sub.id, "paused")}
+                                    className="px-2.5 py-1 text-xs rounded-md bg-orange-900/40 text-orange-400 border border-orange-800/50 hover:bg-orange-900/60 transition-colors"
+                                    title={language === "en" ? "Pause" : "Pausa"}
+                                  >
+                                    {language === "en" ? "Pause" : "Pausa"}
+                                  </button>
+                                  <button
+                                    onClick={() => handleStatusChange(sub.id, "cancelled")}
+                                    className="px-2.5 py-1 text-xs rounded-md bg-red-900/40 text-red-400 border border-red-800/50 hover:bg-red-900/60 transition-colors"
+                                    title={language === "en" ? "Cancel" : "Annulla"}
+                                  >
+                                    {language === "en" ? "Cancel" : "Annulla"}
+                                  </button>
+                                </>
+                              )}
+                              {sub.status === "paused" && (
+                                <>
+                                  <button
+                                    onClick={() => handleStatusChange(sub.id, "active")}
+                                    className="px-2.5 py-1 text-xs rounded-md bg-green-900/40 text-green-400 border border-green-800/50 hover:bg-green-900/60 transition-colors"
+                                    title={language === "en" ? "Resume" : "Riattiva"}
+                                  >
+                                    {language === "en" ? "Resume" : "Riattiva"}
+                                  </button>
+                                  <button
+                                    onClick={() => handleStatusChange(sub.id, "cancelled")}
+                                    className="px-2.5 py-1 text-xs rounded-md bg-red-900/40 text-red-400 border border-red-800/50 hover:bg-red-900/60 transition-colors"
+                                    title={language === "en" ? "Cancel" : "Annulla"}
+                                  >
+                                    {language === "en" ? "Cancel" : "Annulla"}
+                                  </button>
+                                </>
+                              )}
+                              {(sub.status === "cancelled" || sub.status === "expired") && (
+                                <button
+                                  onClick={() => handleStatusChange(sub.id, "active")}
+                                  className="px-2.5 py-1 text-xs rounded-md bg-green-900/40 text-green-400 border border-green-800/50 hover:bg-green-900/60 transition-colors"
+                                  title={language === "en" ? "Reactivate" : "Riattiva"}
+                                >
+                                  {language === "en" ? "Reactivate" : "Riattiva"}
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-600">
+              {data.total} {language === "en" ? "total subscriptions" : "abbonamenti totali"} &middot;{" "}
+              {language === "en" ? "Page" : "Pagina"} {data.page} {language === "en" ? "of" : "di"}{" "}
+              {data.pages}
+            </p>
+            <Pagination page={data.page} pages={data.pages} onPage={setPage} lang={language} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // MAIN DASHBOARD LAYOUT
 // ---------------------------------------------------------------------------
 
-type TabKey = "overview" | "users" | "sites" | "settings";
+type TabKey = "overview" | "users" | "sites" | "services" | "settings";
 
 const TAB_ICONS = {
   overview: (
@@ -1621,6 +1975,11 @@ const TAB_ICONS = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
     </svg>
   ),
+  services: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+    </svg>
+  ),
   settings: (
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
@@ -1634,6 +1993,7 @@ function getTabs(lang: string): { key: TabKey; label: string; icon: JSX.Element 
     { key: "overview", label: lang === "en" ? "Overview" : "Panoramica", icon: TAB_ICONS.overview },
     { key: "users", label: lang === "en" ? "Users" : "Utenti", icon: TAB_ICONS.users },
     { key: "sites", label: lang === "en" ? "Sites" : "Siti", icon: TAB_ICONS.sites },
+    { key: "services", label: lang === "en" ? "Services" : "Servizi", icon: TAB_ICONS.services },
     { key: "settings", label: lang === "en" ? "Settings" : "Impostazioni", icon: TAB_ICONS.settings },
   ];
 }
@@ -1764,6 +2124,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         {activeTab === "overview" && <OverviewTab />}
         {activeTab === "users" && <UsersTab />}
         {activeTab === "sites" && <SitesTab />}
+        {activeTab === "services" && <ServicesTab />}
         {activeTab === "settings" && <SettingsTab />}
       </main>
     </div>
