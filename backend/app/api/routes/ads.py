@@ -2356,3 +2356,216 @@ async def test_platform_connection(
         result["message"] = f"Errore imprevisto: {str(e)[:100]}"
 
     return {"success": True, "data": result}
+
+
+# =============================================================================
+# WEBSITE ANALYZER — AI-powered deep analysis (Module 1 Enhanced)
+# =============================================================================
+
+class AnalyzeWebsiteRequest(BaseModel):
+    url: str
+
+
+@router.post("/analyze-website")
+async def analyze_website(
+    data: AnalyzeWebsiteRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Fetch a website and analyze it with Kimi AI for a structured business report."""
+    import httpx
+    from app.core.config import settings
+
+    url = data.url.strip()
+    if not url.startswith("http"):
+        url = f"https://{url}"
+
+    logger.info(f"[Analyzer] AI analysis for: {url}")
+
+    # 1. Fetch the website HTML
+    try:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+            resp = await client.get(
+                url,
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+            )
+            html = resp.text
+    except Exception as e:
+        logger.error(f"[Analyzer] Fetch failed for {url}: {e}")
+        raise HTTPException(status_code=400, detail=f"Impossibile raggiungere il sito: {str(e)[:200]}")
+
+    # 2. Extract text content
+    text = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()[:8000]
+
+    # 3. Extract meta info
+    title_match = re.search(r'<title[^>]*>(.*?)</title>', html, re.I | re.DOTALL)
+    desc_match = re.search(r'<meta[^>]*name=["\']description["\'][^>]*content=["\']([^"\']*)["\']', html, re.I)
+    if not desc_match:
+        desc_match = re.search(r'<meta[^>]*content=["\']([^"\']*)["\'][^>]*name=["\']description["\']', html, re.I)
+
+    page_title = title_match.group(1).strip() if title_match else "N/A"
+    page_description = desc_match.group(1).strip() if desc_match else "N/A"
+
+    # 4. Build prompt for Kimi AI
+    prompt = f"""Analizza questo sito web e restituisci un JSON strutturato.
+
+URL: {url}
+Titolo: {page_title}
+Meta Description: {page_description}
+
+Contenuto del sito:
+{text}
+
+Restituisci SOLO un JSON valido (senza markdown, senza ```json, senza commenti) con questa struttura:
+{{
+  "business_name": "nome azienda",
+  "business_type": "SaaS|E-commerce|Servizio Locale|Agenzia|Professionista|Ristorante|Blog|Startup|Altro",
+  "sector": "settore specifico",
+  "value_proposition": "proposta di valore principale in 1-2 frasi",
+  "target_audience": ["segmento 1", "segmento 2", "segmento 3"],
+  "services": [
+    {{"name": "servizio 1", "description": "descrizione breve", "price": "prezzo o null"}},
+    {{"name": "servizio 2", "description": "descrizione breve", "price": "prezzo o null"}}
+  ],
+  "tone_of_voice": "formale|informale|tecnico|ironico|professionale|amichevole",
+  "tone_keywords": ["parola1", "parola2", "parola3"],
+  "strengths": ["punto forte 1", "punto forte 2", "punto forte 3"],
+  "weaknesses": ["punto debole 1", "punto debole 2", "punto debole 3"],
+  "cta_list": ["CTA 1", "CTA 2"],
+  "site_structure": ["sezione 1", "sezione 2", "sezione 3"],
+  "tech_detected": ["tecnologia 1", "tecnologia 2"],
+  "tech_score": 75,
+  "seo_score": 70,
+  "mobile_score": 80,
+  "suggested_campaign_type": "Search|Display|Social|Video|Lead Gen",
+  "suggested_platform": "Google|Meta|Both",
+  "ai_suggestions": [
+    "Suggerimento 1 per migliorare le ads",
+    "Suggerimento 2 per migliorare le ads",
+    "Suggerimento 3 per migliorare le ads",
+    "Suggerimento 4 per migliorare le ads",
+    "Suggerimento 5 per migliorare le ads"
+  ]
+}}
+
+IMPORTANTE: Rispondi in italiano. Sii specifico e concreto nelle analisi. I punteggi devono essere realistici (0-100). I suggerimenti devono essere azionabili e utili per creare campagne pubblicitarie efficaci."""
+
+    # 5. Call Kimi API
+    api_url = settings.KIMI_API_URL or "https://api.moonshot.ai/v1"
+    api_key = settings.active_api_key
+    if not api_key:
+        raise HTTPException(status_code=500, detail="Nessuna API key AI configurata")
+
+    ai_payload = {
+        "model": "kimi-k2.5",
+        "messages": [
+            {"role": "system", "content": "Sei un esperto analista di marketing digitale. Analizzi siti web e produci report strutturati in JSON per aiutare a creare campagne pubblicitarie efficaci."},
+            {"role": "user", "content": prompt},
+        ],
+        "max_tokens": 4000,
+        "temperature": 0.4,
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=120) as client:
+            ai_resp = await client.post(
+                f"{api_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=ai_payload,
+            )
+            ai_resp.raise_for_status()
+            ai_data = ai_resp.json()
+    except httpx.HTTPStatusError as e:
+        logger.error(f"[Analyzer] Kimi API error: {e.response.status_code} - {e.response.text[:300]}")
+        raise HTTPException(status_code=502, detail=f"Errore API AI: {e.response.status_code}")
+    except Exception as e:
+        logger.error(f"[Analyzer] Kimi API call failed: {e}")
+        raise HTTPException(status_code=502, detail=f"Errore connessione AI: {str(e)[:200]}")
+
+    # 6. Parse response
+    raw_content = ai_data.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+    cleaned = raw_content.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned)
+        cleaned = re.sub(r'\s*```$', '', cleaned)
+
+    try:
+        analysis = json.loads(cleaned)
+    except json.JSONDecodeError:
+        json_match = re.search(r'\{[\s\S]*\}', cleaned)
+        if json_match:
+            try:
+                analysis = json.loads(json_match.group())
+            except json.JSONDecodeError:
+                logger.error(f"[Analyzer] Could not parse AI response: {cleaned[:500]}")
+                raise HTTPException(status_code=500, detail="Errore nel parsing della risposta AI")
+        else:
+            logger.error(f"[Analyzer] No JSON in AI response: {cleaned[:500]}")
+            raise HTTPException(status_code=500, detail="Risposta AI non valida")
+
+    analysis["analyzed_url"] = url
+    analysis["analyzed_at"] = datetime.now(timezone.utc).isoformat()
+
+    return {"success": True, "data": analysis}
+
+
+# =============================================================================
+# CONTENT CREATOR — Image Generation & Creative Library (stubs)
+# =============================================================================
+
+class GenerateImageRequest(BaseModel):
+    prompt: str
+    format: str = "1:1"
+    style: str = "photographic"
+    model: str = "flux"
+    overlay_text: Optional[str] = None
+
+
+@router.post("/generate-image")
+async def generate_image(
+    req: GenerateImageRequest,
+    current_user: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Stub endpoint for AI image generation.
+    Returns a setup message until API keys are configured."""
+    config = db.query(AdPlatformConfig).filter(
+        AdPlatformConfig.user_id == current_user.id
+    ).first()
+
+    has_key = False
+    if config:
+        has_key = bool(config.openai_api_key) or bool(getattr(config, "replicate_api_key", None))
+
+    if not has_key:
+        return {
+            "success": False,
+            "status": "pending",
+            "message": "La generazione immagini richiede una API key. Vai su Setup \u2192 Modelli AI per configurare Replicate o OpenAI.",
+            "setup_url": "/admin/ads/setup",
+        }
+
+    return {
+        "success": False,
+        "status": "pending",
+        "message": "Generazione immagini in fase di implementazione. API key rilevata.",
+    }
+
+
+@router.get("/creatives")
+async def list_creatives(
+    current_user: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Stub endpoint \u2014 returns empty creative library."""
+    return {
+        "success": True,
+        "data": [],
+        "total": 0,
+    }

@@ -13,14 +13,18 @@ import {
   Wand2,
   Settings,
   Map,
+  Image,
+  Globe,
 } from "lucide-react";
 
 const navItems = [
   { path: "/admin/ads", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { path: "/admin/ads/ai-modules", label: "AI ADS", icon: Cpu },
+  { path: "/admin/ads/analyzer", label: "Analizza Sito", icon: Globe },
   { path: "/admin/ads/clients", label: "Clienti", icon: Users },
   { path: "/admin/ads/campaigns", label: "Campagne", icon: Megaphone },
   { path: "/admin/ads/wizard", label: "Crea Campagna", icon: Wand2 },
+  { path: "/admin/ads/content-creator", label: "Contenuti", icon: Image },
   { path: "/admin/ads/supervision", label: "Supervisione", icon: Shield },
   { path: "/admin/ads/knowledge", label: "Knowledge Base", icon: BookOpen },
   { path: "/admin/ads/setup", label: "Setup", icon: Settings },
