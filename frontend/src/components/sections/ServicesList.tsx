@@ -1,11 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
-import { checkoutService } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
 const services = [
@@ -45,30 +41,13 @@ const fadeUp = {
 export default function ServicesList() {
     const router = useRouter();
     const { isAuthenticated } = useAuth();
-    const [loadingSlug, setLoadingSlug] = useState<string | null>(null);
 
-    const handleCheckout = async (slug: string) => {
+    const handleCheckout = (slug: string) => {
         if (!isAuthenticated) {
-            router.push(`/auth?redirect=/prezzi&service=${slug}`);
+            router.push(`/auth?redirect=${encodeURIComponent(`/checkout?service=${slug}`)}`);
             return;
         }
-
-        setLoadingSlug(slug);
-        try {
-            const result = await checkoutService(slug);
-            if (result.checkout_url) {
-                window.location.href = result.checkout_url;
-            } else if (result.activated) {
-                toast.success("Servizio attivato con successo!");
-                router.push("/dashboard");
-            } else {
-                toast.success("Ordine creato. Completa il pagamento.");
-            }
-        } catch (error: any) {
-            toast.error(error.message || "Errore durante il checkout. Riprova.");
-        } finally {
-            setLoadingSlug(null);
-        }
+        router.push(`/checkout?service=${slug}`);
     };
 
     return (
@@ -103,12 +82,8 @@ export default function ServicesList() {
                                     <li key={i} className="flex justify-between items-start text-sm">
                                         <button
                                             onClick={() => handleCheckout(item.slug)}
-                                            disabled={loadingSlug !== null}
-                                            className="text-gray-300 font-medium hover:text-white transition-colors text-left flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                                            className="text-gray-300 font-medium hover:text-white transition-colors text-left flex items-center gap-2"
                                         >
-                                            {loadingSlug === item.slug && (
-                                                <Loader2 className="w-3 h-3 animate-spin flex-shrink-0" />
-                                            )}
                                             {item.name}
                                         </button>
                                         <div className="text-right flex-shrink-0 ml-4">

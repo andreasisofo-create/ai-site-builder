@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Check, Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
-import { checkoutService } from "@/lib/api";
+import { Check } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 const plans = [
@@ -89,31 +86,13 @@ const fadeUp = {
 export default function Pricing() {
     const router = useRouter();
     const { isAuthenticated } = useAuth();
-    const [loadingSlug, setLoadingSlug] = useState<string | null>(null);
 
-    const handleCheckout = async (slug: string) => {
-        // If not logged in, redirect to auth with return parameters
+    const handleCheckout = (slug: string) => {
         if (!isAuthenticated) {
-            router.push(`/auth?redirect=/prezzi&service=${slug}`);
+            router.push(`/auth?redirect=${encodeURIComponent(`/checkout?service=${slug}`)}`);
             return;
         }
-
-        setLoadingSlug(slug);
-        try {
-            const result = await checkoutService(slug);
-            if (result.checkout_url) {
-                window.location.href = result.checkout_url;
-            } else if (result.activated) {
-                toast.success("Servizio attivato con successo!");
-                router.push("/dashboard");
-            } else {
-                toast.success("Ordine creato. Completa il pagamento.");
-            }
-        } catch (error: any) {
-            toast.error(error.message || "Errore durante il checkout. Riprova.");
-        } finally {
-            setLoadingSlug(null);
-        }
+        router.push(`/checkout?service=${slug}`);
     };
 
     return (
@@ -175,20 +154,12 @@ export default function Pricing() {
 
                             <button
                                 onClick={() => handleCheckout(plan.slug)}
-                                disabled={loadingSlug !== null}
-                                className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed ${plan.highlight
+                                className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${plan.highlight
                                         ? "bg-[#0090FF] hover:bg-[#0070C9] text-white shadow-lg"
                                         : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                                     }`}
                             >
-                                {loadingSlug === plan.slug ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        Caricamento...
-                                    </>
-                                ) : (
-                                    `Scegli ${plan.name}`
-                                )}
+                                {`Scegli ${plan.name}`}
                             </button>
                         </motion.div>
                     ))}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
     Sparkles, Zap, MessageSquare, Smartphone, Globe, Search,
@@ -12,6 +13,7 @@ import {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/sections/Footer";
 import { useLanguage, translations } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth-context";
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -341,9 +343,23 @@ function Testimonials() {
 }
 
 // ============ PRICING ============
+// Slug mapping for the AI builder plans (order matches translations.aiPage.pricing.plans)
+const AI_BASE_SLUG = "homepage-ai";
+const AI_PLAN_SLUGS = ["ai-business", "ai-crescita", "ai-premium"];
+
 function AiPricing() {
     const { language } = useLanguage();
     const txt = translations[language].aiPage;
+    const router = useRouter();
+    const { isAuthenticated } = useAuth();
+
+    const handleCheckout = (slug: string) => {
+        if (!isAuthenticated) {
+            router.push(`/auth?redirect=${encodeURIComponent(`/checkout?service=${slug}`)}`);
+            return;
+        }
+        router.push(`/checkout?service=${slug}`);
+    };
 
     return (
         <section id="prezzi-ai" className="py-20 lg:py-28 bg-[#0a0a1a]">
@@ -388,12 +404,12 @@ function AiPricing() {
                                     <span className="text-gray-400 ml-1 text-sm">{txt.pricing.basePeriod}</span>
                                 </div>
                                 <span className="text-xs text-[#0090FF] font-semibold">{txt.pricing.baseNoCost}</span>
-                                <Link
-                                    href="/auth"
+                                <button
+                                    onClick={() => handleCheckout(AI_BASE_SLUG)}
                                     className="px-8 py-3 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-900/30 block"
                                 >
                                     {txt.pricing.baseCta}
-                                </Link>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -443,15 +459,15 @@ function AiPricing() {
                                         </li>
                                     ))}
                                 </ul>
-                                <Link
-                                    href="/auth"
+                                <button
+                                    onClick={() => handleCheckout(AI_PLAN_SLUGS[idx])}
                                     className={`w-full py-3 rounded-xl font-bold text-sm text-center transition-all block ${highlight
                                             ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-lg"
                                             : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                                         }`}
                                 >
                                     {plan.cta}
-                                </Link>
+                                </button>
                             </motion.div>
                         );
                     })}
