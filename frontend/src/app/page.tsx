@@ -31,6 +31,7 @@ import {
 import { translations, useLanguage } from "@/lib/i18n";
 import { useRef } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import MainHero from "@/components/sections/MainHero";
 
 // ==================== ANIMATION HELPERS ====================
 
@@ -85,11 +86,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* ===== NAVBAR ===== */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-lg"
-            : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? "bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-lg"
+          : "bg-transparent"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -226,8 +226,13 @@ export default function LandingPage() {
         </AnimatePresence>
       </nav>
 
-      {/* ===== HERO ===== */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden"
+      {/* ===== NEW MAIN HERO ===== */}
+      <MainHero />
+
+      {/* ===== OLD HERO (AI APP) ===== */}
+      <section
+        id="ai-app-hero"
+        className="relative pt-20 pb-20 lg:pt-32 lg:pb-28 overflow-hidden"
         style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(79,70,229,0.15) 0%, rgba(124,58,237,0.08) 40%, #000 70%)" }}
       >
         {/* Decorative gradient orbs */}
@@ -439,11 +444,10 @@ export default function LandingPage() {
             >
               <button
                 onClick={() => setActiveTab("site")}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
-                  activeTab === "site"
-                    ? "text-white shadow-md"
-                    : "text-gray-400 hover:text-gray-300"
-                }`}
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${activeTab === "site"
+                  ? "text-white shadow-md"
+                  : "text-gray-400 hover:text-gray-300"
+                  }`}
                 style={
                   activeTab === "site"
                     ? { background: "linear-gradient(135deg, #4F46E5, #7C3AED)" }
@@ -454,11 +458,10 @@ export default function LandingPage() {
               </button>
               <button
                 onClick={() => setActiveTab("clients")}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
-                  activeTab === "clients"
-                    ? "text-white shadow-md"
-                    : "text-gray-400 hover:text-gray-300"
-                }`}
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${activeTab === "clients"
+                  ? "text-white shadow-md"
+                  : "text-gray-400 hover:text-gray-300"
+                  }`}
                 style={
                   activeTab === "clients"
                     ? { background: "linear-gradient(135deg, #4F46E5, #7C3AED)" }
@@ -817,19 +820,18 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={priceInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className={`relative rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 ${
-                  plan.popular ? "bg-[#0a0a15]" : "bg-[#0a0a15]"
-                }`}
+                className={`relative rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 ${plan.popular ? "bg-[#0a0a15]" : "bg-[#0a0a15]"
+                  }`}
                 style={
                   plan.popular
                     ? {
-                        border: "1px solid rgba(79, 70, 229, 0.3)",
-                        boxShadow: "0 20px 60px rgba(79, 70, 229, 0.15), 0 8px 24px rgba(79, 70, 229, 0.1)",
-                      }
+                      border: "1px solid rgba(79, 70, 229, 0.3)",
+                      boxShadow: "0 20px 60px rgba(79, 70, 229, 0.15), 0 8px 24px rgba(79, 70, 229, 0.1)",
+                    }
                     : {
-                        border: "1px solid rgba(79, 70, 229, 0.08)",
-                        boxShadow: "0 4px 24px rgba(0, 0, 0, 0.04)",
-                      }
+                      border: "1px solid rgba(79, 70, 229, 0.08)",
+                      boxShadow: "0 4px 24px rgba(0, 0, 0, 0.04)",
+                    }
                 }
               >
                 {/* Gradient glow behind popular plan */}
@@ -887,21 +889,20 @@ export default function LandingPage() {
 
                 <Link
                   href="/auth"
-                  className={`block w-full py-3 rounded-full font-semibold text-sm text-center transition-all ${
-                    plan.popular
-                      ? "text-white hover:opacity-90"
-                      : "text-gray-300 hover:bg-white/10"
-                  }`}
+                  className={`block w-full py-3 rounded-full font-semibold text-sm text-center transition-all ${plan.popular
+                    ? "text-white hover:opacity-90"
+                    : "text-gray-300 hover:bg-white/10"
+                    }`}
                   style={
                     plan.popular
                       ? {
-                          background: "linear-gradient(135deg, #4F46E5, #7C3AED)",
-                          boxShadow: "0 4px 16px rgba(79, 70, 229, 0.35)",
-                        }
+                        background: "linear-gradient(135deg, #4F46E5, #7C3AED)",
+                        boxShadow: "0 4px 16px rgba(79, 70, 229, 0.35)",
+                      }
                       : {
-                          background: "rgba(20, 15, 40, 0.6)",
-                          border: "1px solid rgba(79, 70, 229, 0.1)",
-                        }
+                        background: "rgba(20, 15, 40, 0.6)",
+                        border: "1px solid rgba(79, 70, 229, 0.1)",
+                      }
                   }
                 >
                   {plan.cta}
@@ -949,9 +950,8 @@ export default function LandingPage() {
                     {faq.q}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform duration-300 ${
-                      openFaq === idx ? "rotate-180" : ""
-                    }`}
+                    className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform duration-300 ${openFaq === idx ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
                 <AnimatePresence>
