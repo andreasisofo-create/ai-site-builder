@@ -50,7 +50,9 @@ async function handleResponse<T>(res: Response): Promise<T> {
       (quotaError as any).isQuotaError = true;
       throw quotaError;
     }
-    throw new Error(error.detail?.message || error.detail || `Errore ${res.status}`);
+    const genericError = new Error(error.detail?.message || error.detail || `Errore ${res.status}`);
+    (genericError as any).status = res.status;
+    throw genericError;
   }
   return res.json();
 }

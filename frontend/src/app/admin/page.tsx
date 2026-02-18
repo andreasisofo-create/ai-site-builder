@@ -110,6 +110,14 @@ interface PaginatedSubscriptions {
   pages: number;
 }
 
+interface ServiceCatalogEntry {
+  slug: string;
+  name: string;
+  category: string;
+  monthly_price_cents: number;
+  setup_price_cents: number;
+}
+
 // ---------------------------------------------------------------------------
 // API helper
 // ---------------------------------------------------------------------------
@@ -1721,6 +1729,19 @@ function ServicesTab() {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
   const [actionLoading, setActionLoading] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<SubscriptionRecord | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [servicesCatalog, setServicesCatalog] = useState<ServiceCatalogEntry[]>([]);
+  const [changeServiceTarget, setChangeServiceTarget] = useState<SubscriptionRecord | null>(null);
+  const [selectedSlug, setSelectedSlug] = useState("");
+  const [changingService, setChangingService] = useState(false);
+
+  // Load services catalog once
+  useEffect(() => {
+    adminFetch("/api/admin/services-catalog")
+      .then((res: { services: ServiceCatalogEntry[] }) => setServicesCatalog(res.services))
+      .catch(() => {});
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -1759,12 +1780,106 @@ function ServicesTab() {
     }
   };
 
+  const handleDeleteSubscription = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await adminFetch(`/api/admin/subscriptions/${deleteTarget.id}`, { method: "DELETE" });
+      setDeleteTarget(null);
+      load();
+    } catch (err: any) {
+      alert((language === "en" ? "Delete error: " : "Errore eliminazione: ") + err.message);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleChangeService = async () => {
+    if (!changeServiceTarget || !selectedSlug || selectedSlug === changeServiceTarget.service_slug) return;
+    setChangingService(true);
+    try {
+      await adminFetch(`/api/admin/subscriptions/${changeServiceTarget.id}`, {
+        method: "PUT",
+        body: JSON.stringify({ service_slug: selectedSlug }),
+      });
+      setChangeServiceTarget(null);
+      setSelectedSlug("");
+      load();
+    } catch (err: any) {
+      alert(
+        (language === "en" ? "Error changing service: " : "Errore cambio servizio: ") + err.message
+      );
+    } finally {
+      setChangingService(false);
+    }
+  };
+
   const formatAmount = (cents: number) => {
     return `${(cents / 100).toFixed(2)} \u20AC`;
   };
 
   return (
     <div className="space-y-4">
+      {/* Change Service Modal */}
+      {changeServiceTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <h3 className="text-white font-semibold mb-1">
+              {language === "en" ? "Change Service" : "Cambia Servizio"}
+            </h3>
+            <p className="text-sm text-gray-400 mb-4">
+              {changeServiceTarget.user_email || `User #${changeServiceTarget.user_id}`}
+              {" - "}
+              <span className="text-gray-300">{changeServiceTarget.service_name}</span>
+            </p>
+            <label className="block text-xs text-gray-500 mb-1.5">
+              {language === "en" ? "New service" : "Nuovo servizio"}
+            </label>
+            <select
+              value={selectedSlug}
+              onChange={(e) => setSelectedSlug(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors mb-1"
+            >
+              <option value="">{language === "en" ? "-- Select --" : "-- Seleziona --"}</option>
+              {servicesCatalog.map((svc) => (
+                <option key={svc.slug} value={svc.slug} disabled={svc.slug === changeServiceTarget.service_slug}>
+                  {svc.name} ({svc.category}) - {(svc.monthly_price_cents / 100).toFixed(2)}/mese
+                </option>
+              ))}
+            </select>
+            {selectedSlug && selectedSlug !== changeServiceTarget.service_slug && (() => {
+              const newSvc = servicesCatalog.find((s) => s.slug === selectedSlug);
+              if (!newSvc) return null;
+              return (
+                <p className="text-xs text-gray-500 mt-1 mb-3">
+                  {language === "en" ? "Monthly amount will update to " : "Importo mensile aggiornato a "}
+                  <span className="text-white">{(newSvc.monthly_price_cents / 100).toFixed(2)} EUR</span>
+                </p>
+              );
+            })()}
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => { setChangeServiceTarget(null); setSelectedSlug(""); }}
+                className="px-4 py-2 text-sm rounded-lg bg-[#1a1a1a] text-gray-300 border border-[#2a2a2a] hover:bg-[#222] transition-colors"
+              >
+                {language === "en" ? "Cancel" : "Annulla"}
+              </button>
+              <button
+                onClick={handleChangeService}
+                disabled={changingService || !selectedSlug || selectedSlug === changeServiceTarget.service_slug}
+                className="px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {changingService ? (
+                  <Spinner size="sm" />
+                ) : (
+                  language === "en" ? "Confirm Change" : "Conferma Cambio"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         <h2 className="text-lg font-semibold text-white flex-1">
@@ -1849,11 +1964,25 @@ function ServicesTab() {
                         </div>
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell">
-                        <div>
-                          <span className="text-gray-300 text-sm">{sub.service_name}</span>
-                          {sub.service_category && (
-                            <span className="block text-xs text-gray-600">{sub.service_category}</span>
-                          )}
+                        <div className="flex items-center gap-1.5">
+                          <div>
+                            <span className="text-gray-300 text-sm">{sub.service_name}</span>
+                            {sub.service_category && (
+                              <span className="block text-xs text-gray-600">{sub.service_category}</span>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => {
+                              setChangeServiceTarget(sub);
+                              setSelectedSlug(sub.service_slug);
+                            }}
+                            className="ml-1 p-1 rounded text-gray-600 hover:text-indigo-400 hover:bg-indigo-900/20 transition-colors"
+                            title={language === "en" ? "Change service" : "Cambia servizio"}
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                            </svg>
+                          </button>
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -1928,6 +2057,15 @@ function ServicesTab() {
                                   {language === "en" ? "Reactivate" : "Riattiva"}
                                 </button>
                               )}
+                              <button
+                                onClick={() => setDeleteTarget(sub)}
+                                className="text-gray-600 hover:text-red-400 transition-colors p-1"
+                                title={language === "en" ? "Delete subscription" : "Elimina abbonamento"}
+                              >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                              </button>
                             </>
                           )}
                         </div>
@@ -1949,6 +2087,19 @@ function ServicesTab() {
           </div>
         </>
       )}
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={language === "en" ? "Delete Subscription" : "Elimina Abbonamento"}
+        message={language === "en"
+          ? `Are you sure you want to delete subscription #${deleteTarget?.id} (${deleteTarget?.service_name}) for "${deleteTarget?.user_email}"? This action cannot be undone. Related payment history will also be removed.`
+          : `Sei sicuro di voler eliminare l'abbonamento #${deleteTarget?.id} (${deleteTarget?.service_name}) di "${deleteTarget?.user_email}"? Questa azione non puo essere annullata. Lo storico pagamenti associato verra rimosso.`}
+        onConfirm={handleDeleteSubscription}
+        onCancel={() => setDeleteTarget(null)}
+        loading={deleting}
+        lang={language}
+      />
     </div>
   );
 }

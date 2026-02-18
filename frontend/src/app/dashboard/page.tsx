@@ -771,8 +771,8 @@ function Dashboard() {
                         </ul>
                       )}
 
-                      {/* Cancel button - only for active subscriptions */}
-                      {sub.status === "active" && (
+                      {/* Cancel button - for active and pending subscriptions */}
+                      {(sub.status === "active" || sub.status === "pending_setup") && (
                         <button
                           onClick={() => handleCancelSubscription(sub)}
                           disabled={cancellingId === sub.id}

@@ -48,6 +48,7 @@ class SubscriptionUpdateRequest(BaseModel):
     status: Optional[str] = None
     monthly_amount_cents: Optional[int] = None
     notes: Optional[str] = None
+    service_slug: Optional[str] = None
 
 
 # ============= AUTH =============
@@ -677,10 +678,28 @@ async def admin_update_subscription(
         else:
             subscription.status = new_status
 
+    # Handle service_slug change
+    if "service_slug" in update_data and update_data["service_slug"]:
+        new_slug = update_data["service_slug"]
+        new_service = db.query(ServiceCatalog).filter(ServiceCatalog.slug == new_slug).first()
+        if not new_service:
+            raise HTTPException(status_code=400, detail=f"Service '{new_slug}' not found in catalog")
+        old_slug = subscription.service_slug
+        subscription.service_slug = new_slug
+        subscription.monthly_amount_cents = new_service.monthly_price_cents or 0
+        # Append change note
+        change_note = f"[Admin] Service changed from '{old_slug}' to '{new_slug}'"
+        if subscription.notes:
+            subscription.notes = f"{subscription.notes}\n{change_note}"
+        else:
+            subscription.notes = change_note
+
     # Update other fields
-    if "monthly_amount_cents" in update_data:
+    if "monthly_amount_cents" in update_data and "service_slug" not in update_data:
+        # Only apply manual amount if not changing service (service change sets amount automatically)
         subscription.monthly_amount_cents = update_data["monthly_amount_cents"]
-    if "notes" in update_data:
+    if "notes" in update_data and "service_slug" not in update_data:
+        # Only apply manual notes if not changing service (service change appends its own note)
         subscription.notes = update_data["notes"]
 
     db.commit()
@@ -690,5 +709,58 @@ async def admin_update_subscription(
         "message": "Subscription updated",
         "subscription_id": subscription.id,
         "status": subscription.status,
+        "service_slug": subscription.service_slug,
+        "monthly_amount_cents": subscription.monthly_amount_cents,
         "activated_by": subscription.activated_by,
+    }
+
+
+@router.delete("/subscriptions/{subscription_id}")
+async def admin_delete_subscription(
+    subscription_id: int,
+    admin=Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Delete a subscription and its related payment history."""
+    subscription = db.query(UserSubscription).filter(
+        UserSubscription.id == subscription_id
+    ).first()
+
+    if not subscription:
+        raise HTTPException(status_code=404, detail="Subscription not found")
+
+    # Delete related payment history first (FK-safe order)
+    db.query(PaymentHistory).filter(
+        PaymentHistory.subscription_id == subscription_id
+    ).delete(synchronize_session=False)
+
+    db.delete(subscription)
+    db.commit()
+
+    return {"message": "Subscription deleted"}
+
+
+@router.get("/services-catalog")
+async def admin_list_services_catalog(
+    admin=Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Return all services from the catalog for admin dropdown."""
+    services = (
+        db.query(ServiceCatalog)
+        .filter(ServiceCatalog.is_active == True)
+        .order_by(ServiceCatalog.display_order, ServiceCatalog.name)
+        .all()
+    )
+    return {
+        "services": [
+            {
+                "slug": s.slug,
+                "name": s.name,
+                "category": s.category,
+                "monthly_price_cents": s.monthly_price_cents or 0,
+                "setup_price_cents": s.setup_price_cents or 0,
+            }
+            for s in services
+        ]
     }

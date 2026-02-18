@@ -546,22 +546,17 @@ async def get_my_subscriptions(
         service = db.query(ServiceCatalog).filter(ServiceCatalog.slug == sub.service_slug).first()
 
         service_name = service.name if service else sub.service_slug
+        service_name_en = service.name_en if service else sub.service_slug
         service_category = service.category if service else None
-
-        # Parse features dal servizio
-        features = []
-        if service and service.features_json:
-            try:
-                features = json.loads(service.features_json)
-            except (json.JSONDecodeError, TypeError):
-                features = []
 
         result.append({
             "id": sub.id,
             "service_slug": sub.service_slug,
             "service_name": service_name,
+            "service_name_en": service_name_en,
             "service_category": service_category,
-            "features": features,
+            "features_json": service.features_json if service else None,
+            "features_en_json": service.features_en_json if service else None,
             "status": sub.status,
             "monthly_amount_cents": sub.monthly_amount_cents or 0,
             "setup_paid": sub.setup_paid or False,

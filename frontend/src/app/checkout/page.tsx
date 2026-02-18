@@ -365,9 +365,24 @@ function CheckoutContent() {
 
         {/* CTA Button */}
         {alreadyOwned ? (
-          <div className="w-full flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold py-4 text-base sm:text-lg">
-            <CheckCircle className="w-5 h-5" />
-            {language === "en" ? "Already active" : "Gia' attivo"}
+          <div className="space-y-3">
+            <div className="w-full flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold py-4 text-base sm:text-lg cursor-not-allowed">
+              <CheckCircle className="w-5 h-5" />
+              {language === "en" ? "Already Active" : "Gia' Attivo"}
+            </div>
+            <p className="text-center text-sm text-gray-400">
+              {language === "en"
+                ? "You already have an active subscription for this service."
+                : "Hai gia' un abbonamento attivo per questo servizio."}
+            </p>
+            <Link
+              href="/dashboard#section-servizi"
+              className="block text-center text-sm text-[#0090FF] hover:text-[#0070C9] transition-colors font-medium"
+            >
+              {language === "en"
+                ? "Go to Dashboard to manage your services"
+                : "Vai alla Dashboard per gestire i tuoi servizi"}
+            </Link>
           </div>
         ) : (
           <button

@@ -3,6 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/i18n";
@@ -321,10 +322,13 @@ export default function PacchettiPage() {
                           {language === "en" ? "Choose" : "Scegli"}
                         </button>
                       ) : (
-                        <div className="mt-auto w-full py-2.5 rounded-lg text-sm font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-center flex items-center justify-center gap-2">
+                        <Link
+                          href="/dashboard#section-servizi"
+                          className="mt-auto w-full py-2.5 rounded-lg text-sm font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-center flex items-center justify-center gap-2 hover:bg-emerald-500/20 transition-colors"
+                        >
                           <CheckCircleIcon className="w-4 h-4" />
-                          {language === "en" ? "Active" : "Attivo"}
-                        </div>
+                          {language === "en" ? "Manage" : "Gestisci"}
+                        </Link>
                       )}
                     </div>
                   );
