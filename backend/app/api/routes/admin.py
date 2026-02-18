@@ -214,6 +214,26 @@ async def admin_list_users(
     total = query.count()
     users = query.order_by(User.created_at.desc()).offset((page - 1) * per_page).limit(per_page).all()
 
+    # Preload subscription counts per user (avoid N+1 query)
+    user_ids = [u.id for u in users]
+    sub_counts = {}
+    active_sub_counts = {}
+    if user_ids:
+        from sqlalchemy import case
+        sub_stats = (
+            db.query(
+                UserSubscription.user_id,
+                func.count(UserSubscription.id).label("total"),
+                func.sum(case((UserSubscription.status == "active", 1), else_=0)).label("active"),
+            )
+            .filter(UserSubscription.user_id.in_(user_ids))
+            .group_by(UserSubscription.user_id)
+            .all()
+        )
+        for row in sub_stats:
+            sub_counts[row.user_id] = row.total
+            active_sub_counts[row.user_id] = row.active
+
     return {
         "users": [
             {
@@ -234,6 +254,8 @@ async def admin_list_users(
                 "pages_limit": u.pages_limit or 1,
                 "email_verified": u.email_verified or False,
                 "sites_count": len(u.sites) if u.sites else 0,
+                "subscriptions_total": sub_counts.get(u.id, 0),
+                "subscriptions_active": active_sub_counts.get(u.id, 0),
                 "created_at": u.created_at.isoformat() if u.created_at else None,
                 "updated_at": u.updated_at.isoformat() if u.updated_at else None,
             }
@@ -259,12 +281,27 @@ async def admin_get_user(
 
     sites = db.query(Site).filter(Site.owner_id == user_id).all()
 
+    # Carica subscription dell'utente
+    subscriptions = (
+        db.query(UserSubscription)
+        .filter(UserSubscription.user_id == user_id)
+        .order_by(UserSubscription.created_at.desc())
+        .all()
+    )
+
+    # Determina piano effettivo: se ha subscription attive, non e' "free"
+    active_subs = [s for s in subscriptions if s.status == "active"]
+    effective_plan = user.plan or "free"
+    if active_subs and effective_plan == "free":
+        effective_plan = "active_services"  # Ha servizi attivi anche se piano legacy e' free
+
     return {
         "id": user.id,
         "email": user.email,
         "full_name": user.full_name,
         "avatar_url": user.avatar_url,
         "plan": user.plan or "free",
+        "effective_plan": effective_plan,
         "is_premium": user.is_premium,
         "is_active": user.is_active,
         "is_superuser": user.is_superuser,
@@ -289,6 +326,18 @@ async def admin_get_user(
                 "created_at": s.created_at.isoformat() if s.created_at else None,
             }
             for s in sites
+        ],
+        "subscriptions": [
+            {
+                "id": sub.id,
+                "service_slug": sub.service_slug,
+                "status": sub.status,
+                "setup_paid": sub.setup_paid or False,
+                "monthly_amount_cents": sub.monthly_amount_cents or 0,
+                "activated_by": sub.activated_by,
+                "created_at": sub.created_at.isoformat() if sub.created_at else None,
+            }
+            for sub in subscriptions
         ],
     }
 
@@ -358,16 +407,20 @@ async def admin_delete_user(
     admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Delete a user and all their sites."""
+    """Delete a user and all their related data."""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Delete versions, then sites, then user
+    # Delete in FK-safe order: payments -> subscriptions -> site versions -> sites -> user
+    db.query(PaymentHistory).filter(PaymentHistory.user_id == user_id).delete(synchronize_session=False)
+    db.query(UserSubscription).filter(UserSubscription.user_id == user_id).delete(synchronize_session=False)
+
     user_site_ids = [s.id for s in db.query(Site.id).filter(Site.owner_id == user_id).all()]
     if user_site_ids:
         db.query(SiteVersion).filter(SiteVersion.site_id.in_(user_site_ids)).delete(synchronize_session=False)
-    db.query(Site).filter(Site.owner_id == user_id).delete()
+    db.query(Site).filter(Site.owner_id == user_id).delete(synchronize_session=False)
+
     db.delete(user)
     db.commit()
 

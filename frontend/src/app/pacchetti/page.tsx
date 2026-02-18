@@ -175,8 +175,7 @@ export default function PacchettiPage() {
                   const isOwned = subscriptions.some(
                     (sub) =>
                       sub.service_slug === item.slug &&
-                      (sub.status === "active" ||
-                        sub.status === "pending_setup")
+                      sub.status === "active"
                   );
 
                   let features: string[] = [];

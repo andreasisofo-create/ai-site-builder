@@ -11,6 +11,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/i18n";
 import {
   getServiceCatalog,
+  getMySubscriptions,
   checkoutService,
   ServiceCatalogItem,
 } from "@/lib/api";
@@ -53,6 +54,7 @@ function CheckoutContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [alreadyOwned, setAlreadyOwned] = useState(false);
 
   // ---- Fetch catalog (PUBLIC, no auth needed) ----
   const fetchCatalog = useCallback(async () => {
@@ -61,12 +63,25 @@ function CheckoutContent() {
       setError(null);
       const data = await getServiceCatalog();
       setCatalog(data.services);
+
+      // Check if user already has this service active
+      if (isAuthenticated && serviceSlug) {
+        try {
+          const subs = await getMySubscriptions();
+          const hasActive = subs.some(
+            (sub) => sub.service_slug === serviceSlug && sub.status === "active"
+          );
+          setAlreadyOwned(hasActive);
+        } catch {
+          // Ignore - subscription check is best-effort
+        }
+      }
     } catch (err: any) {
       setError(err.message || t("checkout.loadingError"));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [t, isAuthenticated, serviceSlug]);
 
   useEffect(() => {
     fetchCatalog();
@@ -109,6 +124,16 @@ function CheckoutContent() {
   const handleCheckout = async () => {
     if (!service) return;
 
+    // Se gia' attivo, blocca
+    if (alreadyOwned) {
+      toast.error(
+        language === "en"
+          ? "You already have this service active."
+          : "Hai gia' questo servizio attivo."
+      );
+      return;
+    }
+
     // Se non autenticato, manda al login e poi ritorna qui
     if (!isAuthenticated) {
       router.push(
@@ -146,6 +171,13 @@ function CheckoutContent() {
         router.push(
           `/auth?redirect=${encodeURIComponent(`/checkout?service=${serviceSlug}`)}`
         );
+      } else if ((err as any).status === 409) {
+        toast.error(
+          language === "en"
+            ? "You already have an active subscription for this service."
+            : "Hai gia' un abbonamento attivo per questo servizio."
+        );
+        setAlreadyOwned(true);
       } else {
         toast.error(err.message || t("checkout.checkoutError"));
       }
@@ -332,28 +364,35 @@ function CheckoutContent() {
         </div>
 
         {/* CTA Button */}
-        <button
-          onClick={handleCheckout}
-          disabled={checkoutLoading}
-          className="w-full flex items-center justify-center gap-2 bg-[#0090FF] hover:bg-[#0070C9] disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-bold py-4 text-base sm:text-lg transition-colors"
-        >
-          {checkoutLoading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              {t("checkout.processing")}
-            </>
-          ) : !isAuthenticated ? (
-            <>
-              <Lock className="w-4 h-4" />
-              {language === "en" ? "Log in to proceed" : "Accedi per procedere"}
-            </>
-          ) : (
-            <>
-              <Lock className="w-4 h-4" />
-              {t("checkout.proceed")}
-            </>
-          )}
-        </button>
+        {alreadyOwned ? (
+          <div className="w-full flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold py-4 text-base sm:text-lg">
+            <CheckCircle className="w-5 h-5" />
+            {language === "en" ? "Already active" : "Gia' attivo"}
+          </div>
+        ) : (
+          <button
+            onClick={handleCheckout}
+            disabled={checkoutLoading}
+            className="w-full flex items-center justify-center gap-2 bg-[#0090FF] hover:bg-[#0070C9] disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-bold py-4 text-base sm:text-lg transition-colors"
+          >
+            {checkoutLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {t("checkout.processing")}
+              </>
+            ) : !isAuthenticated ? (
+              <>
+                <Lock className="w-4 h-4" />
+                {language === "en" ? "Log in to proceed" : "Accedi per procedere"}
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4" />
+                {t("checkout.proceed")}
+              </>
+            )}
+          </button>
+        )}
 
         {/* Secure payment note */}
         <p className="text-center text-gray-500 text-xs mt-3 flex items-center justify-center gap-1.5">

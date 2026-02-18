@@ -352,8 +352,9 @@ async def checkout_service(
 ):
     """Crea un ordine Revolut per un servizio del catalogo.
 
-    - Se il servizio ha setup_price > 0: crea ordine Revolut, ritorna checkout_url
-    - Se il servizio ha solo costo mensile (setup = 0): attiva subito l'abbonamento
+    - Se il servizio ha setup_price > 0 O monthly_price > 0: crea ordine Revolut, ritorna checkout_url
+    - Se il servizio e' completamente gratuito (setup=0 e monthly=0): attiva subito
+    - Impedisce duplicati: se esiste gia' una subscription active/pending_setup, blocca
     """
     if not settings.REVOLUT_API_KEY:
         raise HTTPException(status_code=503, detail="Pagamenti non configurati")
@@ -367,28 +368,92 @@ async def checkout_service(
     if not service:
         raise HTTPException(status_code=404, detail=f"Servizio '{body.service_slug}' non trovato o non attivo")
 
-    # Crea subscription con stato pending
     now = datetime.now(timezone.utc)
-    subscription = UserSubscription(
-        user_id=current_user.id,
-        service_slug=service.slug,
-        status="pending_setup",
-        monthly_amount_cents=service.monthly_price_cents or 0,
-        revolut_customer_id=current_user.revolut_customer_id,
+
+    # ---- DEDUPLICAZIONE: controlla subscription esistenti ----
+    existing_active = (
+        db.query(UserSubscription)
+        .filter(
+            UserSubscription.user_id == current_user.id,
+            UserSubscription.service_slug == service.slug,
+            UserSubscription.status == "active",
+        )
+        .first()
     )
-    db.add(subscription)
-    db.flush()  # per ottenere l'ID
+    if existing_active:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Hai gia' un abbonamento attivo per '{service.name}'"
+        )
+
+    # Cancella vecchie subscription pending_setup scadute (piu' di 1 ora) per questo servizio
+    stale_cutoff = now - timedelta(hours=1)
+    stale_pending = (
+        db.query(UserSubscription)
+        .filter(
+            UserSubscription.user_id == current_user.id,
+            UserSubscription.service_slug == service.slug,
+            UserSubscription.status == "pending_setup",
+            UserSubscription.created_at < stale_cutoff,
+        )
+        .all()
+    )
+    for stale in stale_pending:
+        stale.status = "expired"
+        logger.info(f"Subscription pending scaduta: id={stale.id}, user={current_user.id}, service={service.slug}")
+
+    # Se esiste un pending_setup recente (meno di 1 ora), riutilizzalo
+    existing_pending = (
+        db.query(UserSubscription)
+        .filter(
+            UserSubscription.user_id == current_user.id,
+            UserSubscription.service_slug == service.slug,
+            UserSubscription.status == "pending_setup",
+            UserSubscription.created_at >= stale_cutoff,
+        )
+        .first()
+    )
+
+    if existing_pending:
+        subscription = existing_pending
+        logger.info(f"Riutilizzo subscription pending: id={subscription.id}")
+    else:
+        # Crea nuova subscription con stato pending
+        subscription = UserSubscription(
+            user_id=current_user.id,
+            service_slug=service.slug,
+            status="pending_setup",
+            monthly_amount_cents=service.monthly_price_cents or 0,
+            revolut_customer_id=current_user.revolut_customer_id,
+        )
+        db.add(subscription)
+        db.flush()  # per ottenere l'ID
 
     setup_amount = service.setup_price_cents or 0
+    monthly_amount = service.monthly_price_cents or 0
 
+    # Determina l'importo del primo pagamento
+    # Se c'e' setup: paga setup
+    # Se non c'e' setup ma c'e' monthly: paga il primo mese
+    # Se entrambi 0: servizio gratuito, attiva subito
     if setup_amount > 0:
-        # Crea ordine Revolut per il pagamento setup
+        first_payment_amount = setup_amount
+        payment_description = f"Site Builder - {service.name} (Setup)"
+    elif monthly_amount > 0:
+        first_payment_amount = monthly_amount
+        payment_description = f"Site Builder - {service.name} (Primo mese)"
+    else:
+        first_payment_amount = 0
+        payment_description = ""
+
+    if first_payment_amount > 0:
+        # Crea ordine Revolut per il pagamento
         frontend_base = _frontend_base_url()
 
         order_payload = {
-            "amount": setup_amount,
+            "amount": first_payment_amount,
             "currency": "EUR",
-            "description": f"Site Builder - {service.name} (Setup)",
+            "description": payment_description,
             "merchant_order_ext_ref": f"svc_{current_user.id}_{service.slug}_{subscription.id}",
             "customer_email": current_user.email,
             "metadata": {
@@ -396,18 +461,19 @@ async def checkout_service(
                 "service_slug": service.slug,
                 "subscription_id": str(subscription.id),
                 "flow": "service_checkout",
+                "payment_type": "setup" if setup_amount > 0 else "first_monthly",
             },
             "redirect_url": f"{frontend_base}/dashboard?payment=success&service={service.slug}",
         }
 
         # If the service has monthly fees, save the payment method for future recurring charges
-        if service.monthly_price_cents and service.monthly_price_cents > 0:
+        if monthly_amount > 0:
             order_payload["save_payment_method_for"] = "merchant"
-            # Update description to include monthly info
-            monthly_eur = service.monthly_price_cents / 100
-            order_payload["description"] = (
-                f"Site Builder - {service.name} (Setup + abbonamento \u20ac{monthly_eur:.0f}/mese)"
-            )
+            if setup_amount > 0:
+                monthly_eur = monthly_amount / 100
+                order_payload["description"] = (
+                    f"Site Builder - {service.name} (Setup + abbonamento \u20ac{monthly_eur:.0f}/mese)"
+                )
 
         order = await _revolut_create_order(order_payload)
         order_id = order.get("id", "")
@@ -424,7 +490,7 @@ async def checkout_service(
 
         logger.info(
             f"Service checkout creato: user={current_user.id}, service={service.slug}, "
-            f"subscription={subscription.id}, order={order_id}"
+            f"subscription={subscription.id}, order={order_id}, amount={first_payment_amount}c"
         )
 
         return ServiceCheckoutResponse(
@@ -435,20 +501,19 @@ async def checkout_service(
         )
 
     else:
-        # Nessun setup fee - attiva subito (servizio solo mensile)
+        # Servizio completamente gratuito (setup=0 e monthly=0) - attiva subito
         subscription.status = "active"
-        subscription.setup_paid = True  # Nessun setup richiesto
+        subscription.setup_paid = True
         subscription.activated_by = "auto"
         subscription.current_period_start = now
         subscription.current_period_end = now + timedelta(days=30)
-        subscription.next_billing_date = now + timedelta(days=30)
         db.commit()
 
         # Aggiorna limiti utente se il servizio li prevede
         _apply_service_limits(current_user, service, db)
 
         logger.info(
-            f"Service attivato senza setup: user={current_user.id}, service={service.slug}, "
+            f"Service gratuito attivato: user={current_user.id}, service={service.slug}, "
             f"subscription={subscription.id}"
         )
 
