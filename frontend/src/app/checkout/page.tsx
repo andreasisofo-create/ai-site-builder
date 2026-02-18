@@ -144,7 +144,12 @@ function CheckoutContent() {
         );
       }
     } catch (err: any) {
-      toast.error(err.message || t("checkout.checkoutError"));
+      if ((err as any).status === 401) {
+        toast.error(language === "en" ? "Session expired. Please log in again." : "Sessione scaduta. Effettua nuovamente il login.");
+        router.push(`/auth?redirect=${encodeURIComponent(`/checkout?service=${serviceSlug}`)}`);
+      } else {
+        toast.error(err.message || t("checkout.checkoutError"));
+      }
     } finally {
       setCheckoutLoading(false);
     }

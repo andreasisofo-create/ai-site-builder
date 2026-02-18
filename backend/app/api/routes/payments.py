@@ -56,8 +56,8 @@ PLAN_LABELS = {
 def _revolut_base_url() -> str:
     """URL base Revolut Merchant API (sandbox o produzione)."""
     if settings.REVOLUT_SANDBOX:
-        return "https://sandbox-merchant.revolut.com/api/1.0/orders"
-    return "https://merchant.revolut.com/api/1.0/orders"
+        return "https://sandbox-merchant.revolut.com/api/1.0"
+    return "https://merchant.revolut.com/api/1.0"
 
 
 def _revolut_headers() -> dict:
@@ -171,7 +171,7 @@ async def _revolut_get_order(order_id: str) -> Optional[dict]:
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
             resp = await client.get(
-                f"{_revolut_base_url()}/{order_id}",
+                f"{_revolut_base_url()}/orders/{order_id}",
                 headers=_revolut_headers(),
             )
         if resp.status_code == 200:
@@ -190,7 +190,7 @@ async def _revolut_create_order(payload: dict) -> dict:
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(
-                _revolut_base_url(),
+                f"{_revolut_base_url()}/orders",
                 headers=_revolut_headers(),
                 json=payload,
             )
@@ -208,6 +208,52 @@ async def _revolut_create_order(payload: dict) -> dict:
     except httpx.RequestError as e:
         logger.error(f"Errore connessione Revolut: {e}")
         raise HTTPException(status_code=502, detail="Errore comunicazione con il sistema di pagamento")
+
+
+async def _revolut_pay_order(order_id: str, payment_method_id: str) -> Optional[dict]:
+    """Pay for an order using a saved payment method (for recurring charges).
+
+    Docs: https://developer.revolut.com/docs/merchant/pay-for-an-order
+    """
+    try:
+        payload = {
+            "saved_payment_method": {
+                "type": "card",
+                "id": payment_method_id,
+            }
+        }
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(
+                f"{_revolut_base_url()}/orders/{order_id}/payments",
+                headers=_revolut_headers(),
+                json=payload,
+            )
+        if resp.status_code in (200, 201):
+            return resp.json()
+        logger.error(f"Revolut pay order {order_id}: {resp.status_code} - {resp.text}")
+        return None
+    except httpx.RequestError as e:
+        logger.error(f"Revolut pay order errore connessione: {e}")
+        return None
+
+
+async def _revolut_get_customer_payment_methods(customer_id: str) -> list:
+    """Retrieve saved payment methods for a customer.
+
+    Docs: https://developer.revolut.com/docs/merchant/retrieve-all-payment-methods
+    """
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.get(
+                f"{_revolut_base_url()}/customers/{customer_id}/payment-methods",
+                headers=_revolut_headers(),
+            )
+        if resp.status_code == 200:
+            return resp.json()
+        logger.error(f"Revolut get payment methods for {customer_id}: {resp.status_code} - {resp.text}")
+    except httpx.RequestError as e:
+        logger.error(f"Revolut get payment methods errore: {e}")
+    return []
 
 
 # ============ ADMIN AUTH FOR RECURRING ============
@@ -353,6 +399,15 @@ async def checkout_service(
             },
             "redirect_url": f"{frontend_base}/dashboard?payment=success&service={service.slug}",
         }
+
+        # If the service has monthly fees, save the payment method for future recurring charges
+        if service.monthly_price_cents and service.monthly_price_cents > 0:
+            order_payload["save_payment_method_for"] = "merchant"
+            # Update description to include monthly info
+            monthly_eur = service.monthly_price_cents / 100
+            order_payload["description"] = (
+                f"Site Builder - {service.name} (Setup + abbonamento \u20ac{monthly_eur:.0f}/mese)"
+            )
 
         order = await _revolut_create_order(order_payload)
         order_id = order.get("id", "")
@@ -679,6 +734,18 @@ async def _handle_service_order_completed(
         if customer_id:
             subscription.revolut_customer_id = customer_id
 
+        # Recupera e salva payment_method_id per addebiti ricorrenti futuri
+        if customer_id and service and service.monthly_price_cents and service.monthly_price_cents > 0:
+            payment_methods = await _revolut_get_customer_payment_methods(customer_id)
+            if payment_methods:
+                # Prendi il primo metodo di pagamento salvato
+                pm = payment_methods[0] if isinstance(payment_methods, list) else None
+                if pm and isinstance(pm, dict):
+                    pm_id = pm.get("id")
+                    if pm_id:
+                        subscription.revolut_payment_method_id = pm_id
+                        logger.info(f"Payment method salvato: sub={subscription_id}, pm={pm_id}")
+
         # Registra pagamento in PaymentHistory
         amount = order.get("amount", service.setup_price_cents if service else 0)
         payment_record = PaymentHistory(
@@ -893,7 +960,16 @@ async def process_recurring_payments(
             order = await _revolut_create_order(order_payload)
             revolut_order_id = order.get("id", "")
 
-            # Registra pagamento pendente
+            # Tenta addebito automatico con metodo di pagamento salvato
+            auto_charged = False
+            payment_method_id = getattr(sub, 'revolut_payment_method_id', None)
+            if payment_method_id and revolut_order_id:
+                pay_result = await _revolut_pay_order(revolut_order_id, payment_method_id)
+                if pay_result:
+                    auto_charged = True
+                    logger.info(f"Addebito automatico riuscito: sub={sub.id}, order={revolut_order_id}")
+
+            # Registra pagamento
             payment_record = PaymentHistory(
                 user_id=user.id,
                 subscription_id=sub.id,
@@ -901,7 +977,7 @@ async def process_recurring_payments(
                 amount_cents=sub.monthly_amount_cents,
                 currency="EUR",
                 payment_type="monthly",
-                status="pending",
+                status="completed" if auto_charged else "pending",
                 description=f"Rinnovo mensile - {service_name}",
             )
             db.add(payment_record)
@@ -921,16 +997,17 @@ async def process_recurring_payments(
                 "service": sub.service_slug,
                 "amount_cents": sub.monthly_amount_cents,
                 "revolut_order_id": revolut_order_id,
-                "status": "order_created",
+                "auto_charged": auto_charged,
+                "status": "auto_charged" if auto_charged else "order_created",
             })
 
             logger.info(
-                f"Rinnovo creato: subscription={sub.id}, user={user.id}, "
+                f"Rinnovo {'auto-addebitato' if auto_charged else 'creato'}: "
+                f"subscription={sub.id}, user={user.id}, "
                 f"service={sub.service_slug}, amount={sub.monthly_amount_cents}c, order={revolut_order_id}"
             )
 
         except HTTPException as e:
-            # Errore Revolut (gia' loggato in _revolut_create_order)
             failed += 1
             details.append({
                 "subscription_id": sub.id,

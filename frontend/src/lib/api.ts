@@ -30,14 +30,13 @@ async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const error = await res.json().catch(() => ({ detail: "Errore sconosciuto" }));
 
-    // Se 401 Unauthorized, pulisci auth e redirect al login
+    // Se 401 Unauthorized, pulisci auth
     if (res.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        window.location.href = "/auth";
       }
-      const authError = new Error(error.detail || "Non autorizzato");
+      const authError = new Error(error.detail || "Sessione scaduta. Effettua nuovamente il login.");
       (authError as any).status = 401;
       throw authError;
     }

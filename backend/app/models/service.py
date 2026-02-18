@@ -63,6 +63,7 @@ class UserSubscription(Base):
     # Abbonamento mensile
     monthly_amount_cents = Column(Integer, default=0)
     revolut_customer_id = Column(String, nullable=True)  # Per addebiti ricorrenti
+    revolut_payment_method_id = Column(String, nullable=True)  # Saved payment method for recurring charges
 
     # Periodo corrente
     current_period_start = Column(DateTime(timezone=True), nullable=True)
