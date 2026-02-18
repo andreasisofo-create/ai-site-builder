@@ -20,7 +20,6 @@ import {
 /** Convert cents to EUR string, e.g. 49900 -> "499" */
 function formatPrice(cents: number): string {
   const euros = cents / 100;
-  // If it's a whole number, no decimals; otherwise 2 decimals
   return euros % 1 === 0 ? euros.toFixed(0) : euros.toFixed(2);
 }
 
@@ -55,20 +54,7 @@ function CheckoutContent() {
   const [error, setError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
-  // ---- Auth redirect ----
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      const hasToken =
-        typeof window !== "undefined" && !!localStorage.getItem("token");
-      if (!hasToken) {
-        router.replace(
-          `/auth?redirect=${encodeURIComponent(`/checkout?service=${serviceSlug}`)}`
-        );
-      }
-    }
-  }, [authLoading, isAuthenticated, serviceSlug, router]);
-
-  // ---- Fetch catalog ----
+  // ---- Fetch catalog (PUBLIC, no auth needed) ----
   const fetchCatalog = useCallback(async () => {
     try {
       setLoading(true);
@@ -83,10 +69,8 @@ function CheckoutContent() {
   }, [t]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchCatalog();
-    }
-  }, [isAuthenticated, fetchCatalog]);
+    fetchCatalog();
+  }, [fetchCatalog]);
 
   // ---- Find service ----
   const service = catalog.find((s) => s.slug === serviceSlug);
@@ -121,9 +105,18 @@ function CheckoutContent() {
       : service.name
     : "";
 
-  // ---- Checkout handler ----
+  // ---- Checkout handler: check auth ONLY here ----
   const handleCheckout = async () => {
     if (!service) return;
+
+    // Se non autenticato, manda al login e poi ritorna qui
+    if (!isAuthenticated) {
+      router.push(
+        `/auth?redirect=${encodeURIComponent(`/checkout?service=${serviceSlug}`)}`
+      );
+      return;
+    }
+
     setCheckoutLoading(true);
     try {
       const result = await checkoutService(service.slug);
@@ -145,8 +138,14 @@ function CheckoutContent() {
       }
     } catch (err: any) {
       if ((err as any).status === 401) {
-        toast.error(language === "en" ? "Session expired. Please log in again." : "Sessione scaduta. Effettua nuovamente il login.");
-        router.push(`/auth?redirect=${encodeURIComponent(`/checkout?service=${serviceSlug}`)}`);
+        toast.error(
+          language === "en"
+            ? "Session expired. Please log in again."
+            : "Sessione scaduta. Effettua nuovamente il login."
+        );
+        router.push(
+          `/auth?redirect=${encodeURIComponent(`/checkout?service=${serviceSlug}`)}`
+        );
       } else {
         toast.error(err.message || t("checkout.checkoutError"));
       }
@@ -155,17 +154,8 @@ function CheckoutContent() {
     }
   };
 
-  // ---- Loading state (auth or catalog) ----
-  if (authLoading || (isAuthenticated && loading)) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // ---- Not authenticated (waiting for redirect) ----
-  if (!isAuthenticated) {
+  // ---- Loading state ----
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -207,7 +197,7 @@ function CheckoutContent() {
             {t("checkout.serviceNotFoundDesc")}
           </p>
           <Link
-            href="/prezzi"
+            href="/pacchetti"
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-xl font-semibold transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -224,7 +214,7 @@ function CheckoutContent() {
       <div className="max-w-lg mx-auto px-4 py-12 sm:py-20">
         {/* Back link */}
         <Link
-          href="/prezzi"
+          href="/pacchetti"
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -351,6 +341,11 @@ function CheckoutContent() {
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
               {t("checkout.processing")}
+            </>
+          ) : !isAuthenticated ? (
+            <>
+              <Lock className="w-4 h-4" />
+              {language === "en" ? "Log in to proceed" : "Accedi per procedere"}
             </>
           ) : (
             <>

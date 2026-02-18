@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { useAuth } from "@/lib/auth-context";
 
 const services = [
     {
@@ -40,13 +39,8 @@ const fadeUp = {
 
 export default function ServicesList() {
     const router = useRouter();
-    const { isAuthenticated } = useAuth();
 
     const handleCheckout = (slug: string) => {
-        if (!isAuthenticated) {
-            router.push(`/auth?redirect=${encodeURIComponent(`/checkout?service=${slug}`)}`);
-            return;
-        }
         router.push(`/checkout?service=${slug}`);
     };
 

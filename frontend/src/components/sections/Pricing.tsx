@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
 
 const plans = [
     {
@@ -85,13 +84,8 @@ const fadeUp = {
 
 export default function Pricing() {
     const router = useRouter();
-    const { isAuthenticated } = useAuth();
 
     const handleCheckout = (slug: string) => {
-        if (!isAuthenticated) {
-            router.push(`/auth?redirect=${encodeURIComponent(`/checkout?service=${slug}`)}`);
-            return;
-        }
         router.push(`/checkout?service=${slug}`);
     };
 
