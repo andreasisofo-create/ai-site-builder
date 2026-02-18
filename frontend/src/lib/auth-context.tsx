@@ -42,6 +42,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: false,
   });
 
+  // Ascolta evento "auth-invalidated" da handleResponse (api.ts)
+  // Quando un 401 pulisce localStorage, aggiorna anche lo stato React
+  useEffect(() => {
+    const handleAuthInvalidated = () => {
+      setState({
+        user: null,
+        token: null,
+        isLoading: false,
+        isAuthenticated: false,
+      });
+    };
+    window.addEventListener("auth-invalidated", handleAuthInvalidated);
+    return () => window.removeEventListener("auth-invalidated", handleAuthInvalidated);
+  }, []);
+
   // Load token from localStorage on mount
   useEffect(() => {
     const token = localStorage.getItem("token");

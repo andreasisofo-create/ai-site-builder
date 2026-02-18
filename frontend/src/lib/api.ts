@@ -30,11 +30,13 @@ async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const error = await res.json().catch(() => ({ detail: "Errore sconosciuto" }));
 
-    // Se 401 Unauthorized, pulisci auth
+    // Se 401 Unauthorized, pulisci auth e notifica React
     if (res.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        // Notifica AuthProvider di aggiornare lo stato React
+        window.dispatchEvent(new Event("auth-invalidated"));
       }
       const authError = new Error(error.detail || "Sessione scaduta. Effettua nuovamente il login.");
       (authError as any).status = 401;
