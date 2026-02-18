@@ -120,6 +120,17 @@ async def lifespan(app: FastAPI):
                 "ALTER TABLE sites ADD COLUMN IF NOT EXISTS tokens_input INTEGER",
                 "ALTER TABLE sites ADD COLUMN IF NOT EXISTS tokens_output INTEGER",
                 "ALTER TABLE sites ADD COLUMN IF NOT EXISTS ai_model VARCHAR",
+                # Service tables (user_subscriptions, payment_history, service_catalog)
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS revolut_customer_id VARCHAR",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS revolut_payment_method_id VARCHAR",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS setup_order_id VARCHAR",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS activated_by VARCHAR",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS notes TEXT",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS cancelled_at TIMESTAMP WITH TIME ZONE",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS current_period_start TIMESTAMP WITH TIME ZONE",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS current_period_end TIMESTAMP WITH TIME ZONE",
+                "ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS next_billing_date TIMESTAMP WITH TIME ZONE",
             ]
             with engine.connect() as conn:
                 for stmt in migrations:
