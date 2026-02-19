@@ -31,9 +31,10 @@ resend>=2.5.0
 
 # Payments (Revolut - uses httpx, no SDK needed)
 
-# Vector Database
-chromadb>=0.4.22
+# Vector Database (pgvector for embeddings storage)
 pgvector>=0.3.0
+# Note: chromadb removed — replaced with lightweight in-memory keyword search
+# to stay within Render free tier 512MB memory limit
 
 # Image Generation (Flux via fal.ai)
 fal-client>=0.5.0

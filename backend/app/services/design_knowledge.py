@@ -1,19 +1,25 @@
 """
-Design Knowledge Vector Database Service
-Uses ChromaDB to store and retrieve design patterns, animation effects,
-GSAP code snippets, layout patterns, and creative prompts.
+Design Knowledge Service — Lightweight In-Memory Pattern Store
+
+Stores design patterns and retrieves them via keyword-based relevance scoring.
+Replaces ChromaDB (which required ~300MB for sentence-transformers) to fit
+within Render free tier's 512MB memory limit.
+
+Same public API as the previous ChromaDB-based implementation.
 """
-import chromadb
-from chromadb.config import Settings
-import os
+import re
+import random
+import logging
+from collections import Counter
 from typing import Dict, List, Optional
 
-# Persistent storage path
-CHROMA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "chroma_db")
+logger = logging.getLogger(__name__)
 
-# Singleton client
-_client = None
-_collection = None
+# ---------------------------------------------------------------------------
+# In-memory pattern store
+# ---------------------------------------------------------------------------
+_patterns: Dict[str, dict] = {}  # id -> {document, metadata, tokens}
+_ready = False
 
 CATEGORIES = [
     "scroll_effects",
@@ -30,17 +36,17 @@ CATEGORIES = [
     "section_references",
 ]
 
-def get_collection():
-    """Get or create the design_patterns collection."""
-    global _client, _collection
-    if _collection is None:
-        _client = chromadb.PersistentClient(path=CHROMA_PATH)
-        _collection = _client.get_or_create_collection(
-            name="design_patterns",
-            metadata={"hnsw:space": "cosine"}
-        )
-    return _collection
+# Simple tokenizer: split on non-alphanumeric, lowercase, drop short tokens
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
 
+
+def _tokenize(text: str) -> List[str]:
+    return [t for t in _TOKEN_RE.findall(text.lower()) if len(t) > 2]
+
+
+# ---------------------------------------------------------------------------
+# Public API (drop-in replacement)
+# ---------------------------------------------------------------------------
 
 def add_pattern(
     pattern_id: str,
@@ -52,7 +58,6 @@ def add_pattern(
     code_snippet: str = "",
 ):
     """Add a design pattern to the knowledge base."""
-    col = get_collection()
     metadata = {
         "category": category,
         "tags": ",".join(tags or []),
@@ -60,60 +65,92 @@ def add_pattern(
         "impact_score": impact_score,
     }
     if code_snippet:
-        metadata["code_snippet"] = code_snippet[:4000]  # ChromaDB metadata limit
+        metadata["code_snippet"] = code_snippet[:4000]
 
-    # Full document = content + code for better semantic search
     document = f"{content}\n\nCode:\n{code_snippet}" if code_snippet else content
+    tokens = _tokenize(document + " " + " ".join(tags or []))
 
-    col.upsert(
-        ids=[pattern_id],
-        documents=[document],
-        metadatas=[metadata],
-    )
+    _patterns[pattern_id] = {
+        "document": document,
+        "metadata": metadata,
+        "tokens": tokens,
+        "token_set": set(tokens),
+    }
+
+
+def add_patterns_batch(
+    ids: List[str],
+    documents: List[str],
+    metadatas: List[dict],
+):
+    """Batch-add patterns (used by seed_all for speed)."""
+    for pid, doc, meta in zip(ids, documents, metadatas):
+        tags_str = meta.get("tags", "")
+        tokens = _tokenize(doc + " " + tags_str)
+        _patterns[pid] = {
+            "document": doc,
+            "metadata": meta,
+            "tokens": tokens,
+            "token_set": set(tokens),
+        }
 
 
 def search_patterns(query: str, n_results: int = 5, category: Optional[str] = None) -> List[Dict]:
-    """Search for design patterns relevant to a query."""
-    col = get_collection()
-    where = {"category": category} if category else None
+    """Search for design patterns by keyword relevance scoring."""
+    if not _patterns:
+        return []
 
-    results = col.query(
-        query_texts=[query],
-        n_results=n_results,
-        where=where,
-        include=["documents", "metadatas", "distances"],
-    )
+    query_tokens = _tokenize(query)
+    if not query_tokens:
+        return []
 
-    patterns = []
-    if results and results["ids"] and results["ids"][0]:
-        for i, pid in enumerate(results["ids"][0]):
-            patterns.append({
-                "id": pid,
-                "content": results["documents"][0][i],
-                "metadata": results["metadatas"][0][i],
-                "relevance": 1 - results["distances"][0][i],  # Convert distance to similarity
-            })
-    return patterns
+    query_set = set(query_tokens)
+    scored = []
+
+    for pid, data in _patterns.items():
+        meta = data["metadata"]
+        if category and meta.get("category") != category:
+            continue
+
+        # Score: count of matching unique tokens + bonus for tag matches
+        common = query_set & data["token_set"]
+        if not common:
+            continue
+
+        score = len(common)
+        # Bonus for high impact patterns
+        score += meta.get("impact_score", 5) * 0.1
+        # Small random jitter to vary results across calls
+        score += random.random() * 0.3
+
+        scored.append((score, pid, data))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+
+    results = []
+    for score, pid, data in scored[:n_results]:
+        results.append({
+            "id": pid,
+            "content": data["document"],
+            "metadata": data["metadata"],
+            "relevance": min(score / max(len(query_tokens), 1), 1.0),
+        })
+    return results
 
 
 def get_patterns_by_category(category: str, limit: int = 20) -> List[Dict]:
     """Get all patterns in a category."""
-    col = get_collection()
-    results = col.get(
-        where={"category": category},
-        limit=limit,
-        include=["documents", "metadatas"],
-    )
-
-    patterns = []
-    if results and results["ids"]:
-        for i, pid in enumerate(results["ids"]):
-            patterns.append({
+    results = []
+    for pid, data in _patterns.items():
+        if data["metadata"].get("category") == category:
+            results.append({
                 "id": pid,
-                "content": results["documents"][i],
-                "metadata": results["metadatas"][i],
+                "content": data["document"],
+                "metadata": data["metadata"],
             })
-    return patterns
+            if len(results) >= limit:
+                break
+    return results
 
 
 def get_creative_context(style_id: str, category_label: str, sections: Optional[List[str]] = None) -> str:
@@ -192,10 +229,8 @@ def get_creative_context(style_id: str, category_label: str, sections: Optional[
 
 def get_collection_stats() -> dict:
     """Get statistics about the knowledge base."""
-    col = get_collection()
-    count = col.count()
     return {
-        "total_patterns": count,
+        "total_patterns": len(_patterns),
         "collection_name": "design_patterns",
-        "storage_path": CHROMA_PATH,
+        "storage_path": "in-memory",
     }

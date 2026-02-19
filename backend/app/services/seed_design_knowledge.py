@@ -2521,9 +2521,8 @@ function connectParticles(a, b, ctx) {
 
 
 def seed_all():
-    """Seed all design patterns into ChromaDB (batched for speed)."""
-    from app.services.design_knowledge import get_collection
-    col = get_collection()
+    """Seed all design patterns into the in-memory pattern store."""
+    from app.services.design_knowledge import add_patterns_batch
 
     ids = []
     documents = []
@@ -2546,16 +2545,8 @@ def seed_all():
         documents.append(document)
         metadatas.append(metadata)
 
-    # Batch upsert all patterns at once (much faster than 176 individual calls)
-    BATCH_SIZE = 50
-    for i in range(0, len(ids), BATCH_SIZE):
-        col.upsert(
-            ids=ids[i:i + BATCH_SIZE],
-            documents=documents[i:i + BATCH_SIZE],
-            metadatas=metadatas[i:i + BATCH_SIZE],
-        )
-
-    print(f"Seeded {len(ids)} design patterns into ChromaDB.")
+    add_patterns_batch(ids, documents, metadatas)
+    print(f"Seeded {len(ids)} design patterns.")
     return len(ids)
 
 
