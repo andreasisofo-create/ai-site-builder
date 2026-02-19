@@ -300,6 +300,290 @@ CATEGORY_TONES: Dict[str, str] = {
 }
 
 # =========================================================
+# STYLE_TONE_MAP: Per-style copywriting directives.
+# While CATEGORY_TONES sets the broad sector voice (restaurant,
+# saas, etc.), this map overrides/refines the tone for each
+# specific template sub-style. "restaurant-elegant" should read
+# COMPLETELY different from "restaurant-cozy".
+# Injected into BOTH _generate_texts() and _generate_theme()
+# so that fonts, colors, AND copy all speak the same language.
+# =========================================================
+STYLE_TONE_MAP: Dict[str, Dict[str, str]] = {
+    "restaurant-elegant": {
+        "voice": (
+            "VOCE: Formale, raffinata, sussurrata. Come un maitre d'hotel che ti accoglie per nome. "
+            "Frasi lunghe ed eleganti, vocabolario ricercato (degustazione, mise en place, terroir). "
+            "Mai esclamazioni, mai punti esclamativi. Il lusso non grida."
+        ),
+        "headlines": "Titoli evocativi e poetici. Metafore sensoriali. MAX 5 parole. Es: 'Dove il Gusto Diventa Arte'.",
+        "theme_hint": (
+            "Palette calda e profonda: bordeaux, oro antico, crema avorio. Font serif classico (Playfair, Cormorant). "
+            "shadow_style: soft. spacing_density: generous. border_radius_style: soft."
+        ),
+    },
+    "restaurant-cozy": {
+        "voice": (
+            "VOCE: Calda, familiare, come una nonna che ti invita a sederti. Tono colloquiale ma mai sciatto. "
+            "Frasi brevi e affettuose. Parole che sanno di casa: 'fatto a mano', 'ricetta della nonna', "
+            "'come una volta'. Accogliente, mai formale."
+        ),
+        "headlines": "Titoli che sorridono. Tono amichevole, quasi intimo. Es: 'A Casa Nostra, Si Mangia Col Cuore'.",
+        "theme_hint": (
+            "Colori caldi e terrosi: terracotta, arancio tenue, verde salvia, beige. Font morbido e arrotondato "
+            "(Nunito, Quicksand heading). shadow_style: soft. spacing_density: normal. border_radius_style: round."
+        ),
+    },
+    "restaurant-modern": {
+        "voice": (
+            "VOCE: Tagliente, contemporanea, magazine-style. Come Bon Appetit o Eater. "
+            "Frasi corte e d'impatto. Giustapposizioni: 'Tradizione. Rivista.' — 'Fuoco. Tecnica. Ossessione.' "
+            "Zero nostalgia, tutta innovazione. Food come design."
+        ),
+        "headlines": "Titoli brutali e minimali. Una parola. Un concetto. Es: 'Fuoco Vivo' o 'Crudo. Puro. Nostro.'.",
+        "theme_hint": (
+            "Palette ad alto contrasto: nero/bianco con un accento vivace (rosso fuoco, lime). Font sans-serif "
+            "geometrico bold (Space Grotesk, Archivo). shadow_style: none. spacing_density: compact. "
+            "border_radius_style: sharp."
+        ),
+    },
+    "saas-gradient": {
+        "voice": (
+            "VOCE: Energica, futuristica, tech-ottimista. Come la landing page di Vercel o Linear. "
+            "Promesse audaci con numeri specifici. Linguaggio da startup che sta cambiando il mondo. "
+            "Verbi d'azione forti: 'accelera', 'scala', 'automatizza', 'domina'."
+        ),
+        "headlines": "Titoli brevi e potenti con numeri o verbi d'azione. Es: '10x Piu' Veloce' o 'Il Futuro e' Adesso'.",
+        "theme_hint": (
+            "Palette scura con gradienti vibranti: deep purple→electric blue, dark bg con glow neon. "
+            "Font geometrico moderno (Sora, Inter heading bold). shadow_style: dramatic. "
+            "spacing_density: normal. border_radius_style: soft."
+        ),
+    },
+    "saas-clean": {
+        "voice": (
+            "VOCE: Chiara, diretta, senza fronzoli. Come Notion o Stripe. Ogni parola ha uno scopo. "
+            "Niente metafore eccessive — chiarezza sopra tutto. Il prodotto parla da solo. "
+            "Benefici misurabili, frasi che un CEO condividerebbe su LinkedIn."
+        ),
+        "headlines": "Titoli funzionali ma eleganti. Chiarezza > creativita'. Es: 'Tutto in Un Solo Strumento'.",
+        "theme_hint": (
+            "Palette luminosa e pulita: bianco/grigio chiaro con un primary vibrante (blue, indigo). "
+            "Font sans-serif pulito (Inter, Plus Jakarta Sans). shadow_style: soft. "
+            "spacing_density: normal. border_radius_style: soft."
+        ),
+    },
+    "saas-dark": {
+        "voice": (
+            "VOCE: Tecnica, affilata, da developer-tool. Come GitHub, Raycast, o Warp terminal. "
+            "Gergo tech accettato. Poche parole, massima densita' informativa. "
+            "Copy che sembra codice: preciso, senza sprechi. Mai 'soluzione innovativa' — "
+            "piuttosto 'build, ship, iterate'."
+        ),
+        "headlines": "Titoli ultra-minimali, quasi comandi. Es: 'Ship Faster.' o 'Zero Config. Full Power.'.",
+        "theme_hint": (
+            "Palette dark-mode: charcoal/navy profondo, accento neon (cyan, green, amber). "
+            "Font monospace o geometric (JetBrains Mono heading, Space Grotesk). shadow_style: none. "
+            "spacing_density: compact. border_radius_style: sharp."
+        ),
+    },
+    "portfolio-gallery": {
+        "voice": (
+            "VOCE: Visiva, minimale, ogni parola e' didascalia. Come un catalogo d'arte o Behance. "
+            "I progetti parlano — il testo accompagna, non domina. Frasi poetiche e frammentarie. "
+            "Il designer non spiega, mostra. 'Esplora il progetto' non 'Guarda i nostri lavori'."
+        ),
+        "headlines": "Titoli evocativi e astratti. Es: 'Forme che Parlano' o 'Spazio. Luce. Intenzione.'.",
+        "theme_hint": (
+            "Palette neutra con un accento deciso: bianco/nero + un colore signature (rosso, electric blue). "
+            "Font display con carattere (Instrument Serif, Space Grotesk). shadow_style: none. "
+            "spacing_density: generous. border_radius_style: sharp."
+        ),
+    },
+    "portfolio-minimal": {
+        "voice": (
+            "VOCE: Ultra-ridotta, zen-like. Come il portfolio di un designer svizzero. "
+            "Ogni parola e' pesata come in un haiku. Nessun aggettivo superfluo. "
+            "Il vuoto parla piu' del pieno. Bio in terza persona, distaccata e autorevole."
+        ),
+        "headlines": "Titoli di una o due parole. Es: 'Design.' o 'Meno, Meglio.'.",
+        "theme_hint": (
+            "Palette monocromatica: bianco purissimo o nero profondo, quasi nessun colore. "
+            "Font sans-serif raffinato con molto tracking (Epilogue, Albert Sans). shadow_style: none. "
+            "spacing_density: generous. border_radius_style: sharp."
+        ),
+    },
+    "portfolio-creative": {
+        "voice": (
+            "VOCE: Esplosiva, giocosa, anti-convenzionale. Come un manifesto artistico. "
+            "Rompi le regole della punteggiatura. Mix di lingue accettato. Emotivo e viscerale. "
+            "Il creativo non e' un fornitore — e' un visionario che trasforma brand."
+        ),
+        "headlines": "Titoli provocatori, anche irriverenti. Es: 'Facciamo Cose Belle (Sul Serio)' o 'Caos Calcolato'.",
+        "theme_hint": (
+            "Palette audace e inaspettata: accostamenti non convenzionali (lime+magenta, coral+indigo). "
+            "Font display grassissimo (Unbounded, Archivo Black). shadow_style: dramatic. "
+            "spacing_density: normal. border_radius_style: round."
+        ),
+    },
+    "ecommerce-modern": {
+        "voice": (
+            "VOCE: Aspirazionale ma accessibile. Come Glossier o Everlane. "
+            "Il prodotto diventa lifestyle. Linguaggio sensoriale sui materiali e l'esperienza. "
+            "Urgenza morbida: 'Edizione limitata' non 'COMPRA ORA'. "
+            "Ogni descrizione e' una micro-storia."
+        ),
+        "headlines": "Titoli che creano desiderio. Es: 'Progettato per Chi Non si Accontenta'.",
+        "theme_hint": (
+            "Palette lifestyle: toni neutri caldi (blush, sand, sage) con primary deciso. "
+            "Font moderno elegante (DM Sans, Plus Jakarta Sans). shadow_style: soft. "
+            "spacing_density: normal. border_radius_style: soft."
+        ),
+    },
+    "ecommerce-luxury": {
+        "voice": (
+            "VOCE: Esclusiva, sussurrata, da maison. Come Hermes o Bottega Veneta. "
+            "Mai vendere — invitare. Mai 'economico' — 'accessibile'. Mai 'prodotto' — 'creazione'. "
+            "Frasi brevi, peso specifico altissimo. L'understatement e' il vero lusso."
+        ),
+        "headlines": "Titoli che non spiegano, evocano. Es: 'L'Arte del Dettaglio' o 'Senza Tempo'.",
+        "theme_hint": (
+            "Palette lusso: nero/champagne/oro, fondi scuri con tipografia chiara. "
+            "Font serif sofisticato (Playfair Display, DM Serif Display). shadow_style: dramatic. "
+            "spacing_density: generous. border_radius_style: soft."
+        ),
+    },
+    "business-corporate": {
+        "voice": (
+            "VOCE: Autorevole, strutturata, da report annuale di alto livello. Come McKinsey o Deloitte. "
+            "Dati concreti, case study impliciti, linguaggio che ispira fiducia istituzionale. "
+            "Mai informale. Il 'noi' aziendale e' forte e coeso."
+        ),
+        "headlines": "Titoli che comunicano solidita' e visione. Es: 'Costruiamo il Futuro delle Imprese'.",
+        "theme_hint": (
+            "Palette professionale: navy, grigio-blu, bianco. Accento corporate (teal o gold). "
+            "Font serif autorevole per heading (DM Serif Display), sans-serif per body. "
+            "shadow_style: soft. spacing_density: normal. border_radius_style: soft."
+        ),
+    },
+    "business-trust": {
+        "voice": (
+            "VOCE: Empatica, rassicurante, concreta. Come un consulente che ti prende per mano. "
+            "Meno 'noi siamo bravi' e piu' 'tu otterrai questo'. Focus su risultati tangibili. "
+            "Testimonial e numeri costruiscono credibilita' naturale."
+        ),
+        "headlines": "Titoli orientati al risultato del cliente. Es: 'Il Tuo Successo e' la Nostra Misura'.",
+        "theme_hint": (
+            "Palette calda e affidabile: blu medio, verde, terra di Siena. Sfondo caldo (cream/ivory). "
+            "Font amichevole ma professionale (Source Serif, Lora heading). shadow_style: soft. "
+            "spacing_density: normal. border_radius_style: round."
+        ),
+    },
+    "business-fresh": {
+        "voice": (
+            "VOCE: Giovane, energica, startup-vibes. Come Mailchimp o Slack. "
+            "Tono conversazionale, quasi amichevole. Emoji strategici OK. "
+            "Humor sottile accettato. Parole corte, frasi che rimbalzano. "
+            "Il business e' serio, il tono no."
+        ),
+        "headlines": "Titoli giocosi e diretti. Es: 'Basta Fogli Excel. Davvero.' o 'Lavora Meglio, Non di Piu''.",
+        "theme_hint": (
+            "Palette vivace e pop: primary brillante (viola, coral, teal), sfondo chiaro e fresco. "
+            "Font sans-serif rotondo e friendly (Nunito, Outfit). shadow_style: soft. "
+            "spacing_density: normal. border_radius_style: round."
+        ),
+    },
+    "blog-editorial": {
+        "voice": (
+            "VOCE: Intellettuale, narrativa, da rivista letteraria. Come The Atlantic o Il Post. "
+            "Frasi lunghe e ben costruite. Citazioni, domande retoriche, aperture in medias res. "
+            "Il blog non informa — crea pensiero. Ogni articolo e' un mini-saggio."
+        ),
+        "headlines": "Titoli che pongono domande o provocano. Es: 'Perche' Nessuno Parla di Questo?' o 'La Fine di un'Era'.",
+        "theme_hint": (
+            "Palette editoriale: fondi carta (ivory, linen), testo scuro ricco, accento minimo. "
+            "Font serif da rivista (Instrument Serif, Lora heading). shadow_style: none. "
+            "spacing_density: generous. border_radius_style: sharp."
+        ),
+    },
+    "blog-dark": {
+        "voice": (
+            "VOCE: Intima, notturna, da blog tech/culture. Come The Verge o Wired dark mode. "
+            "Tono informato e opinionated. Mix di analisi tecnica e storytelling. "
+            "Linguaggio contemporaneo, riferimenti culturali, frasi nette e taglienti."
+        ),
+        "headlines": "Titoli d'impatto, stile news/tech. Es: 'L'Algoritmo Che Cambia Tutto' o 'Deep Dive: Oltre il Codice'.",
+        "theme_hint": (
+            "Palette dark: background scuro (charcoal, navy), testo chiaro, accento neon vivace. "
+            "Font moderno e leggibile (Space Grotesk, Sora). shadow_style: soft. "
+            "spacing_density: normal. border_radius_style: soft."
+        ),
+    },
+    "event-vibrant": {
+        "voice": (
+            "VOCE: Elettrica, urgente, da festival poster. Come Primavera Sound o Web Summit. "
+            "FOMO puro. Countdown implicito. Numeri ovunque (speaker, ore, partecipanti). "
+            "Frasi brevissime. Imperativi. 'Non Mancare.' 'Ci Vediamo Li'.' "
+            "L'energia deve uscire dallo schermo."
+        ),
+        "headlines": "Titoli da poster: grandi, audaci, 3 parole max. Es: 'L'Evento dell'Anno' o 'Preparati.'.",
+        "theme_hint": (
+            "Palette esplosiva: gradienti neon, accostamenti elettrici (magenta+cyan, arancio+viola). "
+            "Font display gigantesco (Unbounded, Space Grotesk 900). shadow_style: dramatic. "
+            "spacing_density: compact. border_radius_style: round."
+        ),
+    },
+    "event-minimal": {
+        "voice": (
+            "VOCE: Elegante, curata, da invito esclusivo. Come un vernissage o un TED Talk. "
+            "Poche parole, massima eleganza. L'evento parla di qualita', non di quantita'. "
+            "Dettagli pratici (data, luogo, orario) presentati con grazia tipografica."
+        ),
+        "headlines": "Titoli raffinati e puliti. Es: 'Un Incontro di Menti' o '12 Aprile. Milano. Sii Presente.'.",
+        "theme_hint": (
+            "Palette sofisticata: bianco/nero con un accento metallico (oro, argento). "
+            "Font serif elegante (Cormorant, Instrument Serif). shadow_style: none. "
+            "spacing_density: generous. border_radius_style: sharp."
+        ),
+    },
+}
+
+
+def _get_style_tone(template_style_id: Optional[str]) -> str:
+    """Build style-specific tone directive for prompt injection.
+
+    Returns a formatted block with voice, headline, and visual
+    directives for the specific sub-style (e.g., 'restaurant-elegant'
+    vs 'restaurant-cozy'). Returns empty string if no match.
+    """
+    if not template_style_id:
+        return ""
+    tone = STYLE_TONE_MAP.get(template_style_id)
+    if not tone:
+        return ""
+    lines = [
+        f"=== IDENTITA' STILISTICA: {template_style_id.upper()} (SEGUI QUESTE DIRETTIVE ALLA LETTERA) ===",
+        tone["voice"],
+        f"HEADLINE STYLE: {tone['headlines']}",
+        "=== FINE IDENTITA' STILISTICA ===",
+    ]
+    return "\n".join(lines)
+
+
+def _get_style_theme_hint(template_style_id: Optional[str]) -> str:
+    """Return theme-specific directives (colors, fonts, layout tokens) for the style."""
+    if not template_style_id:
+        return ""
+    tone = STYLE_TONE_MAP.get(template_style_id)
+    if not tone or "theme_hint" not in tone:
+        return ""
+    return (
+        f"\n=== STYLE IDENTITY: {template_style_id.upper()} (adapt palette to match) ===\n"
+        f"{tone['theme_hint']}\n"
+        f"=== END STYLE IDENTITY ===\n"
+    )
+
+
+# =========================================================
 # FEW-SHOT EXAMPLES: Award-winning Italian copy per category.
 # Injected into _generate_texts() so the AI sees CONCRETE
 # examples of the quality level expected. 2 examples each.
@@ -2150,6 +2434,7 @@ class DataBindingGenerator:
         reference_analysis: Optional[str] = None,
         parsed_reference: Optional[Dict[str, Any]] = None,
         photo_urls: Optional[List[str]] = None,
+        template_style_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Kimi returns JSON with color palette and fonts.
 
@@ -2301,6 +2586,9 @@ The reference uses MINIMAL/CLEAN typography. Use one of these pairings:
         if photo_urls and len(photo_urls) > 0 and not has_exact_colors:
             theme_photo_hint = f"\nThe user has uploaded {len(photo_urls)} real photo(s) of their business. Choose colors that complement real-world photography: warm tones for food/hospitality, cool tones for tech, earthy tones for nature businesses. Avoid overly saturated backgrounds that clash with photos.\n"
 
+        # Style-specific theme direction (colors, fonts, layout tokens for sub-style)
+        style_theme_hint = _get_style_theme_hint(template_style_id) if not has_exact_colors else ""
+
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
 {exact_colors_block}{reference_override}
@@ -2310,6 +2598,7 @@ BUSINESS: {business_name} - {business_description[:500]}
 {variety_hint}
 {reference_font_hint}
 {theme_photo_hint}
+{style_theme_hint}
 
 === COLOR THEORY RULES (follow these for professional palettes) ===
 - PRIMARY: The brand's emotional core. Ask: "What feeling should this business evoke?" Warm = trust/comfort (amber, coral). Cool = innovation/clarity (blue, teal). Bold = energy/passion (red, purple).
@@ -2563,6 +2852,9 @@ Avoid generic placeholder descriptions. The site will feature REAL business phot
         category = _get_category_from_style_id(template_style_id)
         few_shot_block = _build_few_shot_block(category)
 
+        # === STYLE-SPECIFIC TONE (overrides broad category tone) ===
+        style_tone_block = _get_style_tone(template_style_id)
+
         prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.
 Return ONLY valid JSON, no markdown.
 {reference_tone_hint}{knowledge_hint}{reference_hint}{photo_hint}
@@ -2581,6 +2873,8 @@ Return ONLY valid JSON, no markdown.
 - Any text that could appear on ANY other business website. Be SPECIFIC to THIS business.
 
 {few_shot_block}
+
+{style_tone_block}
 
 BUSINESS: {business_name}
 DESCRIPTION: {business_description[:800]}
@@ -3170,6 +3464,7 @@ RULES:
             reference_analysis=reference_analysis,
             parsed_reference=parsed_reference,
             photo_urls=photo_urls,
+            template_style_id=template_style_id,
         )
         texts_task = self._generate_texts(
             business_name, business_description,
