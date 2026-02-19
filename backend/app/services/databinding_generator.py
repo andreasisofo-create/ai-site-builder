@@ -238,9 +238,25 @@ FALLBACK_THEME_POOL = [
 
 
 def _pick_variety_context() -> Dict[str, Any]:
-    """Pick random personality, color mood, and font pairing for this generation."""
+    """Pick blended personality, color mood, and font pairing for this generation.
+
+    Instead of a single personality, picks two and blends them (70/30 ratio)
+    to produce more original and less robotic output.
+    """
+    primary, secondary = random.sample(PERSONALITY_POOL, 2)
+    blended = {
+        "name": f"{primary['name']}+{secondary['name']}",
+        "directive": (
+            f"You have a BLENDED personality: 70% {primary['name'].upper()} and 30% {secondary['name'].upper()}.\n"
+            f"PRIMARY VOICE (dominant): {primary['directive']}\n"
+            f"SECONDARY VOICE (accent): {secondary['directive']}\n"
+            f"Blend them: the primary voice leads, the secondary adds unexpected nuance. "
+            f"This mix must feel NATURAL, not schizophrenic."
+        ),
+        "headline_style": f"primarily {primary['headline_style']}, with touches of {secondary['headline_style']}",
+    }
     return {
-        "personality": random.choice(PERSONALITY_POOL),
+        "personality": blended,
         "color_mood": random.choice(COLOR_MOOD_POOL),
         "font_pairing": random.choice(FONT_PAIRING_POOL),
     }
@@ -1748,8 +1764,131 @@ STYLE_CSS_PROFILES: Dict[str, Dict[str, str]] = {
 }
 
 
+
+# =========================================================
+# SECTION BACKGROUND ACCENTS: Break the monotonous bg/bg-alt alternation
+# by injecting special backgrounds on specific sections per style.
+# Uses CSS targeting section IDs (#testimonials, #cta, etc.) to add
+# gradients, patterns, or inverted color schemes.
+# =========================================================
+SECTION_BG_ACCENTS: Dict[str, str] = {
+    "restaurant-elegant": """
+    /* Testimonials: warm gradient overlay */
+    #testimonials { background: linear-gradient(135deg, var(--color-bg-alt), rgba(var(--color-primary-rgb), 0.06)) !important; }
+    /* CTA: inverted dark section */
+    #cta { background: var(--color-text) !important; color: var(--color-bg) !important; }
+    #cta h2, #cta p, #cta span { color: var(--color-bg) !important; }
+    #cta [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
+    """,
+    "restaurant-cozy": """
+    /* About: subtle warm pattern */
+    #about { background: radial-gradient(circle at 20% 80%, rgba(var(--color-primary-rgb), 0.04), transparent 50%), var(--color-bg-alt) !important; }
+    /* Testimonials: warm tint */
+    #testimonials { background: linear-gradient(180deg, var(--color-bg), rgba(var(--color-secondary-rgb), 0.05)) !important; }
+    """,
+    "restaurant-modern": """
+    /* Testimonials: full dark inversion */
+    #testimonials { background: var(--color-text) !important; color: var(--color-bg) !important; }
+    #testimonials h2, #testimonials p, #testimonials span, #testimonials blockquote { color: var(--color-bg) !important; }
+    #testimonials [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
+    #testimonials [style*="color: var(--color-text-muted)"] { color: rgba(var(--color-bg-rgb), 0.6) !important; }
+    """,
+    "saas-gradient": """
+    /* Features: gradient mesh */
+    #features { background: linear-gradient(135deg, var(--color-bg), rgba(var(--color-primary-rgb), 0.08) 40%, rgba(var(--color-secondary-rgb), 0.06)) !important; }
+    /* CTA: vibrant gradient */
+    #cta { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)) !important; color: #fff !important; }
+    #cta h2, #cta p, #cta span { color: #fff !important; }
+    """,
+    "saas-clean": """
+    /* Testimonials: subtle dot pattern */
+    #testimonials { background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.08) 1px, transparent 1px), var(--color-bg-alt) !important; background-size: 24px 24px !important; }
+    """,
+    "saas-dark": """
+    /* Features: glow gradient */
+    #features { background: radial-gradient(ellipse at 50% 0%, rgba(var(--color-primary-rgb), 0.12), transparent 70%), var(--color-bg) !important; }
+    /* CTA: accent glow */
+    #cta { background: radial-gradient(ellipse at 50% 100%, rgba(var(--color-accent-rgb), 0.15), transparent 60%), var(--color-bg-alt) !important; }
+    """,
+    "portfolio-gallery": """
+    /* About: clean white break */
+    #about { background: #fff !important; }
+    """,
+    "portfolio-minimal": """
+    /* Testimonials: single thin top border as accent */
+    #testimonials { border-top: 1px solid rgba(var(--color-primary-rgb), 0.15); }
+    """,
+    "portfolio-creative": """
+    /* Services: diagonal gradient */
+    #services { background: linear-gradient(160deg, var(--color-bg), rgba(var(--color-primary-rgb), 0.1) 30%, rgba(var(--color-accent-rgb), 0.08) 70%, var(--color-bg-alt)) !important; }
+    /* Testimonials: inverted */
+    #testimonials { background: var(--color-text) !important; color: var(--color-bg) !important; }
+    #testimonials h2, #testimonials p, #testimonials span, #testimonials blockquote { color: var(--color-bg) !important; }
+    #testimonials [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
+    """,
+    "ecommerce-modern": """
+    /* Testimonials: soft radial spotlight */
+    #testimonials { background: radial-gradient(ellipse at 50% 50%, rgba(var(--color-primary-rgb), 0.06), transparent 70%), var(--color-bg) !important; }
+    /* CTA: accent band */
+    #cta { background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) !important; color: #fff !important; }
+    #cta h2, #cta p, #cta span { color: #fff !important; }
+    """,
+    "ecommerce-luxury": """
+    /* Testimonials: dark luxurious section */
+    #testimonials { background: var(--color-text) !important; color: var(--color-bg) !important; }
+    #testimonials h2, #testimonials p, #testimonials span, #testimonials blockquote { color: var(--color-bg) !important; }
+    #testimonials [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
+    #testimonials [style*="color: var(--color-text-muted)"] { color: rgba(var(--color-bg-rgb), 0.5) !important; }
+    /* CTA: gold-tinted */
+    #cta { background: linear-gradient(135deg, var(--color-bg-alt), rgba(var(--color-primary-rgb), 0.08)) !important; }
+    """,
+    "business-corporate": """
+    /* Stats/features: corporate dark band */
+    #stats, #features { background: var(--color-text) !important; color: var(--color-bg) !important; }
+    #stats h2, #stats p, #stats span, #features h2, #features p, #features span { color: var(--color-bg) !important; }
+    #stats [style*="color: var(--color-text)"], #features [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
+    """,
+    "business-trust": """
+    /* Testimonials: warm trust gradient */
+    #testimonials { background: linear-gradient(180deg, rgba(var(--color-primary-rgb), 0.04), var(--color-bg-alt)) !important; }
+    """,
+    "business-fresh": """
+    /* Features: playful gradient mesh */
+    #features { background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.06), transparent 40%, rgba(var(--color-secondary-rgb), 0.06)) !important; }
+    /* CTA: vibrant gradient */
+    #cta { background: linear-gradient(135deg, var(--color-primary), var(--color-accent)) !important; color: #fff !important; }
+    #cta h2, #cta p, #cta span { color: #fff !important; }
+    """,
+    "blog-editorial": """
+    /* Pull-quote accent on testimonials */
+    #testimonials { border-top: 3px solid var(--color-primary); border-bottom: 3px solid var(--color-primary); }
+    """,
+    "blog-dark": """
+    /* About: glow from below */
+    #about { background: radial-gradient(ellipse at 50% 100%, rgba(var(--color-primary-rgb), 0.1), transparent 60%), var(--color-bg) !important; }
+    """,
+    "event-vibrant": """
+    /* CTA: explosive gradient */
+    #cta { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-accent)) !important; color: #fff !important; }
+    #cta h2, #cta p, #cta span { color: #fff !important; }
+    /* Testimonials: dark with glow */
+    #testimonials { background: radial-gradient(ellipse at 30% 50%, rgba(var(--color-primary-rgb), 0.15), transparent 50%), var(--color-text) !important; color: var(--color-bg) !important; }
+    #testimonials h2, #testimonials p, #testimonials span, #testimonials blockquote { color: var(--color-bg) !important; }
+    """,
+    "event-minimal": """
+    /* Subtle section dividers */
+    #about, #services, #contact { border-top: 1px solid rgba(var(--color-text-rgb), 0.08); }
+    """,
+}
+
+
 def _build_per_style_css(style_id: str) -> str:
-    """Build CSS overrides for a specific template style."""
+    """Build CSS overrides for a specific template style.
+
+    Combines spatial overrides (from STYLE_CSS_PROFILES) with section
+    background accents (from SECTION_BG_ACCENTS) to create a unique
+    visual identity per template style.
+    """
     profile = STYLE_CSS_PROFILES.get(style_id)
     if not profile:
         return ""
@@ -1764,6 +1903,20 @@ def _build_per_style_css(style_id: str) -> str:
     ls = profile["letter_spacing"]
     aspeed = profile["animation_speed"]
 
+    # Section background accents (gradients, patterns, inversions)
+    bg_accents = SECTION_BG_ACCENTS.get(style_id, "")
+    # Scope accents to the style body class
+    if bg_accents:
+        scoped_accents = bg_accents.replace("#testimonials", f"{s} #testimonials")
+        scoped_accents = scoped_accents.replace("#cta", f"{s} #cta")
+        scoped_accents = scoped_accents.replace("#features", f"{s} #features")
+        scoped_accents = scoped_accents.replace("#services", f"{s} #services")
+        scoped_accents = scoped_accents.replace("#about", f"{s} #about")
+        scoped_accents = scoped_accents.replace("#stats", f"{s} #stats")
+        scoped_accents = scoped_accents.replace("#contact", f"{s} #contact")
+    else:
+        scoped_accents = ""
+
     return f"""
     /* Style profile: {style_id} */
     {s} section {{ padding-top: {space}; padding-bottom: {space}; }}
@@ -1775,6 +1928,7 @@ def _build_per_style_css(style_id: str) -> str:
     {s} [class*="shadow-xl"], {s} [class*="shadow-2xl"],
     {s} [class*="shadow-lg"] {{ box-shadow: {shd}; }}
     {s} {{ --animation-speed: {aspeed}; }}
+    {scoped_accents}
     """
 
 
@@ -2615,7 +2769,7 @@ The reference uses MINIMAL/CLEAN typography. Use one of these pairings:
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
 {exact_colors_block}{reference_override}
-BUSINESS: {business_name} - {business_description[:500]}
+BUSINESS: {business_name} - {business_description[:1200]}
 {style_hint}
 {palette_hint}
 {variety_hint}
@@ -2900,7 +3054,7 @@ Return ONLY valid JSON, no markdown.
 {style_tone_block}
 
 BUSINESS: {business_name}
-DESCRIPTION: {business_description[:800]}
+DESCRIPTION: {business_description[:2000]}
 SECTIONS NEEDED: {sections_str}
 {contact_str}
 
