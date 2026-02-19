@@ -422,6 +422,31 @@ async def health_check():
 async def ping():
     return {"pong": True, "status": "alive"}
 
+@app.get("/debug/db-test")
+async def debug_db_test():
+    """Temporary diagnostic: test actual DB queries."""
+    import traceback as _tb
+    results = {}
+    try:
+        from sqlalchemy import text as _txt
+        with engine.connect() as conn:
+            r = conn.execute(_txt("SELECT COUNT(*) FROM users"))
+            results["users_count"] = r.scalar()
+    except Exception as e:
+        results["users_query_error"] = f"{type(e).__name__}: {e}"
+        results["traceback"] = _tb.format_exc()
+    try:
+        from app.core.database import get_db, SessionLocal
+        db = SessionLocal()
+        from app.models.user import User
+        u = db.query(User).first()
+        results["user_query"] = "OK" if u else "no users"
+        db.close()
+    except Exception as e:
+        results["orm_query_error"] = f"{type(e).__name__}: {e}"
+        results["orm_traceback"] = _tb.format_exc()
+    return results
+
 @app.get("/debug/imports")
 async def debug_imports():
     """Diagnostica: prova a importare ogni modulo e riporta errori."""
