@@ -22,7 +22,12 @@ class GenerationLogComponent(Base):
 
     # Relationships
     generation = relationship("GenerationLog", back_populates="component_entries")
-    component = relationship("ComponentV2")
+    # ComponentV2 relationship only available when pgvector is installed
+    try:
+        from app.models.component_v2 import ComponentV2 as _CV2  # noqa: F401
+        component = relationship("ComponentV2")
+    except ImportError:
+        pass
 
     __table_args__ = (
         Index("ix_gen_log_comp_component_id", "component_id"),
