@@ -1307,6 +1307,217 @@ OVERALL FEEL: Exciting, urgent, community-driven. Creates FOMO. Like a tech conf
   </div>
 </footer>""",
     },
+
+    # ====================================================
+    # CODEPEN EFFECTS (9) - Advanced CSS/JS techniques from real demos
+    # ====================================================
+    {
+        "id": "codepen_expanding_gallery",
+        "content": """Expanding gallery with CSS :has() selector: a grid of overlapping image cards where hovering one card causes it to expand (6fr) while others shrink (1fr) using CSS grid-template-columns animation. Cards use corner-shape:notch for decorative cut corners and overlap via grid-column spanning. Pure CSS, no JavaScript. The :has(:nth-child(N):hover) pattern on the parent drives all state changes. Creates an elegant, interactive image showcase with smooth 300ms transitions.""",
+        "category": "micro_interactions",
+        "tags": ["gallery", "hover", "grid", "expanding", "css-has", "interactive"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  aspect-ratio: 2/1;
+  transition: grid 300ms ease-in-out;
+}
+.wrapper:has(:nth-child(1):hover) { grid-template-columns: 6fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+.wrapper > * {
+  grid-row: 1;
+  overflow: hidden;
+  border-radius: 0 0 0 30%/0 0 0 50%;
+  transition: all 300ms ease-in-out;
+  background-size: cover;
+}
+.wrapper > :nth-child(1) { grid-column: 1 / span 3; }
+.wrapper > :nth-child(2) { grid-column: 3 / span 3; }""",
+    },
+    {
+        "id": "codepen_scroll_focus_text",
+        "content": """Scroll-driven text focus effect using CSS view-timeline and scroll-linked animations. Text starts dim/muted and becomes bright/focused as it scrolls into the viewport center. A sticky visual panel on the right shows geometric shapes that fade in/out synced to scroll position. Uses CSS timeline-scope, view-timeline-name, and animation-timeline properties for zero-JS scroll synchronization. The 'focus-text' class uses animation-range: cover 0% cover 100% to map scroll position to opacity/color. Creates an editorial, storytelling experience with text that 'lights up' as you read.""",
+        "category": "scroll_effects",
+        "tags": ["scroll-driven", "text-focus", "view-timeline", "css-animation", "editorial", "storytelling"],
+        "complexity": "high",
+        "impact_score": 9,
+        "code": """.focus-text {
+  font-size: 3.5rem;
+  color: var(--text-muted);
+  animation: content-focus linear both;
+  animation-timeline: view();
+  animation-range: cover 0% cover 100%;
+}
+.scroll-section {
+  view-timeline-axis: block;
+  view-timeline-inset: 40% 40%;
+}
+.shape-container {
+  animation-name: shape-fade;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}""",
+    },
+    {
+        "id": "codepen_warm_product_card",
+        "content": """Warm minimal product card with CSS-only day-to-night mode toggle. Uses corner-shape:squircle for smooth Apple-style rounded corners. The card has glassmorphism (backdrop-filter:blur + semi-transparent bg), warm radial gradient backgrounds with soft golden tones, and multi-layer box-shadows for depth. The day/night transition changes entire palette using CSS custom properties. Split layout: image left in squircle container, info right with brand, title (scaleY(2) for condensed elegance), price, description. CTA button uses golden gradient with hover lift. Creates a premium, boutique feel perfect for luxury e-commerce.""",
+        "category": "layout_patterns",
+        "tags": ["product-card", "glassmorphism", "squircle", "luxury", "warm", "ecommerce", "css-only"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.product-card {
+  border-radius: 12rem;
+  corner-shape: squircle;
+  background: linear-gradient(145deg, rgba(255,255,255,0.75), rgba(255,255,255,0.55));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 40px 80px rgba(206,168,132,0.1), 0 20px 40px rgba(0,0,0,0.1), 0 0 120px rgba(198,169,126,0.25), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.btn-primary {
+  background: linear-gradient(145deg, #d8a45c, #b97a2f);
+  box-shadow: 0 8px 20px rgba(201,155,94,0.35), 0 0 25px rgba(201,155,94,0.15), inset 0 2px 6px rgba(255,255,255,0.3);
+}""",
+    },
+    {
+        "id": "codepen_text_fill_scroll",
+        "content": """Text fill on scroll with GSAP ScrollTrigger: text starts with muted color and progressively fills with a bright foreground color as the user scrolls. Uses background-clip:text with a gradient (bright 50%, muted 60%) and animates background-size from 0% to 200% via GSAP scrub. The text appears to be 'painted' word-by-word as you scroll. Dark background (#0b0c0f), light text (#f3f4f6), muted base (#3f434a). Font: Syne, bold 600, large clamp(22px, 4vw, 48px). Simple but extremely effective for hero/manifesto sections. Respects prefers-reduced-motion.""",
+        "category": "text_animations",
+        "tags": ["text-fill", "scroll", "gsap", "scrub", "progressive", "hero", "manifesto"],
+        "complexity": "medium",
+        "impact_score": 10,
+        "code": """.fill-text > span {
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-color: var(--muted);
+  background-image: linear-gradient(135deg, var(--fg) 50%, var(--muted) 60%);
+  background-size: 0% 200%;
+  color: transparent;
+  will-change: background-size;
+}
+/* GSAP */
+gsap.to(target, {
+  backgroundSize: "200% 200%",
+  ease: "none",
+  scrollTrigger: { trigger: ".js-fill", start: "top 80%", end: "bottom 35%", scrub: true }
+});""",
+    },
+    {
+        "id": "codepen_dark_bento_blog",
+        "content": """Dark bento-grid blog layout with glassmorphism UI: full dark theme (#0a0a0a) with purple-indigo gradient accents (#667eea → #764ba2). Features: glass cards (rgba(255,255,255,0.03) + backdrop-blur(10px)), gradient-border technique (background padding-box + border-box), animated shimmer loading effect (background-position sliding), bento cards with scale(1.02)+translateY(-4px) hover, floating keyframe animation, gradient text via background-clip, and cursor-glow follower. The gradient-border creates an animated rainbow border using transparent border + gradient background. Perfect for dark SaaS/tech/blog layouts.""",
+        "category": "layout_patterns",
+        "tags": ["bento", "dark", "glassmorphism", "gradient-border", "shimmer", "blog", "tech"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.glass {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.gradient-border {
+  background: linear-gradient(#0a0a0a, #0a0a0a) padding-box,
+              linear-gradient(135deg, #667eea, #764ba2, #f093fb) border-box;
+  border: 2px solid transparent;
+}
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+.bento-card:hover { transform: scale(1.02) translateY(-4px); }""",
+    },
+    {
+        "id": "codepen_fullscreen_slider",
+        "content": """Full-screen animated image slider with GSAP: immersive slider with background images covering entire viewport, massive title text (clamp(64px, 15vw, 200px)), custom circular cursor (80px border circle following mouse with GSAP), and smooth slide transitions. Each slide has: bg image, large title with word-by-word reveal (inline-block spans with will-change:transform), description in small uppercase tracking, location info. Transitions use GSAP timeline with staggered word animations. Custom cursor replaces default, showing navigation arrows. Dark cinematic feel with subtle white borders. Perfect for hero sections, portfolio showcases, and immersive full-page experiences.""",
+        "category": "micro_interactions",
+        "tags": ["slider", "fullscreen", "gsap", "cursor", "immersive", "hero", "portfolio", "cinematic"],
+        "complexity": "high",
+        "impact_score": 10,
+        "code": """.slider { width: 100%; height: 100vh; overflow: hidden; cursor: none; }
+.slider__title {
+  font-size: clamp(64px, 15vw, 200px);
+  font-weight: 700; color: #fff;
+  line-height: 1.15; letter-spacing: -0.02em;
+}
+.slider__title span { display: inline-block; will-change: transform; }
+.slider__cursor {
+  position: fixed; width: 80px; height: 80px;
+  border-radius: 50%; border: 1px solid rgba(255,255,255,0.3);
+  pointer-events: none; will-change: transform; z-index: 10;
+}""",
+    },
+    {
+        "id": "codepen_scroll_card_fan",
+        "content": """CSS scroll-based card fan animation: cards spread from a stacked deck into a fan layout as user scrolls, using CSS sibling-index() and scroll-driven animations. Each card calculates its rotation angle based on its sibling index: --angle = (angle-min + angle-step * index) * progress. Also features: 3D calendar perspective reveal (translateZ + rotateX on scroll), radial progress spinner animated by scroll (conic-gradient with CSS counter showing percentage), image clip-path morphing on scroll (shape() function), and staggered review card entries. All animations use animation-timeline: view(block) with no JavaScript. Creates rich, layered scroll storytelling.""",
+        "category": "scroll_effects",
+        "tags": ["card-fan", "scroll-driven", "css-animation", "sibling-index", "perspective", "radial-progress", "no-js"],
+        "complexity": "high",
+        "impact_score": 10,
+        "code": """.card {
+  --index: sibling-index();
+  --count: sibling-count();
+  --angle: calc(var(--angle-min) + var(--angle-step) * var(--index));
+  --angle-deg: calc((var(--angle) * var(--card-rotation-progress)) * 1deg);
+  position: absolute;
+  transform-origin: bottom center;
+  rotate: var(--angle-deg);
+  animation: cardUp 1ms ease-out both;
+  animation-timeline: view(block);
+}
+.spinner { background: conic-gradient(from 0deg, #8b5cf6 0deg, #8b5cf6 var(--progress), transparent var(--progress)); }
+.cover-image { clip-path: shape(...); animation-timeline: view(block); }""",
+    },
+    {
+        "id": "codepen_obsidian_gold_landing",
+        "content": """Obsidian gold luxury landing page template (Tailwind + GSAP): dark theme (#121212 bg, #F5F5F0 text, #C5A059 gold accent). Features: page loader with fade-in text, stagger reveal-on-load animations, -webkit-text-stroke for decorative outlined headings (1px gold stroke on transparent), glass-panel (rgba(255,255,255,0.06) + backdrop-blur + subtle border), showcase-frame with radial gold gradients and repeating diagonal line pattern overlay. Image containers with hover scale(1.1) zoom. Custom gold scrollbar. Prefers-reduced-motion support. The gold+dark combination creates an ultra-premium feel for luxury brands, high-end restaurants, and exclusive services. Uses Cormorant Garamond serif for elegance.""",
+        "category": "professional_blueprints",
+        "tags": ["luxury", "dark", "gold", "tailwind", "gsap", "text-stroke", "glass", "premium", "landing"],
+        "complexity": "medium",
+        "impact_score": 10,
+        "code": """:root { --bg:#121212; --fg:#F5F5F0; --gold:#C5A059; }
+.text-stroke {
+  -webkit-text-stroke: 1px rgba(197,160,89,0.55);
+  color: rgba(245,245,240,0.05);
+  text-shadow: 0 0 18px rgba(197,160,89,0.1);
+}
+.glass-panel {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+.showcase-frame {
+  border: 1px solid rgba(197,160,89,0.25);
+  background: radial-gradient(700px at 20% 20%, rgba(197,160,89,0.18), transparent 60%);
+}
+.showcase-frame::before {
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 14px);
+}""",
+    },
+    {
+        "id": "codepen_glassmorphism_portfolio",
+        "content": """Modern glassmorphism portfolio with animated canvas background and theme toggle. Dark (#050505) and light (#e8e8e8) themes via CSS custom properties and [data-theme] attribute. App-style layout: fixed sidebar (260px, glassmorphism panel with blur(20px)), main scrollable content area. Nav links with translateX(4px) hover shift. Bento grid for project cards. Canvas background with animated particles/shapes (Three.js or vanilla Canvas). CSS variables for consistent glass: --panel-bg: rgba(20,20,25,0.4), --panel-border: rgba(255,255,255,0.08), --glass-blur: 20px. Accent color #6d5dfc (indigo-purple). Avatar with gradient. Smooth 0.5s cubic-bezier transitions on all theme changes. Creates a dashboard-like portfolio with depth and interactivity.""",
+        "category": "layout_patterns",
+        "tags": ["glassmorphism", "portfolio", "sidebar", "canvas", "theme-toggle", "bento", "dashboard", "dark-light"],
+        "complexity": "high",
+        "impact_score": 9,
+        "code": """:root {
+  --panel-bg: rgba(20,20,25,0.4);
+  --panel-border: rgba(255,255,255,0.08);
+  --panel-hover: rgba(255,255,255,0.12);
+  --glass-blur: 20px;
+  --radius-lg: 24px;
+}
+[data-theme="light"] {
+  --panel-bg: rgba(255,255,255,0.4);
+  --panel-border: rgba(0,0,0,0.05);
+}
+.sidebar {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-lg);
+}
+.nav-link:hover { background: var(--panel-hover); transform: translateX(4px); }""",
+    },
 ]
 
 
