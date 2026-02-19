@@ -230,6 +230,8 @@ async def _run_generation_background(
                 gen_kwargs["hero_type"] = request.hero_type
             if request.hero_video_url:
                 gen_kwargs["hero_video_url"] = request.hero_video_url
+            if request.generate_images:
+                gen_kwargs["generate_images"] = request.generate_images
 
         result = await generator.generate(**gen_kwargs)
 

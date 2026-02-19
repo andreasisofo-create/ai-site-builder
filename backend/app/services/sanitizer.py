@@ -161,10 +161,16 @@ def _sanitize_scripts(html: str) -> str:
     return html
 
 
-def sanitize_output(html: str) -> str:
+def sanitize_output(html: str, is_template_assembled: bool = False) -> str:
     """
     Sanitizza HTML generato dall'AI.
     Rimuove script, iframe, event handler inline, domini non consentiti.
+
+    Args:
+        html: HTML string to sanitize.
+        is_template_assembled: If True, skip stripping inline event handlers
+            (onclick, onsubmit, etc.) because template-assembled HTML uses
+            them for lightbox, FAQ accordion, pricing toggle, and mobile nav.
     """
     if not html:
         return html
@@ -190,20 +196,22 @@ def sanitize_output(html: str) -> str:
             flags=re.IGNORECASE
         )
 
-    # Rimuovi event handler inline
-    for handler in EVENT_HANDLERS:
-        html = re.sub(
-            rf'\s{handler}\s*=\s*["\'][^"\']*["\']',
-            '',
-            html,
-            flags=re.IGNORECASE
-        )
-        html = re.sub(
-            rf'\s{handler}\s*=\s*\S+',
-            '',
-            html,
-            flags=re.IGNORECASE
-        )
+    # Rimuovi event handler inline (skip for template-assembled HTML which
+    # relies on onclick for lightbox, FAQ accordion, pricing toggle, hamburger)
+    if not is_template_assembled:
+        for handler in EVENT_HANDLERS:
+            html = re.sub(
+                rf'\s{handler}\s*=\s*["\'][^"\']*["\']',
+                '',
+                html,
+                flags=re.IGNORECASE
+            )
+            html = re.sub(
+                rf'\s{handler}\s*=\s*\S+',
+                '',
+                html,
+                flags=re.IGNORECASE
+            )
 
     # Rimuovi javascript: URLs
     html = re.sub(

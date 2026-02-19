@@ -483,7 +483,7 @@ TECHNICAL RULES:
    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 4. Mobile-first responsive (375px, 768px, 1440px)
-5. Placeholder images: https://placehold.co
+5. Placeholder images: use inline SVG data URIs (data:image/svg+xml,...) instead of external services
 6. Working contact form with labels, names, submit button
 7. Smooth scroll nav + mobile hamburger menu (vanilla JS)
 8. Meta tags: charset, viewport, description, og:title, og:description

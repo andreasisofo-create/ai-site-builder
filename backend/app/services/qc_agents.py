@@ -493,7 +493,7 @@ class LayoutFixAgent:
             "HERO_SUBTITLE": "La tua descrizione qui",
             "HERO_CTA_TEXT": "Scopri di Pi\u00f9",
             "HERO_CTA_URL": "#contact",
-            "HERO_IMAGE_URL": "https://placehold.co/800x600/eee/999?text=Immagine",
+            "HERO_IMAGE_URL": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Crect fill='%23eee' width='800' height='600'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' font-family='system-ui' font-size='18' text-anchor='middle' dy='.3em'%3EImmagine%3C/text%3E%3C/svg%3E",
             "HERO_IMAGE_ALT": "Immagine principale",
             "CONTACT_EMAIL": "",
             "CONTACT_PHONE": "",

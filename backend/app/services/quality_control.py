@@ -187,7 +187,7 @@ class QualityControlPipeline:
         # PHASE 4: Final Score
         # ===============================
         fixes_applied_count = sum(f.issues_fixed for f in all_fixes)
-        fix_bonus = min(fixes_applied_count * 0.2, 1.5)
+        fix_bonus = min(fixes_applied_count * 0.2, 0.5)
         report.final_score = min(10.0, report.overall_score + fix_bonus)
         report.passed = report.final_score >= PASS_THRESHOLD
         report.html_after = html
@@ -234,6 +234,8 @@ class QualityControlPipeline:
         issues.extend(self._check_accessibility(html))
         issues.extend(self._check_heading_hierarchy(html))
         issues.extend(self._check_banned_phrases(html))
+        issues.extend(self._check_nav_anchor_links(html))
+        issues.extend(self._check_placeholder_images(html))
 
         # Art Director checks (always active, instant, no AI)
         issues.extend(self._check_animation_density(html))
@@ -547,6 +549,63 @@ class QualityControlPipeline:
                 ))
         return issues
 
+    def _check_nav_anchor_links(self, html: str) -> List[QCIssue]:
+        """Verify every href="#section-id" in nav resolves to an existing element ID."""
+        issues = []
+        # Find the <nav> block(s)
+        nav_blocks = re.findall(r'<nav\b[^>]*>.*?</nav>', html, re.IGNORECASE | re.DOTALL)
+        if not nav_blocks:
+            return issues
+
+        # Collect all anchor hrefs from nav that point to fragment IDs
+        nav_hrefs: set = set()
+        for nav_html in nav_blocks:
+            nav_hrefs.update(re.findall(r'<a\b[^>]*href="#([^"]+)"', nav_html, re.IGNORECASE))
+
+        if not nav_hrefs:
+            return issues
+
+        # Collect all element IDs in the full document
+        all_ids = set(re.findall(r'\bid="([^"]*)"', html))
+
+        for href_id in sorted(nav_hrefs):
+            if href_id not in all_ids:
+                issues.append(QCIssue(
+                    type="structure", severity="warning",
+                    element=f'a[href="#{href_id}"]',
+                    description=f"Nav link #{href_id} does not resolve to any element ID in the page",
+                    auto_fixable=False,
+                ))
+        return issues
+
+    def _check_placeholder_images(self, html: str) -> List[QCIssue]:
+        """Warn if >50% of images use placeholder sources (placehold.co or SVG data URI placeholders)."""
+        issues = []
+        img_tags = re.findall(r'<img\b[^>]*>', html, re.IGNORECASE)
+        if not img_tags:
+            return issues
+
+        total = len(img_tags)
+        placeholder_count = 0
+        for tag in img_tags:
+            src_match = re.search(r'src="([^"]*)"', tag)
+            if src_match:
+                src = src_match.group(1)
+                if "placehold.co" in src or src.startswith("data:image/svg+xml,"):
+                    placeholder_count += 1
+
+        if total > 0 and placeholder_count > total / 2:
+            issues.append(QCIssue(
+                type="structure", severity="warning",
+                element="img",
+                description=(
+                    f"{placeholder_count}/{total} images ({int(placeholder_count/total*100)}%) "
+                    f"are external placeholders. Consider adding real or AI-generated images."
+                ),
+                auto_fixable=False,
+            ))
+        return issues
+
     # =========================================================
     # Art Director Checks (instant, no AI)
     # =========================================================
@@ -667,9 +726,9 @@ class QualityControlPipeline:
 
         from app.core.config import settings as _settings
 
-        # Truncate HTML to save tokens (keep first ~8000 chars)
-        html_excerpt = html[:8000]
-        if len(html) > 8000:
+        # Truncate HTML to save tokens (keep first ~15000 chars)
+        html_excerpt = html[:15000]
+        if len(html) > 15000:
             html_excerpt += "\n... [HTML truncated for review] ..."
 
         # Enhanced dimensions when Art Director QC is on

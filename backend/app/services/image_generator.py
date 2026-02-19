@@ -12,6 +12,7 @@ style mood, and color palette.
 import asyncio
 import logging
 import os
+import urllib.parse
 from typing import Dict, Any, Optional, List, Callable
 
 import fal_client
@@ -68,9 +69,6 @@ SECTION_IMAGE_COUNTS: Dict[str, int] = {
     "event": 1,
 }
 
-# Placeholder fallback URL pattern
-PLACEHOLDER_URL = "https://placehold.co/{width}x{height}/1a1a2e/e0e0e0?text={text}"
-
 PLACEHOLDER_DIMENSIONS: Dict[str, tuple] = {
     "landscape_16_9": (1280, 720),
     "landscape_4_3": (1024, 768),
@@ -79,6 +77,18 @@ PLACEHOLDER_DIMENSIONS: Dict[str, tuple] = {
     "portrait_4_3": (768, 1024),
     "portrait_16_9": (720, 1280),
 }
+
+
+def _svg_placeholder(width: int, height: int, label: str = "", bg_color: str = "#1a1a2e", text_color: str = "#94a3b8") -> str:
+    """Generate an inline SVG data URI placeholder image."""
+    label_escaped = label.replace("&", "&amp;").replace("<", "&lt;").replace('"', "&quot;")
+    svg = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">'
+        f'<rect fill="{bg_color}" width="{width}" height="{height}"/>'
+        f'<text x="50%" y="50%" fill="{text_color}" font-family="system-ui,sans-serif" font-size="18" text-anchor="middle" dy=".3em">{label_escaped}</text>'
+        f'</svg>'
+    )
+    return f"data:image/svg+xml,{urllib.parse.quote(svg)}"
 
 
 def _has_api_key() -> bool:
@@ -287,11 +297,11 @@ def build_prompt(
 
 
 def _get_placeholder(section_type: str, index: int = 0) -> str:
-    """Generate a placehold.co fallback URL for a given section."""
+    """Generate an inline SVG data URI placeholder for a given section."""
     size_key = SECTION_IMAGE_SIZES.get(section_type, "landscape_4_3")
     w, h = PLACEHOLDER_DIMENSIONS.get(size_key, (1024, 768))
-    label = f"{section_type}+{index + 1}"
-    return PLACEHOLDER_URL.format(width=w, height=h, text=label)
+    label = f"{section_type} {index + 1}"
+    return _svg_placeholder(w, h, label)
 
 
 # ---------------------------------------------------------------------------
@@ -327,22 +337,36 @@ async def generate_single_image(
         "output_format": "jpeg",
     }
 
-    try:
-        result = await fal_client.run_async(model, arguments=arguments)
+    for attempt in range(2):
+        try:
+            result = await asyncio.wait_for(
+                fal_client.run_async(model, arguments=arguments),
+                timeout=30.0,
+            )
 
-        images = result.get("images", [])
-        if images and len(images) > 0:
-            url = images[0].get("url", "")
-            if url:
-                logger.info(f"Flux generated image: {url[:80]}...")
-                return url
+            images = result.get("images", [])
+            if images and len(images) > 0:
+                url = images[0].get("url", "")
+                if url:
+                    logger.info(f"Flux generated image: {url[:80]}...")
+                    return url
 
-        logger.warning(f"Flux returned empty images for prompt: {prompt[:60]}...")
-        return None
+            logger.warning(f"Flux returned empty images for prompt: {prompt[:60]}...")
+            return None
 
-    except Exception as e:
-        logger.error(f"Flux generation failed: {e}")
-        return None
+        except asyncio.TimeoutError:
+            logger.warning(f"Flux timeout (attempt {attempt + 1}/2) for prompt: {prompt[:60]}...")
+            if attempt == 0:
+                await asyncio.sleep(1.0)
+                continue
+            return None
+        except Exception as e:
+            logger.error(f"Flux generation failed (attempt {attempt + 1}/2): {e}")
+            if attempt == 0:
+                await asyncio.sleep(1.0)
+                continue
+            return None
+    return None
 
 
 async def generate_section_images(
@@ -369,7 +393,7 @@ async def generate_section_images(
         quality: "fast" (schnell $0.025) or "quality" (pro $0.04)
 
     Returns:
-        List of image URLs. Falls back to placehold.co on failure.
+        List of image URLs. Falls back to inline SVG placeholders on failure.
     """
     if not _has_api_key():
         logger.warning("FAL_API_KEY not configured, returning placeholder images")
@@ -446,36 +470,48 @@ async def generate_all_site_images(
             result[section] = [_get_placeholder(section, i) for i in range(count)]
         return result
 
-    total_sections = len(sections)
     all_images: Dict[str, List[str]] = {}
+    semaphore = asyncio.Semaphore(5)
 
-    for idx, section in enumerate(sections):
+    async def _gen_section(section: str) -> tuple:
         count = SECTION_IMAGE_COUNTS.get(section, 1)
+        async with semaphore:
+            logger.info(f"Generating {count} image(s) for section '{section}'")
+            urls = await generate_section_images(
+                business_name=business_name,
+                business_description=business_description,
+                section_type=section,
+                style_mood=style_mood,
+                color_palette=color_palette,
+                count=count,
+                quality=quality,
+            )
+            return section, urls
 
-        if progress_callback:
-            pct = int((idx / total_sections) * 100)
-            progress_callback(pct, f"Generating {section} images...")
+    if progress_callback:
+        progress_callback(0, "Generating images for all sections...")
 
-        logger.info(f"Generating {count} image(s) for section '{section}' [{idx+1}/{total_sections}]")
+    results = await asyncio.gather(
+        *[_gen_section(s) for s in sections],
+        return_exceptions=True,
+    )
 
-        urls = await generate_section_images(
-            business_name=business_name,
-            business_description=business_description,
-            section_type=section,
-            style_mood=style_mood,
-            color_palette=color_palette,
-            count=count,
-            quality=quality,
-        )
-
-        all_images[section] = urls
+    for idx, result in enumerate(results):
+        if isinstance(result, Exception):
+            section = sections[idx]
+            logger.error(f"Section '{section}' image generation failed: {result}")
+            count = SECTION_IMAGE_COUNTS.get(section, 1)
+            all_images[section] = [_get_placeholder(section, i) for i in range(count)]
+        else:
+            section, urls = result
+            all_images[section] = urls
 
     if progress_callback:
         progress_callback(100, "Image generation complete")
 
     total_generated = sum(len(v) for v in all_images.values())
     placeholder_count = sum(
-        1 for urls in all_images.values() for u in urls if "placehold.co" in u
+        1 for urls in all_images.values() for u in urls if "data:image/svg+xml" in u
     )
     logger.info(
         f"Image generation complete: {total_generated} images, "

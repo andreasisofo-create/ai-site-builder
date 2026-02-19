@@ -37,13 +37,24 @@ from app.services.quality_control import qc_pipeline
 
 # AI Image generation (Flux/fal.ai) - graceful fallback if not available
 try:
-    from app.services.image_generator import generate_all_site_images, _has_api_key as _has_image_api_key
+    from app.services.image_generator import generate_all_site_images, _has_api_key as _has_image_api_key, _svg_placeholder
     _has_image_generation = True
 except Exception:
     _has_image_generation = False
 
     def _has_image_api_key() -> bool:
         return False
+
+    def _svg_placeholder(width: int, height: int, label: str = "", bg_color: str = "#1a1a2e", text_color: str = "#94a3b8") -> str:
+        import urllib.parse
+        label_escaped = label.replace("&", "&amp;").replace("<", "&lt;").replace('"', "&quot;")
+        svg = (
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">'
+            f'<rect fill="{bg_color}" width="{width}" height="{height}"/>'
+            f'<text x="50%" y="50%" fill="{text_color}" font-family="system-ui,sans-serif" font-size="18" text-anchor="middle" dy=".3em">{label_escaped}</text>'
+            f'</svg>'
+        )
+        return f"data:image/svg+xml,{urllib.parse.quote(svg)}"
 
 # Design knowledge (SQLite FTS5) - graceful fallback if not available
 try:
@@ -3750,6 +3761,7 @@ Return ONLY the JSON object."""
         hero_video_url: Optional[str] = None,
         user_id: Optional[int] = None,
         site_id: Optional[int] = None,
+        generate_images: bool = False,
     ) -> Dict[str, Any]:
         """
         Generate a website using the data-binding pipeline.
@@ -3777,6 +3789,7 @@ Return ONLY the JSON object."""
                     hero_video_url=hero_video_url,
                     user_id=user_id,
                     site_id=site_id,
+                    generate_images=generate_images,
                 ),
                 timeout=180.0,
             )
@@ -3802,6 +3815,7 @@ Return ONLY the JSON object."""
         hero_video_url: Optional[str] = None,
         user_id: Optional[int] = None,
         site_id: Optional[int] = None,
+        generate_images: bool = False,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens_in = 0
@@ -4048,7 +4062,8 @@ RULES:
 
         # Determine if we should generate AI images
         should_generate_images = (
-            _has_image_generation
+            generate_images
+            and _has_image_generation
             and _has_image_api_key()
         )
 
@@ -4089,7 +4104,7 @@ RULES:
             # Replace placeholder URLs in texts with generated images
             total_ai_images = sum(
                 1 for urls in generated_images.values()
-                for u in urls if "placehold.co" not in u
+                for u in urls if not (u.startswith("data:image/svg+xml,") or "placehold.co" in u)
             )
             if total_ai_images > 0:
                 texts = self._inject_ai_images(texts, generated_images)
@@ -4184,7 +4199,7 @@ RULES:
 
         try:
             html_content = self.assembler.assemble(site_data)
-            html_content = sanitize_output(html_content)
+            html_content = sanitize_output(html_content, is_template_assembled=True)
             # Post-process: randomize GSAP animations for per-site uniqueness
             html_content = _randomize_animations(html_content)
             # Post-process: remove empty sections (better no section than blank space)
@@ -4449,7 +4464,7 @@ RULES:
         if section == "hero":
             # Ensure HERO_IMAGE_URL has a placeholder so stock/AI image injection can find and replace it
             if "HERO_IMAGE_URL" not in data or not data["HERO_IMAGE_URL"]:
-                data["HERO_IMAGE_URL"] = f"https://placehold.co/1200x800/1a1a2e/white?text={business_name}"
+                data["HERO_IMAGE_URL"] = _svg_placeholder(1200, 800, business_name)
             if "HERO_IMAGE_ALT" not in data or not data["HERO_IMAGE_ALT"]:
                 data["HERO_IMAGE_ALT"] = business_name
 
@@ -4574,8 +4589,7 @@ RULES:
 
             # Ensure ABOUT_IMAGE_URL has a fallback for templates that need it
             if "ABOUT_IMAGE_URL" not in data or not data["ABOUT_IMAGE_URL"]:
-                primary = "3b82f6"
-                data["ABOUT_IMAGE_URL"] = f"https://placehold.co/800x600/{primary}/white?text={business_name}"
+                data["ABOUT_IMAGE_URL"] = _svg_placeholder(800, 600, business_name, bg_color="#3b82f6", text_color="#ffffff")
             if "ABOUT_IMAGE_ALT" not in data or not data["ABOUT_IMAGE_ALT"]:
                 data["ABOUT_IMAGE_ALT"] = f"Immagine {business_name}"
 
@@ -5364,7 +5378,7 @@ RULES:
         ]
         items = []
         for i in range(6):
-            url = gallery_photos[i % len(gallery_photos)] if gallery_photos else f"https://placehold.co/600x400/eee/999?text=Foto+{i+1}"
+            url = gallery_photos[i % len(gallery_photos)] if gallery_photos else _svg_placeholder(600, 400, f"Foto {i+1}", bg_color="#eeeeee", text_color="#999999")
             items.append({
                 "GALLERY_IMAGE_URL": url,
                 "GALLERY_IMAGE_ALT": captions[i],
@@ -5413,9 +5427,14 @@ RULES:
             f' frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>'
         )
 
+    @staticmethod
+    def _is_placeholder_url(url: str) -> bool:
+        """Check if a URL is a placeholder (inline SVG data URI or legacy placehold.co)."""
+        return isinstance(url, str) and ("placehold.co" in url or url.startswith("data:image/svg+xml,"))
+
     def _inject_stock_photos(self, site_data: Dict[str, Any], template_style_id: Optional[str] = None) -> Dict[str, Any]:
-        """Replace placehold.co grey boxes with high-quality Unsplash stock photos.
-        Only replaces URLs that still contain 'placehold.co'."""
+        """Replace placeholder images with high-quality Unsplash stock photos.
+        Only replaces URLs that are placeholders (inline SVG or legacy placehold.co)."""
         photos = _get_stock_photos(template_style_id or "default")
 
         hero_pool = photos.get("hero", [])
@@ -5427,12 +5446,12 @@ RULES:
             data = component.get("data", {})
 
             # Hero image
-            if "HERO_IMAGE_URL" in data and "placehold.co" in str(data.get("HERO_IMAGE_URL", "")):
+            if "HERO_IMAGE_URL" in data and self._is_placeholder_url(str(data.get("HERO_IMAGE_URL", ""))):
                 if hero_pool:
                     data["HERO_IMAGE_URL"] = hero_pool[0]
 
             # About image
-            if "ABOUT_IMAGE_URL" in data and "placehold.co" in str(data.get("ABOUT_IMAGE_URL", "")):
+            if "ABOUT_IMAGE_URL" in data and self._is_placeholder_url(str(data.get("ABOUT_IMAGE_URL", ""))):
                 if about_pool:
                     data["ABOUT_IMAGE_URL"] = about_pool[0]
 
@@ -5440,7 +5459,7 @@ RULES:
             gallery_items = data.get("GALLERY_ITEMS", [])
             if isinstance(gallery_items, list):
                 for i, item in enumerate(gallery_items):
-                    if isinstance(item, dict) and "placehold.co" in str(item.get("GALLERY_IMAGE_URL", "")):
+                    if isinstance(item, dict) and self._is_placeholder_url(str(item.get("GALLERY_IMAGE_URL", ""))):
                         if gallery_pool:
                             item["GALLERY_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
 
@@ -5448,24 +5467,23 @@ RULES:
             team_members = data.get("TEAM_MEMBERS", [])
             if isinstance(team_members, list):
                 for i, member in enumerate(team_members):
-                    if isinstance(member, dict) and "placehold.co" in str(member.get("MEMBER_IMAGE_URL", "")):
+                    if isinstance(member, dict) and self._is_placeholder_url(str(member.get("MEMBER_IMAGE_URL", ""))):
                         if team_pool:
                             member["MEMBER_IMAGE_URL"] = team_pool[i % len(team_pool)]
 
-            # Logo partner images - use stylish SVG placeholders instead of grey boxes
+            # Logo partner images - use inline SVG placeholders instead of grey boxes
             logos_items = data.get("LOGOS_ITEMS", [])
             if isinstance(logos_items, list):
                 for i, logo in enumerate(logos_items):
-                    if isinstance(logo, dict) and "placehold.co" in str(logo.get("LOGO_IMAGE_URL", "")):
+                    if isinstance(logo, dict) and self._is_placeholder_url(str(logo.get("LOGO_IMAGE_URL", ""))):
                         name = logo.get("LOGO_NAME", f"Partner {i+1}")
-                        # Use a clean text-based logo placeholder
-                        logo["LOGO_IMAGE_URL"] = f"https://placehold.co/160x60/f8fafc/64748b?text={name.replace(' ', '+')}&font=raleway"
+                        logo["LOGO_IMAGE_URL"] = _svg_placeholder(160, 60, name, bg_color="#f8fafc", text_color="#64748b")
 
         logger.info(f"[DataBinding] Injected stock photos for category: {template_style_id or 'default'}")
         return site_data
 
     def _inject_user_photos(self, site_data: Dict[str, Any], photo_urls: List[str]) -> Dict[str, Any]:
-        """Replace placehold.co URLs with user-uploaded photos in site_data."""
+        """Replace placeholder URLs with user-uploaded photos in site_data."""
         if not photo_urls:
             return site_data
 
@@ -5521,11 +5539,11 @@ RULES:
     ) -> Dict[str, Any]:
         """Replace placehold.co URLs in texts dict with AI-generated image URLs.
 
-        Only replaces URLs that contain 'placehold.co' so user-uploaded photos
-        (injected later via _inject_user_photos) are not affected here.
+        Only replaces placeholder URLs (inline SVG data URIs or legacy placehold.co)
+        so user-uploaded photos are not affected here.
         """
         def _is_placeholder(url: str) -> bool:
-            return isinstance(url, str) and "placehold.co" in url
+            return isinstance(url, str) and ("placehold.co" in url or url.startswith("data:image/svg+xml,"))
 
         def _get_image(section: str, index: int) -> Optional[str]:
             urls = generated_images.get(section, [])
@@ -5685,7 +5703,7 @@ RULES:
                 "HERO_SUBTITLE": f"Dove la visione incontra l'eccellenza. {business_name} ridefinisce gli standard del settore con un approccio che mette al centro le persone e i risultati concreti.",
                 "HERO_CTA_TEXT": "Inizia la Trasformazione",
                 "HERO_CTA_URL": "#contact",
-                "HERO_IMAGE_URL": f"https://placehold.co/800x600/3b82f6/white?text={business_name}",
+                "HERO_IMAGE_URL": _svg_placeholder(800, 600, business_name, bg_color="#3b82f6", text_color="#ffffff"),
                 "HERO_IMAGE_ALT": f"L'esperienza {business_name}",
             }
         if "about" in sections:

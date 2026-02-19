@@ -372,6 +372,10 @@ class TemplateAssembler:
         bg_hex = head_data.get("BG_COLOR", "#ffffff")
         head_data["PRIMARY_COLOR_RGB"] = _hex_to_rgb(primary_hex)
         head_data["BG_COLOR_RGB"] = _hex_to_rgb(bg_hex)
+        secondary_hex = head_data.get("SECONDARY_COLOR", "#1e40af")
+        accent_hex = head_data.get("ACCENT_COLOR", "#f59e0b")
+        head_data["SECONDARY_COLOR_RGB"] = _hex_to_rgb(secondary_hex)
+        head_data["ACCENT_COLOR_RGB"] = _hex_to_rgb(accent_hex)
 
         # ---- WCAG Contrast enforcement ----
         # Cards use bg_alt as background, so text must be readable against it too
