@@ -1,0 +1,68 @@
+<!-- Testimonials Rating: star ratings as visual focus with trust badge -->
+<section id="testimonials" class="py-24 md:py-32 bg-[var(--color-bg-alt)] relative overflow-hidden">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(var(--color-primary-rgb), 0.1), transparent);"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(var(--color-primary-rgb), 0.1), transparent);"></div>
+    <div data-animate="float" class="absolute top-[15%] right-[10%] w-40 h-40 rounded-full blur-3xl" style="background: var(--color-primary); opacity: 0.04;"></div>
+    <div data-animate="float" class="absolute bottom-[20%] left-[5%] w-48 h-48 rounded-full blur-3xl" style="background: var(--color-accent); opacity: 0.04;"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+    <!-- Section Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <span class="w-8 h-px bg-[var(--color-primary)]/40"></span>
+        <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Testimonianze</p>
+        <span class="w-8 h-px bg-[var(--color-primary)]/40"></span>
+      </div>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{TESTIMONIALS_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] mt-3 max-w-xl mx-auto font-body leading-relaxed">{{TESTIMONIALS_SUBTITLE}}</p>
+
+      <!-- Trust Badge -->
+      <div class="inline-flex items-center gap-2 mt-6 px-5 py-2.5 rounded-full border border-[var(--color-primary)]/20" style="background: rgba(var(--color-primary-rgb), 0.06);" data-animate="scale-in">
+        <svg class="w-4 h-4 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <span class="text-xs font-semibold text-[var(--color-primary)] font-body tracking-wide">Verificato</span>
+        <span class="text-xs text-[var(--color-text-muted)] font-body">&middot; 5.0 su 5</span>
+      </div>
+    </div>
+
+    <!-- Rating Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate="stagger">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="stagger-item" data-animate="fade-up">
+        <div class="group bg-[var(--color-bg)] rounded-2xl p-8 shadow-sm border border-[var(--color-text)]/[0.04] transition-all duration-500 hover:shadow-lg hover:border-[var(--color-primary)]/15 h-full flex flex-col" data-animate="tilt">
+          <!-- Star Rating (prominent) -->
+          <div class="flex items-center gap-1 mb-5">
+            <svg class="w-6 h-6 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="w-6 h-6 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="w-6 h-6 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="w-6 h-6 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="w-6 h-6 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          </div>
+
+          <!-- Testimonial Text -->
+          <p class="text-[var(--color-text-muted)] leading-relaxed font-body flex-grow mb-6">&ldquo;{{TESTIMONIAL_TEXT}}&rdquo;</p>
+
+          <!-- Author with photo circle -->
+          <div class="flex items-center gap-4 pt-6 border-t border-[var(--color-text)]/[0.06]">
+            <div class="relative flex-shrink-0">
+              <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="w-12 h-12 rounded-full object-cover" loading="lazy">
+              <!-- Verified check on avatar -->
+              <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center" style="background: var(--color-primary);">
+                <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              </div>
+            </div>
+            <div>
+              <p class="font-semibold text-[var(--color-text)] text-sm font-heading">{{TESTIMONIAL_AUTHOR}}</p>
+              <p class="text-xs text-[var(--color-text-muted)] font-body">{{TESTIMONIAL_ROLE}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+</section>

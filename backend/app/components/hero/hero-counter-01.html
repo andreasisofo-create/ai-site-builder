@@ -1,0 +1,98 @@
+<!-- Hero Counter: bold headline with integrated stats counter row — numbers animate on scroll -->
+<section id="hero" class="min-h-screen relative overflow-hidden bg-[var(--color-bg)]">
+
+  <!-- Subtle radial gradient background -->
+  <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at 50% 30%, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 60%);"></div>
+  <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at 80% 80%, var(--color-accent), transparent 50%); opacity: 0.03;"></div>
+
+  <!-- Decorative vertical lines -->
+  <div class="absolute top-0 left-[25%] w-px h-full bg-[var(--color-text)] opacity-[0.04] z-0"></div>
+  <div class="absolute top-0 left-[50%] w-px h-full bg-[var(--color-text)] opacity-[0.04] z-0"></div>
+  <div class="absolute top-0 left-[75%] w-px h-full bg-[var(--color-text)] opacity-[0.04] z-0"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-6xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col items-center justify-center text-center" style="min-height: calc(100vh - 80px);">
+
+    <!-- Eyebrow -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-text)]/10 bg-[var(--color-bg-alt)]/60 backdrop-blur-sm mb-8" data-animate="blur-in" data-delay="0.1">
+      <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--color-primary);"></span>
+      <span class="font-body text-xs tracking-widest uppercase text-[var(--color-text-muted)]">{{BUSINESS_NAME}}</span>
+    </div>
+
+    <!-- Main headline -->
+    <h1 class="font-heading text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.05] tracking-tight max-w-5xl text-[var(--color-text)] mb-6" data-animate="text-split" data-split-type="words">
+      {{HERO_TITLE}}
+    </h1>
+
+    <!-- Accent line -->
+    <div class="flex items-center gap-3 mb-6" data-animate="scale-in" data-delay="0.2">
+      <div class="w-8 h-px" style="background: var(--color-primary);"></div>
+      <div class="w-2 h-2 rounded-full" style="background: var(--color-primary); opacity: 0.6;"></div>
+      <div class="w-8 h-px" style="background: var(--color-primary);"></div>
+    </div>
+
+    <!-- Subtitle -->
+    <p class="font-body text-lg md:text-xl text-[var(--color-text-muted)] max-w-2xl leading-relaxed mb-12" data-animate="blur-slide" data-delay="0.25" data-duration="1">
+      {{HERO_SUBTITLE}}
+    </p>
+
+    <!-- CTA button -->
+    <div class="mb-16" data-animate="fade-up" data-delay="0.35">
+      <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="group relative inline-flex items-center gap-3 px-10 py-4 rounded-xl font-body text-sm font-semibold tracking-wide text-white overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(var(--color-primary-rgb),0.3)]" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+        <span class="relative z-10">{{HERO_CTA_TEXT}}</span>
+        <svg class="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        <!-- Shine sweep -->
+        <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+      </a>
+    </div>
+
+    <!-- === STATS COUNTER ROW === -->
+    <div class="w-full max-w-4xl" data-animate="fade-up" data-delay="0.45">
+      <!-- Top separator -->
+      <div class="h-px w-full mb-10" style="background: linear-gradient(90deg, transparent, var(--color-text), transparent); opacity: 0.08;"></div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4">
+
+        <!-- Stat 1 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="flex items-baseline gap-1 mb-2">
+            <span class="font-heading text-5xl md:text-6xl lg:text-7xl font-bold" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="500" data-duration="2.5" data-delay="0.5">0</span>
+            <span class="font-heading text-2xl md:text-3xl font-bold" style="color: var(--color-primary);">+</span>
+          </div>
+          <div class="w-8 h-px mb-3 transition-all group-hover:w-12" style="background: var(--color-primary); opacity: 0.4;"></div>
+          <p class="font-body text-sm tracking-wider uppercase text-[var(--color-text-muted)]">Clienti soddisfatti</p>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="relative">
+            <!-- Decorative glow behind number -->
+            <div class="absolute inset-0 blur-2xl rounded-full" style="background: var(--color-primary); opacity: 0.06;"></div>
+            <div class="flex items-baseline gap-1 mb-2 relative">
+              <span class="font-heading text-5xl md:text-6xl lg:text-7xl font-bold" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="98" data-duration="2" data-delay="0.7">0</span>
+              <span class="font-heading text-2xl md:text-3xl font-bold" style="color: var(--color-primary);">%</span>
+            </div>
+          </div>
+          <div class="w-8 h-px mb-3 transition-all group-hover:w-12" style="background: var(--color-primary); opacity: 0.4;"></div>
+          <p class="font-body text-sm tracking-wider uppercase text-[var(--color-text-muted)]">Tasso di successo</p>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="flex items-baseline gap-1 mb-2">
+            <span class="font-heading text-5xl md:text-6xl lg:text-7xl font-bold" style="background: linear-gradient(135deg, var(--color-secondary), var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="15" data-duration="2" data-delay="0.9">0</span>
+            <span class="font-heading text-2xl md:text-3xl font-bold" style="color: var(--color-primary);">+</span>
+          </div>
+          <div class="w-8 h-px mb-3 transition-all group-hover:w-12" style="background: var(--color-primary); opacity: 0.4;"></div>
+          <p class="font-body text-sm tracking-wider uppercase text-[var(--color-text-muted)]">Anni di esperienza</p>
+        </div>
+      </div>
+
+      <!-- Bottom separator -->
+      <div class="h-px w-full mt-10" style="background: linear-gradient(90deg, transparent, var(--color-text), transparent); opacity: 0.08;"></div>
+    </div>
+  </div>
+
+  <!-- Bottom fade line -->
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-text)]/10 to-transparent"></div>
+</section>

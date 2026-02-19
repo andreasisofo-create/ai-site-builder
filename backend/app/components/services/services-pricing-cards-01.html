@@ -1,0 +1,58 @@
+<!-- Services Pricing Cards: pricing-style cards with service name, description, and CTA button -->
+<section id="services" class="py-24 lg:py-32 bg-[var(--color-bg-alt)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-20" data-animate="clip-reveal">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">I Nostri Servizi</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{SERVICES_TITLE}}</h2>
+      <div class="w-12 h-1 rounded-full mx-auto mb-6 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]" data-animate="scale-in"></div>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Pricing-style cards -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto" data-animate="stagger-scale">
+      <!-- REPEAT:SERVICES -->
+      <div class="stagger-item group relative" data-animate="tilt">
+        <div class="relative h-full bg-[var(--color-bg)] rounded-2xl border border-[var(--color-text)]/5 overflow-hidden hover:shadow-2xl hover:border-[var(--color-primary)]/20 transition-all duration-500 hover:-translate-y-2 flex flex-col">
+          <!-- Top gradient bar -->
+          <div class="h-1.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]"></div>
+
+          <!-- Card content -->
+          <div class="p-8 lg:p-10 flex flex-col flex-1">
+            <!-- Icon -->
+            <div class="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/10 flex items-center justify-center text-3xl mb-6 group-hover:bg-[var(--color-primary)]/20 group-hover:scale-110 transition-all duration-400">
+              {{SERVICE_ICON}}
+            </div>
+
+            <!-- Service name as "plan" title -->
+            <h3 class="text-xl md:text-2xl font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              {{SERVICE_TITLE}}
+            </h3>
+
+            <!-- Divider -->
+            <div class="w-full h-px bg-[var(--color-text)]/10 my-4"></div>
+
+            <!-- Description -->
+            <p class="text-[var(--color-text-muted)] leading-relaxed font-body flex-1 mb-8">
+              {{SERVICE_DESCRIPTION}}
+            </p>
+
+            <!-- CTA button -->
+            <a href="#contact" class="inline-flex items-center justify-center w-full py-3.5 px-6 rounded-xl font-semibold text-sm tracking-wide transition-all duration-300 border-2 border-[var(--color-primary)]/20 text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)] hover:shadow-lg hover:shadow-[var(--color-primary)]/20" data-animate="magnetic">
+              Scopri di piu
+              <svg class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+
+          <!-- Hover corner glow -->
+          <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/5 rounded-full blur-2xl transition-all duration-500 pointer-events-none"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+
+  <!-- Background decorations -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-[0.03]" style="background: var(--color-primary)"></div>
+  <div class="absolute bottom-20 right-10 w-48 h-48 bg-[var(--color-secondary)]/3 rounded-full blur-[80px] pointer-events-none"></div>
+</section>

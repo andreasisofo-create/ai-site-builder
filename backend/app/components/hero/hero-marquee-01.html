@@ -1,0 +1,96 @@
+<!-- Hero Marquee: bold editorial hero with horizontally scrolling text marquee behind the main title -->
+<section id="hero" class="min-h-screen relative overflow-hidden bg-[var(--color-bg)]">
+
+  <!-- Subtle background texture -->
+  <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at 50% 0%, rgba(var(--color-primary-rgb), 0.05) 0%, transparent 50%);"></div>
+
+  <!-- === MARQUEE LAYER — scrolls behind the main title === -->
+  <div class="absolute inset-0 z-[1] flex flex-col items-center justify-center pointer-events-none overflow-hidden select-none" aria-hidden="true">
+
+    <!-- Marquee Row 1: scrolls left -->
+    <div class="w-full" style="transform: translateY(-1.5rem);" data-animate="marquee" data-speed="25" data-direction="left">
+      <div class="flex whitespace-nowrap">
+        <span class="font-heading text-[8rem] md:text-[12rem] lg:text-[16rem] xl:text-[20rem] font-black leading-none tracking-tighter uppercase" style="color: var(--color-text); opacity: 0.03; -webkit-text-stroke: 1px rgba(var(--color-primary-rgb), 0.06);">
+          {{BUSINESS_NAME}}&nbsp;&mdash;&nbsp;{{BUSINESS_NAME}}&nbsp;&mdash;&nbsp;{{BUSINESS_NAME}}&nbsp;&mdash;&nbsp;
+        </span>
+      </div>
+    </div>
+
+    <!-- Marquee Row 2: scrolls right (offset, slightly smaller) -->
+    <div class="w-full" style="transform: translateY(-2rem);" data-animate="marquee" data-speed="20" data-direction="right">
+      <div class="flex whitespace-nowrap">
+        <span class="font-heading text-[6rem] md:text-[9rem] lg:text-[12rem] xl:text-[15rem] font-black leading-none tracking-tighter uppercase" style="color: var(--color-primary); opacity: 0.04;">
+          {{BUSINESS_NAME}}&nbsp;&bull;&nbsp;{{BUSINESS_NAME}}&nbsp;&bull;&nbsp;{{BUSINESS_NAME}}&nbsp;&bull;&nbsp;{{BUSINESS_NAME}}&nbsp;&bull;&nbsp;
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vertical decorative lines -->
+  <div class="absolute top-0 left-[12%] w-px h-full bg-[var(--color-text)] opacity-[0.04] z-[2]"></div>
+  <div class="absolute top-0 right-[12%] w-px h-full bg-[var(--color-text)] opacity-[0.04] z-[2]"></div>
+
+  <!-- Main content — on top of marquee -->
+  <div class="relative z-10 flex flex-col items-center justify-center text-center px-6 md:px-12 lg:px-16" style="min-height: calc(100vh - 80px);">
+
+    <!-- Eyebrow -->
+    <div class="inline-flex items-center gap-3 mb-10" data-animate="blur-in" data-delay="0.1">
+      <div class="w-12 h-px" style="background: var(--color-primary);"></div>
+      <span class="font-body text-[11px] tracking-[0.4em] uppercase text-[var(--color-primary)]">{{BUSINESS_NAME}}</span>
+      <div class="w-12 h-px" style="background: var(--color-primary);"></div>
+    </div>
+
+    <!-- Main headline — large and bold, layered on top of the marquee text -->
+    <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.95] tracking-tight max-w-5xl text-[var(--color-text)] mb-8 relative" data-animate="text-split" data-split-type="chars" data-duration="1.2">
+      {{HERO_TITLE}}
+    </h1>
+
+    <!-- Accent element -->
+    <div class="flex items-center gap-4 mb-8" data-animate="scale-in" data-delay="0.3">
+      <div class="w-16 h-0.5 rounded-full" style="background: linear-gradient(90deg, transparent, var(--color-primary));"></div>
+      <svg class="w-5 h-5" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <div class="w-16 h-0.5 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), transparent);"></div>
+    </div>
+
+    <!-- Subtitle -->
+    <p class="font-body text-lg md:text-xl text-[var(--color-text-muted)] max-w-xl leading-relaxed mb-12" data-animate="blur-slide" data-delay="0.35" data-duration="1.2">
+      {{HERO_SUBTITLE}}
+    </p>
+
+    <!-- CTA buttons -->
+    <div class="flex flex-col sm:flex-row items-center gap-5" data-animate="fade-up" data-delay="0.45">
+      <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="group relative inline-flex items-center gap-3 px-10 py-4 font-body text-sm font-bold tracking-wide text-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(var(--color-primary-rgb),0.3)]" style="background: var(--color-primary);">
+        <span class="relative z-10">{{HERO_CTA_TEXT}}</span>
+        <svg class="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        <!-- Shine sweep -->
+        <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+      </a>
+      <a href="#about" class="inline-flex items-center gap-2 font-body text-sm font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors group">
+        <span>Scopri di pi&ugrave;</span>
+        <svg class="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+      </a>
+    </div>
+
+    <!-- Bottom image strip — optional visual anchor -->
+    <div class="mt-16 md:mt-20 w-full max-w-4xl" data-animate="clip-reveal" data-delay="0.55" data-parallax="0.2">
+      <div class="relative rounded-xl overflow-hidden">
+        <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full aspect-[21/9] object-cover" loading="eager">
+        <!-- Gradient overlays for blending -->
+        <div class="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] via-transparent to-[var(--color-bg)]/40"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[var(--color-bg)]/20 via-transparent to-[var(--color-bg)]/20"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom decorative marquee bar — thin, fast, accent color -->
+  <div class="absolute bottom-8 left-0 right-0 z-[3] overflow-hidden pointer-events-none select-none opacity-30" aria-hidden="true" data-animate="marquee" data-speed="40" data-direction="left">
+    <div class="flex whitespace-nowrap">
+      <span class="font-body text-[10px] tracking-[0.5em] uppercase" style="color: var(--color-primary);">
+        {{HERO_CTA_TEXT}}&nbsp;&nbsp;&mdash;&nbsp;&nbsp;{{BUSINESS_NAME}}&nbsp;&nbsp;&mdash;&nbsp;&nbsp;{{HERO_CTA_TEXT}}&nbsp;&nbsp;&mdash;&nbsp;&nbsp;{{BUSINESS_NAME}}&nbsp;&nbsp;&mdash;&nbsp;&nbsp;{{HERO_CTA_TEXT}}&nbsp;&nbsp;&mdash;&nbsp;&nbsp;{{BUSINESS_NAME}}&nbsp;&nbsp;&mdash;&nbsp;&nbsp;
+      </span>
+    </div>
+  </div>
+
+  <!-- Bottom fade line -->
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-text)]/10 to-transparent"></div>
+</section>

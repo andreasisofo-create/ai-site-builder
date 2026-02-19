@@ -1,0 +1,60 @@
+<!-- Services Timeline: vertical timeline with alternating left/right cards and numbered steps -->
+<section id="services" class="py-24 lg:py-32 bg-[var(--color-bg)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-20" data-animate="clip-reveal">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">Il Nostro Percorso</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="relative max-w-5xl mx-auto" data-animate="stagger">
+      <!-- Central vertical line -->
+      <div class="absolute left-6 lg:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--color-primary)]/30 via-[var(--color-secondary)]/20 to-transparent lg:-translate-x-px"></div>
+
+      <!-- Timeline items -->
+      <div class="space-y-12 lg:space-y-16">
+        <!-- REPEAT:SERVICES -->
+        <div class="stagger-item relative flex flex-col lg:flex-row lg:even:flex-row-reverse items-start lg:items-center gap-6 lg:gap-0">
+          <!-- Step circle (centered on timeline) -->
+          <div class="absolute left-6 lg:left-1/2 -translate-x-1/2 z-10">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/20 ring-4 ring-[var(--color-bg)]" data-animate="scale-in">
+              <span class="text-xl font-bold font-heading text-white">{{SERVICE_ICON}}</span>
+            </div>
+          </div>
+
+          <!-- Card (alternates left/right on desktop) -->
+          <div class="ml-16 lg:ml-0 lg:w-[calc(50%-2.5rem)] lg:odd:pr-0 lg:even:pl-0">
+            <div class="group relative bg-[var(--color-bg-alt)] rounded-2xl p-8 border border-[var(--color-text)]/5 hover:shadow-2xl hover:border-[var(--color-primary)]/20 transition-all duration-500 hover:-translate-y-1">
+              <!-- Connecting arm to timeline (desktop only) -->
+              <div class="hidden lg:block absolute top-1/2 -translate-y-px h-px w-8 bg-[var(--color-primary)]/20
+                          lg:odd:right-[-2rem] lg:even:left-[-2rem]"></div>
+
+              <!-- Top accent gradient -->
+              <div class="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-primary)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+              <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+                {{SERVICE_TITLE}}
+              </h3>
+              <p class="text-[var(--color-text-muted)] leading-relaxed font-body">
+                {{SERVICE_DESCRIPTION}}
+              </p>
+
+              <!-- Bottom accent bar -->
+              <div class="mt-5 w-10 h-0.5 rounded-full bg-[var(--color-primary)]/20 group-hover:w-16 group-hover:bg-[var(--color-primary)] transition-all duration-500"></div>
+            </div>
+          </div>
+        </div>
+        <!-- /REPEAT:SERVICES -->
+      </div>
+
+      <!-- Timeline end dot -->
+      <div class="absolute left-6 lg:left-1/2 -translate-x-1/2 bottom-0 w-3 h-3 rounded-full bg-[var(--color-primary)]/40"></div>
+    </div>
+  </div>
+
+  <!-- Decorative blobs -->
+  <div class="absolute top-20 right-0 w-64 h-64 bg-[var(--color-primary)]/3 rounded-full blur-[100px] pointer-events-none"></div>
+  <div class="absolute bottom-20 left-0 w-48 h-48 bg-[var(--color-secondary)]/3 rounded-full blur-[80px] pointer-events-none"></div>
+</section>

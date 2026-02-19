@@ -148,6 +148,30 @@
           "description": "Hero minimale stile Shopify con titolo a rotazione automatica, tipografia grande centrata e CTA magnetico",
           "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_ROTATING_TEXTS"],
           "tags": ["modern", "tech", "bold"]
+        },
+        {
+          "id": "hero-floating-cards-01",
+          "file": "hero/hero-floating-cards-01.html",
+          "name": "Floating Cards Hero",
+          "description": "Stile Linear/Notion con mini card UI fluttuanti attorno al titolo centrale, analytics, team e status",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
+          "tags": ["tech", "modern", "bold"]
+        },
+        {
+          "id": "hero-counter-01",
+          "file": "hero/hero-counter-01.html",
+          "name": "Counter Hero",
+          "description": "Titolo centrato con riga di statistiche animate (data-counter) sotto, linee decorative verticali",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
+          "tags": ["corporate", "modern", "bold"]
+        },
+        {
+          "id": "hero-marquee-01",
+          "file": "hero/hero-marquee-01.html",
+          "name": "Marquee Hero",
+          "description": "Hero editoriale con testo marquee gigante di sfondo, titolo sovrapposto e strip immagine",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
+          "tags": ["bold", "editorial", "creative"]
         }
       ]
     },
@@ -296,6 +320,22 @@
           "description": "Lista editoriale numerata ultra-pulita con hover accent e frecce direzionali",
           "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
           "tags": ["elegant", "classic", "cozy"]
+        },
+        {
+          "id": "services-timeline-01",
+          "file": "services/services-timeline-01.html",
+          "name": "Services Timeline",
+          "description": "Timeline verticale con card alternate sinistra/destra, cerchi numerati e linea connettiva gradiente",
+          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
+          "tags": ["corporate", "elegant", "modern"]
+        },
+        {
+          "id": "services-pricing-cards-01",
+          "file": "services/services-pricing-cards-01.html",
+          "name": "Services Pricing Cards",
+          "description": "Card stile pricing con barra gradiente top, icona, divider e CTA per ogni servizio",
+          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
+          "tags": ["modern", "corporate", "bold"]
         }
       ]
     },
@@ -366,6 +406,14 @@
           "description": "Griglia bento asimmetrica con card spotlight, glassmorphism, glow radiale e animazioni stagger",
           "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
           "tags": ["modern", "tech", "bold"]
+        },
+        {
+          "id": "features-showcase-01",
+          "file": "features/features-showcase-01.html",
+          "name": "Features Showcase",
+          "description": "Card large con icona gigante a sinistra e testo a destra, glow al hover e accent underline",
+          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
+          "tags": ["elegant", "modern", "corporate"]
         }
       ]
     },
@@ -420,6 +468,30 @@
           "description": "Scorrimento infinito su due righe in direzioni opposte con card glassmorphism",
           "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS_SUBTITLE", "TESTIMONIALS"],
           "tags": ["modern", "tech", "corporate"]
+        },
+        {
+          "id": "testimonials-quote-wall-01",
+          "file": "testimonials/testimonials-quote-wall-01.html",
+          "name": "Testimonials Quote Wall",
+          "description": "Layout masonry a colonne CSS con card di altezza variabile, quote icon e stelle",
+          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS"],
+          "tags": ["modern", "creative", "bold"]
+        },
+        {
+          "id": "testimonials-rating-01",
+          "file": "testimonials/testimonials-rating-01.html",
+          "name": "Testimonials Rating",
+          "description": "Stelle grandi in evidenza, badge verificato, avatar con check e tilt interattivo",
+          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS_SUBTITLE", "TESTIMONIALS"],
+          "tags": ["corporate", "modern", "trust"]
+        },
+        {
+          "id": "testimonials-minimal-01",
+          "file": "testimonials/testimonials-minimal-01.html",
+          "name": "Testimonials Minimal",
+          "description": "Stile Apple ultra-minimale con citazioni grandi in corsivo centrate e separatori sottili",
+          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS"],
+          "tags": ["elegant", "classic", "cozy"]
         }
       ]
     },
@@ -474,6 +546,22 @@
           "description": "Card con bordo gradiente, dot pattern e badge offerta speciale",
           "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
           "tags": ["elegant", "classic", "cozy"]
+        },
+        {
+          "id": "cta-newsletter-01",
+          "file": "cta/cta-newsletter-01.html",
+          "name": "CTA Newsletter",
+          "description": "Signup email con icona mail, input + bottone magnetico e nota privacy",
+          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
+          "tags": ["modern", "corporate", "elegant"]
+        },
+        {
+          "id": "cta-countdown-01",
+          "file": "cta/cta-countdown-01.html",
+          "name": "CTA Countdown",
+          "description": "Sfondo scuro con countdown decorativo, badge urgenza e CTA luminoso",
+          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
+          "tags": ["bold", "modern", "tech"]
         }
       ]
     },
@@ -528,6 +616,22 @@
           "description": "Layout centrato ultra-pulito con info separate da divider e form sottile",
           "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL"],
           "tags": ["elegant", "classic", "cozy"]
+        },
+        {
+          "id": "contact-cards-grid-01",
+          "file": "contact/contact-cards-grid-01.html",
+          "name": "Contact Cards Grid",
+          "description": "4 card info separate (telefono, email, indirizzo, orari) in griglia con hover lift",
+          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "BUSINESS_HOURS"],
+          "tags": ["modern", "corporate", "bold"]
+        },
+        {
+          "id": "contact-two-col-01",
+          "file": "contact/contact-two-col-01.html",
+          "name": "Contact Two Column",
+          "description": "Due colonne: info contatto con mappa a sinistra, form con floating labels a destra",
+          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "BUSINESS_NAME", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "BUSINESS_HOURS"],
+          "tags": ["modern", "elegant", "corporate"]
         }
       ]
     },

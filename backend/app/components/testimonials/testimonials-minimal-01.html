@@ -1,0 +1,43 @@
+<!-- Testimonials Minimal: Apple-style ultra-minimal with centered large italic quotes -->
+<section id="testimonials" class="py-24 md:py-32 bg-[var(--color-bg)] relative overflow-hidden">
+  <!-- Subtle decorative elements -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-[0.04]" style="background: radial-gradient(circle, var(--color-primary), transparent 70%);"></div>
+  </div>
+
+  <div class="relative z-10 max-w-4xl mx-auto px-6">
+    <!-- Section Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body mb-4">Testimonianze</p>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{TESTIMONIALS_TITLE}}</h2>
+    </div>
+
+    <!-- Minimal Testimonials -->
+    <div class="space-y-0" data-animate="stagger">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="stagger-item" data-animate="fade-up">
+        <div class="text-center py-12 md:py-16">
+          <!-- Large italic quote -->
+          <blockquote class="max-w-2xl mx-auto mb-8">
+            <p class="text-xl md:text-2xl lg:text-3xl italic leading-relaxed text-[var(--color-text)] font-body font-light">
+              &ldquo;{{TESTIMONIAL_TEXT}}&rdquo;
+            </p>
+          </blockquote>
+
+          <!-- Author -->
+          <div class="flex flex-col items-center gap-3" data-animate="bounce-in">
+            <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="w-12 h-12 rounded-full object-cover" loading="lazy">
+            <div class="text-center">
+              <p class="font-semibold text-sm text-[var(--color-text)] font-heading tracking-wide">{{TESTIMONIAL_AUTHOR}}</p>
+              <p class="text-xs text-[var(--color-text-muted)] font-body mt-0.5">{{TESTIMONIAL_ROLE}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thin colored line separator -->
+        <div class="w-16 h-px mx-auto" style="background: linear-gradient(90deg, transparent, var(--color-primary), transparent);"></div>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+</section>
