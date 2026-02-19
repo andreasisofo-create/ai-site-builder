@@ -189,7 +189,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Seed category blueprints fallito: {e}")
 
-    # Seed design knowledge (in-memory keyword store, instant)
+    # Seed design knowledge (SQLite FTS5 store with BM25 ranking)
     try:
         from app.services.design_knowledge import get_collection_stats
         stats = get_collection_stats()

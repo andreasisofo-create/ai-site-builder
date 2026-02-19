@@ -2521,8 +2521,20 @@ function connectParticles(a, b, ctx) {
 
 
 def seed_all():
-    """Seed all design patterns into the in-memory pattern store."""
-    from app.services.design_knowledge import add_patterns_batch
+    """Seed all design patterns into the SQLite FTS5 knowledge base.
+
+    Skips seeding if the DB already has enough patterns (idempotent).
+    """
+    from app.services.design_knowledge import (
+        add_patterns_batch,
+        add_html_snippet,
+        get_collection_stats,
+    )
+
+    stats = get_collection_stats()
+    if stats.get("total_patterns", 0) >= len(PATTERNS):
+        print(f"Knowledge base already has {stats['total_patterns']} patterns, skipping seed.")
+        return stats["total_patterns"]
 
     ids = []
     documents = []
@@ -2546,11 +2558,79 @@ def seed_all():
         metadatas.append(metadata)
 
     add_patterns_batch(ids, documents, metadatas)
-    print(f"Seeded {len(ids)} design patterns.")
-    return len(ids)
+
+    # Seed HTML snippets from component templates
+    _seed_component_snippets(add_html_snippet)
+
+    final_stats = get_collection_stats()
+    print(f"Seeded {final_stats['total_patterns']} design patterns (text + HTML).")
+    return final_stats["total_patterns"]
+
+
+def _seed_component_snippets(add_html_snippet_fn):
+    """Extract representative HTML snippets from component templates and seed them."""
+    import os
+    from pathlib import Path
+
+    components_dir = Path(__file__).parent.parent / "components"
+    if not components_dir.exists():
+        return
+
+    # Section types to harvest from
+    section_dirs = [
+        "hero", "about", "services", "gallery", "testimonials",
+        "contact", "footer", "nav", "cta", "features", "team",
+        "pricing", "faq",
+    ]
+
+    count = 0
+    for section_type in section_dirs:
+        section_dir = components_dir / section_type
+        if not section_dir.exists():
+            continue
+
+        for html_file in section_dir.glob("*.html"):
+            try:
+                content = html_file.read_text(encoding="utf-8")
+                if len(content) < 50:
+                    continue
+
+                variant_id = html_file.stem  # e.g. "hero-classic-01"
+                # Determine mood from variant name
+                mood = "modern"
+                if any(kw in variant_id for kw in ["elegant", "classic", "luxury"]):
+                    mood = "elegant"
+                elif any(kw in variant_id for kw in ["minimal", "zen", "clean"]):
+                    mood = "minimal"
+                elif any(kw in variant_id for kw in ["bold", "neon", "brutalist", "dark"]):
+                    mood = "bold"
+                elif any(kw in variant_id for kw in ["creative", "gradient", "animated"]):
+                    mood = "creative"
+
+                # Extract style tags from variant name
+                style_tags = variant_id.replace("-01", "").replace("-02", "").replace("-03", "")
+
+                snippet = content[:3000]  # Truncate for storage
+
+                add_html_snippet_fn(
+                    pattern_id=f"component-{variant_id}",
+                    content=f"{section_type} component: {variant_id}. HTML template for {section_type} section with {mood} style.",
+                    html_snippet=snippet,
+                    category="html_snippets",
+                    section_type=section_type,
+                    mood=mood,
+                    style_tags=style_tags,
+                    impact_score=7,
+                )
+                count += 1
+            except Exception as e:
+                print(f"Warning: Could not process {html_file}: {e}")
+
+    print(f"Seeded {count} HTML component snippets.")
 
 
 if __name__ == "__main__":
     seed_all()
+    from app.services.design_knowledge import get_collection_stats
     stats = get_collection_stats()
     print(f"Collection stats: {stats}")

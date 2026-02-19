@@ -45,12 +45,19 @@ except Exception:
     def _has_image_api_key() -> bool:
         return False
 
-# Design knowledge (ChromaDB) - graceful fallback if not available
+# Design knowledge (SQLite FTS5) - graceful fallback if not available
 try:
     from app.services.design_knowledge import get_creative_context, get_collection_stats
     _has_design_knowledge = True
 except Exception:
     _has_design_knowledge = False
+
+# Diversity agent (Qwen3/Groq) - graceful fallback if not available
+try:
+    from app.services.diversity_agent import get_diversity_suggestions, _generate_local_diversity
+    _has_diversity_agent = True
+except Exception:
+    _has_diversity_agent = False
 
 # Reference HTML sites for quality injection
 try:
@@ -1885,26 +1892,197 @@ SECTION_BG_ACCENTS: Dict[str, str] = {
 }
 
 
+# =========================================================
+# ANIMATION RANDOMIZER: Replace hardcoded data-animate values
+# with randomly-chosen alternatives from equivalent pools.
+# This ensures each generation gets a unique animation fingerprint.
+# =========================================================
+_ANIMATION_POOLS = {
+    # Heading animations (replacements for text-split)
+    "heading": ["text-split", "text-reveal", "typewriter", "blur-in", "clip-reveal"],
+    # Subtitle/paragraph entrance
+    "subtitle": ["blur-slide", "fade-up", "fade-left", "slide-up", "fade-right", "reveal-up"],
+    # CTA button entrance
+    "cta": ["bounce-in", "scale-in", "magnetic", "blur-in", "fade-up"],
+    # Card/item entrance
+    "card": ["fade-up", "scale-in", "blur-in", "fade-left", "fade-right", "zoom-out"],
+    # Section entrance (generic)
+    "section": ["fade-up", "fade-left", "fade-right", "reveal-up", "reveal-left", "blur-in", "scale-in"],
+    # Image entrance
+    "image": ["scale-in", "blur-in", "fade-up", "clip-reveal", "zoom-out"],
+}
+
+# Stagger animation variants
+_STAGGER_VARIANTS = ["stagger", "stagger-scale"]
+
+# Ease function variants
+_EASE_VARIANTS = [
+    "power2.out", "power3.out", "power4.out",
+    "back.out(1.2)", "expo.out", "circ.out",
+    "elastic.out(0.5,0.3)",
+]
+
+
+def _randomize_animations(html: str) -> str:
+    """Randomize GSAP data-animate attributes for per-site animation uniqueness.
+
+    Replaces specific animation values with alternatives from equivalent pools.
+    Also varies data-delay and data-duration slightly.
+    """
+    import re as _re
+
+    # Replace heading animations (h1, h2 with text-split)
+    def _vary_heading_anim(m):
+        prefix = m.group(1)
+        anim = random.choice(_ANIMATION_POOLS["heading"])
+        # Keep data-split-type only for text-split/text-reveal
+        suffix = m.group(0)[len(m.group(1)) + len('data-animate="text-split"'):]
+        if anim not in ("text-split", "text-reveal") and 'data-split-type' in suffix:
+            suffix = _re.sub(r'\s*data-split-type="[^"]*"', '', suffix)
+        return f'{prefix}data-animate="{anim}"{suffix}'
+
+    html = _re.sub(
+        r'(<h[12][^>]*?)data-animate="text-split"([^>]*)',
+        _vary_heading_anim,
+        html,
+    )
+
+    # Replace subtitle animations (p, span with blur-slide)
+    def _vary_subtitle(m):
+        anim = random.choice(_ANIMATION_POOLS["subtitle"])
+        return f'{m.group(1)}data-animate="{anim}"{m.group(2)}'
+
+    html = _re.sub(
+        r'(<(?:p|span)[^>]*?)data-animate="blur-slide"([^>]*)',
+        _vary_subtitle,
+        html,
+    )
+
+    # Replace CTA animations (a, button with bounce-in)
+    def _vary_cta(m):
+        anim = random.choice(_ANIMATION_POOLS["cta"])
+        return f'{m.group(1)}data-animate="{anim}"{m.group(2)}'
+
+    html = _re.sub(
+        r'(<(?:a|button)[^>]*?)data-animate="bounce-in"([^>]*)',
+        _vary_cta,
+        html,
+    )
+
+    # Replace generic fade-up with varied section entrances (on divs/sections)
+    def _vary_section_entrance(m):
+        # Only vary ~60% of the time to keep some consistency
+        if random.random() < 0.6:
+            anim = random.choice(_ANIMATION_POOLS["section"])
+            return f'{m.group(1)}data-animate="{anim}"{m.group(2)}'
+        return m.group(0)
+
+    html = _re.sub(
+        r'(<(?:div|section|article)[^>]*?)data-animate="fade-up"([^>]*)',
+        _vary_section_entrance,
+        html,
+    )
+
+    # Vary image animations
+    def _vary_image(m):
+        anim = random.choice(_ANIMATION_POOLS["image"])
+        return f'{m.group(1)}data-animate="{anim}"{m.group(2)}'
+
+    html = _re.sub(
+        r'(<img[^>]*?)data-animate="scale-in"([^>]*)',
+        _vary_image,
+        html,
+    )
+
+    # Vary data-delay values slightly (add +-0.1s jitter)
+    def _vary_delay(m):
+        try:
+            val = float(m.group(1))
+            jittered = max(0, val + random.uniform(-0.1, 0.15))
+            return f'data-delay="{jittered:.1f}"'
+        except ValueError:
+            return m.group(0)
+
+    html = _re.sub(r'data-delay="([\d.]+)"', _vary_delay, html)
+
+    # Vary data-duration values slightly (add +-0.2s jitter)
+    def _vary_duration(m):
+        try:
+            val = float(m.group(1))
+            jittered = max(0.3, val + random.uniform(-0.2, 0.3))
+            return f'data-duration="{jittered:.1f}"'
+        except ValueError:
+            return m.group(0)
+
+    html = _re.sub(r'data-duration="([\d.]+)"', _vary_duration, html)
+
+    # Randomly vary ease functions (~30% of the time)
+    def _vary_ease(m):
+        if random.random() < 0.3:
+            ease = random.choice(_EASE_VARIANTS)
+            return f'data-ease="{ease}"'
+        return m.group(0)
+
+    html = _re.sub(r'data-ease="[^"]*"', _vary_ease, html)
+
+    return html
+
+
+def _jitter_rem(base_rem: str, delta_range: float = 0.8) -> str:
+    """Add random jitter to a rem value string. '6rem' -> '5.4rem' to '6.8rem'."""
+    try:
+        val = float(base_rem.replace("rem", ""))
+        jittered = val + random.uniform(-delta_range, delta_range)
+        return f"{max(2.0, jittered):.1f}rem"
+    except (ValueError, AttributeError):
+        return base_rem
+
+
+def _jitter_clamp(clamp_str: str, factor_range: tuple = (0.92, 1.12)) -> str:
+    """Slightly scale a clamp() font-size by wrapping with calc()."""
+    factor = random.uniform(*factor_range)
+    if factor < 0.97 or factor > 1.03:
+        return f"calc({clamp_str} * {factor:.2f})"
+    return clamp_str
+
+
+def _jitter_shadow(shadow: str, intensity: float = None) -> str:
+    """Vary shadow intensity. Multiplies blur/spread values."""
+    if shadow == "none":
+        return shadow
+    if intensity is None:
+        intensity = random.uniform(0.6, 1.5)
+    # Simple approach: adjust the opacity in rgba
+    import re as _re
+    def _scale_opacity(m):
+        val = float(m.group(1))
+        new_val = min(0.5, max(0.02, val * intensity))
+        return f"{new_val:.2f})"
+    return _re.sub(r'([\d.]+)\)', _scale_opacity, shadow)
+
+
 def _build_per_style_css(style_id: str) -> str:
     """Build CSS overrides for a specific template style.
 
     Combines spatial overrides (from STYLE_CSS_PROFILES) with section
-    background accents (from SECTION_BG_ACCENTS) to create a unique
-    visual identity per template style.
+    background accents (from SECTION_BG_ACCENTS) plus per-generation
+    random micro-variations to ensure every site looks unique.
     """
     profile = STYLE_CSS_PROFILES.get(style_id)
     if not profile:
         return ""
 
     s = f"body.style-{style_id}"
-    space = profile["space_section"]
-    mw = profile["max_width"]
-    rad = profile["radius"]
-    shd = profile["shadow"]
-    h1 = profile["h1_scale"]
-    h2 = profile["h2_scale"]
+    # Apply micro-jitter to each CSS property for per-site uniqueness
+    space = _jitter_rem(profile["space_section"], delta_range=0.8)
+    mw = _jitter_rem(profile["max_width"], delta_range=2.0)
+    rad = _jitter_rem(profile["radius"], delta_range=0.2) if profile["radius"] != "0" else "0"
+    shd = _jitter_shadow(profile["shadow"])
+    h1 = _jitter_clamp(profile["h1_scale"])
+    h2 = _jitter_clamp(profile["h2_scale"])
     ls = profile["letter_spacing"]
-    aspeed = profile["animation_speed"]
+    base_speed = float(profile["animation_speed"])
+    aspeed = str(round(base_speed + random.uniform(-0.15, 0.15), 2))
 
     # Section background accents (gradients, patterns, inversions)
     bg_accents = SECTION_BG_ACCENTS.get(style_id, "")
@@ -3434,9 +3612,13 @@ Return ONLY the JSON object, no explanation."""
                             continue
 
                     selections[section] = self._diversity_weighted_choice(pool, usage_counts)
-                # Priority 2: Fixed deterministic map (fallback)
-                elif section in fixed_map:
-                    selections[section] = fixed_map[section]
+                # Priority 2: Build ad-hoc pool from ALL available variants for this section
+                elif section in available:
+                    all_variants = available[section]
+                    if all_variants:
+                        selections[section] = self._diversity_weighted_choice(all_variants, usage_counts)
+                    elif section in fixed_map:
+                        selections[section] = fixed_map[section]
                 # Priority 3: Randomized pool for default section types (faq, pricing, etc.)
                 elif section in _DEFAULT_SECTION_VARIANT_POOLS:
                     pool = _DEFAULT_SECTION_VARIANT_POOLS[section]
@@ -4003,6 +4185,8 @@ RULES:
         try:
             html_content = self.assembler.assemble(site_data)
             html_content = sanitize_output(html_content)
+            # Post-process: randomize GSAP animations for per-site uniqueness
+            html_content = _randomize_animations(html_content)
             # Post-process: remove empty sections (better no section than blank space)
             html_content = self._post_process_html(html_content)
         except Exception as e:

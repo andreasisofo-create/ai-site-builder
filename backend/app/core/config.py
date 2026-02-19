@@ -122,10 +122,13 @@ class Settings(BaseSettings):
     # AI Configuration
     AI_MAX_TOKENS: int = 6000
     AI_TEMPERATURE: float = 0.7
-    
+
     # OpenRouter API key (unified gateway for multiple AI providers)
     OPENROUTER_API_KEY: str = ""
     OPENROUTER_API_URL: str = "https://openrouter.ai/api/v1"
+
+    # Groq API key (fallback for diversity agent)
+    GROQ_API_KEY: str = ""
     
     # Email (opzionale)
     SMTP_HOST: str = ""
