@@ -29,7 +29,7 @@ import {
 } from "@heroicons/react/24/outline";
 import GenerationExperience, { type PreviewData } from "@/components/GenerationExperience";
 import toast from "react-hot-toast";
-import { createSite, generateWebsite, generateWebsiteV2, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus, analyzeImage } from "@/lib/api";
+import { createSite, generateWebsite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus, analyzeImage } from "@/lib/api";
 import {
   TEMPLATE_CATEGORIES, TemplateCategory, TemplateStyle,
   SECTION_LABELS, STYLE_OPTIONS, CTA_OPTIONS, ALL_SECTIONS, STYLE_TO_MOOD,
@@ -133,6 +133,32 @@ const CATEGORY_PALETTES: Record<string, string[][]> = {
     ["#EC4899", "#DB2777", "#F9A8D4", "#fdf2f8", "#1a0a14"],
     ["#3B82F6", "#2563EB", "#93C5FD", "#eff6ff", "#0c1a30"],
   ],
+};
+
+// ============ V2 CATEGORY → V1 TEMPLATE STYLE MAPPING ============
+// Maps V2 category slugs to V1 template_style_id for the databinding pipeline.
+// The V1 pipeline is production-ready (background, progress tracking, battle-tested).
+const V2_TO_V1_STYLE: Record<string, string> = {
+  ristorante: "restaurant-elegant",
+  studio_professionale: "business-trust",
+  portfolio: "portfolio-gallery",
+  fitness: "business-fresh",
+  bellezza: "portfolio-creative",
+  salute: "business-corporate",
+  saas: "saas-gradient",
+  ecommerce: "ecommerce-modern",
+  artigiani: "business-corporate",
+  agenzia: "saas-gradient",
+};
+
+// Maps V2-specific section types to V1 equivalents (V1 has no templates for these)
+const V2_SECTION_TO_V1: Record<string, string> = {
+  portfolio: "gallery",
+  products: "services",
+  programs: "services",
+  menu: "services",
+  booking: "contact",
+  cases: "testimonials",
 };
 
 // ============ COMPONENT ============
@@ -451,34 +477,42 @@ function NewProjectContent() {
         } catch { /* non-blocking */ }
       }
 
-      // Use V2 pipeline when a V2 category is selected, otherwise fallback to V1
-      let generateResult: { success: boolean; error?: string };
-      if (selectedV2Category) {
-        generateResult = await generateWebsiteV2({
-          category: selectedV2Category.slug,
-          description: fullDescription,
-          business_name: formData.businessName,
-          logo_base64: formData.logo || undefined,
-          color_primary: colorPalette[0],
-          client_ref: `site-${site.id}`,
-        });
-      } else {
-        generateResult = await generateWebsite({
-          business_name: formData.businessName,
-          business_description: fullDescription,
-          sections: formData.selectedSections,
-          style_preferences: stylePrefs,
-          logo_url: formData.logo || undefined,
-          reference_image_url: refImageUrl || (photoUrls.length > 0 ? photoUrls[0] : undefined),
-          reference_analysis: refAnalysis,
-          reference_urls: refUrlList.length > 0 ? refUrlList : undefined,
-          photo_urls: photoUrls.length > 0 ? photoUrls : undefined,
-          contact_info: Object.keys(contactInfo).length > 0 ? contactInfo : undefined,
-          site_id: site.id,
-          template_style_id: selectedStyle?.id,
-          generate_images: formData.generateImages,
-        });
+      // Always use V1 (databinding) pipeline - runs in background, saves progress, battle-tested.
+      // When V2 category is selected, map it to the closest V1 template_style_id.
+      const effectiveTemplateStyle = selectedStyle?.id
+        || (selectedV2Category ? V2_TO_V1_STYLE[selectedV2Category.slug] : undefined);
+
+      // If V2 category selected but no style prefs set, derive from V2 category palette
+      if (selectedV2Category && !stylePrefs) {
+        stylePrefs = {
+          primary_color: colorPalette[0],
+          secondary_color: colorPalette[1],
+          mood: selectedV2Category.slug,
+        };
       }
+
+      // Map V2-specific section types to V1 equivalents
+      const mappedSections = formData.selectedSections.map(
+        s => V2_SECTION_TO_V1[s] || s
+      );
+      // Deduplicate (e.g. if both "services" and "products" → "services" map to same)
+      const uniqueSections = [...new Set(mappedSections)];
+
+      const generateResult = await generateWebsite({
+        business_name: formData.businessName,
+        business_description: fullDescription,
+        sections: uniqueSections,
+        style_preferences: stylePrefs,
+        logo_url: formData.logo || undefined,
+        reference_image_url: refImageUrl || (photoUrls.length > 0 ? photoUrls[0] : undefined),
+        reference_analysis: refAnalysis,
+        reference_urls: refUrlList.length > 0 ? refUrlList : undefined,
+        photo_urls: photoUrls.length > 0 ? photoUrls : undefined,
+        contact_info: Object.keys(contactInfo).length > 0 ? contactInfo : undefined,
+        site_id: site.id,
+        template_style_id: effectiveTemplateStyle,
+        generate_images: formData.generateImages,
+      });
 
       if (!generateResult.success) throw new Error(generateResult.error || (language === "en" ? "Error starting generation" : "Errore nell'avvio della generazione"));
 

@@ -176,12 +176,19 @@ async def _run_generation_background(
 
         def on_progress(step: int, message: str, preview_data: dict = None):
             if site:
-                site.generation_step = step
-                site.generation_message = message
-                site.status = "generating"
-                if preview_data:
-                    site.config = {"_generation_preview": preview_data}
-                db.commit()
+                try:
+                    site.generation_step = step
+                    site.generation_message = message
+                    site.status = "generating"
+                    if preview_data:
+                        site.config = {"_generation_preview": preview_data}
+                    db.commit()
+                except Exception as e:
+                    logger.warning(f"[BG] on_progress commit failed (step={step}): {e}")
+                    try:
+                        db.rollback()
+                    except Exception:
+                        pass
 
         # Seleziona pipeline in base alla configurazione
         pipeline = settings.GENERATION_PIPELINE
@@ -340,10 +347,14 @@ async def generate_website(
             Site.id == data.site_id,
             Site.owner_id == current_user.id,
         ).first()
-        if site:
-            site.status = "generating"
-            site.generation_step = 0
-            site.generation_message = "Avvio generazione..."
+        if not site:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Sito con id {data.site_id} non trovato per l'utente corrente",
+            )
+        site.status = "generating"
+        site.generation_step = 0
+        site.generation_message = "Avvio generazione..."
     db.commit()
 
     # Lancia generazione in background (hold ref to prevent GC)

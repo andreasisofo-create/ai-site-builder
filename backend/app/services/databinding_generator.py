@@ -2571,6 +2571,7 @@ Return ONLY the JSON object, no explanation."""
         "logos": "logos-marquee-01",
         "process": "process-steps-01",
         "timeline": "timeline-vertical-01",
+        "team": "team-grid-01",
     }
 
     # Layout style keywords mapped to variant name fragments for reference-influenced selection
