@@ -33,6 +33,89 @@ def _hex_to_rgb(hex_color: str) -> str:
         return "99,102,241"
 
 
+def _relative_luminance(hex_color: str) -> float:
+    """Calculate WCAG relative luminance from hex color."""
+    hex_color = hex_color.strip().lstrip("#")
+    if len(hex_color) == 3:
+        hex_color = "".join(c * 2 for c in hex_color)
+    r, g, b = int(hex_color[0:2], 16) / 255, int(hex_color[2:4], 16) / 255, int(hex_color[4:6], 16) / 255
+    r = r / 12.92 if r <= 0.04045 else ((r + 0.055) / 1.055) ** 2.4
+    g = g / 12.92 if g <= 0.04045 else ((g + 0.055) / 1.055) ** 2.4
+    b = b / 12.92 if b <= 0.04045 else ((b + 0.055) / 1.055) ** 2.4
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _contrast_ratio(hex1: str, hex2: str) -> float:
+    """WCAG contrast ratio between two hex colors. Returns 1.0-21.0."""
+    l1 = _relative_luminance(hex1)
+    l2 = _relative_luminance(hex2)
+    lighter, darker = max(l1, l2), min(l1, l2)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def _hex_to_hsl(hex_color: str) -> tuple:
+    """Convert hex color to HSL (h: 0-360, s: 0-100, l: 0-100)."""
+    hex_color = hex_color.strip().lstrip("#")
+    if len(hex_color) == 3:
+        hex_color = "".join(c * 2 for c in hex_color)
+    r, g, b = int(hex_color[0:2], 16) / 255, int(hex_color[2:4], 16) / 255, int(hex_color[4:6], 16) / 255
+    max_c, min_c = max(r, g, b), min(r, g, b)
+    l = (max_c + min_c) / 2
+    if max_c == min_c:
+        h = s = 0.0
+    else:
+        d = max_c - min_c
+        s = d / (2.0 - max_c - min_c) if l > 0.5 else d / (max_c + min_c)
+        if max_c == r:
+            h = (g - b) / d + (6 if g < b else 0)
+        elif max_c == g:
+            h = (b - r) / d + 2
+        else:
+            h = (r - g) / d + 4
+        h /= 6
+    return round(h * 360), round(s * 100), round(l * 100)
+
+
+def _hsl_to_hex(h: int, s: int, l: int) -> str:
+    """Convert HSL (h: 0-360, s: 0-100, l: 0-100) to hex color."""
+    h, s, l = h / 360, s / 100, l / 100
+    if s == 0:
+        r = g = b = l
+    else:
+        def hue2rgb(p, q, t):
+            if t < 0: t += 1
+            if t > 1: t -= 1
+            if t < 1 / 6: return p + (q - p) * 6 * t
+            if t < 1 / 2: return q
+            if t < 2 / 3: return p + (q - p) * (2 / 3 - t) * 6
+            return p
+        q = l * (1 + s) if l < 0.5 else l + s - l * s
+        p = 2 * l - q
+        r = hue2rgb(p, q, h + 1 / 3)
+        g = hue2rgb(p, q, h)
+        b = hue2rgb(p, q, h - 1 / 3)
+    return f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}"
+
+
+def _fix_contrast(text_hex: str, bg_hex: str, min_ratio: float = 4.5) -> str:
+    """Adjust text color to meet minimum contrast ratio against background.
+    Progressively lightens or darkens until WCAG AA is met."""
+    try:
+        if _contrast_ratio(text_hex, bg_hex) >= min_ratio:
+            return text_hex
+        bg_lum = _relative_luminance(bg_hex)
+        h, s, l = _hex_to_hsl(text_hex)
+        direction = 1 if bg_lum < 0.5 else -1
+        for _ in range(50):
+            l = min(100, max(0, l + direction * 2))
+            candidate = _hsl_to_hex(h, s, l)
+            if _contrast_ratio(candidate, bg_hex) >= min_ratio:
+                return candidate
+        return "#F1F5F9" if bg_lum < 0.5 else "#1A1A2E"
+    except (ValueError, IndexError):
+        return text_hex
+
+
 # Section labels for navigation (Italian)
 _SECTION_NAV_LABELS = {
     "hero": None,  # hero is the top of the page, no nav link needed
@@ -289,6 +372,25 @@ class TemplateAssembler:
         bg_hex = head_data.get("BG_COLOR", "#ffffff")
         head_data["PRIMARY_COLOR_RGB"] = _hex_to_rgb(primary_hex)
         head_data["BG_COLOR_RGB"] = _hex_to_rgb(bg_hex)
+
+        # ---- WCAG Contrast enforcement ----
+        # Cards use bg_alt as background, so text must be readable against it too
+        text_muted_hex = head_data.get("TEXT_MUTED_COLOR", "#6B7280")
+        bg_alt_hex = head_data.get("BG_ALT_COLOR", bg_hex)
+        text_hex = head_data.get("TEXT_COLOR", "#1A1A2E")
+
+        # Fix text_muted against BOTH bg_alt (cards) and bg (main background)
+        text_muted_hex = _fix_contrast(text_muted_hex, bg_alt_hex, min_ratio=4.5)
+        text_muted_hex = _fix_contrast(text_muted_hex, bg_hex, min_ratio=3.5)
+        if text_muted_hex != head_data.get("TEXT_MUTED_COLOR"):
+            logger.info(f"[Assembler] Contrast fix: TEXT_MUTED_COLOR {head_data.get('TEXT_MUTED_COLOR')} -> {text_muted_hex}")
+        head_data["TEXT_MUTED_COLOR"] = text_muted_hex
+
+        # Fix main text against bg_alt too (some cards show primary text on alt bg)
+        text_hex_fixed = _fix_contrast(text_hex, bg_alt_hex, min_ratio=4.5)
+        if text_hex_fixed != text_hex:
+            logger.info(f"[Assembler] Contrast fix: TEXT_COLOR {text_hex} -> {text_hex_fixed}")
+            head_data["TEXT_COLOR"] = text_hex_fixed
 
         # Map layout design tokens from theme choices to CSS values
         radius_map = {

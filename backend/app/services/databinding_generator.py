@@ -222,7 +222,7 @@ FALLBACK_THEME_POOL = [
     },
     {
         "primary_color": "#A855F7", "secondary_color": "#EC4899", "accent_color": "#22D3EE",
-        "bg_color": "#0F172A", "bg_alt_color": "#1E293B", "text_color": "#F1F5F9", "text_muted_color": "#94A3B8",
+        "bg_color": "#0F172A", "bg_alt_color": "#1E293B", "text_color": "#F1F5F9", "text_muted_color": "#CBD5E1",
         "font_heading": "Outfit", "font_heading_url": "Outfit:wght@400;600;700;800",
         "font_body": "DM Sans", "font_body_url": "DM+Sans:wght@400;500;600",
         "border_radius_style": "pill", "shadow_style": "dramatic", "spacing_density": "normal",
@@ -2992,7 +2992,7 @@ Return this exact JSON structure:
 - bg_color: NEVER plain #ffffff or #000000. Use rich tones: warm cream (#FAF7F2), deep navy (#0A1628), charcoal slate (#1A1D23), soft sage (#F0F4F1), warm blush (#FFF5F5), ivory (#FFFDF7). The background sets the entire mood.
 - bg_alt_color: must be NOTICEABLY different from bg_color (at least 8-12% lightness shift). If bg is light, bg_alt should be a tinted pastel (e.g. soft lavender, light sand). If bg is dark, bg_alt should be 2-3 shades lighter. Sections must visually alternate.
 - text_color: WCAG AA contrast against bg_color (minimum 4.5:1). For dark bg use near-white (#F1F5F9), for light bg use rich dark (#0F172A or #1A1A2E).
-- text_muted_color: 40-50% opacity feel vs text_color. Must still be readable.
+- text_muted_color: MUST have WCAG AA contrast (4.5:1) against BOTH bg_color AND bg_alt_color. For dark themes (bg_color < #333): use light grays (#CBD5E1, #E2E8F0, #D1D5DB), NOT mid-grays (#94A3B8, #6B7280). For light themes: use dark grays (#4B5563, #374151), NOT light grays. CRITICAL: cards use bg_alt_color as background — text_muted MUST be readable on cards.
 - BANNED dull palettes: no all-blue (#3b82f6 + #1e40af + #2563eb), no corporate gray, no monochromatic schemes. Every color should earn its place.
 
 === FONT PAIRING RULES (CRITICAL) ===
@@ -3078,7 +3078,7 @@ Return ONLY the JSON object"""
             elif parsed_reference.get("bg_alt_color"):
                 theme["bg_alt_color"] = parsed_reference["bg_alt_color"]
             if "text_muted_color" not in parsed_reference or not parsed_reference.get("text_muted_color"):
-                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#F1F5F9"))
+                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#F1F5F9"), theme.get("bg_alt_color"))
             elif parsed_reference.get("text_muted_color"):
                 theme["text_muted_color"] = parsed_reference["text_muted_color"]
             if overridden:
@@ -4003,7 +4003,7 @@ RULES:
                     theme.get("bg_color", "#FAF7F2"),
                 )
                 theme["bg_alt_color"] = self._derive_alt_bg(theme.get("bg_color", "#FAF7F2"))
-                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#1A1A2E"))
+                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#1A1A2E"), theme.get("bg_alt_color"))
                 logger.info(
                     f"[DataBinding] Recalculated harmony: accent={theme['accent_color']}, "
                     f"bg_alt={theme['bg_alt_color']}, text_muted={theme['text_muted_color']}"
@@ -5752,7 +5752,10 @@ RULES:
                 "bg_color": reference_colors.get("bg_color", "#0F172A" if is_dark else "#FAF7F2"),
                 "bg_alt_color": self._derive_alt_bg(reference_colors.get("bg_color", "#0F172A" if is_dark else "#FAF7F2")),
                 "text_color": reference_colors.get("text_color", "#F1F5F9" if is_dark else "#1A1A2E"),
-                "text_muted_color": self._derive_muted(reference_colors.get("text_color", "#F1F5F9" if is_dark else "#1A1A2E")),
+                "text_muted_color": self._derive_muted(
+                    reference_colors.get("text_color", "#F1F5F9" if is_dark else "#1A1A2E"),
+                    self._derive_alt_bg(reference_colors.get("bg_color", "#0F172A" if is_dark else "#FAF7F2")),
+                ),
                 "font_heading": "Space Grotesk",
                 "font_heading_url": "Space+Grotesk:wght@400;600;700;800",
                 "font_body": "DM Sans",
@@ -5773,7 +5776,7 @@ RULES:
                     theme["primary_color"], theme.get("bg_color", "#FAF7F2")
                 )
                 theme["bg_alt_color"] = self._derive_alt_bg(theme.get("bg_color", "#FAF7F2"))
-                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#1A1A2E"))
+                theme["text_muted_color"] = self._derive_muted(theme.get("text_color", "#1A1A2E"), theme.get("bg_alt_color"))
         return theme
 
     @staticmethod
@@ -5849,15 +5852,46 @@ RULES:
         except (ValueError, IndexError):
             return bg_hex
 
-    def _derive_muted(self, text_hex: str) -> str:
-        """Derive a muted text color by moving lightness toward 50%."""
+    @staticmethod
+    def _relative_luminance(hex_color: str) -> float:
+        """Calculate WCAG relative luminance from hex color."""
+        hex_color = hex_color.strip().lstrip("#")
+        if len(hex_color) == 3:
+            hex_color = "".join(c * 2 for c in hex_color)
+        r, g, b = int(hex_color[0:2], 16) / 255, int(hex_color[2:4], 16) / 255, int(hex_color[4:6], 16) / 255
+        r = r / 12.92 if r <= 0.04045 else ((r + 0.055) / 1.055) ** 2.4
+        g = g / 12.92 if g <= 0.04045 else ((g + 0.055) / 1.055) ** 2.4
+        b = b / 12.92 if b <= 0.04045 else ((b + 0.055) / 1.055) ** 2.4
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+    def _contrast_ratio(self, hex1: str, hex2: str) -> float:
+        """WCAG contrast ratio between two hex colors. Returns 1.0-21.0."""
+        l1 = self._relative_luminance(hex1)
+        l2 = self._relative_luminance(hex2)
+        lighter, darker = max(l1, l2), min(l1, l2)
+        return (lighter + 0.05) / (darker + 0.05)
+
+    def _derive_muted(self, text_hex: str, bg_alt_hex: str = None) -> str:
+        """Derive a muted text color, ensuring WCAG AA contrast against bg_alt."""
         try:
             h, s, l = self._hex_to_hsl(text_hex)
-            # Move lightness 30% toward middle (50)
+            # Move lightness 40% toward middle (50)
             new_l = l + int((50 - l) * 0.4)
             # Reduce saturation slightly
             new_s = max(0, s - 15)
-            return self._hsl_to_hex(h, new_s, new_l)
+            muted = self._hsl_to_hex(h, new_s, new_l)
+            # If bg_alt provided, ensure WCAG AA contrast (4.5:1)
+            if bg_alt_hex:
+                ratio = self._contrast_ratio(muted, bg_alt_hex)
+                if ratio < 4.5:
+                    bg_l = self._hex_to_hsl(bg_alt_hex)[2]
+                    direction = 1 if bg_l < 50 else -1
+                    for _ in range(30):
+                        new_l = min(100, max(0, new_l + direction * 3))
+                        muted = self._hsl_to_hex(h, new_s, new_l)
+                        if self._contrast_ratio(muted, bg_alt_hex) >= 4.5:
+                            break
+            return muted
         except (ValueError, IndexError):
             return "#6B7280"
 
@@ -5898,14 +5932,14 @@ RULES:
             theme["bg_color"] = reference_colors.get("bg_color", "#0F172A")
             theme["bg_alt_color"] = self._derive_alt_bg(theme["bg_color"])
             theme["text_color"] = reference_colors.get("text_color", "#F1F5F9")
-            theme["text_muted_color"] = self._derive_muted(theme["text_color"])
+            theme["text_muted_color"] = self._derive_muted(theme["text_color"], theme["bg_alt_color"])
         elif not ref_is_dark and theme_bg_lightness < 40:
             # Reference is light but theme bg is dark - force correct
             logger.warning(f"[DataBinding] Theme bg_color {theme.get('bg_color')} is dark but reference is light. Forcing reference colors.")
             theme["bg_color"] = reference_colors.get("bg_color", "#FAF7F2")
             theme["bg_alt_color"] = self._derive_alt_bg(theme["bg_color"])
             theme["text_color"] = reference_colors.get("text_color", "#1A1A2E")
-            theme["text_muted_color"] = self._derive_muted(theme["text_color"])
+            theme["text_muted_color"] = self._derive_muted(theme["text_color"], theme["bg_alt_color"])
 
         # Force-correct primary/accent if they differ significantly from reference
         ref_primary = reference_colors.get("primary_color")

@@ -26,14 +26,14 @@ export default function Footer() {
 
                 <div className="grid md:grid-cols-4 gap-12 mb-16">
                     <div className="col-span-1 md:col-span-1">
-                        <Link href="/" className="inline-block mb-6 relative w-32 h-8">
+                        <a href="https://www.e-quipe.it" target="_blank" rel="noopener noreferrer" className="inline-block mb-6 relative w-32 h-8">
                             <Image
                                 src="/logo.png"
                                 alt="E-quipe"
                                 fill
-                                className="object-contain object-left opacity-90"
+                                className="object-contain object-left opacity-90 hover:opacity-100 transition-opacity"
                             />
-                        </Link>
+                        </a>
                         <p className="text-gray-400 text-sm leading-relaxed">
                             {txt.description}
                             <br /><br />

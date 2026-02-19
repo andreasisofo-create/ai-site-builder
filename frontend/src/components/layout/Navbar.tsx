@@ -92,7 +92,7 @@ export default function Navbar({ variant = "agency" }: NavbarProps) {
                     ) : (
                         <button
                             onClick={scrollToForm}
-                            className="px-6 py-2.5 bg-[#0090FF] hover:bg-[#0070C9] text-white rounded-lg font-bold text-sm transition-all shadow-lg hover:-translate-y-0.5"
+                            className="px-6 py-2.5 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-lg font-bold text-sm transition-all shadow-lg hover:-translate-y-0.5"
                         >
                             {nav.contact}
                         </button>
@@ -154,7 +154,7 @@ export default function Navbar({ variant = "agency" }: NavbarProps) {
                                     <a href="/#faq" onClick={() => setMobileMenuOpen(false)} className="text-lg text-gray-300 hover:text-white">{nav.faq}</a>
                                     <button
                                         onClick={scrollToForm}
-                                        className="w-full py-4 bg-[#0090FF] text-white rounded-xl font-bold text-lg"
+                                        className="w-full py-4 bg-[#22C55E] text-white rounded-xl font-bold text-lg"
                                     >
                                         {nav.contact}
                                     </button>
