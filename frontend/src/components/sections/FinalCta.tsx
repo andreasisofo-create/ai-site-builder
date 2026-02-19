@@ -65,12 +65,14 @@ export default function FinalCta() {
                     transition={{ delay: 0.2 }}
                     className="flex flex-col sm:flex-row items-center justify-center gap-6"
                 >
-                    <button
-                        onClick={scrollToForm}
-                        className="px-8 py-4 bg-white text-[#0090FF] rounded-full font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl"
+                    <a
+                        href="https://www.e-quipe.it/it"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-8 py-4 bg-white text-[#0090FF] rounded-full font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl inline-block"
                     >
-                        {txt.cta}
-                    </button>
+                        Entra in E-quipe
+                    </a>
 
                     <Link
                         href="/auth"
