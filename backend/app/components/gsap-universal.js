@@ -120,6 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
     el.style.animation = 'none';
   });
 
+  // Per-style animation speed multiplier (set via --animation-speed CSS variable)
+  var _animSpeed = parseFloat(getComputedStyle(document.body).getPropertyValue('--animation-speed')) || 1;
+
   // Mobile detection for reduced animation complexity
   var isMobile = window.innerWidth < 768 || ('ontouchstart' in window);
 
@@ -152,14 +155,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!config) { el.style.opacity = 1; return; }
 
     var delay = parseFloat(el.getAttribute('data-delay') || 0);
-    var dur = parseFloat(el.getAttribute('data-duration') || 0.9);
+    var dur = parseFloat(el.getAttribute('data-duration') || 0.9) * _animSpeed;
     var easing = el.getAttribute('data-ease') || (type === 'bounce-in' ? 'elastic.out(1,0.5)' : 'power3.out');
 
     gsap.fromTo(el, Object.assign({}, config), {
       y: 0, x: 0, scale: 1, opacity: 1, rotation: 0, rotationX: 0,
       filter: 'blur(0px)',
       clipPath: 'inset(0 0% 0 0)',
-      duration: dur, delay: delay, ease: easing,
+      duration: dur, delay: delay * _animSpeed, ease: easing,
       scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
     });
   });
@@ -172,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!items.length) return;
     var effect = container.getAttribute('data-stagger-effect') || 'fade-up';
     var delay = parseFloat(container.getAttribute('data-delay') || 0);
-    var dur = parseFloat(container.getAttribute('data-duration') || 0.8);
+    var dur = parseFloat(container.getAttribute('data-duration') || 0.8) * _animSpeed;
     var easing = container.getAttribute('data-ease') || 'power3.out';
     var from = { opacity: 0 };
     if (effect === 'fade-up')    Object.assign(from, { y: 30, filter: 'blur(6px)' });
@@ -182,8 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     gsap.fromTo(items, from, {
       y: 0, x: 0, scale: 1, opacity: 1, filter: 'blur(0px)',
-      duration: dur, delay: delay,
-      stagger: function(i) { return 0.12 * i + Math.random() * 0.1; },
+      duration: dur, delay: delay * _animSpeed,
+      stagger: function(i) { return (0.12 * i + Math.random() * 0.1) * _animSpeed; },
       ease: easing,
       scrollTrigger: { trigger: container, start: 'top 85%', toggleActions: 'play none none none' }
     });

@@ -820,6 +820,38 @@
           "description": "Footer sitemap 5 colonne con divisore SVG ondulato e colori invertiti",
           "placeholders": ["FOOTER_DESCRIPTION"],
           "tags": ["corporate", "modern", "bold"]
+        },
+        {
+          "id": "footer-cta-band-01",
+          "file": "footer/footer-cta-band-01.html",
+          "name": "Footer CTA Band",
+          "description": "Grande sezione CTA con gradiente e barra info minima. Orientato alla conversione",
+          "placeholders": ["FOOTER_DESCRIPTION"],
+          "tags": ["bold", "modern", "tech", "corporate"]
+        },
+        {
+          "id": "footer-social-01",
+          "file": "footer/footer-social-01.html",
+          "name": "Footer Social",
+          "description": "Footer con icone social grandi in primo piano e testo minimale",
+          "placeholders": ["FOOTER_DESCRIPTION"],
+          "tags": ["creative", "modern", "portfolio"]
+        },
+        {
+          "id": "footer-asymmetric-01",
+          "file": "footer/footer-asymmetric-01.html",
+          "name": "Footer Asymmetric",
+          "description": "Layout asimmetrico 60/40: grande brand a sinistra, info compatte a destra",
+          "placeholders": ["FOOTER_DESCRIPTION"],
+          "tags": ["editorial", "creative", "bold"]
+        },
+        {
+          "id": "footer-stacked-01",
+          "file": "footer/footer-stacked-01.html",
+          "name": "Footer Stacked",
+          "description": "Stack verticale centrato: logo, tagline, nav, social, contatti, copyright",
+          "placeholders": ["FOOTER_DESCRIPTION"],
+          "tags": ["elegant", "classic", "clean"]
         }
       ]
     }

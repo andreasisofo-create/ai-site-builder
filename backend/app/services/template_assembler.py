@@ -333,6 +333,10 @@ class TemplateAssembler:
             consentmanager_tag = ""
         head_html = head_html.replace("<!-- CONSENTMANAGER_SCRIPT -->", consentmanager_tag)
 
+        # Inject per-style CSS overrides (spacing, shadows, radius, typography per template style)
+        per_style_css = site_data.get("per_style_css", "")
+        head_html = head_html.replace("<!-- PER_STYLE_CSS -->", per_style_css)
+
         # 2. Build body sections
         sections_html = []
         for component in site_data.get("components", []):
@@ -377,8 +381,11 @@ class TemplateAssembler:
         body_content = "\n\n".join(sections_html)
         gsap_script_tag = f"<script>\n{self.gsap_script}\n</script>"
 
+        style_id = site_data.get("style_id", "")
+        body_style_class = f"style-{style_id} " if style_id else ""
+
         complete_html = f"""{head_html}
-<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-body antialiased">
+<body class="{body_style_class}bg-[var(--color-bg)] text-[var(--color-text)] font-body antialiased">
 
 {nav_html}
 

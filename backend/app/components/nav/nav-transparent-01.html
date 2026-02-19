@@ -1,0 +1,91 @@
+<!-- Nav Transparent: no background on load, fades in on scroll. Immersive hero-first feel. -->
+<nav id="site-nav" data-animate="nav-scroll" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" style="background: transparent; border-bottom: 1px solid transparent;">
+  <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+    <a href="#hero" class="flex items-center gap-2 shrink-0">
+      <img src="{{LOGO_URL}}" alt="" class="h-8 w-auto object-contain" loading="lazy">
+      <span class="font-bold font-heading text-sm text-[var(--color-text)]">{{BUSINESS_NAME}}</span>
+    </a>
+    <div class="hidden md:flex items-center gap-7">
+      {{NAV_LINKS}}
+    </div>
+    <button id="nav-transp-toggle" class="md:hidden relative w-8 h-8 flex items-center justify-center" aria-label="Menu">
+      <span class="nav-transp-line absolute h-[2px] w-5 rounded-full bg-[var(--color-text)] transition-all duration-300" style="transform: translateY(-4px);"></span>
+      <span class="nav-transp-line absolute h-[2px] w-5 rounded-full bg-[var(--color-text)] transition-all duration-300" style="transform: translateY(4px);"></span>
+    </button>
+  </div>
+  <!-- Mobile dropdown -->
+  <div id="nav-transp-mobile" class="md:hidden overflow-hidden transition-all duration-300" style="max-height: 0; opacity: 0;">
+    <div class="px-6 py-4 space-y-1" style="background: rgba(var(--color-bg-rgb), 0.95); backdrop-filter: blur(16px);">
+      {{NAV_LINKS_MOBILE}}
+    </div>
+  </div>
+</nav>
+<div class="h-16"></div>
+<script>
+(function() {
+  var nav = document.getElementById('site-nav');
+  var toggle = document.getElementById('nav-transp-toggle');
+  var mobile = document.getElementById('nav-transp-mobile');
+  var lines = toggle ? toggle.querySelectorAll('.nav-transp-line') : [];
+  var open = false;
+
+  // Scroll-based background
+  var scrolled = false;
+  function onScroll() {
+    var sy = window.scrollY || document.documentElement.scrollTop;
+    if (sy > 60 && !scrolled) {
+      scrolled = true;
+      nav.style.background = 'rgba(var(--color-bg-rgb), 0.85)';
+      nav.style.backdropFilter = 'blur(12px)';
+      nav.style.webkitBackdropFilter = 'blur(12px)';
+      nav.style.borderBottomColor = 'rgba(var(--color-primary-rgb), 0.08)';
+    } else if (sy <= 60 && scrolled) {
+      scrolled = false;
+      nav.style.background = 'transparent';
+      nav.style.backdropFilter = 'none';
+      nav.style.webkitBackdropFilter = 'none';
+      nav.style.borderBottomColor = 'transparent';
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  if (toggle && mobile) {
+    toggle.addEventListener('click', function() {
+      open = !open;
+      if (open) {
+        mobile.style.maxHeight = mobile.scrollHeight + 'px';
+        mobile.style.opacity = '1';
+        nav.style.background = 'rgba(var(--color-bg-rgb), 0.95)';
+        nav.style.backdropFilter = 'blur(12px)';
+      } else {
+        mobile.style.maxHeight = '0';
+        mobile.style.opacity = '0';
+        if (!scrolled) {
+          nav.style.background = 'transparent';
+          nav.style.backdropFilter = 'none';
+        }
+      }
+      if (lines.length >= 2) {
+        lines[0].style.transform = open ? 'rotate(45deg)' : 'translateY(-4px)';
+        lines[1].style.transform = open ? 'rotate(-45deg)' : 'translateY(4px)';
+      }
+    });
+    mobile.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        open = false;
+        mobile.style.maxHeight = '0';
+        mobile.style.opacity = '0';
+        if (lines.length >= 2) {
+          lines[0].style.transform = 'translateY(-4px)';
+          lines[1].style.transform = 'translateY(4px)';
+        }
+        if (!scrolled) {
+          nav.style.background = 'transparent';
+          nav.style.backdropFilter = 'none';
+        }
+      });
+    });
+  }
+})();
+</script>

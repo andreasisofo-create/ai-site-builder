@@ -1,0 +1,86 @@
+<!-- Nav Pill: hidden on load, appears as floating centered pill after scrolling past hero. Modern SaaS feel. -->
+<nav id="site-nav" data-animate="nav-scroll" class="fixed top-4 left-1/2 z-50 transition-all duration-500" style="transform: translateX(-50%) translateY(-120px); opacity: 0;">
+  <div class="flex items-center gap-1 px-2 py-2 rounded-full shadow-lg" style="background: rgba(var(--color-bg-rgb), 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(var(--color-primary-rgb), 0.1);">
+    <a href="#hero" class="flex items-center gap-2 pl-2 pr-3 shrink-0">
+      <img src="{{LOGO_URL}}" alt="" class="h-6 w-auto object-contain" loading="lazy">
+    </a>
+    <div class="hidden md:flex items-center gap-1">
+      {{NAV_LINKS}}
+    </div>
+    <button id="nav-pill-toggle" class="md:hidden relative w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--color-bg-alt)] transition-colors" aria-label="Menu">
+      <svg class="w-4 h-4 text-[var(--color-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+  <!-- Mobile dropdown -->
+  <div id="nav-pill-mobile" class="md:hidden mt-2 overflow-hidden rounded-2xl shadow-xl transition-all duration-300" style="max-height: 0; opacity: 0; background: rgba(var(--color-bg-rgb), 0.95); backdrop-filter: blur(16px); border: 1px solid rgba(var(--color-primary-rgb), 0.08);">
+    <div class="px-4 py-3 space-y-1">
+      {{NAV_LINKS_MOBILE}}
+    </div>
+  </div>
+</nav>
+<!-- Thin top bar visible before pill appears (with logo + name) -->
+<div class="fixed top-0 left-0 right-0 z-40 h-14 flex items-center justify-between px-6 transition-opacity duration-300" id="nav-pill-topbar" style="background: transparent;">
+  <a href="#hero" class="flex items-center gap-2">
+    <img src="{{LOGO_URL}}" alt="" class="h-7 w-auto object-contain" loading="lazy">
+    <span class="font-heading font-bold text-sm text-[var(--color-text)]">{{BUSINESS_NAME}}</span>
+  </a>
+</div>
+<div class="h-14"></div>
+<style>
+  #site-nav a:not([href="#hero"]) {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    transition: all 0.2s;
+  }
+  #site-nav a:not([href="#hero"]):hover {
+    color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.08);
+  }
+</style>
+<script>
+(function() {
+  var nav = document.getElementById('site-nav');
+  var topbar = document.getElementById('nav-pill-topbar');
+  var toggle = document.getElementById('nav-pill-toggle');
+  var mobile = document.getElementById('nav-pill-mobile');
+  var shown = false;
+  var open = false;
+
+  function onScroll() {
+    var sy = window.scrollY || document.documentElement.scrollTop;
+    var threshold = window.innerHeight * 0.6;
+    if (sy > threshold && !shown) {
+      shown = true;
+      nav.style.transform = 'translateX(-50%) translateY(0)';
+      nav.style.opacity = '1';
+      if (topbar) topbar.style.opacity = '0';
+    } else if (sy <= threshold && shown) {
+      shown = false;
+      nav.style.transform = 'translateX(-50%) translateY(-120px)';
+      nav.style.opacity = '0';
+      if (topbar) topbar.style.opacity = '1';
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  if (toggle && mobile) {
+    toggle.addEventListener('click', function() {
+      open = !open;
+      mobile.style.maxHeight = open ? mobile.scrollHeight + 'px' : '0';
+      mobile.style.opacity = open ? '1' : '0';
+    });
+    mobile.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        open = false;
+        mobile.style.maxHeight = '0';
+        mobile.style.opacity = '0';
+      });
+    });
+  }
+})();
+</script>
