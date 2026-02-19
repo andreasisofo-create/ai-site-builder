@@ -31,10 +31,10 @@ resend>=2.5.0
 
 # Payments (Revolut - uses httpx, no SDK needed)
 
-# Vector Database (pgvector for embeddings storage)
-pgvector>=0.3.0
 # Note: chromadb removed — replaced with lightweight in-memory keyword search
-# to stay within Render free tier 512MB memory limit
+# to stay within Render free tier 512MB memory limit.
+# pgvector removed — V2 pipeline works when installed locally but not needed
+# on production (protected by try/except in models/__init__.py)
 
 # Image Generation (Flux via fal.ai)
 fal-client>=0.5.0
