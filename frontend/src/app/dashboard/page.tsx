@@ -37,7 +37,7 @@ import {
 import toast from "react-hot-toast";
 import { fetchSites, deleteSite, Site, getMySubscriptions, cancelSubscription, UserSubscription } from "@/lib/api";
 import GenerationCounter from "@/components/GenerationCounter";
-import { TEMPLATE_CATEGORIES, generateStylePreviewHtml } from "@/lib/templates";
+import { TEMPLATE_CATEGORIES, generateStylePreviewHtml, V2_CATEGORIES, getV2CategoryName, getV2CategoryDescription } from "@/lib/templates";
 import { useLanguage } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -504,6 +504,44 @@ function Dashboard() {
                 <ArrowRightIcon className="w-4 h-4" />
               </span>
             </button>
+          </section>
+
+          {/* V2 Category Picker */}
+          <section id="section-v2-categories">
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold mb-1">
+                {language === "en" ? "What's your business?" : "Qual e' la tua attivita'?"}
+              </h3>
+              <p className="text-slate-400 text-sm">
+                {language === "en"
+                  ? "Pick your category and AI will build a unique site with the perfect structure"
+                  : "Scegli la tua categoria e l'AI creera' un sito unico con la struttura perfetta"}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {V2_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.slug}
+                  onClick={() => {
+                    const userPlan = (user as any)?.plan || "free";
+                    if (userPlan === "free" || !userPlan) {
+                      toast(language === "en" ? "Available with Base or Premium plan" : "Disponibile con piano Base o Premium", { icon: "\uD83D\uDD12" });
+                      return;
+                    }
+                    router.push(`/dashboard/new?v2category=${cat.slug}`);
+                  }}
+                  className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/20 transition-all text-center"
+                >
+                  <span className="text-2xl">{cat.icon}</span>
+                  <span className="text-sm font-medium text-white group-hover:text-blue-400 transition-colors">
+                    {getV2CategoryName(cat, language)}
+                  </span>
+                  <span className="text-[11px] text-slate-500 leading-tight">
+                    {getV2CategoryDescription(cat, language)}
+                  </span>
+                </button>
+              ))}
+            </div>
           </section>
 
           {/* Unlock Potential CTA */}

@@ -1,0 +1,103 @@
+<!-- Team Luxury Minimal V4: elegant portraits with serif names, editorial style -->
+<section id="team" class="team-luxury-minimal py-24 md:py-36">
+  <style>
+    .team-luxury-minimal {
+      background: var(--color-bg);
+    }
+    .team-luxury-minimal .section-header {
+      text-align: center;
+      margin-bottom: 4.5rem;
+    }
+    .team-luxury-minimal .section-header .overline {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--color-text-muted);
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+    }
+    .team-luxury-minimal .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--color-text);
+      font-style: italic;
+    }
+    @media (min-width: 768px) {
+      .team-luxury-minimal .section-header h2 { font-size: 2.5rem; }
+    }
+    .team-luxury-minimal .team-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+    @media (min-width: 640px) {
+      .team-luxury-minimal .team-grid { grid-template-columns: repeat(2, 1fr); gap: 2.5rem; }
+    }
+    @media (min-width: 1024px) {
+      .team-luxury-minimal .team-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .team-luxury-minimal .team-card {
+      text-align: center;
+    }
+    .team-luxury-minimal .team-photo-frame {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+    }
+    .team-luxury-minimal .team-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(30%);
+      transition: filter 0.5s ease, transform 0.5s ease;
+    }
+    .team-luxury-minimal .team-card:hover .team-photo {
+      filter: grayscale(0%);
+      transform: scale(1.03);
+    }
+    .team-luxury-minimal .team-name {
+      font-family: var(--font-heading);
+      font-size: 1.375rem;
+      font-weight: 400;
+      color: var(--color-text);
+      margin-bottom: 0.375rem;
+      letter-spacing: 0.02em;
+    }
+    .team-luxury-minimal .team-divider {
+      width: 1.5rem;
+      height: 1px;
+      background: var(--color-primary);
+      margin: 0.75rem auto;
+      opacity: 0.4;
+    }
+    .team-luxury-minimal .team-role {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--color-text-muted);
+      font-weight: 400;
+    }
+  </style>
+
+  <div style="max-width: 68rem; margin: 0 auto; padding: 0 2rem;">
+    <div class="section-header" data-animate="fade-up">
+      <p class="overline">Il Team</p>
+      <h2 data-animate="text-split" data-split-type="words">{{TEAM_TITLE}}</h2>
+    </div>
+
+    <div class="team-grid" data-animate="stagger">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <div class="team-card stagger-item" data-animate="fade-up">
+        <div class="team-photo-frame">
+          <img src="{{MEMBER_IMAGE_URL}}" alt="{{MEMBER_NAME}}" class="team-photo" loading="lazy">
+        </div>
+        <h3 class="team-name">{{MEMBER_NAME}}</h3>
+        <div class="team-divider"></div>
+        <p class="team-role">{{MEMBER_ROLE}}</p>
+      </div>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+</section>

@@ -1,0 +1,103 @@
+<!-- Team Clean Pro V2: clean grid with circular photos, professional layout -->
+<section id="team" class="team-clean-pro py-20 md:py-24">
+  <style>
+    .team-clean-pro {
+      background: var(--color-bg);
+    }
+    .team-clean-pro .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .team-clean-pro .section-header .overline {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--color-primary);
+      margin-bottom: 1rem;
+    }
+    .team-clean-pro .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    @media (min-width: 768px) {
+      .team-clean-pro .section-header h2 { font-size: 2.25rem; }
+    }
+    .team-clean-pro .section-header p {
+      color: var(--color-text-muted);
+      max-width: 32rem;
+      margin: 0.75rem auto 0;
+    }
+    .team-clean-pro .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+    @media (min-width: 768px) {
+      .team-clean-pro .team-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+    }
+    @media (min-width: 1024px) {
+      .team-clean-pro .team-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .team-clean-pro .team-card {
+      text-align: center;
+      padding: 2rem 1rem;
+      border-radius: 1rem;
+      border: 1px solid color-mix(in srgb, var(--color-text) 6%, transparent);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .team-clean-pro .team-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+      transform: translateY(-2px);
+    }
+    .team-clean-pro .team-photo {
+      width: 6rem;
+      height: 6rem;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 1.25rem;
+      border: 3px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+    }
+    .team-clean-pro .team-name {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 0.25rem;
+    }
+    .team-clean-pro .team-role {
+      font-size: 0.8125rem;
+      color: var(--color-primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+    .team-clean-pro .team-bio {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;">
+    <div class="section-header" data-animate="fade-up">
+      <p class="overline">Il Team</p>
+      <h2 data-animate="text-split" data-split-type="words">{{TEAM_TITLE}}</h2>
+      <p>{{TEAM_SUBTITLE}}</p>
+    </div>
+
+    <div class="team-grid" data-animate="stagger">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <div class="team-card stagger-item" data-animate="fade-up">
+        <img src="{{MEMBER_IMAGE_URL}}" alt="{{MEMBER_NAME}}" class="team-photo" loading="lazy">
+        <h3 class="team-name">{{MEMBER_NAME}}</h3>
+        <p class="team-role">{{MEMBER_ROLE}}</p>
+        <p class="team-bio">{{MEMBER_BIO}}</p>
+      </div>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+</section>

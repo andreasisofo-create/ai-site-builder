@@ -1,0 +1,168 @@
+<style>
+  .booking-luxury-v4 {
+    padding: 8rem 0;
+    background: var(--color-bg);
+  }
+  .booking-luxury-v4__inner {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .booking-luxury-v4__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .booking-luxury-v4__ornament {
+    width: 30px;
+    height: 1px;
+    background: var(--color-accent);
+    margin: 0 auto 1.5rem;
+  }
+  .booking-luxury-v4__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1.25rem;
+  }
+  .booking-luxury-v4__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    color: var(--color-text);
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .booking-luxury-v4__subtitle {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+  .booking-luxury-v4__form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .booking-luxury-v4__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .booking-luxury-v4__field-label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .booking-luxury-v4__input {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.75rem 0;
+    border: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-text) 15%, transparent);
+    background: transparent;
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+  .booking-luxury-v4__input:focus {
+    border-bottom-color: var(--color-accent);
+  }
+  .booking-luxury-v4__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .booking-luxury-v4__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 center;
+    cursor: pointer;
+  }
+  .booking-luxury-v4__submit {
+    padding: 0.875rem 2.5rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    border: 1px solid var(--color-text);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.4s;
+    align-self: center;
+    margin-top: 1rem;
+  }
+  .booking-luxury-v4__submit:hover {
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+  .booking-luxury-v4__note {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+  @media (min-width: 640px) {
+    .booking-luxury-v4__row { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<section class="booking-luxury-v4" id="booking">
+  <div class="booking-luxury-v4__inner">
+    <header class="booking-luxury-v4__header" data-animate="fade-up">
+      <div class="booking-luxury-v4__ornament" data-animate="scale-in"></div>
+      <p class="booking-luxury-v4__label">{{SECTION_LABEL}}</p>
+      <h2 class="booking-luxury-v4__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="booking-luxury-v4__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <form class="booking-luxury-v4__form" data-animate="fade-up" data-delay="0.3">
+      <div class="booking-luxury-v4__row">
+        <div class="booking-luxury-v4__field">
+          <label class="booking-luxury-v4__field-label">{{LABEL_NAME}}</label>
+          <input class="booking-luxury-v4__input" type="text" placeholder="{{PLACEHOLDER_NAME}}" required>
+        </div>
+        <div class="booking-luxury-v4__field">
+          <label class="booking-luxury-v4__field-label">{{LABEL_PHONE}}</label>
+          <input class="booking-luxury-v4__input" type="tel" placeholder="{{PLACEHOLDER_PHONE}}" required>
+        </div>
+      </div>
+      <div class="booking-luxury-v4__row">
+        <div class="booking-luxury-v4__field">
+          <label class="booking-luxury-v4__field-label">{{LABEL_DATE}}</label>
+          <input class="booking-luxury-v4__input" type="date" required>
+        </div>
+        <div class="booking-luxury-v4__field">
+          <label class="booking-luxury-v4__field-label">{{LABEL_TIME}}</label>
+          <input class="booking-luxury-v4__input" type="time" required>
+        </div>
+      </div>
+      <div class="booking-luxury-v4__field">
+        <label class="booking-luxury-v4__field-label">{{LABEL_GUESTS}}</label>
+        <select class="booking-luxury-v4__input booking-luxury-v4__select" required>
+          <option value="">{{PLACEHOLDER_GUESTS}}</option>
+          <option value="2">2</option>
+          <option value="4">4</option>
+          <option value="6">6</option>
+          <option value="8">8+</option>
+        </select>
+      </div>
+      <div class="booking-luxury-v4__field">
+        <label class="booking-luxury-v4__field-label">{{LABEL_NOTES}}</label>
+        <input class="booking-luxury-v4__input" type="text" placeholder="{{PLACEHOLDER_NOTES}}">
+      </div>
+      <button type="submit" class="booking-luxury-v4__submit" data-animate="magnetic">{{CTA_TEXT}}</button>
+    </form>
+
+    <p class="booking-luxury-v4__note" data-animate="fade-up" data-delay="0.4">{{BOOKING_NOTE}}</p>
+  </div>
+</section>

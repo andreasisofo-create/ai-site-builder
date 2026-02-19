@@ -1,0 +1,138 @@
+<style>
+  .chef-luxury-v4 {
+    padding: 8rem 0;
+    background: var(--color-bg);
+  }
+  .chef-luxury-v4__inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .chef-luxury-v4__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .chef-luxury-v4__portrait {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .chef-luxury-v4__portrait-img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .chef-luxury-v4__portrait-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .chef-luxury-v4__portrait-frame {
+    position: absolute;
+    inset: -12px;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    z-index: -1;
+    opacity: 0.3;
+  }
+  .chef-luxury-v4__content {
+    text-align: center;
+  }
+  .chef-luxury-v4__ornament {
+    width: 30px;
+    height: 1px;
+    background: var(--color-accent);
+    margin: 0 auto 1.5rem;
+  }
+  .chef-luxury-v4__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+  }
+  .chef-luxury-v4__name {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    color: var(--color-text);
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+  }
+  .chef-luxury-v4__role {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 2rem;
+  }
+  .chef-luxury-v4__divider {
+    width: 40px;
+    height: 1px;
+    background: var(--color-accent);
+    margin: 0 auto 2rem;
+    opacity: 0.5;
+  }
+  .chef-luxury-v4__bio {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.9;
+    margin: 0 0 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .chef-luxury-v4__quote {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--color-text);
+    font-style: italic;
+    line-height: 1.6;
+    padding: 1.5rem 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+    max-width: 450px;
+    margin: 0 auto;
+  }
+  @media (min-width: 768px) {
+    .chef-luxury-v4__grid {
+      grid-template-columns: 1fr 1.2fr;
+      gap: 5rem;
+    }
+    .chef-luxury-v4__content { text-align: left; }
+    .chef-luxury-v4__ornament { margin: 0 0 1.5rem; }
+    .chef-luxury-v4__divider { margin: 0 0 2rem; }
+    .chef-luxury-v4__bio { margin-left: 0; margin-right: 0; }
+    .chef-luxury-v4__quote { margin: 0; }
+  }
+</style>
+
+<section class="chef-luxury-v4" id="chef">
+  <div class="chef-luxury-v4__inner">
+    <div class="chef-luxury-v4__grid">
+      <div class="chef-luxury-v4__portrait" data-animate="clip-reveal">
+        <div class="chef-luxury-v4__portrait-img">
+          <img src="{{CHEF_IMAGE}}" alt="{{CHEF_NAME}}" loading="lazy">
+        </div>
+        <div class="chef-luxury-v4__portrait-frame" data-animate="fade-up" data-delay="0.4"></div>
+      </div>
+
+      <div class="chef-luxury-v4__content">
+        <div class="chef-luxury-v4__ornament" data-animate="scale-in"></div>
+        <p class="chef-luxury-v4__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+        <h2 class="chef-luxury-v4__name" data-animate="text-split" data-split-type="words">{{CHEF_NAME}}</h2>
+        <p class="chef-luxury-v4__role" data-animate="fade-up" data-delay="0.2">{{CHEF_ROLE}}</p>
+        <div class="chef-luxury-v4__divider" data-animate="scale-in" data-delay="0.3"></div>
+        <p class="chef-luxury-v4__bio" data-animate="fade-up" data-delay="0.3">{{CHEF_BIO}}</p>
+        <blockquote class="chef-luxury-v4__quote" data-animate="fade-up" data-delay="0.4">{{CHEF_QUOTE}}</blockquote>
+      </div>
+    </div>
+  </div>
+</section>

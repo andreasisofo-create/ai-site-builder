@@ -1,0 +1,124 @@
+<!-- Team Modern Tech V3: dark cards with gradient borders and hover 3D -->
+<section id="team" class="team-modern-tech py-24 md:py-32 overflow-hidden relative">
+  <style>
+    .team-modern-tech {
+      background: #0a0a0f;
+      color: #f0f0f5;
+    }
+    .team-modern-tech .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .team-modern-tech .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    @media (min-width: 768px) {
+      .team-modern-tech .section-header h2 { font-size: 2.5rem; }
+    }
+    .team-modern-tech .section-header p {
+      color: rgba(255,255,255,0.5);
+      max-width: 32rem;
+      margin: 0.75rem auto 0;
+    }
+    .team-modern-tech .team-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .team-modern-tech .team-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .team-modern-tech .team-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .team-modern-tech .team-card-wrap {
+      position: relative;
+      border-radius: 1.25rem;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary), rgba(255,255,255,0.1));
+      transition: box-shadow 0.4s ease;
+    }
+    .team-modern-tech .team-card-wrap:hover {
+      box-shadow: 0 0 40px color-mix(in srgb, var(--color-primary) 20%, transparent);
+    }
+    .team-modern-tech .team-card {
+      background: rgba(15,15,25,0.95);
+      border-radius: 1.2rem;
+      padding: 2rem;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+    .team-modern-tech .team-photo-wrap {
+      position: relative;
+      width: 5.5rem;
+      height: 5.5rem;
+      margin: 0 auto 1.25rem;
+    }
+    .team-modern-tech .team-photo-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      opacity: 0.6;
+    }
+    .team-modern-tech .team-photo {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #0a0a0f;
+    }
+    .team-modern-tech .team-name {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .team-modern-tech .team-role {
+      font-size: 0.8125rem;
+      color: var(--color-primary);
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+    }
+    .team-modern-tech .team-bio {
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+    }
+    .team-modern-tech .team-divider {
+      width: 2rem;
+      height: 1px;
+      margin: 0.75rem auto;
+      background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1;">
+    <div class="section-header" data-animate="fade-up">
+      <h2 data-animate="text-split" data-split-type="words">{{TEAM_TITLE}}</h2>
+      <p>{{TEAM_SUBTITLE}}</p>
+    </div>
+
+    <div class="team-grid" data-animate="stagger">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <div class="team-card-wrap stagger-item" data-animate="card-hover-3d">
+        <div class="team-card">
+          <div class="team-photo-wrap">
+            <img src="{{MEMBER_IMAGE_URL}}" alt="{{MEMBER_NAME}}" class="team-photo" loading="lazy">
+          </div>
+          <h3 class="team-name">{{MEMBER_NAME}}</h3>
+          <p class="team-role">{{MEMBER_ROLE}}</p>
+          <div class="team-divider"></div>
+          <p class="team-bio">{{MEMBER_BIO}}</p>
+        </div>
+      </div>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;background:radial-gradient(ellipse,color-mix(in srgb, var(--color-primary) 6%, transparent),transparent 70%);pointer-events:none;"></div>
+</section>

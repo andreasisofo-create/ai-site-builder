@@ -1,0 +1,150 @@
+<!-- FAQ Warm Local V5: friendly accordion with warm colors and rounded corners -->
+<section id="faq" class="faq-warm-local py-20 md:py-24">
+  <style>
+    .faq-warm-local {
+      background: var(--color-bg);
+    }
+    .faq-warm-local .faq-container {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .faq-warm-local .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .faq-warm-local .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    @media (min-width: 768px) {
+      .faq-warm-local .section-header h2 { font-size: 2.25rem; }
+    }
+    .faq-warm-local .section-header p {
+      color: var(--color-text-muted);
+      max-width: 28rem;
+      margin: 0.75rem auto 0;
+    }
+    .faq-warm-local .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .faq-warm-local .faq-card {
+      background: color-mix(in srgb, var(--color-primary) 4%, var(--color-bg));
+      border-radius: 1.25rem;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 8%, transparent);
+      overflow: hidden;
+      transition: box-shadow 0.3s ease;
+    }
+    .faq-warm-local .faq-card.is-open {
+      box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 10%, transparent);
+      border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+    }
+    .faq-warm-local .faq-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      color: var(--color-text);
+    }
+    .faq-warm-local .faq-trigger:focus { outline: 2px solid var(--color-primary); outline-offset: -2px; border-radius: 1.25rem; }
+    .faq-warm-local .faq-question {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .faq-warm-local .faq-icon {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .faq-warm-local .faq-card.is-open .faq-icon {
+      transform: rotate(45deg);
+      background: var(--color-primary);
+    }
+    .faq-warm-local .faq-icon svg {
+      width: 0.75rem;
+      height: 0.75rem;
+      stroke: var(--color-primary);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+    .faq-warm-local .faq-card.is-open .faq-icon svg {
+      stroke: var(--color-bg);
+    }
+    .faq-warm-local .faq-answer {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s ease;
+    }
+    .faq-warm-local .faq-answer-inner {
+      padding: 0 1.5rem 1.5rem;
+    }
+    .faq-warm-local .faq-answer-inner p {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--color-text-muted);
+    }
+    .faq-warm-local .faq-footer {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .faq-warm-local .faq-footer p {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+    }
+    .faq-warm-local .faq-footer a {
+      color: var(--color-primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .faq-warm-local .faq-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <div class="faq-container">
+    <div class="section-header" data-animate="fade-up">
+      <h2 data-animate="text-split" data-split-type="words">{{FAQ_TITLE}}</h2>
+      <p>{{FAQ_SUBTITLE}}</p>
+    </div>
+
+    <div class="faq-list" data-animate="stagger">
+      <!-- REPEAT:FAQ_ITEMS -->
+      <div class="faq-card stagger-item" data-animate="fade-up">
+        <button type="button" class="faq-trigger" onclick="var p=this.parentElement;var a=p.querySelector('.faq-answer');p.classList.toggle('is-open');if(p.classList.contains('is-open')){a.style.maxHeight=a.scrollHeight+'px';}else{a.style.maxHeight='0';}">
+          <span class="faq-question">{{FAQ_QUESTION}}</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg>
+          </div>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            <p>{{FAQ_ANSWER}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:FAQ_ITEMS -->
+    </div>
+
+    <div class="faq-footer" data-animate="fade-up">
+      <p>Non trovi la risposta? <a href="#contact">Contattaci</a></p>
+    </div>
+  </div>
+</section>

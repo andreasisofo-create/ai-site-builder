@@ -1,12 +1,14 @@
 /* ============================================================
-   GSAP Universal Animation Engine v3.1
+   GSAP Universal Animation Engine v3.2
    Auto-injected in every generated site
    Effects: parallax, text-split, typewriter, magnetic, 3D tilt,
    floating, gradient-flow, blur-in, curtain, morphing, glass,
    marquee, counter, stagger, scroll-progress, text-reveal,
    stagger-scale, clip-reveal, blur-slide, rotate-3d, image-zoom,
    card-hover-3d, draw-svg, split-screen, scroll-fade, pin-hero,
-   section-reveal, text-rotate, sticky-cta, data-parallax (standalone)
+   section-reveal, text-rotate, sticky-cta, sticky-reveal,
+   before-after, section-progress, parallax-layers, 3d-scroll,
+   scroll-snap-horizontal, data-parallax (standalone)
    Supports: data-delay, data-duration, data-ease, data-scrub
    Respects prefers-reduced-motion
    Skips heavy scroll effects on mobile/touch
@@ -145,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('[data-animate]').forEach(function (el) {
     var type = el.getAttribute('data-animate');
-    if (['stagger', 'parallax', 'text-split', 'typewriter', 'text-rotate', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal', 'sticky-cta'].indexOf(type) !== -1) return;
+    if (['stagger', 'parallax', 'text-split', 'typewriter', 'text-rotate', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal', 'sticky-cta', 'sticky-reveal', 'before-after', 'section-progress', 'parallax-layers', '3d-scroll', 'scroll-snap-horizontal'].indexOf(type) !== -1) return;
     var config = animations[type];
     if (!config) { el.style.opacity = 1; return; }
 
@@ -985,6 +987,372 @@ document.addEventListener('DOMContentLoaded', function () {
         onEnter: function () { gsap.to(el, { opacity: 0, y: 20, duration: 0.3, ease: 'power2.in' }); },
         onLeaveBack: function () { gsap.to(el, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }); }
       });
+    }
+  });
+
+  /* ----------------------------------------------------------
+     30. STICKY REVEAL (data-animate="sticky-reveal")
+     Section is pinned while inner .sticky-content children
+     scroll through sequentially. Desktop only.
+     ---------------------------------------------------------- */
+  if (!isMobile) {
+    document.querySelectorAll('[data-animate="sticky-reveal"]').forEach(function (el) {
+      el.style.opacity = '1';
+      var content = el.querySelector('.sticky-content');
+      if (!content) return;
+      var children = content.children;
+      if (!children.length) return;
+
+      var stickyDuration = el.getAttribute('data-sticky-duration') || '200%';
+
+      // Pin the container
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top top',
+        end: '+=' + stickyDuration,
+        pin: true,
+        pinSpacing: true
+      });
+
+      // Animate each child: fade in then fade out as the next one appears
+      var totalChildren = children.length;
+      for (var i = 0; i < totalChildren; i++) {
+        (function (index) {
+          var child = children[index];
+          var segmentStart = index / totalChildren;
+          var segmentEnd = (index + 1) / totalChildren;
+          var fadeInEnd = segmentStart + (segmentEnd - segmentStart) * 0.3;
+          var fadeOutStart = segmentStart + (segmentEnd - segmentStart) * 0.7;
+
+          // Initial state: hidden (except first)
+          if (index > 0) {
+            gsap.set(child, { opacity: 0, y: 30 });
+          } else {
+            gsap.set(child, { opacity: 1, y: 0 });
+          }
+
+          // Fade in
+          if (index > 0) {
+            gsap.fromTo(child,
+              { opacity: 0, y: 30 },
+              {
+                opacity: 1, y: 0, ease: 'power2.out',
+                scrollTrigger: {
+                  trigger: el,
+                  start: 'top top',
+                  end: '+=' + stickyDuration,
+                  scrub: true,
+                  // Map to segment of the total scroll
+                  onUpdate: function (self) {
+                    var progress = self.progress;
+                    if (progress >= segmentStart && progress <= fadeInEnd) {
+                      var localProgress = (progress - segmentStart) / (fadeInEnd - segmentStart);
+                      gsap.set(child, { opacity: localProgress, y: 30 * (1 - localProgress) });
+                    }
+                  }
+                }
+              }
+            );
+          }
+
+          // Fade out (except last)
+          if (index < totalChildren - 1) {
+            ScrollTrigger.create({
+              trigger: el,
+              start: 'top top',
+              end: '+=' + stickyDuration,
+              scrub: true,
+              onUpdate: function (self) {
+                var progress = self.progress;
+                if (progress >= fadeOutStart && progress <= segmentEnd) {
+                  var localProgress = (progress - fadeOutStart) / (segmentEnd - fadeOutStart);
+                  gsap.set(child, { opacity: 1 - localProgress, y: -20 * localProgress });
+                }
+              }
+            });
+          }
+        })(i);
+      }
+    });
+  } else {
+    // Mobile: show all children stacked normally
+    document.querySelectorAll('[data-animate="sticky-reveal"]').forEach(function (el) {
+      el.style.opacity = '1';
+      var content = el.querySelector('.sticky-content');
+      if (!content) return;
+      Array.prototype.forEach.call(content.children, function (child) {
+        child.style.opacity = '1';
+        child.style.transform = 'none';
+      });
+    });
+  }
+
+  /* ----------------------------------------------------------
+     31. BEFORE-AFTER SLIDER (data-animate="before-after")
+     Comparison slider with .before and .after child divs.
+     Works with both mouse drag and touch.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="before-after"]').forEach(function (el) {
+    el.style.opacity = '1';
+    var beforeEl = el.querySelector('.before');
+    var afterEl = el.querySelector('.after');
+    var slider = el.querySelector('.ba-slider');
+    if (!beforeEl || !afterEl) return;
+
+    // Create slider handle if not present
+    if (!slider) {
+      slider = document.createElement('div');
+      slider.className = 'ba-slider';
+      slider.style.cssText = 'position:absolute;top:0;width:3px;height:100%;background:white;cursor:ew-resize;z-index:10;transform:translateX(-50%);box-shadow:0 0 8px rgba(0,0,0,0.3);';
+      // Add drag handle circle
+      var handle = document.createElement('div');
+      handle.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;';
+      handle.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 3L1 8L5 13M11 3L15 8L11 13" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      slider.appendChild(handle);
+      el.appendChild(slider);
+    }
+
+    // Setup positioning
+    el.style.position = 'relative';
+    el.style.overflow = 'hidden';
+    el.style.userSelect = 'none';
+    afterEl.style.position = 'absolute';
+    afterEl.style.top = '0';
+    afterEl.style.left = '0';
+    afterEl.style.width = '100%';
+    afterEl.style.height = '100%';
+
+    var startPos = parseFloat(el.getAttribute('data-ba-start') || 50);
+    var isDragging = false;
+
+    function setPosition(pct) {
+      pct = Math.max(0, Math.min(100, pct));
+      beforeEl.style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
+      slider.style.left = pct + '%';
+    }
+
+    setPosition(startPos);
+
+    function getPercent(clientX) {
+      var rect = el.getBoundingClientRect();
+      return ((clientX - rect.left) / rect.width) * 100;
+    }
+
+    // Mouse events
+    slider.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      isDragging = true;
+    });
+    document.addEventListener('mousemove', function (e) {
+      if (!isDragging) return;
+      setPosition(getPercent(e.clientX));
+    });
+    document.addEventListener('mouseup', function () {
+      isDragging = false;
+    });
+
+    // Touch events
+    slider.addEventListener('touchstart', function (e) {
+      isDragging = true;
+    }, { passive: true });
+    document.addEventListener('touchmove', function (e) {
+      if (!isDragging) return;
+      setPosition(getPercent(e.touches[0].clientX));
+    }, { passive: true });
+    document.addEventListener('touchend', function () {
+      isDragging = false;
+    });
+
+    // Click anywhere on container to move slider
+    el.addEventListener('click', function (e) {
+      if (e.target === slider || slider.contains(e.target)) return;
+      setPosition(getPercent(e.clientX));
+    });
+  });
+
+  /* ----------------------------------------------------------
+     32. SECTION SCROLL PROGRESS (data-animate="section-progress")
+     Progress bar scoped to a specific section.
+     Bar width goes from 0% to 100% as section scrolls through.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="section-progress"]').forEach(function (el) {
+    el.style.opacity = '1';
+    var position = el.getAttribute('data-progress-position') || 'top';
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+
+    // Find or create progress bar
+    var bar = el.querySelector('.section-progress-bar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.className = 'section-progress-bar';
+      bar.style.cssText = 'position:absolute;left:0;height:3px;width:0%;background:var(--color-primary, #3b82f6);z-index:10;transition:none;';
+      if (!el.style.position || el.style.position === 'static') {
+        el.style.position = 'relative';
+      }
+      el.appendChild(bar);
+    }
+
+    bar.style[position] = '0';
+    bar.style.width = '0%';
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: true,
+      onUpdate: function (self) {
+        bar.style.width = (self.progress * 100) + '%';
+      }
+    });
+  });
+
+  /* ----------------------------------------------------------
+     33. PARALLAX LAYERS (data-animate="parallax-layers")
+     Multiple .parallax-layer children move at different speeds.
+     Desktop only.
+     ---------------------------------------------------------- */
+  if (!isMobile) {
+    document.querySelectorAll('[data-animate="parallax-layers"]').forEach(function (el) {
+      el.style.opacity = '1';
+      var layers = el.querySelectorAll('.parallax-layer');
+      if (!layers.length) return;
+
+      layers.forEach(function (layer) {
+        var speed = parseFloat(layer.getAttribute('data-speed') || 0.3);
+        var yDistance = speed * -200;
+
+        gsap.fromTo(layer,
+          { y: -yDistance / 2 },
+          {
+            y: yDistance / 2,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.5
+            }
+          }
+        );
+      });
+    });
+  } else {
+    document.querySelectorAll('[data-animate="parallax-layers"]').forEach(function (el) {
+      el.style.opacity = '1';
+      var layers = el.querySelectorAll('.parallax-layer');
+      layers.forEach(function (layer) {
+        layer.style.opacity = '1';
+        layer.style.transform = 'none';
+      });
+    });
+  }
+
+  /* ----------------------------------------------------------
+     34. 3D SCROLL ROTATION (data-animate="3d-scroll")
+     Element rotates on Y axis linked to scroll position.
+     Desktop only.
+     ---------------------------------------------------------- */
+  if (!isMobile) {
+    document.querySelectorAll('[data-animate="3d-scroll"]').forEach(function (el) {
+      el.style.opacity = '1';
+      var maxRot = parseFloat(el.getAttribute('data-rotation-max') || 15);
+      var delay = parseFloat(el.getAttribute('data-delay') || 0);
+      var dur = parseFloat(el.getAttribute('data-duration') || 1);
+      var easing = el.getAttribute('data-ease') || 'none';
+
+      el.style.perspective = '800px';
+      el.style.transformStyle = 'preserve-3d';
+
+      gsap.fromTo(el,
+        { rotationY: -maxRot, transformPerspective: 800 },
+        {
+          rotationY: maxRot,
+          transformPerspective: 800,
+          ease: easing,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1
+          }
+        }
+      );
+    });
+  } else {
+    document.querySelectorAll('[data-animate="3d-scroll"]').forEach(function (el) {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+  }
+
+  /* ----------------------------------------------------------
+     35. SCROLL SNAP HORIZONTAL (data-animate="scroll-snap-horizontal")
+     Horizontal scrolling section with CSS snap points.
+     Optional autoplay with pause on hover/touch.
+     Works on mobile via native CSS scroll snap.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="scroll-snap-horizontal"]').forEach(function (el) {
+    el.style.opacity = '1';
+
+    // Apply scroll-snap CSS to container
+    el.style.overflowX = 'auto';
+    el.style.overflowY = 'hidden';
+    el.style.scrollSnapType = 'x mandatory';
+    el.style.display = 'flex';
+    el.style.webkitOverflowScrolling = 'touch'; // smooth on iOS
+    el.style.scrollBehavior = 'smooth';
+    // Hide scrollbar
+    el.style.scrollbarWidth = 'none'; // Firefox
+    el.style.msOverflowStyle = 'none'; // IE/Edge
+
+    // Apply snap alignment to children
+    var items = el.querySelectorAll('.snap-item');
+    items.forEach(function (item) {
+      item.style.scrollSnapAlign = 'start';
+      item.style.flexShrink = '0';
+    });
+
+    // Autoplay functionality
+    var autoplay = el.getAttribute('data-autoplay') === 'true';
+    if (autoplay && items.length > 1) {
+      var speed = parseFloat(el.getAttribute('data-autoplay-speed') || 5) * 1000;
+      var currentIndex = 0;
+      var autoplayTimer = null;
+      var isPaused = false;
+
+      function advanceSlide() {
+        if (isPaused) return;
+        currentIndex = (currentIndex + 1) % items.length;
+        items[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      }
+
+      function startAutoplay() {
+        if (autoplayTimer) clearInterval(autoplayTimer);
+        autoplayTimer = setInterval(advanceSlide, speed);
+      }
+
+      function stopAutoplay() {
+        isPaused = true;
+        if (autoplayTimer) clearInterval(autoplayTimer);
+      }
+
+      function resumeAutoplay() {
+        isPaused = false;
+        startAutoplay();
+      }
+
+      // Pause on hover (desktop)
+      el.addEventListener('mouseenter', stopAutoplay);
+      el.addEventListener('mouseleave', resumeAutoplay);
+
+      // Pause on touch
+      el.addEventListener('touchstart', stopAutoplay, { passive: true });
+      el.addEventListener('touchend', function () {
+        // Resume after a short delay to allow manual scrolling
+        setTimeout(resumeAutoplay, 2000);
+      }, { passive: true });
+
+      startAutoplay();
     }
   });
 

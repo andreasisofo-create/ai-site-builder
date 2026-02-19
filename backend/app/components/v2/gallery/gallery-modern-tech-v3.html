@@ -1,0 +1,123 @@
+<style>
+  .gallery-tech-v3 {
+    padding: 6rem 0;
+    background: #0a0a0f;
+    overflow: hidden;
+  }
+  .gallery-tech-v3__inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .gallery-tech-v3__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .gallery-tech-v3__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+  .gallery-tech-v3__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+    line-height: 1.15;
+    margin: 0;
+  }
+  .gallery-tech-v3__track {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 1.5rem;
+    padding: 0 1.5rem 1.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+  .gallery-tech-v3__track::-webkit-scrollbar {
+    height: 4px;
+  }
+  .gallery-tech-v3__track::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .gallery-tech-v3__track::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+  }
+  .gallery-tech-v3__item {
+    flex: 0 0 80%;
+    scroll-snap-align: center;
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 16/10;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .gallery-tech-v3__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s;
+  }
+  .gallery-tech-v3__item:hover img {
+    transform: scale(1.05);
+  }
+  .gallery-tech-v3__item-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  }
+  .gallery-tech-v3__item-caption {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+  }
+  .gallery-tech-v3__counter {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.1em;
+  }
+  @media (min-width: 640px) {
+    .gallery-tech-v3__item { flex: 0 0 45%; }
+  }
+  @media (min-width: 1024px) {
+    .gallery-tech-v3 { padding: 8rem 0; }
+    .gallery-tech-v3__item { flex: 0 0 35%; }
+  }
+</style>
+
+<section class="gallery-tech-v3" id="gallery">
+  <div class="gallery-tech-v3__inner">
+    <header class="gallery-tech-v3__header" data-animate="reveal-up">
+      <p class="gallery-tech-v3__label" data-animate="blur-in">{{SECTION_LABEL}}</p>
+      <h2 class="gallery-tech-v3__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="gallery-tech-v3__track" data-animate="stagger">
+      <!-- REPEAT:GALLERY_ITEMS -->
+      <div class="gallery-tech-v3__item stagger-item">
+        <img src="{{GALLERY_IMAGE}}" alt="{{GALLERY_ALT}}" loading="lazy">
+        <div class="gallery-tech-v3__item-overlay">
+          <span class="gallery-tech-v3__item-caption">{{GALLERY_CAPTION}}</span>
+        </div>
+      </div>
+      <!-- /REPEAT:GALLERY_ITEMS -->
+    </div>
+    <div class="gallery-tech-v3__counter" data-animate="fade-up" data-delay="0.3">
+      Scorri per esplorare &rarr;
+    </div>
+  </div>
+</section>

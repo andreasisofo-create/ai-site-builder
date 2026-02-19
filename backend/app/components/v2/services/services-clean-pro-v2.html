@@ -1,0 +1,117 @@
+<style>
+  .services-clean-v2 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+  }
+  .services-clean-v2__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .services-clean-v2__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .services-clean-v2__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+  .services-clean-v2__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+  }
+  .services-clean-v2__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .services-clean-v2__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .services-clean-v2__card {
+    background: var(--color-bg);
+    border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .services-clean-v2__card:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+  }
+  .services-clean-v2__card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 1.25rem;
+    transition: background 0.3s;
+  }
+  .services-clean-v2__card:hover .services-clean-v2__card-icon {
+    background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg));
+  }
+  .services-clean-v2__card-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    color: var(--color-text);
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+  }
+  .services-clean-v2__card-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+  @media (min-width: 640px) {
+    .services-clean-v2__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .services-clean-v2 { padding: 8rem 0; }
+    .services-clean-v2__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+
+<section class="services-clean-v2" id="services">
+  <div class="services-clean-v2__inner">
+    <header class="services-clean-v2__header" data-animate="reveal-up">
+      <p class="services-clean-v2__label" data-animate="blur-in">{{SECTION_LABEL}}</p>
+      <h2 class="services-clean-v2__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="services-clean-v2__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="services-clean-v2__grid" data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <article class="services-clean-v2__card stagger-item" data-animate="card-hover-3d">
+        <div class="services-clean-v2__card-icon">{{SERVICE_ICON}}</div>
+        <h3 class="services-clean-v2__card-title">{{SERVICE_TITLE}}</h3>
+        <p class="services-clean-v2__card-text">{{SERVICE_DESCRIPTION}}</p>
+      </article>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

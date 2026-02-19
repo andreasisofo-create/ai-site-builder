@@ -1,0 +1,125 @@
+<style>
+  .gallery-warm-v5 {
+    padding: 5rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .gallery-warm-v5__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .gallery-warm-v5__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .gallery-warm-v5__emoji {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .gallery-warm-v5__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: var(--color-text);
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .gallery-warm-v5__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 450px;
+    margin: 0 auto;
+  }
+  .gallery-warm-v5__strip {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 1rem 0 1.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .gallery-warm-v5__strip::-webkit-scrollbar { display: none; }
+  .gallery-warm-v5__frame {
+    flex: 0 0 75%;
+    scroll-snap-align: center;
+    background: var(--color-bg);
+    border-radius: 16px;
+    padding: 0.75rem;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.06);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);
+  }
+  .gallery-warm-v5__frame-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .gallery-warm-v5__frame-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .gallery-warm-v5__frame-caption {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: 0.75rem 0.5rem 0.25rem;
+  }
+  .gallery-warm-v5__nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .gallery-warm-v5__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-primary) 20%, var(--color-bg));
+  }
+  .gallery-warm-v5__dot--active {
+    background: var(--color-primary);
+    width: 24px;
+    border-radius: 4px;
+  }
+  @media (min-width: 640px) {
+    .gallery-warm-v5__frame { flex: 0 0 45%; }
+  }
+  @media (min-width: 1024px) {
+    .gallery-warm-v5 { padding: 7rem 0; }
+    .gallery-warm-v5__frame { flex: 0 0 32%; }
+  }
+</style>
+
+<section class="gallery-warm-v5" id="gallery">
+  <div class="gallery-warm-v5__inner">
+    <header class="gallery-warm-v5__header" data-animate="fade-up">
+      <span class="gallery-warm-v5__emoji">{{EMOJI_ICON}}</span>
+      <h2 class="gallery-warm-v5__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="gallery-warm-v5__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="gallery-warm-v5__strip" data-animate="stagger">
+      <!-- REPEAT:GALLERY_ITEMS -->
+      <div class="gallery-warm-v5__frame stagger-item">
+        <div class="gallery-warm-v5__frame-img">
+          <img src="{{GALLERY_IMAGE}}" alt="{{GALLERY_ALT}}" loading="lazy">
+        </div>
+        <p class="gallery-warm-v5__frame-caption">{{GALLERY_CAPTION}}</p>
+      </div>
+      <!-- /REPEAT:GALLERY_ITEMS -->
+    </div>
+
+    <div class="gallery-warm-v5__nav" data-animate="fade-up" data-delay="0.3">
+      <span class="gallery-warm-v5__dot gallery-warm-v5__dot--active"></span>
+      <span class="gallery-warm-v5__dot"></span>
+      <span class="gallery-warm-v5__dot"></span>
+      <span class="gallery-warm-v5__dot"></span>
+    </div>
+  </div>
+</section>

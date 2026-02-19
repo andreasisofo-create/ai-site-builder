@@ -1,0 +1,139 @@
+<!-- Team Bold Visual V1: large overlapping photo cards with dramatic layout -->
+<section id="team" class="team-bold-visual py-24 md:py-32 overflow-hidden relative">
+  <style>
+    .team-bold-visual {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+    .team-bold-visual .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .team-bold-visual .section-header .overline {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--color-primary);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .team-bold-visual .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--color-bg);
+    }
+    @media (min-width: 768px) {
+      .team-bold-visual .section-header h2 { font-size: 3rem; }
+    }
+    .team-bold-visual .section-header p {
+      color: rgba(255,255,255,0.5);
+      max-width: 32rem;
+      margin: 0.75rem auto 0;
+    }
+    .team-bold-visual .team-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 640px) {
+      .team-bold-visual .team-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .team-bold-visual .team-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .team-bold-visual .team-member {
+      position: relative;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      cursor: pointer;
+    }
+    .team-bold-visual .team-member img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .team-bold-visual .team-member:hover img {
+      transform: scale(1.08);
+    }
+    .team-bold-visual .team-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 2rem;
+      transition: background 0.4s ease;
+    }
+    .team-bold-visual .team-member:hover .team-overlay {
+      background: linear-gradient(to top, var(--color-primary) 0%, rgba(0,0,0,0.3) 50%, transparent 70%);
+    }
+    .team-bold-visual .team-name {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+    .team-bold-visual .team-role {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.7);
+      font-weight: 500;
+    }
+    .team-bold-visual .team-bio {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 0.75rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+      line-height: 1.5;
+    }
+    .team-bold-visual .team-member:hover .team-bio {
+      max-height: 6rem;
+    }
+    .team-bold-visual .team-accent {
+      width: 2rem;
+      height: 3px;
+      background: var(--color-primary);
+      margin-bottom: 1rem;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+    .team-bold-visual .team-member:hover .team-accent {
+      width: 3.5rem;
+      background: #fff;
+    }
+  </style>
+
+  <div style="max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1;">
+    <div class="section-header" data-animate="fade-up">
+      <p class="overline">Il Team</p>
+      <h2 data-animate="text-split" data-split-type="words">{{TEAM_TITLE}}</h2>
+      <p>{{TEAM_SUBTITLE}}</p>
+    </div>
+
+    <div class="team-grid" data-animate="stagger">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <div class="team-member stagger-item" data-animate="scale-in">
+        <img src="{{MEMBER_IMAGE_URL}}" alt="{{MEMBER_NAME}}" loading="lazy">
+        <div class="team-overlay">
+          <div class="team-accent"></div>
+          <h3 class="team-name" data-animate="text-split">{{MEMBER_NAME}}</h3>
+          <p class="team-role">{{MEMBER_ROLE}}</p>
+          <p class="team-bio">{{MEMBER_BIO}}</p>
+        </div>
+      </div>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+
+  <div style="position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(to left,color-mix(in srgb, var(--color-primary) 5%, transparent),transparent);pointer-events:none;"></div>
+</section>

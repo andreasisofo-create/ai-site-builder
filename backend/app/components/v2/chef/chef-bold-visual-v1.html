@@ -1,0 +1,139 @@
+<style>
+  .chef-bold-v1 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .chef-bold-v1__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .chef-bold-v1__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .chef-bold-v1__image-wrap {
+    position: relative;
+  }
+  .chef-bold-v1__image {
+    width: 100%;
+    aspect-ratio: 3/4;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .chef-bold-v1__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .chef-bold-v1__image-accent {
+    position: absolute;
+    bottom: -1rem;
+    left: -1rem;
+    width: 60%;
+    height: 60%;
+    border-radius: 12px;
+    border: 3px solid var(--color-primary);
+    z-index: -1;
+    opacity: 0.3;
+  }
+  .chef-bold-v1__content {
+    max-width: 520px;
+  }
+  .chef-bold-v1__label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .chef-bold-v1__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--color-text);
+    line-height: 1.1;
+    margin: 0 0 0.5rem;
+    font-weight: 800;
+  }
+  .chef-bold-v1__role {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+  .chef-bold-v1__text {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.8;
+    margin: 0 0 1.5rem;
+  }
+  .chef-bold-v1__quote {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--color-text);
+    font-style: italic;
+    line-height: 1.4;
+    border-left: 4px solid var(--color-primary);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+  }
+  .chef-bold-v1__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .chef-bold-v1__skill {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg));
+    color: var(--color-primary);
+    border-radius: 50px;
+  }
+  @media (min-width: 768px) {
+    .chef-bold-v1__grid {
+      grid-template-columns: 1fr 1.1fr;
+      gap: 4rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .chef-bold-v1 { padding: 8rem 0; }
+    .chef-bold-v1__grid { gap: 5rem; }
+  }
+</style>
+
+<section class="chef-bold-v1" id="chef">
+  <div class="chef-bold-v1__inner">
+    <div class="chef-bold-v1__grid">
+      <div class="chef-bold-v1__image-wrap" data-animate="clip-reveal">
+        <div class="chef-bold-v1__image">
+          <img src="{{CHEF_IMAGE}}" alt="{{CHEF_NAME}}" loading="lazy" data-animate="image-zoom">
+        </div>
+        <div class="chef-bold-v1__image-accent" data-animate="fade-up" data-delay="0.4"></div>
+      </div>
+
+      <div class="chef-bold-v1__content">
+        <p class="chef-bold-v1__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+        <h2 class="chef-bold-v1__title" data-animate="text-split" data-split-type="words">{{CHEF_NAME}}</h2>
+        <p class="chef-bold-v1__role" data-animate="fade-up" data-delay="0.2">{{CHEF_ROLE}}</p>
+        <p class="chef-bold-v1__text" data-animate="fade-up" data-delay="0.3">{{CHEF_BIO}}</p>
+        <blockquote class="chef-bold-v1__quote" data-animate="fade-left" data-delay="0.4">{{CHEF_QUOTE}}</blockquote>
+        <div class="chef-bold-v1__skills" data-animate="stagger">
+          <!-- REPEAT:CHEF_SKILLS -->
+          <span class="chef-bold-v1__skill stagger-item">{{SKILL_NAME}}</span>
+          <!-- /REPEAT:CHEF_SKILLS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

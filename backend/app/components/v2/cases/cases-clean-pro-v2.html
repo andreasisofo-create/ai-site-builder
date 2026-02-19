@@ -1,0 +1,127 @@
+<style>
+  .cases-clean-v2 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+  }
+  .cases-clean-v2__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .cases-clean-v2__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .cases-clean-v2__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+  .cases-clean-v2__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+  }
+  .cases-clean-v2__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .cases-clean-v2__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .cases-clean-v2__card {
+    background: var(--color-bg);
+    border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.3s;
+  }
+  .cases-clean-v2__card:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 25%, transparent);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+  }
+  .cases-clean-v2__card-category {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 0.75rem;
+  }
+  .cases-clean-v2__card-title {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 0.75rem;
+    line-height: 1.3;
+  }
+  .cases-clean-v2__card-desc {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0 0 1.25rem;
+  }
+  .cases-clean-v2__card-result {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: color-mix(in srgb, var(--color-primary) 5%, var(--color-bg));
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+  .cases-clean-v2__card-result-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  @media (min-width: 640px) {
+    .cases-clean-v2__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .cases-clean-v2 { padding: 8rem 0; }
+    .cases-clean-v2__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+
+<section class="cases-clean-v2" id="cases">
+  <div class="cases-clean-v2__inner">
+    <header class="cases-clean-v2__header" data-animate="reveal-up">
+      <p class="cases-clean-v2__label" data-animate="blur-in">{{SECTION_LABEL}}</p>
+      <h2 class="cases-clean-v2__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="cases-clean-v2__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="cases-clean-v2__grid" data-animate="stagger">
+      <!-- REPEAT:CASES -->
+      <article class="cases-clean-v2__card stagger-item" data-animate="card-hover-3d">
+        <p class="cases-clean-v2__card-category">{{CASE_CATEGORY}}</p>
+        <h3 class="cases-clean-v2__card-title">{{CASE_TITLE}}</h3>
+        <p class="cases-clean-v2__card-desc">{{CASE_DESCRIPTION}}</p>
+        <div class="cases-clean-v2__card-result">
+          <span class="cases-clean-v2__card-result-icon">{{CASE_RESULT_ICON}}</span>
+          <span>{{CASE_RESULT}}</span>
+        </div>
+      </article>
+      <!-- /REPEAT:CASES -->
+    </div>
+  </div>
+</section>

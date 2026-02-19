@@ -1,0 +1,175 @@
+<style>
+  .contact-bold-v1 {
+    padding: 0;
+    background: var(--color-bg);
+  }
+  .contact-bold-v1__split {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 600px;
+  }
+  .contact-bold-v1__visual {
+    position: relative;
+    min-height: 300px;
+    overflow: hidden;
+  }
+  .contact-bold-v1__visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+  .contact-bold-v1__visual-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 80%, black), color-mix(in srgb, var(--color-secondary) 80%, black));
+    opacity: 0.85;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem;
+  }
+  .contact-bold-v1__visual-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+    font-weight: 800;
+    margin: 0 0 1rem;
+    line-height: 1.1;
+  }
+  .contact-bold-v1__visual-text {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    margin: 0 0 2rem;
+    max-width: 400px;
+  }
+  .contact-bold-v1__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .contact-bold-v1__info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: rgba(255,255,255,0.9);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+  }
+  .contact-bold-v1__info-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .contact-bold-v1__form-wrap {
+    padding: 3rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .contact-bold-v1__form-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--color-text);
+    font-weight: 700;
+    margin: 0 0 2rem;
+  }
+  .contact-bold-v1__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .contact-bold-v1__form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .contact-bold-v1__input {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 0.875rem 1rem;
+    border: 1.5px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+    border-radius: 8px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+  .contact-bold-v1__input:focus {
+    border-color: var(--color-primary);
+  }
+  .contact-bold-v1__textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  .contact-bold-v1__submit {
+    padding: 1rem 2.5rem;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    align-self: flex-start;
+  }
+  .contact-bold-v1__submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
+  @media (min-width: 640px) {
+    .contact-bold-v1__form-row { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 768px) {
+    .contact-bold-v1__split {
+      grid-template-columns: 1fr 1fr;
+    }
+    .contact-bold-v1__form-wrap { padding: 4rem 3rem; }
+  }
+</style>
+
+<section class="contact-bold-v1" id="contact">
+  <div class="contact-bold-v1__split">
+    <div class="contact-bold-v1__visual" data-animate="clip-reveal">
+      <img src="{{IMAGE_URL}}" alt="{{IMAGE_ALT}}" loading="lazy">
+      <div class="contact-bold-v1__visual-overlay">
+        <h2 class="contact-bold-v1__visual-title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+        <p class="contact-bold-v1__visual-text" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+        <div class="contact-bold-v1__info" data-animate="stagger">
+          <!-- REPEAT:CONTACT_INFO -->
+          <div class="contact-bold-v1__info-item stagger-item">
+            <span class="contact-bold-v1__info-icon">{{INFO_ICON}}</span>
+            <span>{{INFO_TEXT}}</span>
+          </div>
+          <!-- /REPEAT:CONTACT_INFO -->
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-bold-v1__form-wrap" data-animate="fade-up" data-delay="0.2">
+      <h3 class="contact-bold-v1__form-title">{{FORM_TITLE}}</h3>
+      <form class="contact-bold-v1__form">
+        <div class="contact-bold-v1__form-row">
+          <input class="contact-bold-v1__input" type="text" placeholder="{{PLACEHOLDER_NAME}}" required>
+          <input class="contact-bold-v1__input" type="email" placeholder="{{PLACEHOLDER_EMAIL}}" required>
+        </div>
+        <input class="contact-bold-v1__input" type="tel" placeholder="{{PLACEHOLDER_PHONE}}">
+        <textarea class="contact-bold-v1__input contact-bold-v1__textarea" placeholder="{{PLACEHOLDER_MESSAGE}}"></textarea>
+        <button type="submit" class="contact-bold-v1__submit" data-animate="magnetic">{{CTA_TEXT}}</button>
+      </form>
+    </div>
+  </div>
+</section>

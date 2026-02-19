@@ -1,0 +1,179 @@
+<style>
+  .contact-tech-v3 {
+    padding: 6rem 0;
+    background: #0a0a0f;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-tech-v3__glow {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    opacity: 0.1;
+    background: var(--color-primary);
+    bottom: -100px;
+    right: -100px;
+  }
+  .contact-tech-v3__inner {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .contact-tech-v3__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .contact-tech-v3__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+  .contact-tech-v3__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+    line-height: 1.15;
+    margin: 0 0 0.75rem;
+  }
+  .contact-tech-v3__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: rgba(255,255,255,0.4);
+  }
+  .contact-tech-v3__card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    backdrop-filter: blur(10px);
+  }
+  .contact-tech-v3__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .contact-tech-v3__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .contact-tech-v3__input {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 0.875rem 1.25rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+  .contact-tech-v3__input::placeholder {
+    color: rgba(255,255,255,0.25);
+  }
+  .contact-tech-v3__input:focus {
+    border-color: var(--color-primary);
+    background: rgba(255,255,255,0.06);
+  }
+  .contact-tech-v3__textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  .contact-tech-v3__submit {
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 0 30px color-mix(in srgb, var(--color-primary) 20%, transparent);
+    width: 100%;
+  }
+  .contact-tech-v3__submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 50px color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+  .contact-tech-v3__info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .contact-tech-v3__info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .contact-tech-v3__info-icon {
+    font-size: 1.25rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .contact-tech-v3__info-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+  }
+  @media (min-width: 640px) {
+    .contact-tech-v3__row { grid-template-columns: 1fr 1fr; }
+    .contact-tech-v3__info { grid-template-columns: repeat(3, 1fr); }
+    .contact-tech-v3__card { padding: 3rem; }
+  }
+  @media (min-width: 1024px) {
+    .contact-tech-v3 { padding: 8rem 0; }
+  }
+</style>
+
+<section class="contact-tech-v3" id="contact">
+  <div class="contact-tech-v3__glow" data-animate="float"></div>
+  <div class="contact-tech-v3__inner">
+    <header class="contact-tech-v3__header" data-animate="reveal-up">
+      <p class="contact-tech-v3__label" data-animate="blur-in">{{SECTION_LABEL}}</p>
+      <h2 class="contact-tech-v3__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="contact-tech-v3__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="contact-tech-v3__card" data-animate="fade-up" data-delay="0.2">
+      <form class="contact-tech-v3__form">
+        <div class="contact-tech-v3__row">
+          <input class="contact-tech-v3__input" type="text" placeholder="{{PLACEHOLDER_NAME}}" required>
+          <input class="contact-tech-v3__input" type="email" placeholder="{{PLACEHOLDER_EMAIL}}" required>
+        </div>
+        <input class="contact-tech-v3__input" type="tel" placeholder="{{PLACEHOLDER_PHONE}}">
+        <textarea class="contact-tech-v3__input contact-tech-v3__textarea" placeholder="{{PLACEHOLDER_MESSAGE}}"></textarea>
+        <button type="submit" class="contact-tech-v3__submit" data-animate="magnetic">{{CTA_TEXT}}</button>
+      </form>
+    </div>
+
+    <div class="contact-tech-v3__info" data-animate="stagger">
+      <!-- REPEAT:CONTACT_INFO -->
+      <div class="contact-tech-v3__info-item stagger-item">
+        <span class="contact-tech-v3__info-icon">{{INFO_ICON}}</span>
+        <span class="contact-tech-v3__info-text">{{INFO_TEXT}}</span>
+      </div>
+      <!-- /REPEAT:CONTACT_INFO -->
+    </div>
+  </div>
+</section>

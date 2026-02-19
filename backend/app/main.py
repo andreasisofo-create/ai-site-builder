@@ -101,6 +101,14 @@ async def lifespan(app: FastAPI):
     if engine and Base:
         try:
             logger.info("Connessione al database...")
+            # Ensure required extensions exist before creating tables
+            from sqlalchemy import text as sql_text_ext
+            with engine.connect() as conn:
+                conn.execute(sql_text_ext("CREATE EXTENSION IF NOT EXISTS vector"))
+                conn.execute(sql_text_ext('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'))
+                conn.commit()
+            logger.info("Estensioni PostgreSQL (vector, uuid-ossp) verificate")
+
             Base.metadata.create_all(bind=engine)
             logger.info("Database inizializzato correttamente")
 
@@ -140,6 +148,27 @@ async def lifespan(app: FastAPI):
                         pass  # Column already exists or different DB dialect
                 conn.commit()
             logger.info("Migrazioni colonne completate")
+
+            # Enable RLS on all tables (Supabase Security Advisor).
+            # The backend connects as `postgres` superuser which bypasses RLS.
+            # This blocks direct access via Supabase anon/authenticated roles.
+            rls_tables = [
+                "users", "sites", "site_versions", "components", "components_v2",
+                "generation_logs", "generation_log_components", "category_blueprints",
+                "service_catalog", "user_subscriptions", "payment_history",
+                "global_counters", "ad_leads", "ad_platform_configs", "ad_clients",
+                "ad_campaigns", "ad_optimization_logs", "ad_ai_activities",
+                "ad_metrics", "ad_wizard_progress", "ad_market_research",
+                "ad_strategies",
+            ]
+            with engine.connect() as conn:
+                for table in rls_tables:
+                    try:
+                        conn.execute(sql_text(f'ALTER TABLE "{table}" ENABLE ROW LEVEL SECURITY'))
+                    except Exception:
+                        pass  # Table may not exist yet
+                conn.commit()
+            logger.info("RLS abilitato su tutte le tabelle")
         except Exception as e:
             logger.error(f"Errore connessione database: {e}")
             logger.error(traceback.format_exc())
@@ -152,6 +181,13 @@ async def lifespan(app: FastAPI):
         seed_service_catalog()
     except Exception as e:
         logger.warning(f"Seed catalogo servizi fallito: {e}")
+
+    # Seed category blueprints if empty
+    try:
+        from app.services.seed_category_blueprints import seed_category_blueprints
+        seed_category_blueprints()
+    except Exception as e:
+        logger.warning(f"Seed category blueprints fallito: {e}")
 
     # Seed design knowledge (ChromaDB) if empty
     try:
@@ -324,6 +360,14 @@ try:
     logger.info("Route ads registrate")
 except Exception as e:
     logger.error(f"Errore registrazione route ads: {e}")
+    logger.error(traceback.format_exc())
+
+try:
+    from app.api.routes import v2_generate
+    app.include_router(v2_generate.router, prefix="/api/v2", tags=["v2"])
+    logger.info("Route v2 registrate")
+except Exception as e:
+    logger.error(f"Errore registrazione route v2: {e}")
     logger.error(traceback.format_exc())
 
 logger.info("Routes registrate")

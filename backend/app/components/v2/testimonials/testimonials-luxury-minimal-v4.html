@@ -1,0 +1,106 @@
+<!-- Testimonials Luxury Minimal V4: single large quote with elegant serif typography -->
+<section id="testimonials" class="testimonials-luxury-minimal py-24 md:py-36">
+  <style>
+    .testimonials-luxury-minimal {
+      background: var(--color-bg);
+    }
+    .testimonials-luxury-minimal .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .testimonials-luxury-minimal .section-header .overline {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--color-text-muted);
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+    }
+    .testimonials-luxury-minimal .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 400;
+      color: var(--color-text);
+      font-style: italic;
+    }
+    @media (min-width: 768px) {
+      .testimonials-luxury-minimal .section-header h2 { font-size: 2.25rem; }
+    }
+    .testimonials-luxury-minimal .testimonials-stack {
+      max-width: 48rem;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4rem;
+    }
+    .testimonials-luxury-minimal .testimonial-item {
+      text-align: center;
+      position: relative;
+    }
+    .testimonials-luxury-minimal .quote-mark {
+      font-family: var(--font-heading);
+      font-size: 6rem;
+      line-height: 0.5;
+      color: var(--color-primary);
+      opacity: 0.15;
+      margin-bottom: 1.5rem;
+    }
+    .testimonials-luxury-minimal .testimonial-text {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.8;
+      color: var(--color-text);
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 768px) {
+      .testimonials-luxury-minimal .testimonial-text { font-size: 1.5rem; }
+    }
+    .testimonials-luxury-minimal .testimonial-divider {
+      width: 2rem;
+      height: 1px;
+      background: var(--color-primary);
+      margin: 0 auto 1.5rem;
+      opacity: 0.4;
+    }
+    .testimonials-luxury-minimal .testimonial-author {
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--color-text);
+      font-weight: 500;
+    }
+    .testimonials-luxury-minimal .testimonial-role {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: 0.25rem;
+      letter-spacing: 0.1em;
+    }
+    .testimonials-luxury-minimal .separator {
+      width: 60%;
+      height: 1px;
+      background: color-mix(in srgb, var(--color-text) 6%, transparent);
+      margin: 0 auto;
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 2rem;">
+    <div class="section-header" data-animate="fade-up">
+      <p class="overline">Testimonianze</p>
+      <h2 data-animate="text-split" data-split-type="words">{{TESTIMONIALS_TITLE}}</h2>
+    </div>
+
+    <div class="testimonials-stack" data-animate="stagger">
+      <!-- REPEAT:TESTIMONIALS -->
+      <article class="testimonial-item stagger-item" data-animate="fade-up">
+        <div class="quote-mark">&ldquo;</div>
+        <blockquote class="testimonial-text">{{TESTIMONIAL_TEXT}}</blockquote>
+        <div class="testimonial-divider"></div>
+        <cite class="testimonial-author" style="font-style:normal;">{{TESTIMONIAL_AUTHOR}}</cite>
+        <p class="testimonial-role">{{TESTIMONIAL_ROLE}}</p>
+      </article>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+</section>

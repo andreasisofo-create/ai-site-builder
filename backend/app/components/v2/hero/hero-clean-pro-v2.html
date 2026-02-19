@@ -1,0 +1,158 @@
+<style>
+  .hero-clean-v2 {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .hero-clean-v2__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 3rem;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 6rem 1.5rem 3rem;
+    width: 100%;
+  }
+  .hero-clean-v2__text {
+    max-width: 560px;
+  }
+  .hero-clean-v2__label {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+  }
+  .hero-clean-v2__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    color: var(--color-text);
+    line-height: 1.1;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.01em;
+  }
+  .hero-clean-v2__subtitle {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0 0 2rem;
+  }
+  .hero-clean-v2__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .hero-clean-v2__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .hero-clean-v2__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
+  .hero-clean-v2__cta--outline {
+    background: transparent;
+    color: var(--color-text);
+    border: 1.5px solid var(--color-text-muted);
+  }
+  .hero-clean-v2__cta--outline:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    box-shadow: none;
+  }
+  .hero-clean-v2__image-wrap {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+  }
+  .hero-clean-v2__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hero-clean-v2__image-accent {
+    position: absolute;
+    bottom: -1rem;
+    right: -1rem;
+    width: 40%;
+    height: 40%;
+    border-radius: 12px;
+    background: var(--color-primary);
+    opacity: 0.1;
+    z-index: -1;
+  }
+  .hero-clean-v2__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  }
+  .hero-clean-v2__stat-num {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+  .hero-clean-v2__stat-label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+  }
+  @media (min-width: 768px) {
+    .hero-clean-v2__inner {
+      grid-template-columns: 1fr 1fr;
+      padding: 0 2rem;
+      min-height: 100vh;
+    }
+  }
+  @media (min-width: 1024px) {
+    .hero-clean-v2__inner { padding: 0 3rem; gap: 4rem; }
+  }
+</style>
+
+<section class="hero-clean-v2" id="hero">
+  <div class="hero-clean-v2__inner">
+    <div class="hero-clean-v2__text">
+      <span class="hero-clean-v2__label" data-animate="fade-up">{{BADGE_TEXT}}</span>
+      <h1 class="hero-clean-v2__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h1>
+      <p class="hero-clean-v2__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+      <div class="hero-clean-v2__actions" data-animate="fade-up" data-delay="0.3">
+        <a href="#booking" class="hero-clean-v2__cta" data-animate="magnetic">{{CTA_TEXT}}</a>
+        <a href="#menu" class="hero-clean-v2__cta hero-clean-v2__cta--outline">{{CTA_SECONDARY_TEXT}}</a>
+      </div>
+      <div class="hero-clean-v2__stats" data-animate="stagger">
+        <!-- REPEAT:HERO_STATS -->
+        <div class="stagger-item">
+          <div class="hero-clean-v2__stat-num" data-counter="{{STAT_NUMBER}}">0</div>
+          <div class="hero-clean-v2__stat-label">{{STAT_LABEL}}</div>
+        </div>
+        <!-- /REPEAT:HERO_STATS -->
+      </div>
+    </div>
+    <div class="hero-clean-v2__image-wrap" data-animate="scale-in" data-delay="0.2">
+      <img src="{{IMAGE_URL}}" alt="{{IMAGE_ALT}}" loading="eager">
+      <div class="hero-clean-v2__image-accent"></div>
+    </div>
+  </div>
+</section>

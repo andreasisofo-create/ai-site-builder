@@ -1,0 +1,138 @@
+<style>
+  .showcase-lux-v4 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .showcase-lux-v4__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .showcase-lux-v4__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .showcase-lux-v4__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .showcase-lux-v4__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .showcase-lux-v4__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .showcase-lux-v4__item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 3rem 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .showcase-lux-v4__item:last-child {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  }
+  .showcase-lux-v4__item:hover {
+    background: color-mix(in srgb, var(--color-primary) 3%, transparent);
+  }
+  .showcase-lux-v4__img-wrap {
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 16/10;
+  }
+  .showcase-lux-v4__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .showcase-lux-v4__item:hover .showcase-lux-v4__img-wrap img {
+    transform: scale(1.05);
+  }
+  .showcase-lux-v4__meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .showcase-lux-v4__cat {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .showcase-lux-v4__item-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    color: var(--color-text);
+    font-weight: 500;
+    margin: 0 0 0.75rem;
+    line-height: 1.2;
+  }
+  .showcase-lux-v4__item-desc {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .showcase-lux-v4__item {
+      grid-template-columns: 1fr 1.2fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .showcase-lux-v4__item:nth-child(even) {
+      direction: rtl;
+    }
+    .showcase-lux-v4__item:nth-child(even) > * {
+      direction: ltr;
+    }
+  }
+  @media (min-width: 1024px) {
+    .showcase-lux-v4 { padding: 8rem 0; }
+    .showcase-lux-v4__item { padding: 4rem 0; }
+    .showcase-lux-v4__item-title { font-size: 2rem; }
+  }
+</style>
+
+<section class="showcase-lux-v4" id="showcase">
+  <div class="showcase-lux-v4__inner">
+    <header class="showcase-lux-v4__header" data-animate="reveal-up">
+      <p class="showcase-lux-v4__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="showcase-lux-v4__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="showcase-lux-v4__list">
+      <!-- REPEAT:PROJECTS -->
+      <div class="showcase-lux-v4__item" data-animate="fade-up">
+        <div class="showcase-lux-v4__img-wrap" data-animate="clip-reveal">
+          <img src="{{PROJECT_IMAGE}}" alt="{{PROJECT_TITLE}}" loading="lazy" data-animate="image-zoom">
+        </div>
+        <div class="showcase-lux-v4__meta">
+          <span class="showcase-lux-v4__cat">{{PROJECT_CATEGORY}}</span>
+          <h3 class="showcase-lux-v4__item-title">{{PROJECT_TITLE}}</h3>
+          <p class="showcase-lux-v4__item-desc">{{PROJECT_DESCRIPTION}}</p>
+        </div>
+      </div>
+      <!-- /REPEAT:PROJECTS -->
+    </div>
+  </div>
+</section>

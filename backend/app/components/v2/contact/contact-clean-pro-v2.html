@@ -1,0 +1,171 @@
+<style>
+  .contact-clean-v2 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+  }
+  .contact-clean-v2__inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .contact-clean-v2__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .contact-clean-v2__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+  .contact-clean-v2__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0 0 0.75rem;
+  }
+  .contact-clean-v2__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+  }
+  .contact-clean-v2__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .contact-clean-v2__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .contact-clean-v2__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .contact-clean-v2__label-text {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+  .contact-clean-v2__input {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+    border-radius: 8px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+  .contact-clean-v2__input:focus {
+    border-color: var(--color-primary);
+  }
+  .contact-clean-v2__textarea {
+    min-height: 130px;
+    resize: vertical;
+  }
+  .contact-clean-v2__submit {
+    padding: 0.875rem 2rem;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+  }
+  .contact-clean-v2__submit:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .contact-clean-v2__info-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  }
+  .contact-clean-v2__info-card {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--color-primary) 3%, var(--color-bg));
+  }
+  .contact-clean-v2__info-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .contact-clean-v2__info-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-text);
+  }
+  .contact-clean-v2__info-detail {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+  }
+  @media (min-width: 640px) {
+    .contact-clean-v2__row { grid-template-columns: 1fr 1fr; }
+    .contact-clean-v2__info-row { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .contact-clean-v2 { padding: 8rem 0; }
+  }
+</style>
+
+<section class="contact-clean-v2" id="contact">
+  <div class="contact-clean-v2__inner">
+    <header class="contact-clean-v2__header" data-animate="reveal-up">
+      <p class="contact-clean-v2__label" data-animate="blur-in">{{SECTION_LABEL}}</p>
+      <h2 class="contact-clean-v2__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="contact-clean-v2__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <form class="contact-clean-v2__form" data-animate="fade-up" data-delay="0.3">
+      <div class="contact-clean-v2__row">
+        <div class="contact-clean-v2__field">
+          <label class="contact-clean-v2__label-text">{{LABEL_NAME}}</label>
+          <input class="contact-clean-v2__input" type="text" placeholder="{{PLACEHOLDER_NAME}}" required>
+        </div>
+        <div class="contact-clean-v2__field">
+          <label class="contact-clean-v2__label-text">{{LABEL_EMAIL}}</label>
+          <input class="contact-clean-v2__input" type="email" placeholder="{{PLACEHOLDER_EMAIL}}" required>
+        </div>
+      </div>
+      <div class="contact-clean-v2__field">
+        <label class="contact-clean-v2__label-text">{{LABEL_PHONE}}</label>
+        <input class="contact-clean-v2__input" type="tel" placeholder="{{PLACEHOLDER_PHONE}}">
+      </div>
+      <div class="contact-clean-v2__field">
+        <label class="contact-clean-v2__label-text">{{LABEL_MESSAGE}}</label>
+        <textarea class="contact-clean-v2__input contact-clean-v2__textarea" placeholder="{{PLACEHOLDER_MESSAGE}}"></textarea>
+      </div>
+      <button type="submit" class="contact-clean-v2__submit" data-animate="magnetic">{{CTA_TEXT}}</button>
+    </form>
+
+    <div class="contact-clean-v2__info-row" data-animate="stagger">
+      <!-- REPEAT:CONTACT_INFO -->
+      <div class="contact-clean-v2__info-card stagger-item">
+        <div class="contact-clean-v2__info-icon">{{INFO_ICON}}</div>
+        <div class="contact-clean-v2__info-text">{{INFO_TEXT}}</div>
+        <div class="contact-clean-v2__info-detail">{{INFO_DETAIL}}</div>
+      </div>
+      <!-- /REPEAT:CONTACT_INFO -->
+    </div>
+  </div>
+</section>

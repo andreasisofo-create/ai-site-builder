@@ -1,0 +1,97 @@
+<style>
+  .gallery-bold-v1 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+  }
+  .gallery-bold-v1__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .gallery-bold-v1__header {
+    margin-bottom: 3rem;
+  }
+  .gallery-bold-v1__label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .gallery-bold-v1__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    color: var(--color-text);
+    line-height: 1.1;
+    margin: 0;
+    max-width: 500px;
+  }
+  .gallery-bold-v1__masonry {
+    columns: 1;
+    column-gap: 1rem;
+  }
+  .gallery-bold-v1__item {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+  .gallery-bold-v1__item img {
+    width: 100%;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+  .gallery-bold-v1__item:hover img {
+    transform: scale(1.05);
+  }
+  .gallery-bold-v1__item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.5), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    display: flex;
+    align-items: flex-end;
+    padding: 1.5rem;
+  }
+  .gallery-bold-v1__item:hover .gallery-bold-v1__item-overlay {
+    opacity: 1;
+  }
+  .gallery-bold-v1__item-caption {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #fff;
+    font-weight: 500;
+  }
+  @media (min-width: 640px) {
+    .gallery-bold-v1__masonry { columns: 2; }
+  }
+  @media (min-width: 1024px) {
+    .gallery-bold-v1 { padding: 8rem 0; }
+    .gallery-bold-v1__masonry { columns: 3; }
+  }
+</style>
+
+<section class="gallery-bold-v1" id="gallery">
+  <div class="gallery-bold-v1__inner">
+    <header class="gallery-bold-v1__header" data-animate="reveal-up">
+      <p class="gallery-bold-v1__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="gallery-bold-v1__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="gallery-bold-v1__masonry" data-animate="stagger">
+      <!-- REPEAT:GALLERY_ITEMS -->
+      <div class="gallery-bold-v1__item stagger-item" data-animate="image-zoom">
+        <img src="{{GALLERY_IMAGE}}" alt="{{GALLERY_ALT}}" loading="lazy">
+        <div class="gallery-bold-v1__item-overlay">
+          <span class="gallery-bold-v1__item-caption">{{GALLERY_CAPTION}}</span>
+        </div>
+      </div>
+      <!-- /REPEAT:GALLERY_ITEMS -->
+    </div>
+  </div>
+</section>

@@ -1,0 +1,126 @@
+<!-- Stats Bold Visual V1: large animated counters on dramatic background -->
+<section id="stats" class="stats-bold-visual relative py-24 md:py-32 overflow-hidden">
+  <style>
+    .stats-bold-visual {
+      background: var(--color-text);
+      color: var(--color-bg);
+      position: relative;
+    }
+    .stats-bold-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--color-primary) 0%, transparent 50%, var(--color-secondary) 100%);
+      opacity: 0.15;
+    }
+    .stats-bold-visual .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+    @media (min-width: 768px) {
+      .stats-bold-visual .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 3rem;
+      }
+    }
+    .stats-bold-visual .stat-item {
+      text-align: center;
+      position: relative;
+      padding: 2rem 1rem;
+    }
+    .stats-bold-visual .stat-item::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 20%;
+      height: 60%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--color-bg)/20, transparent);
+    }
+    .stats-bold-visual .stat-item:last-child::after,
+    .stats-bold-visual .stat-item:nth-child(2)::after {
+      display: none;
+    }
+    @media (min-width: 768px) {
+      .stats-bold-visual .stat-item:nth-child(2)::after { display: block; }
+      .stats-bold-visual .stat-item:last-child::after { display: none; }
+    }
+    .stats-bold-visual .stat-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      border-radius: 1rem;
+      background: var(--color-primary);
+      color: var(--color-bg);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .stats-bold-visual .stat-number {
+      font-family: var(--font-heading);
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--color-bg), var(--color-primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    @media (min-width: 768px) {
+      .stats-bold-visual .stat-number { font-size: 4.5rem; }
+    }
+    .stats-bold-visual .stat-label {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.6;
+      font-weight: 500;
+    }
+    .stats-bold-visual .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .stats-bold-visual .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--color-bg);
+    }
+    @media (min-width: 768px) {
+      .stats-bold-visual .section-header h2 { font-size: 2.75rem; }
+    }
+    .stats-bold-visual .section-header p {
+      color: var(--color-bg);
+      opacity: 0.6;
+      max-width: 36rem;
+      margin: 1rem auto 0;
+    }
+  </style>
+
+  <div style="max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1;">
+    <div class="section-header" data-animate="fade-up">
+      <h2 data-animate="text-split" data-split-type="words">{{STATS_TITLE}}</h2>
+      <p>{{STATS_SUBTITLE}}</p>
+    </div>
+
+    <div class="stats-grid" data-animate="stagger">
+      <!-- REPEAT:STATS_ITEMS -->
+      <div class="stat-item stagger-item" data-animate="scale-in">
+        <div class="stat-icon">{{STAT_ICON}}</div>
+        <div class="stat-number" data-counter="{{STAT_NUMBER}}" data-counter-suffix="{{STAT_SUFFIX}}">0</div>
+        <p class="stat-label">{{STAT_LABEL}}</p>
+      </div>
+      <!-- /REPEAT:STATS_ITEMS -->
+    </div>
+  </div>
+
+  <!-- Dramatic background shapes -->
+  <div style="position:absolute;top:-10%;left:-5%;width:40%;height:60%;background:var(--color-primary);opacity:0.05;border-radius:50%;filter:blur(80px);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-10%;right:-5%;width:35%;height:50%;background:var(--color-secondary);opacity:0.05;border-radius:50%;filter:blur(80px);pointer-events:none;"></div>
+</section>

@@ -1,0 +1,196 @@
+<style>
+  .booking-warm-v5 {
+    padding: 5rem 0;
+    background: color-mix(in srgb, var(--color-primary) 3%, var(--color-bg));
+  }
+  .booking-warm-v5__inner {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .booking-warm-v5__header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .booking-warm-v5__emoji {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .booking-warm-v5__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    color: var(--color-text);
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .booking-warm-v5__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .booking-warm-v5__card {
+    background: var(--color-bg);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.04);
+  }
+  .booking-warm-v5__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .booking-warm-v5__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .booking-warm-v5__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .booking-warm-v5__label {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .booking-warm-v5__label-icon {
+    font-size: 1rem;
+  }
+  .booking-warm-v5__input {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 0.875rem 1rem;
+    border: 1.5px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--color-primary) 2%, var(--color-bg));
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+  .booking-warm-v5__input:focus {
+    border-color: var(--color-primary);
+  }
+  .booking-warm-v5__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+  .booking-warm-v5__submit {
+    padding: 1rem 2rem;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--color-primary) 25%, transparent);
+  }
+  .booking-warm-v5__submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+  .booking-warm-v5__info {
+    text-align: center;
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .booking-warm-v5__info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+  .booking-warm-v5__info-icon {
+    font-size: 1.1rem;
+  }
+  @media (min-width: 640px) {
+    .booking-warm-v5__row { grid-template-columns: 1fr 1fr; }
+    .booking-warm-v5__card { padding: 3rem 2.5rem; }
+  }
+  @media (min-width: 1024px) {
+    .booking-warm-v5 { padding: 7rem 0; }
+  }
+</style>
+
+<section class="booking-warm-v5" id="booking">
+  <div class="booking-warm-v5__inner">
+    <header class="booking-warm-v5__header" data-animate="fade-up">
+      <span class="booking-warm-v5__emoji">{{EMOJI_ICON}}</span>
+      <h2 class="booking-warm-v5__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="booking-warm-v5__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="booking-warm-v5__card" data-animate="fade-up" data-delay="0.2">
+      <form class="booking-warm-v5__form">
+        <div class="booking-warm-v5__row">
+          <div class="booking-warm-v5__field">
+            <label class="booking-warm-v5__label"><span class="booking-warm-v5__label-icon">{{ICON_NAME}}</span> {{LABEL_NAME}}</label>
+            <input class="booking-warm-v5__input" type="text" placeholder="{{PLACEHOLDER_NAME}}" required>
+          </div>
+          <div class="booking-warm-v5__field">
+            <label class="booking-warm-v5__label"><span class="booking-warm-v5__label-icon">{{ICON_PHONE}}</span> {{LABEL_PHONE}}</label>
+            <input class="booking-warm-v5__input" type="tel" placeholder="{{PLACEHOLDER_PHONE}}" required>
+          </div>
+        </div>
+        <div class="booking-warm-v5__row">
+          <div class="booking-warm-v5__field">
+            <label class="booking-warm-v5__label"><span class="booking-warm-v5__label-icon">{{ICON_DATE}}</span> {{LABEL_DATE}}</label>
+            <input class="booking-warm-v5__input" type="date" required>
+          </div>
+          <div class="booking-warm-v5__field">
+            <label class="booking-warm-v5__label"><span class="booking-warm-v5__label-icon">{{ICON_TIME}}</span> {{LABEL_TIME}}</label>
+            <input class="booking-warm-v5__input" type="time" required>
+          </div>
+        </div>
+        <div class="booking-warm-v5__field">
+          <label class="booking-warm-v5__label"><span class="booking-warm-v5__label-icon">{{ICON_GUESTS}}</span> {{LABEL_GUESTS}}</label>
+          <select class="booking-warm-v5__input booking-warm-v5__select" required>
+            <option value="">{{PLACEHOLDER_GUESTS}}</option>
+            <option value="1">1 persona</option>
+            <option value="2">2 persone</option>
+            <option value="3">3 persone</option>
+            <option value="4">4 persone</option>
+            <option value="5">5 persone</option>
+            <option value="6">6 persone</option>
+            <option value="8">8+ persone</option>
+          </select>
+        </div>
+        <div class="booking-warm-v5__field">
+          <label class="booking-warm-v5__label"><span class="booking-warm-v5__label-icon">{{ICON_NOTES}}</span> {{LABEL_NOTES}}</label>
+          <input class="booking-warm-v5__input" type="text" placeholder="{{PLACEHOLDER_NOTES}}">
+        </div>
+        <button type="submit" class="booking-warm-v5__submit" data-animate="magnetic">{{CTA_TEXT}}</button>
+      </form>
+    </div>
+
+    <div class="booking-warm-v5__info" data-animate="fade-up" data-delay="0.3">
+      <!-- REPEAT:BOOKING_INFO -->
+      <div class="booking-warm-v5__info-item">
+        <span class="booking-warm-v5__info-icon">{{INFO_ICON}}</span>
+        <span>{{INFO_TEXT}}</span>
+      </div>
+      <!-- /REPEAT:BOOKING_INFO -->
+    </div>
+  </div>
+</section>

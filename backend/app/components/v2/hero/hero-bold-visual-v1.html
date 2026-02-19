@@ -1,0 +1,131 @@
+<style>
+  .hero-bold-v1 {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--color-bg);
+  }
+  .hero-bold-v1__bg {
+    position: absolute;
+    inset: 0;
+    background: url('{{IMAGE_URL}}') center/cover no-repeat;
+    will-change: transform;
+  }
+  .hero-bold-v1__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%);
+  }
+  .hero-bold-v1__content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 2rem;
+    max-width: 900px;
+  }
+  .hero-bold-v1__badge {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    margin-bottom: 2rem;
+  }
+  .hero-bold-v1__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.8rem, 7vw, 6rem);
+    color: #fff;
+    line-height: 1.05;
+    margin: 0 0 1.5rem;
+    letter-spacing: -0.02em;
+  }
+  .hero-bold-v1__subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: rgba(255,255,255,0.8);
+    margin: 0 0 2.5rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-bold-v1__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .hero-bold-v1__cta {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .hero-bold-v1__cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+  .hero-bold-v1__cta--secondary {
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+  .hero-bold-v1__cta--secondary:hover {
+    border-color: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.05);
+  }
+  .hero-bold-v1__scroll {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255,255,255,0.4);
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .hero-bold-v1__scroll-line {
+    width: 1px;
+    height: 3rem;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+  }
+  @media (min-width: 768px) {
+    .hero-bold-v1__content { padding: 3rem; }
+  }
+</style>
+
+<section class="hero-bold-v1" id="hero">
+  <div class="hero-bold-v1__bg" data-animate="parallax" data-speed="0.3"></div>
+  <div class="hero-bold-v1__overlay"></div>
+  <div class="hero-bold-v1__content">
+    <span class="hero-bold-v1__badge" data-animate="fade-up">{{BADGE_TEXT}}</span>
+    <h1 class="hero-bold-v1__title" data-animate="text-split" data-split-type="chars">{{HEADLINE}}</h1>
+    <p class="hero-bold-v1__subtitle" data-animate="blur-slide" data-delay="0.3" data-duration="1.2">{{SUBTEXT}}</p>
+    <div class="hero-bold-v1__actions" data-animate="fade-up" data-delay="0.5">
+      <a href="#booking" class="hero-bold-v1__cta" data-animate="magnetic">{{CTA_TEXT}}</a>
+      <a href="#menu" class="hero-bold-v1__cta hero-bold-v1__cta--secondary" data-animate="magnetic">{{CTA_SECONDARY_TEXT}}</a>
+    </div>
+  </div>
+  <div class="hero-bold-v1__scroll" data-animate="fade-up" data-delay="1">
+    <span>Scroll</span>
+    <div class="hero-bold-v1__scroll-line"></div>
+  </div>
+</section>

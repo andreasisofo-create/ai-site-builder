@@ -1,0 +1,142 @@
+<!-- Testimonials Bold Visual V1: full-width spotlight with large quote mark -->
+<section id="testimonials" class="testimonials-bold-visual py-24 md:py-32 overflow-hidden relative">
+  <style>
+    .testimonials-bold-visual {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+    .testimonials-bold-visual .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .testimonials-bold-visual .section-header .overline {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--color-primary);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .testimonials-bold-visual .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--color-bg);
+    }
+    @media (min-width: 768px) {
+      .testimonials-bold-visual .section-header h2 { font-size: 3rem; }
+    }
+    .testimonials-bold-visual .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 768px) {
+      .testimonials-bold-visual .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .testimonials-bold-visual .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .testimonials-bold-visual .testimonial-card {
+      position: relative;
+      padding: 2.5rem 2rem;
+      border-radius: 1.25rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .testimonials-bold-visual .testimonial-card:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-4px);
+    }
+    .testimonials-bold-visual .quote-mark {
+      font-family: var(--font-heading);
+      font-size: 5rem;
+      line-height: 1;
+      color: var(--color-primary);
+      opacity: 0.3;
+      position: absolute;
+      top: 0.5rem;
+      left: 1.5rem;
+    }
+    .testimonials-bold-visual .testimonial-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+      padding-top: 1.5rem;
+    }
+    .testimonials-bold-visual .testimonial-author-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: relative;
+      z-index: 1;
+    }
+    .testimonials-bold-visual .testimonial-avatar {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--color-primary);
+    }
+    .testimonials-bold-visual .testimonial-author {
+      font-family: var(--font-heading);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--color-bg);
+    }
+    .testimonials-bold-visual .testimonial-role {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+    }
+    .testimonials-bold-visual .stars {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    .testimonials-bold-visual .stars svg {
+      width: 1rem;
+      height: 1rem;
+      fill: var(--color-primary);
+    }
+  </style>
+
+  <div style="max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1;">
+    <div class="section-header" data-animate="fade-up">
+      <p class="overline">Testimonianze</p>
+      <h2 data-animate="text-split" data-split-type="words">{{TESTIMONIALS_TITLE}}</h2>
+    </div>
+
+    <div class="testimonials-grid" data-animate="stagger">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="testimonial-card stagger-item" data-animate="scale-in">
+        <div class="quote-mark">&ldquo;</div>
+        <div class="stars">
+          <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+          <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+          <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+          <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+          <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+        </div>
+        <p class="testimonial-text">{{TESTIMONIAL_TEXT}}</p>
+        <div class="testimonial-author-wrap">
+          <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="testimonial-avatar" loading="lazy">
+          <div>
+            <p class="testimonial-author">{{TESTIMONIAL_AUTHOR}}</p>
+            <p class="testimonial-role">{{TESTIMONIAL_ROLE}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:-20%;left:10%;width:40%;height:60%;background:var(--color-primary);opacity:0.04;border-radius:50%;filter:blur(80px);pointer-events:none;"></div>
+</section>

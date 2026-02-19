@@ -1,0 +1,162 @@
+<style>
+  .process-bold-v1 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+    position: relative;
+  }
+  .process-bold-v1__bg {
+    position: absolute;
+    inset: 0;
+    background: url('{{BACKGROUND_IMAGE}}') center/cover no-repeat;
+    opacity: 0.08;
+    will-change: transform;
+  }
+  .process-bold-v1__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .process-bold-v1__header {
+    margin-bottom: 4rem;
+  }
+  .process-bold-v1__label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .process-bold-v1__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    color: var(--color-text);
+    line-height: 1.1;
+    margin: 0;
+    max-width: 700px;
+  }
+  .process-bold-v1__timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+  .process-bold-v1__line {
+    display: none;
+  }
+  .process-bold-v1__step {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .process-bold-v1__number-wrap {
+    position: relative;
+  }
+  .process-bold-v1__number {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+  }
+  .process-bold-v1__connector {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: calc(100% + 3rem);
+    background: linear-gradient(to bottom, var(--color-primary), transparent);
+    display: none;
+  }
+  .process-bold-v1__step:not(:last-child) .process-bold-v1__connector {
+    display: block;
+  }
+  .process-bold-v1__content {
+    padding: 0.5rem 0;
+  }
+  .process-bold-v1__step-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--color-text);
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+  }
+  .process-bold-v1__step-desc {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+    max-width: 500px;
+  }
+  @media (min-width: 768px) {
+    .process-bold-v1__timeline {
+      flex-direction: row;
+      gap: 0;
+      align-items: flex-start;
+    }
+    .process-bold-v1__line {
+      display: block;
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      right: 30px;
+      height: 2px;
+      background: linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 20%, transparent));
+      z-index: 0;
+    }
+    .process-bold-v1__step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .process-bold-v1__connector { display: none; }
+    .process-bold-v1__content { padding: 1.5rem 1rem 0; }
+    .process-bold-v1__step-desc { max-width: 280px; margin: 0 auto; }
+  }
+  @media (min-width: 1024px) {
+    .process-bold-v1 { padding: 8rem 0; }
+  }
+</style>
+
+<section class="process-bold-v1" id="process">
+  <div class="process-bold-v1__bg" data-animate="parallax" data-speed="0.3"></div>
+  <div class="process-bold-v1__inner">
+    <header class="process-bold-v1__header" data-animate="reveal-up">
+      <p class="process-bold-v1__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="process-bold-v1__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="process-bold-v1__timeline" data-animate="stagger">
+      <div class="process-bold-v1__line"></div>
+      <!-- REPEAT:STEPS -->
+      <div class="process-bold-v1__step stagger-item">
+        <div class="process-bold-v1__number-wrap">
+          <div class="process-bold-v1__number" data-animate="scale-in">{{STEP_NUMBER}}</div>
+          <div class="process-bold-v1__connector"></div>
+        </div>
+        <div class="process-bold-v1__content">
+          <h3 class="process-bold-v1__step-title">{{STEP_TITLE}}</h3>
+          <p class="process-bold-v1__step-desc">{{STEP_DESCRIPTION}}</p>
+        </div>
+      </div>
+      <!-- /REPEAT:STEPS -->
+    </div>
+  </div>
+</section>

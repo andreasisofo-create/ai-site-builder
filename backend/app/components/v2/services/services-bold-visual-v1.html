@@ -1,0 +1,131 @@
+<style>
+  .services-bold-v1 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+  }
+  .services-bold-v1__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .services-bold-v1__header {
+    margin-bottom: 3.5rem;
+  }
+  .services-bold-v1__label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .services-bold-v1__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    color: var(--color-text);
+    line-height: 1.1;
+    margin: 0 0 1rem;
+    max-width: 500px;
+  }
+  .services-bold-v1__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 450px;
+  }
+  .services-bold-v1__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .services-bold-v1__card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+  }
+  .services-bold-v1__card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+  .services-bold-v1__card:hover img {
+    transform: scale(1.08);
+  }
+  .services-bold-v1__card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 60%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+    transition: background 0.4s;
+  }
+  .services-bold-v1__card:hover .services-bold-v1__card-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 70%);
+  }
+  .services-bold-v1__card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .services-bold-v1__card-title {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    color: #fff;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+  .services-bold-v1__card-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+  }
+  .services-bold-v1__card:hover .services-bold-v1__card-text {
+    max-height: 100px;
+  }
+  @media (min-width: 640px) {
+    .services-bold-v1__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .services-bold-v1 { padding: 8rem 0; }
+    .services-bold-v1__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .services-bold-v1__card { aspect-ratio: 3/4; }
+  }
+</style>
+
+<section class="services-bold-v1" id="services">
+  <div class="services-bold-v1__inner">
+    <header class="services-bold-v1__header" data-animate="reveal-up">
+      <p class="services-bold-v1__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="services-bold-v1__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="services-bold-v1__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="services-bold-v1__grid" data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <article class="services-bold-v1__card stagger-item">
+        <img src="{{SERVICE_IMAGE}}" alt="{{SERVICE_TITLE}}" loading="lazy">
+        <div class="services-bold-v1__card-overlay">
+          <span class="services-bold-v1__card-icon">{{SERVICE_ICON}}</span>
+          <h3 class="services-bold-v1__card-title">{{SERVICE_TITLE}}</h3>
+          <p class="services-bold-v1__card-text">{{SERVICE_DESCRIPTION}}</p>
+        </div>
+      </article>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

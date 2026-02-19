@@ -1,0 +1,174 @@
+<style>
+  .about-bold-v1 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .about-bold-v1__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .about-bold-v1__header {
+    margin-bottom: 4rem;
+  }
+  .about-bold-v1__label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .about-bold-v1__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    color: var(--color-text);
+    line-height: 1.1;
+    margin: 0;
+    max-width: 600px;
+  }
+  .about-bold-v1__magazine {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .about-bold-v1__img-block {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16/10;
+  }
+  .about-bold-v1__img-block img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .about-bold-v1__img-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  }
+  .about-bold-v1__img-overlay-text {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: 700;
+  }
+  .about-bold-v1__text-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+  .about-bold-v1__text {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    line-height: 1.8;
+    margin: 0 0 1.5rem;
+  }
+  .about-bold-v1__highlight {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    color: var(--color-text);
+    line-height: 1.3;
+    font-weight: 700;
+    border-left: 4px solid var(--color-primary);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+  }
+  .about-bold-v1__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .about-bold-v1__stat {
+    text-align: center;
+    padding: 1.5rem;
+    background: color-mix(in srgb, var(--color-primary) 5%, var(--color-bg));
+    border-radius: 12px;
+  }
+  .about-bold-v1__stat-num {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-primary);
+  }
+  .about-bold-v1__stat-label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.25rem;
+  }
+  .about-bold-v1__second-img {
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    margin-top: 1rem;
+  }
+  .about-bold-v1__second-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .about-bold-v1__magazine {
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2rem;
+    }
+    .about-bold-v1__img-block { aspect-ratio: 3/4; }
+    .about-bold-v1__stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .about-bold-v1 { padding: 8rem 0; }
+    .about-bold-v1__magazine { gap: 3rem; }
+  }
+</style>
+
+<section class="about-bold-v1" id="about">
+  <div class="about-bold-v1__inner">
+    <header class="about-bold-v1__header" data-animate="reveal-up">
+      <p class="about-bold-v1__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="about-bold-v1__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="about-bold-v1__magazine">
+      <div>
+        <div class="about-bold-v1__img-block" data-animate="clip-reveal">
+          <img src="{{IMAGE_URL}}" alt="{{IMAGE_ALT}}" loading="lazy">
+          <div class="about-bold-v1__img-overlay">
+            <p class="about-bold-v1__img-overlay-text">{{IMAGE_CAPTION}}</p>
+          </div>
+        </div>
+        <div class="about-bold-v1__second-img" data-animate="fade-up" data-delay="0.3">
+          <img src="{{IMAGE_URL_2}}" alt="{{IMAGE_ALT_2}}" loading="lazy" data-animate="image-zoom">
+        </div>
+      </div>
+
+      <div class="about-bold-v1__text-block">
+        <p class="about-bold-v1__text" data-animate="fade-up" data-delay="0.2">{{ABOUT_TEXT}}</p>
+        <blockquote class="about-bold-v1__highlight" data-animate="fade-left" data-delay="0.3">{{ABOUT_QUOTE}}</blockquote>
+        <p class="about-bold-v1__text" data-animate="fade-up" data-delay="0.4">{{ABOUT_TEXT_2}}</p>
+
+        <div class="about-bold-v1__stats" data-animate="stagger">
+          <!-- REPEAT:STATS -->
+          <div class="about-bold-v1__stat stagger-item">
+            <div class="about-bold-v1__stat-num" data-counter="{{STAT_NUMBER}}">0</div>
+            <div class="about-bold-v1__stat-label">{{STAT_LABEL}}</div>
+          </div>
+          <!-- /REPEAT:STATS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

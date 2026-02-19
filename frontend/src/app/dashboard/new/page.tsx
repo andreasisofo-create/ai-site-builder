@@ -21,18 +21,119 @@ import {
   ChevronRightIcon,
   PlusIcon,
   TrashIcon,
+  VideoCameraIcon,
+  SwatchIcon,
+  MapPinIcon,
+  PhoneIcon,
+  EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 import GenerationExperience, { type PreviewData } from "@/components/GenerationExperience";
 import toast from "react-hot-toast";
-import { createSite, generateWebsite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus, analyzeImage } from "@/lib/api";
+import { createSite, generateWebsite, generateWebsiteV2, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus, analyzeImage } from "@/lib/api";
 import {
   TEMPLATE_CATEGORIES, TemplateCategory, TemplateStyle,
   SECTION_LABELS, STYLE_OPTIONS, CTA_OPTIONS, ALL_SECTIONS, STYLE_TO_MOOD,
   generateStylePreviewHtml, findStyleById,
   getSectionLabels, getStyleOptions, getCtaOptions, getAllSections,
   getCategoryLabel, getStyleLabel, getStyleDescription,
+  V2_CATEGORIES, V2Category, getV2CategoryName, getV2CategoryDescription,
 } from "@/lib/templates";
 import { useLanguage } from "@/lib/i18n";
+
+// ============ COLOR PALETTE UTILS ============
+
+function hexToHsl(hex: string): [number, number, number] {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  s /= 100; l /= 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, "0");
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+function generatePaletteFromPrimary(primary: string): string[] {
+  const [h, s, l] = hexToHsl(primary);
+  return [
+    primary,
+    hslToHex((h + 30) % 360, Math.min(s + 10, 100), Math.max(l - 10, 20)),
+    hslToHex((h + 180) % 360, Math.max(s - 20, 20), 60),
+    hslToHex(h, Math.max(s - 40, 5), 97),
+    hslToHex(h, Math.max(s - 30, 10), 12),
+  ];
+}
+
+// Pre-built palettes per category
+const CATEGORY_PALETTES: Record<string, string[][]> = {
+  ristorante: [
+    ["#b8860b", "#8b4513", "#d4a843", "#faf5eb", "#1a1a0e"],
+    ["#8b0000", "#5c1a1a", "#c4564a", "#fdf2f2", "#1a0a0a"],
+    ["#2d5016", "#4a7c23", "#f5c542", "#f8f6f0", "#0d1a08"],
+  ],
+  studio_professionale: [
+    ["#1a3c5e", "#0f2a40", "#3498db", "#f0f4f8", "#0a1520"],
+    ["#2c3e50", "#1a252f", "#e67e22", "#f5f5f5", "#111111"],
+    ["#1a365d", "#2d4a6f", "#4299e1", "#edf2f7", "#0d1b2a"],
+  ],
+  portfolio: [
+    ["#2d3436", "#636e72", "#fdcb6e", "#f9f9f9", "#0d0d0d"],
+    ["#1a1a2e", "#16213e", "#e94560", "#f5f5f5", "#0f0f1a"],
+    ["#2d3436", "#00b894", "#dfe6e9", "#fafafa", "#0d0d0d"],
+  ],
+  fitness: [
+    ["#e84393", "#a83279", "#ffeaa7", "#f9f0f5", "#1a0a14"],
+    ["#ff6b35", "#cc4400", "#ffd166", "#fff8f0", "#1a0e06"],
+    ["#00b894", "#008b6e", "#fdcb6e", "#f0faf6", "#0a1a14"],
+  ],
+  bellezza: [
+    ["#c5a04b", "#a0813a", "#f5e6cc", "#faf8f4", "#1a1508"],
+    ["#d4a0a0", "#b07070", "#f5d5d5", "#fdf5f5", "#1a0a0a"],
+    ["#8e7cc3", "#6b5b9a", "#d9cef2", "#f8f5fd", "#140e1f"],
+  ],
+  salute: [
+    ["#3B82F6", "#2563EB", "#93C5FD", "#f0f7ff", "#0c1a30"],
+    ["#10B981", "#059669", "#6EE7B7", "#f0fdf4", "#0a1a14"],
+    ["#0EA5E9", "#0284C7", "#7DD3FC", "#f0f9ff", "#0c1520"],
+  ],
+  saas: [
+    ["#6c5ce7", "#5541d9", "#a29bfe", "#f3f0ff", "#0f0a20"],
+    ["#0984e3", "#0670c4", "#74b9ff", "#f0f7ff", "#081a30"],
+    ["#00cec9", "#00b5b0", "#81ecec", "#f0fdfd", "#0a1a1a"],
+  ],
+  ecommerce: [
+    ["#10B981", "#059669", "#6EE7B7", "#f0fdf4", "#0a1a14"],
+    ["#F59E0B", "#D97706", "#FCD34D", "#fffbeb", "#1a1508"],
+    ["#8B5CF6", "#7C3AED", "#C4B5FD", "#f5f3ff", "#130e20"],
+  ],
+  artigiani: [
+    ["#d35400", "#b84500", "#f39c12", "#fdf5ee", "#1a0e00"],
+    ["#2980b9", "#1a5d8c", "#e67e22", "#f0f7fb", "#0c1a28"],
+    ["#27ae60", "#1e8449", "#f1c40f", "#f0faf4", "#0a1a0e"],
+  ],
+  agenzia: [
+    ["#8B5CF6", "#7C3AED", "#C4B5FD", "#f5f3ff", "#130e20"],
+    ["#EC4899", "#DB2777", "#F9A8D4", "#fdf2f8", "#1a0a14"],
+    ["#3B82F6", "#2563EB", "#93C5FD", "#eff6ff", "#0c1a30"],
+  ],
+};
 
 // ============ COMPONENT ============
 
@@ -51,6 +152,8 @@ function NewProjectContent() {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | null>(initialCategory);
   const [selectedStyle, setSelectedStyle] = useState<TemplateStyle | null>(initialStyle);
+  const [selectedV2Category, setSelectedV2Category] = useState<V2Category | null>(null);
+  const [colorPalette, setColorPalette] = useState<string[]>(["#3b82f6", "#2563eb", "#93c5fd", "#f0f7ff", "#0c1a30"]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [createdSiteId, setCreatedSiteId] = useState<number | null>(null);
   const [showAdvancedTemplate, setShowAdvancedTemplate] = useState(true);
@@ -77,6 +180,8 @@ function NewProjectContent() {
     referenceImages: [null, null] as (string | null)[],
     referenceUrls: "",
     preferredStyle: "",
+    heroType: "simple" as "video" | "gallery" | "simple",
+    heroVideoUrl: "",
     selectedSections: ALL_SECTIONS.filter(s => s.default).map(s => s.id),
     sectionTexts: {} as Record<string, string>,
     primaryCta: "contact",
@@ -99,9 +204,9 @@ function NewProjectContent() {
 
   // Steps definition - 3 step wizard
   const WIZARD_STEPS = [
-    { id: 0, title: "Brand & Info", icon: BuildingStorefrontIcon },
-    { id: 1, title: language === "en" ? "Inspiration" : "Ispirazione", icon: PaintBrushIcon },
-    { id: 2, title: language === "en" ? "Content" : "Contenuti", icon: DocumentTextIcon },
+    { id: 0, title: language === "en" ? "Your Brand" : "Il tuo Brand", icon: BuildingStorefrontIcon },
+    { id: 1, title: language === "en" ? "Content" : "Contenuti", icon: DocumentTextIcon },
+    { id: 2, title: language === "en" ? "Review & Generate" : "Rivedi & Genera", icon: SparklesIcon },
   ];
 
   // Logo upload
@@ -346,21 +451,34 @@ function NewProjectContent() {
         } catch { /* non-blocking */ }
       }
 
-      const generateResult = await generateWebsite({
-        business_name: formData.businessName,
-        business_description: fullDescription,
-        sections: formData.selectedSections,
-        style_preferences: stylePrefs,
-        logo_url: formData.logo || undefined,
-        reference_image_url: refImageUrl || (photoUrls.length > 0 ? photoUrls[0] : undefined),
-        reference_analysis: refAnalysis,
-        reference_urls: refUrlList.length > 0 ? refUrlList : undefined,
-        photo_urls: photoUrls.length > 0 ? photoUrls : undefined,
-        contact_info: Object.keys(contactInfo).length > 0 ? contactInfo : undefined,
-        site_id: site.id,
-        template_style_id: selectedStyle?.id,
-        generate_images: formData.generateImages,
-      });
+      // Use V2 pipeline when a V2 category is selected, otherwise fallback to V1
+      let generateResult: { success: boolean; error?: string };
+      if (selectedV2Category) {
+        generateResult = await generateWebsiteV2({
+          category: selectedV2Category.slug,
+          description: fullDescription,
+          business_name: formData.businessName,
+          logo_base64: formData.logo || undefined,
+          color_primary: colorPalette[0],
+          client_ref: `site-${site.id}`,
+        });
+      } else {
+        generateResult = await generateWebsite({
+          business_name: formData.businessName,
+          business_description: fullDescription,
+          sections: formData.selectedSections,
+          style_preferences: stylePrefs,
+          logo_url: formData.logo || undefined,
+          reference_image_url: refImageUrl || (photoUrls.length > 0 ? photoUrls[0] : undefined),
+          reference_analysis: refAnalysis,
+          reference_urls: refUrlList.length > 0 ? refUrlList : undefined,
+          photo_urls: photoUrls.length > 0 ? photoUrls : undefined,
+          contact_info: Object.keys(contactInfo).length > 0 ? contactInfo : undefined,
+          site_id: site.id,
+          template_style_id: selectedStyle?.id,
+          generate_images: formData.generateImages,
+        });
+      }
 
       if (!generateResult.success) throw new Error(generateResult.error || (language === "en" ? "Error starting generation" : "Errore nell'avvio della generazione"));
 
@@ -396,11 +514,30 @@ function NewProjectContent() {
 
   const canProceed = () => {
     switch (currentStep) {
-      case 0: return !!(formData.businessName.trim() && formData.description.trim());
-      case 1: return true; // Everything optional
+      case 0: return !!(formData.businessName.trim() && formData.description.trim() && selectedV2Category);
+      case 1: return formData.selectedSections.length > 0;
       case 2: return formData.selectedSections.length > 0;
       default: return true;
     }
+  };
+
+  // When V2 category changes, update palette and sections
+  const handleV2CategorySelect = (cat: V2Category) => {
+    setSelectedV2Category(cat);
+    setColorPalette(generatePaletteFromPrimary(cat.defaultColor));
+    // Auto-set sections from blueprint
+    setFormData(prev => ({
+      ...prev,
+      selectedSections: cat.sectionsRequired,
+    }));
+  };
+
+  const handlePrimaryColorChange = (color: string) => {
+    setColorPalette(generatePaletteFromPrimary(color));
+  };
+
+  const handlePaletteSelect = (palette: string[]) => {
+    setColorPalette([...palette]);
   };
 
   return (
@@ -447,17 +584,18 @@ function NewProjectContent() {
       <main className="pt-24 pb-32 px-6">
         <div className="max-w-5xl mx-auto">
 
-          {/* ===== STEP 0: Brand & Info ===== */}
+          {/* ===== STEP 0: Il tuo Brand ===== */}
           {currentStep === 0 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-12">
-                <h1 className="text-3xl font-bold mb-3">Brand & Info</h1>
-                <p className="text-slate-400">{language === "en" ? "Tell us about your business to personalize the site" : "Raccontaci del tuo business per personalizzare il sito"}</p>
+                <h1 className="text-3xl font-bold mb-3">{language === "en" ? "Your Brand" : "Il tuo Brand"}</h1>
+                <p className="text-slate-400">{language === "en" ? "Tell us about your business — the AI will design everything else" : "Raccontaci della tua attivita' — l'AI pensera' a tutto il resto"}</p>
               </div>
 
-              <div className="max-w-2xl mx-auto space-y-6">
+              <div className="max-w-3xl mx-auto space-y-8">
+                {/* Nome del sito */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Business Name" : "Nome del Business"} <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Site Name" : "Nome del sito"} <span className="text-red-400">*</span></label>
                   <input
                     type="text"
                     value={formData.businessName}
@@ -467,248 +605,150 @@ function NewProjectContent() {
                   />
                 </div>
 
+                {/* Descrizione attivita' */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Business description" : "Descrizione dell'attivita'"} <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Describe your business" : "Descrivi la tua attivita'"} <span className="text-red-400">*</span></label>
                   <textarea
                     value={formData.description}
                     onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder={language === "en" ? "Describe what you do, your services, your story... The more details you provide, the better the result." : "Descrivi cosa fai, i tuoi servizi, la tua storia... Piu' dettagli fornisci, migliore sara' il risultato."}
-                    rows={5}
+                    placeholder={language === "en" ? "Describe in a few words what you do, your services, your specialty..." : "Descrivi in poche parole cosa fai, i tuoi servizi, la tua specialita'..."}
+                    rows={4}
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all resize-none"
                   />
                 </div>
 
-                {/* Logo Upload */}
+                {/* Categoria — visual card grid */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Logo (optional)" : "Logo (opzionale)"}</label>
-                  <div
-                    onClick={() => logoInputRef.current?.click()}
-                    className="relative aspect-video max-w-xs rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer flex flex-col items-center justify-center gap-3"
-                  >
-                    {formData.logo ? (
-                      <>
-                        <Image src={formData.logo} alt="Logo" fill className="object-contain p-4" />
-                        <button
-                          onClick={e => { e.stopPropagation(); setFormData(prev => ({ ...prev, logo: null })); }}
-                          className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-lg hover:bg-black/80"
-                        >
-                          <XMarkIcon className="w-4 h-4" />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <CloudArrowUpIcon className="w-10 h-10 text-slate-500" />
-                        <p className="text-sm text-slate-400">{language === "en" ? "Click to upload logo" : "Clicca per caricare il logo"}</p>
-                        <p className="text-xs text-slate-600">PNG, JPG, SVG (max 2MB)</p>
-                      </>
-                    )}
-                  </div>
-                  <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Slogan / Tagline (optional)" : "Slogan / Tagline (opzionale)"}</label>
-                  <input
-                    type="text"
-                    value={formData.tagline}
-                    onChange={e => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
-                    placeholder={language === "en" ? "e.g. The true taste of tradition" : "es. Il vero gusto della tradizione"}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ===== STEP 1: Ispirazione ===== */}
-          {currentStep === 1 && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="text-center mb-12">
-                <h1 className="text-3xl font-bold mb-3">{language === "en" ? "Inspiration" : "Ispirazione"}</h1>
-                <p className="text-slate-400">{language === "en" ? "Help us understand the look you want (all optional)" : "Aiutaci a capire il look che desideri (tutto opzionale)"}</p>
-              </div>
-
-              <div className="max-w-3xl mx-auto space-y-8">
-                {/* Reference Images */}
-                <div>
-                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Reference screenshots (optional)" : "Screenshot di riferimento (opzionale)"}</label>
-                  <div className="grid grid-cols-2 gap-4">
-                    {[0, 1].map(idx => (
-                      <div
-                        key={idx}
-                        onClick={() => (idx === 0 ? refImageInput1 : refImageInput2).current?.click()}
-                        className="relative aspect-video rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
-                      >
-                        {formData.referenceImages[idx] ? (
-                          <>
-                            <Image src={formData.referenceImages[idx]!} alt={language === "en" ? `Reference ${idx + 1}` : `Riferimento ${idx + 1}`} fill className="object-cover rounded-xl" />
-                            <button
-                              onClick={e => {
-                                e.stopPropagation();
-                                setFormData(prev => {
-                                  const newRefs = [...prev.referenceImages];
-                                  newRefs[idx] = null;
-                                  return { ...prev, referenceImages: newRefs };
-                                });
-                              }}
-                              className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-lg hover:bg-black/80 z-10"
-                            >
-                              <XMarkIcon className="w-4 h-4" />
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <CloudArrowUpIcon className="w-8 h-8 text-slate-500" />
-                            <p className="text-xs text-slate-400">Screenshot #{idx + 1}</p>
-                          </>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <input ref={refImageInput1} type="file" accept="image/*" onChange={handleReferenceImageUpload(0)} className="hidden" />
-                  <input ref={refImageInput2} type="file" accept="image/*" onChange={handleReferenceImageUpload(1)} className="hidden" />
-                  <p className="text-xs text-slate-500 mt-2">{language === "en" ? "Upload screenshots of websites you like as visual reference" : "Carica screenshot di siti che ti piacciono come riferimento visivo"}</p>
-                </div>
-
-                {/* Reference URLs */}
-                <div>
-                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Favorite site URLs (optional)" : "URL siti preferiti (opzionale)"}</label>
-                  <input
-                    type="text"
-                    value={formData.referenceUrls}
-                    onChange={e => setFormData(prev => ({ ...prev, referenceUrls: e.target.value }))}
-                    placeholder={language === "en" ? "e.g. www.example1.com, www.example2.com" : "es. www.esempio1.it, www.esempio2.it"}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
-                  />
-                </div>
-
-                {/* Preferred Style */}
-                <div>
-                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Preferred style" : "Stile preferito"}</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {getStyleOptions(language).map(style => (
+                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Category" : "Categoria"} <span className="text-red-400">*</span></label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                    {V2_CATEGORIES.map(cat => (
                       <button
-                        key={style.id}
-                        onClick={() => setFormData(prev => ({ ...prev, preferredStyle: prev.preferredStyle === style.id ? "" : style.id }))}
-                        className={`px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                          formData.preferredStyle === style.id
-                            ? "border-blue-500 bg-blue-500/10 text-blue-400"
-                            : "border-white/10 text-slate-300 hover:border-white/30"
+                        key={cat.slug}
+                        onClick={() => handleV2CategorySelect(cat)}
+                        className={`group relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all text-center ${
+                          selectedV2Category?.slug === cat.slug
+                            ? "border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/10"
+                            : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
                         }`}
                       >
-                        {style.label}
+                        <span className="text-2xl">{cat.icon}</span>
+                        <span className={`text-sm font-medium ${selectedV2Category?.slug === cat.slug ? "text-blue-300" : "text-white"}`}>
+                          {getV2CategoryName(cat, language)}
+                        </span>
+                        <span className="text-[10px] text-slate-500 leading-tight">
+                          {getV2CategoryDescription(cat, language)}
+                        </span>
+                        {selectedV2Category?.slug === cat.slug && (
+                          <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                            <CheckIcon className="w-3 h-3 text-white" />
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Collapsible Advanced Template */}
-                <div className="border border-white/10 rounded-2xl overflow-hidden">
-                  <button
-                    onClick={() => setShowAdvancedTemplate(!showAdvancedTemplate)}
-                    className="w-full flex items-center justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <PaintBrushIcon className="w-5 h-5 text-violet-400" />
-                      <span className="font-medium">{language === "en" ? "Advanced template" : "Template avanzato"}</span>
-                      <span className="text-xs text-slate-500">({language === "en" ? "optional" : "opzionale"})</span>
-                    </div>
-                    <ChevronRightIcon className={`w-4 h-4 text-slate-400 transition-transform ${showAdvancedTemplate ? "rotate-90" : ""}`} />
-                  </button>
-
-                  {showAdvancedTemplate && (
-                    <div className="px-6 pb-6 space-y-6 border-t border-white/5">
-                      {/* Category selector */}
-                      <div className="pt-4">
-                        <label className="block text-xs text-slate-400 mb-3">{language === "en" ? "Choose category" : "Scegli categoria"}</label>
-                        <div className="flex flex-wrap gap-2">
-                          {TEMPLATE_CATEGORIES.map(category => (
-                            <button
-                              key={category.id}
-                              onClick={() => selectCategory(category)}
-                              className={`px-3 py-2 rounded-lg text-sm flex items-center gap-2 transition-all ${
-                                selectedCategory?.id === category.id
-                                  ? "bg-blue-500/20 border border-blue-500/50 text-blue-300"
-                                  : "bg-white/5 border border-white/10 text-slate-400 hover:text-white"
-                              }`}
-                            >
-                              <span>{category.icon}</span>
-                              <span>{getCategoryLabel(category, language)}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Style cards + Preview */}
-                      {selectedCategory && (
-                        <div className="space-y-4">
-                          <label className="block text-xs text-slate-400">{language === "en" ? `Choose style for ${getCategoryLabel(selectedCategory, language)}` : `Scegli stile per ${getCategoryLabel(selectedCategory, language)}`}</label>
-                          <div className="flex gap-4 h-[50vh]">
-                            {/* Style sidebar */}
-                            <div className="w-56 flex-shrink-0 space-y-2 overflow-y-auto pr-2">
-                              {selectedCategory.styles.map(style => (
-                                <button
-                                  key={style.id}
-                                  onClick={() => selectStyle(style)}
-                                  className={`w-full group relative rounded-xl overflow-hidden border-2 transition-all text-left ${
-                                    selectedStyle?.id === style.id
-                                      ? "border-blue-500 shadow-lg shadow-blue-500/20"
-                                      : "border-white/10 hover:border-white/30"
-                                  }`}
-                                >
-                                  <div className="aspect-[16/9] relative">
-                                    <Image src={style.image} alt={style.label} fill className="object-cover" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                                  </div>
-                                  <div className="p-2 bg-[#111]">
-                                    <div className="flex items-center gap-1.5 mb-0.5">
-                                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: style.primaryColor }} />
-                                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: style.secondaryColor }} />
-                                      <span className="text-xs font-medium text-white ml-auto">{getStyleLabel(style, language)}</span>
-                                    </div>
-                                    <p className="text-[10px] text-slate-400">{getStyleDescription(style, language)}</p>
-                                  </div>
-                                  {selectedStyle?.id === style.id && (
-                                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                                      <CheckIcon className="w-3 h-3 text-white" />
-                                    </div>
-                                  )}
-                                </button>
-                              ))}
-                            </div>
-
-                            {/* Preview */}
-                            <div className="flex-1 rounded-xl border border-white/10 overflow-hidden bg-[#111] flex flex-col">
-                              {selectedStyle ? (
-                                <>
-                                  <div className="flex items-center gap-3 px-3 py-2 border-b border-white/10 bg-[#0a0a0a]">
-                                    <div className="flex gap-1.5">
-                                      <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-                                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-                                      <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-                                    </div>
-                                    <div className="flex-1 text-center">
-                                      <span className="text-[11px] text-slate-400">{getStyleLabel(selectedStyle, language)}</span>
-                                    </div>
-                                  </div>
-                                  <div className="flex-1 overflow-hidden">
-                                    <iframe
-                                      srcDoc={generateStylePreviewHtml(selectedStyle, selectedCategory.label)}
-                                      className="w-full h-full border-0"
-                                      title={`Preview ${selectedStyle.label}`}
-                                      sandbox="allow-same-origin"
-                                    />
-                                  </div>
-                                </>
-                              ) : (
-                                <div className="flex-1 flex items-center justify-center text-slate-500">
-                                  <p className="text-sm">{language === "en" ? "Select a style for preview" : "Seleziona uno stile per l'anteprima"}</p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
+                {/* Logo Upload */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Logo (optional)" : "Logo (opzionale)"}</label>
+                  <div className="flex items-start gap-4">
+                    <div
+                      onClick={() => logoInputRef.current?.click()}
+                      className="relative w-32 h-32 flex-shrink-0 rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
+                    >
+                      {formData.logo ? (
+                        <>
+                          <Image src={formData.logo} alt="Logo" fill className="object-contain p-3" />
+                          <button
+                            onClick={e => { e.stopPropagation(); setFormData(prev => ({ ...prev, logo: null })); }}
+                            className="absolute top-1 right-1 p-1 bg-black/60 rounded-lg hover:bg-black/80"
+                          >
+                            <XMarkIcon className="w-3 h-3" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <CloudArrowUpIcon className="w-8 h-8 text-slate-500" />
+                          <p className="text-[10px] text-slate-500">PNG, JPG, SVG</p>
+                        </>
                       )}
+                    </div>
+                    <div className="text-xs text-slate-500 pt-2">
+                      <p>{language === "en" ? "Upload your logo so the AI can extract colors and style." : "Carica il tuo logo — l'AI ne estrarra' colori e stile."}</p>
+                      <p className="mt-1 text-slate-600">Max 2MB</p>
+                    </div>
+                  </div>
+                  <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                </div>
+
+                {/* Palette Colori */}
+                <div>
+                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Color Palette" : "Palette Colori"}</label>
+
+                  {/* Primary color picker */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <label
+                        className="w-12 h-12 rounded-xl border-2 border-white/20 cursor-pointer overflow-hidden transition-all hover:border-white/40"
+                        style={{ backgroundColor: colorPalette[0] }}
+                      >
+                        <input
+                          type="color"
+                          value={colorPalette[0]}
+                          onChange={e => handlePrimaryColorChange(e.target.value)}
+                          className="opacity-0 w-full h-full cursor-pointer"
+                        />
+                      </label>
+                      <div>
+                        <p className="text-sm text-white font-medium">{language === "en" ? "Primary color" : "Colore primario"}</p>
+                        <p className="text-xs text-slate-500 font-mono">{colorPalette[0]}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Auto-generated palette preview */}
+                  <div className="flex items-center gap-2 mb-4">
+                    {colorPalette.map((color, idx) => (
+                      <div key={idx} className="flex flex-col items-center gap-1">
+                        <div
+                          className={`w-14 h-14 rounded-xl border-2 transition-all ${idx === 0 ? "border-blue-500" : "border-white/10"}`}
+                          style={{ backgroundColor: color }}
+                        />
+                        <span className="text-[9px] text-slate-600 font-mono">{color}</span>
+                        <span className="text-[9px] text-slate-500">
+                          {idx === 0 ? (language === "en" ? "Primary" : "Primario")
+                            : idx === 1 ? (language === "en" ? "Secondary" : "Secondario")
+                            : idx === 2 ? "Accent"
+                            : idx === 3 ? (language === "en" ? "Background" : "Sfondo")
+                            : (language === "en" ? "Text" : "Testo")}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Suggested palettes per category */}
+                  {selectedV2Category && CATEGORY_PALETTES[selectedV2Category.slug] && (
+                    <div>
+                      <p className="text-xs text-slate-400 mb-2">
+                        {language === "en" ? "Suggested palettes for" : "Palette suggerite per"} {getV2CategoryName(selectedV2Category, language)}:
+                      </p>
+                      <div className="flex gap-3">
+                        {CATEGORY_PALETTES[selectedV2Category.slug].map((palette, pidx) => (
+                          <button
+                            key={pidx}
+                            onClick={() => handlePaletteSelect(palette)}
+                            className={`flex rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                              colorPalette[0] === palette[0] && colorPalette[1] === palette[1]
+                                ? "border-blue-500 shadow-lg shadow-blue-500/20"
+                                : "border-white/10 hover:border-white/30"
+                            }`}
+                          >
+                            {palette.map((c, cidx) => (
+                              <div key={cidx} className="w-8 h-10" style={{ backgroundColor: c }} />
+                            ))}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -716,45 +756,185 @@ function NewProjectContent() {
             </div>
           )}
 
-          {/* ===== STEP 2: Contenuti & Genera ===== */}
-          {currentStep === 2 && (
+          {/* ===== STEP 1: Contenuti ===== */}
+          {currentStep === 1 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold mb-3">{language === "en" ? "Content & Generate" : "Contenuti & Genera"}</h1>
-                <p className="text-slate-400">{language === "en" ? "Customize sections, contacts, and generate your site" : "Personalizza le sezioni, i contatti e genera il tuo sito"}</p>
+              <div className="text-center mb-12">
+                <h1 className="text-3xl font-bold mb-3">{language === "en" ? "Content" : "Contenuti"}</h1>
+                <p className="text-slate-400">{language === "en" ? "Choose your hero style, add content, and contact info" : "Scegli lo stile della hero, aggiungi contenuti e contatti"}</p>
               </div>
 
               <div className="max-w-3xl mx-auto space-y-8">
-
-                {/* --- Sections Checkbox Grid --- */}
+                {/* --- Hero Type Choice --- */}
                 <div>
-                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Site sections" : "Sezioni del sito"} <span className="text-red-400">*</span></label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {getAllSections(language).map(section => (
-                      <button
-                        key={section.id}
-                        onClick={() => toggleSection(section.id)}
-                        className={`px-3 py-2.5 rounded-xl border-2 text-sm text-left transition-all flex items-center gap-2 ${
-                          formData.selectedSections.includes(section.id)
-                            ? "border-blue-500 bg-blue-500/10 text-blue-300"
-                            : "border-white/10 text-slate-400 hover:border-white/30"
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border ${
-                          formData.selectedSections.includes(section.id)
-                            ? "bg-blue-500 border-blue-500"
-                            : "border-white/20"
-                        }`}>
-                          {formData.selectedSections.includes(section.id) && <CheckIcon className="w-3 h-3 text-white" />}
+                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Hero Section Style" : "Stile sezione Hero"}</label>
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Video */}
+                    <button
+                      onClick={() => setFormData(prev => ({ ...prev, heroType: "video" }))}
+                      className={`group relative flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all ${
+                        formData.heroType === "video"
+                          ? "border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/10"
+                          : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                      }`}
+                    >
+                      <VideoCameraIcon className={`w-8 h-8 ${formData.heroType === "video" ? "text-blue-400" : "text-slate-500"}`} />
+                      <span className={`text-sm font-medium ${formData.heroType === "video" ? "text-blue-300" : "text-white"}`}>
+                        {language === "en" ? "Video Background" : "Video di sfondo"}
+                      </span>
+                      <span className="text-[10px] text-slate-500 leading-tight text-center">
+                        {language === "en" ? "YouTube video as background" : "Video YouTube come sfondo"}
+                      </span>
+                      {formData.heroType === "video" && (
+                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                          <CheckIcon className="w-3 h-3 text-white" />
                         </div>
-                        <span className="truncate">{section.label}</span>
-                      </button>
-                    ))}
+                      )}
+                    </button>
+
+                    {/* Gallery */}
+                    <button
+                      onClick={() => setFormData(prev => ({ ...prev, heroType: "gallery" }))}
+                      className={`group relative flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all ${
+                        formData.heroType === "gallery"
+                          ? "border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/10"
+                          : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                      }`}
+                    >
+                      <PhotoIcon className={`w-8 h-8 ${formData.heroType === "gallery" ? "text-blue-400" : "text-slate-500"}`} />
+                      <span className={`text-sm font-medium ${formData.heroType === "gallery" ? "text-blue-300" : "text-white"}`}>
+                        {language === "en" ? "Photo Gallery" : "Galleria foto"}
+                      </span>
+                      <span className="text-[10px] text-slate-500 leading-tight text-center">
+                        {language === "en" ? "Photo slideshow as background" : "Slideshow di foto come sfondo"}
+                      </span>
+                      {formData.heroType === "gallery" && (
+                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                          <CheckIcon className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Simple */}
+                    <button
+                      onClick={() => setFormData(prev => ({ ...prev, heroType: "simple" }))}
+                      className={`group relative flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all ${
+                        formData.heroType === "simple"
+                          ? "border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/10"
+                          : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                      }`}
+                    >
+                      <SwatchIcon className={`w-8 h-8 ${formData.heroType === "simple" ? "text-blue-400" : "text-slate-500"}`} />
+                      <span className={`text-sm font-medium ${formData.heroType === "simple" ? "text-blue-300" : "text-white"}`}>
+                        {language === "en" ? "Simple Background" : "Sfondo semplice"}
+                      </span>
+                      <span className="text-[10px] text-slate-500 leading-tight text-center">
+                        {language === "en" ? "Gradient from your palette" : "Gradiente dalla tua palette"}
+                      </span>
+                      {formData.heroType === "simple" && (
+                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                          <CheckIcon className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </button>
                   </div>
                 </div>
 
-                {/* --- Section Texts (collapsible) --- */}
-                {formData.selectedSections.length > 0 && (
+                {/* --- Hero: Video URL (shown only if heroType === "video") --- */}
+                {formData.heroType === "video" && (
+                  <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-3">
+                    <label className="block text-sm font-medium">
+                      {language === "en" ? "YouTube Video URL" : "URL Video YouTube"}
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.heroVideoUrl}
+                      onChange={e => setFormData(prev => ({ ...prev, heroVideoUrl: e.target.value }))}
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
+                    />
+                    {/* YouTube thumbnail preview */}
+                    {formData.heroVideoUrl && (() => {
+                      const match = formData.heroVideoUrl.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                      if (!match) return null;
+                      return (
+                        <div className="relative aspect-video rounded-lg overflow-hidden border border-white/10">
+                          <Image src={`https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg`} alt="Video thumbnail" fill className="object-cover" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                            <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                              <div className="w-0 h-0 border-l-[18px] border-l-white border-t-[11px] border-t-transparent border-b-[11px] border-b-transparent ml-1" />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {/* --- Hero: Gallery Photos (shown only if heroType === "gallery") --- */}
+                {formData.heroType === "gallery" && (
+                  <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-3">
+                    <label className="block text-sm font-medium">
+                      {language === "en" ? "Hero Photos (max 5)" : "Foto Hero (max 5)"}
+                    </label>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                      {formData.photos.slice(0, 5).map((photo, idx) => (
+                        <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 group">
+                          <Image src={photo.dataUrl} alt={photo.label} fill className="object-cover" />
+                          <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/70 rounded text-[10px] text-white">{idx + 1}</div>
+                          <button
+                            onClick={() => removePhoto(photo.id)}
+                            className="absolute top-1 right-1 p-1 bg-black/70 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
+                          >
+                            <TrashIcon className="w-3 h-3 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                      {formData.photos.length < 5 && (
+                        <button
+                          onClick={() => photoInputRef.current?.click()}
+                          className="aspect-square rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.02] hover:bg-white/[0.04] transition-all flex flex-col items-center justify-center gap-1"
+                        >
+                          <PlusIcon className="w-6 h-6 text-slate-500" />
+                          <span className="text-[10px] text-slate-400">{language === "en" ? "Add" : "Aggiungi"}</span>
+                        </button>
+                      )}
+                    </div>
+                    <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
+                    <p className="text-xs text-slate-500">{language === "en" ? "These photos will be used as a slideshow in the hero section" : "Queste foto verranno usate come slideshow nella sezione hero"}</p>
+                  </div>
+                )}
+
+                {/* --- Hero: Simple preview (shown only if heroType === "simple") --- */}
+                {formData.heroType === "simple" && colorPalette.length >= 2 && (
+                  <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-2">
+                    <label className="block text-sm font-medium mb-1">{language === "en" ? "Preview" : "Anteprima"}</label>
+                    <div
+                      className="h-32 rounded-xl flex items-center justify-center"
+                      style={{ background: `linear-gradient(135deg, ${colorPalette[0]}, ${colorPalette[1]})` }}
+                    >
+                      <span className="text-white/80 text-sm font-medium">{formData.tagline || formData.businessName || (language === "en" ? "Your headline here" : "Il tuo slogan qui")}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* --- Slogan & Subtitle --- */}
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Slogan / Headline</label>
+                    <input
+                      type="text"
+                      value={formData.tagline}
+                      onChange={e => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
+                      placeholder={language === "en" ? "e.g. The authentic taste of tradition" : "es. Il gusto autentico della tradizione"}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">{language === "en" ? "Leave blank for AI-generated text" : "Lascia vuoto per generazione automatica AI"}</p>
+                  </div>
+                </div>
+
+                {/* --- Per-Section Content (from category blueprint) --- */}
+                {selectedV2Category && (
                   <div className="border border-white/10 rounded-2xl overflow-hidden">
                     <button
                       onClick={() => setShowSectionTexts(!showSectionTexts)}
@@ -762,7 +942,7 @@ function NewProjectContent() {
                     >
                       <div className="flex items-center gap-3">
                         <DocumentTextIcon className="w-5 h-5 text-emerald-400" />
-                        <span className="font-medium">{language === "en" ? "Section texts" : "Testi per sezione"}</span>
+                        <span className="font-medium">{language === "en" ? "Custom text per section" : "Testi personalizzati per sezione"}</span>
                         <span className="text-xs text-slate-500">({language === "en" ? "optional" : "opzionale"})</span>
                       </div>
                       <ChevronRightIcon className={`w-4 h-4 text-slate-400 transition-transform ${showSectionTexts ? "rotate-90" : ""}`} />
@@ -770,42 +950,73 @@ function NewProjectContent() {
 
                     {showSectionTexts && (
                       <div className="px-6 pb-6 space-y-4 border-t border-white/5 pt-4">
-                        {formData.selectedSections.map(sectionId => {
-                          const sectionLabel = getSectionLabels(language)[sectionId] || sectionId;
-                          return (
-                          <div key={sectionId}>
-                            <div className="flex items-center justify-between mb-1.5">
-                              <label className="text-sm text-slate-300">{sectionLabel}</label>
-                              <button
-                                className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 opacity-50 cursor-not-allowed"
-                                title={language === "en" ? "Coming soon" : "Disponibile prossimamente"}
-                                disabled
-                              >
-                                <SparklesIcon className="w-3 h-3" />
-                                {language === "en" ? "Generate AI text" : "Genera testo AI"}
-                              </button>
-                            </div>
-                            <textarea
-                              value={formData.sectionTexts[sectionId] || ""}
-                              onChange={e => setFormData(prev => ({
-                                ...prev,
-                                sectionTexts: { ...prev.sectionTexts, [sectionId]: e.target.value }
-                              }))}
-                              placeholder={language === "en" ? `Text for the ${sectionLabel} section...` : `Testo per la sezione ${sectionLabel}...`}
-                              rows={2}
-                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all resize-none"
-                            />
-                          </div>
-                          );
-                        })}
+                        {selectedV2Category.sectionsRequired
+                          .filter(s => s !== "hero" && s !== "footer")
+                          .map(sectionId => {
+                            const sectionLabel = getSectionLabels(language)[sectionId] || sectionId;
+                            return (
+                              <div key={sectionId}>
+                                <label className="text-sm text-slate-300 mb-1.5 block">{sectionLabel}</label>
+                                <textarea
+                                  value={formData.sectionTexts[sectionId] || ""}
+                                  onChange={e => setFormData(prev => ({
+                                    ...prev,
+                                    sectionTexts: { ...prev.sectionTexts, [sectionId]: e.target.value }
+                                  }))}
+                                  placeholder={language === "en" ? "Leave blank for automatic AI generation" : "Lascia vuoto per generazione automatica AI"}
+                                  rows={2}
+                                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all resize-none"
+                                />
+                              </div>
+                            );
+                          })}
                       </div>
                     )}
                   </div>
                 )}
 
+                {/* --- Gallery Photos (for gallery section, separate from hero) --- */}
+                {selectedV2Category?.sectionsRequired.includes("gallery") && (
+                  <div>
+                    <label className="block text-sm font-medium mb-3">
+                      {language === "en" ? "Gallery Photos (optional, max 8)" : "Foto Galleria (opzionale, max 8)"}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {formData.photos.map((photo, idx) => (
+                        <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 group">
+                          <Image src={photo.dataUrl} alt={photo.label} fill className="object-cover" />
+                          <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/70 rounded text-[10px] text-white">{idx + 1}</div>
+                          <button
+                            onClick={() => removePhoto(photo.id)}
+                            className="absolute top-1 right-1 p-1 bg-black/70 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
+                          >
+                            <TrashIcon className="w-3 h-3 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                      {formData.photos.length < 8 && (
+                        <button
+                          onClick={() => photoInputRef.current?.click()}
+                          className="aspect-square rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.02] hover:bg-white/[0.04] transition-all flex flex-col items-center justify-center gap-1"
+                        >
+                          <PlusIcon className="w-6 h-6 text-slate-500" />
+                          <span className="text-[10px] text-slate-400">{language === "en" ? "Add" : "Aggiungi"}</span>
+                        </button>
+                      )}
+                    </div>
+                    <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
+                    <p className="text-xs text-slate-500 mt-2">
+                      {language === "en" ? "Without photos, AI will use professional stock images." : "Senza foto, l'AI usera' immagini professionali di stock."}
+                    </p>
+                  </div>
+                )}
+
                 {/* --- Contact Info --- */}
                 <div className="pt-4 border-t border-white/10">
-                  <label className="block text-sm font-medium mb-4">{language === "en" ? "Contact information" : "Informazioni di contatto"}</label>
+                  <label className="block text-sm font-medium mb-4 flex items-center gap-2">
+                    <MapPinIcon className="w-4 h-4 text-slate-400" />
+                    {language === "en" ? "Contact information" : "Informazioni di contatto"}
+                  </label>
                   <div className="space-y-3">
                     <input
                       type="text"
@@ -815,26 +1026,32 @@ function NewProjectContent() {
                       className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
                     />
                     <div className="grid sm:grid-cols-2 gap-3">
-                      <input
-                        type="tel"
-                        value={formData.contactInfo.phone}
-                        onChange={e => setFormData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, phone: e.target.value } }))}
-                        placeholder={language === "en" ? "Phone" : "Telefono"}
-                        className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
-                      />
-                      <input
-                        type="email"
-                        value={formData.contactInfo.email}
-                        onChange={e => setFormData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, email: e.target.value } }))}
-                        placeholder="Email"
-                        className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
-                      />
+                      <div className="relative">
+                        <PhoneIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <input
+                          type="tel"
+                          value={formData.contactInfo.phone}
+                          onChange={e => setFormData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, phone: e.target.value } }))}
+                          placeholder={language === "en" ? "Phone" : "Telefono"}
+                          className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
+                        />
+                      </div>
+                      <div className="relative">
+                        <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <input
+                          type="email"
+                          value={formData.contactInfo.email}
+                          onChange={e => setFormData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, email: e.target.value } }))}
+                          placeholder="Email"
+                          className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
+                        />
+                      </div>
                     </div>
                     <input
                       type="text"
                       value={formData.contactInfo.hours}
                       onChange={e => setFormData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, hours: e.target.value } }))}
-                      placeholder={language === "en" ? "Opening hours: e.g. Mon-Fri 9:00-18:00, Sat 9:00-13:00" : "Orari apertura: es. Lun-Ven 9:00-18:00, Sab 9:00-13:00"}
+                      placeholder={language === "en" ? "Opening hours: e.g. Mon-Fri 9:00-18:00" : "Orari: es. Lun-Ven 9:00-18:00, Sab 9:00-13:00"}
                       className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
                     />
                   </div>
@@ -844,9 +1061,9 @@ function NewProjectContent() {
                 <div>
                   <label className="block text-sm font-medium mb-3">{language === "en" ? "Social Links (optional)" : "Social Links (opzionale)"}</label>
                   <div className="grid sm:grid-cols-2 gap-3">
-                    {(["facebook", "instagram", "linkedin", "twitter"] as const).map(social => (
+                    {(["instagram", "facebook", "linkedin", "twitter"] as const).map(social => (
                       <div key={social} className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400 w-20 capitalize">{social}</span>
+                        <span className="text-xs text-slate-400 w-20 capitalize">{social === "twitter" ? "X / Twitter" : social}</span>
                         <input
                           type="text"
                           value={formData.socialLinks[social]}
@@ -861,96 +1078,97 @@ function NewProjectContent() {
                     ))}
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
 
-                {/* --- CTA Primaria --- */}
-                <div>
-                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Primary Call-to-Action" : "Call-to-Action primaria"}</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {getCtaOptions(language).map(cta => (
-                      <button
-                        key={cta.id}
-                        onClick={() => setFormData(prev => ({ ...prev, primaryCta: cta.id }))}
-                        className={`px-4 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
-                          formData.primaryCta === cta.id
-                            ? "border-blue-500 bg-blue-500/10 text-blue-300"
-                            : "border-white/10 text-slate-400 hover:border-white/30"
-                        }`}
-                      >
-                        {cta.label}
-                      </button>
-                    ))}
+          {/* ===== STEP 2: Rivedi & Genera ===== */}
+          {currentStep === 2 && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold mb-3">{language === "en" ? "Review & Generate" : "Rivedi & Genera"}</h1>
+                <p className="text-slate-400">{language === "en" ? "Check everything looks good, then generate your site" : "Controlla che tutto sia corretto, poi genera il tuo sito"}</p>
+              </div>
+
+              <div className="max-w-3xl mx-auto space-y-6">
+
+                {/* --- Summary Cards --- */}
+                <div className="grid sm:grid-cols-2 gap-3 text-sm">
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <span className="text-slate-500">Business:</span>{" "}
+                    <span className="text-white">{formData.businessName || "\u2014"}</span>
                   </div>
+                  {selectedV2Category && (
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2">
+                      <span className="text-slate-500">{language === "en" ? "Category:" : "Categoria:"}</span>
+                      <span className="text-lg">{selectedV2Category.icon}</span>
+                      <span className="text-white">{getV2CategoryName(selectedV2Category, language)}</span>
+                    </div>
+                  )}
+                  {colorPalette.length > 0 && (
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2">
+                      <span className="text-slate-500">{language === "en" ? "Palette:" : "Palette:"}</span>
+                      <div className="flex gap-1">
+                        {colorPalette.map((c, i) => (
+                          <div key={i} className="w-5 h-5 rounded" style={{ backgroundColor: c }} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {formData.tagline && (
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                      <span className="text-slate-500">{language === "en" ? "Tagline:" : "Slogan:"}</span>{" "}
+                      <span className="text-white">{formData.tagline}</span>
+                    </div>
+                  )}
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <span className="text-slate-500">{language === "en" ? "Hero:" : "Hero:"}</span>{" "}
+                    <span className="text-white">
+                      {formData.heroType === "video" ? (language === "en" ? "Video Background" : "Video di sfondo")
+                        : formData.heroType === "gallery" ? (language === "en" ? "Photo Gallery" : "Galleria foto")
+                        : (language === "en" ? "Simple Background" : "Sfondo semplice")}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <span className="text-slate-500">{language === "en" ? "Sections:" : "Sezioni:"}</span>{" "}
+                    <span className="text-white">{formData.selectedSections.length}</span>
+                  </div>
+                  {formData.photos.length > 0 && (
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                      <span className="text-slate-500">{language === "en" ? "Photos:" : "Foto:"}</span>{" "}
+                      <span className="text-white">{formData.photos.length}</span>
+                    </div>
+                  )}
+                  {formData.logo && (
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2">
+                      <span className="text-slate-500">Logo:</span>
+                      <div className="w-6 h-6 rounded overflow-hidden relative"><Image src={formData.logo} alt="Logo" fill className="object-contain" /></div>
+                    </div>
+                  )}
+                  {(formData.contactInfo.phone || formData.contactInfo.email) && (
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                      <span className="text-slate-500">{language === "en" ? "Contact:" : "Contatti:"}</span>{" "}
+                      <span className="text-white">{[formData.contactInfo.phone, formData.contactInfo.email].filter(Boolean).join(", ")}</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* --- Photos --- */}
-                <div className="pt-4 border-t border-white/10">
-                  <label className="block text-sm font-medium mb-3">{language === "en" ? "Photos of your business (optional, max 8)" : "Foto della tua attivit\u00E0 (opzionale, max 8)"}</label>
-                  {/* Placement guide */}
-                  <p className="text-xs text-slate-400 mb-3">
-                    {language === "en"
-                      ? "Photos are placed in order: Photo 1 \u2192 Hero, Photos 2-5 \u2192 Gallery, Photo 6 \u2192 About Us, Photos 7-8 \u2192 Team"
-                      : "Le foto vengono posizionate in ordine: Foto 1 \u2192 Hero, Foto 2-5 \u2192 Galleria, Foto 6 \u2192 Chi Siamo, Foto 7-8 \u2192 Team"}
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {formData.photos.map((photo, idx) => {
-                      // Determine placement label based on index + selected sections
-                      const sections = formData.selectedSections;
-                      let placement = "";
-                      if (idx === 0 && sections.includes("hero")) placement = "Hero";
-                      else if (idx >= 1 && idx <= 4 && sections.includes("gallery")) placement = language === "en" ? "Gallery" : "Galleria";
-                      else if (idx === 5 && sections.includes("about")) placement = language === "en" ? "About" : "Chi Siamo";
-                      else if (idx >= 6 && sections.includes("team")) placement = "Team";
-                      return (
-                        <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 group">
-                          <Image src={photo.dataUrl} alt={photo.label} fill className="object-cover" />
-                          {/* Numbered label with section target */}
-                          <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/70 backdrop-blur-sm rounded-md text-xs text-white font-medium">
-                            {idx + 1}{placement ? `. ${placement}` : ""}
-                          </div>
-                          <button
-                            onClick={() => removePhoto(photo.id)}
-                            className="absolute top-2 right-2 p-1.5 bg-black/70 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
-                          >
-                            <TrashIcon className="w-4 h-4 text-white" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                    {formData.photos.length < 8 && (
-                      <button
-                        onClick={() => photoInputRef.current?.click()}
-                        className="aspect-square rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.02] hover:bg-white/[0.04] transition-all flex flex-col items-center justify-center gap-2"
-                      >
-                        <PlusIcon className="w-8 h-8 text-slate-500" />
-                        <span className="text-xs text-slate-400">{language === "en" ? "Add" : "Aggiungi"}</span>
-                      </button>
-                    )}
+                {/* --- Sections List --- */}
+                {selectedV2Category && (
+                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                    <p className="text-xs text-slate-400 mb-2">{language === "en" ? "Sections included:" : "Sezioni incluse:"}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.selectedSections.map(sectionId => (
+                        <span key={sectionId} className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-300 text-xs border border-blue-500/20">
+                          {getSectionLabels(language)[sectionId] || sectionId}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
-                  {/* Dynamic section-count hint */}
-                  <p className="text-xs text-slate-500 mt-2">
-                    {(() => {
-                      const s = formData.selectedSections;
-                      const recommended = (s.includes("hero") ? 1 : 0) + (s.includes("gallery") ? 4 : 0) + (s.includes("about") ? 1 : 0) + (s.includes("team") ? 2 : 0);
-                      if (recommended > 0) {
-                        const parts: string[] = [];
-                        if (s.includes("hero")) parts.push("1 hero");
-                        if (s.includes("gallery")) parts.push(language === "en" ? "4 gallery" : "4 galleria");
-                        if (s.includes("about")) parts.push(language === "en" ? "1 about" : "1 chi siamo");
-                        if (s.includes("team")) parts.push("2 team");
-                        return language === "en"
-                          ? `We recommend: ${recommended} photos for the selected sections (${parts.join(" + ")}). Without photos, AI will use stock images.`
-                          : `Consigliamo: ${recommended} foto per le sezioni selezionate (${parts.join(" + ")}). Senza foto, l'AI usera' immagini di stock.`;
-                      }
-                      return language === "en"
-                        ? "If you don't upload photos, AI will use professional stock images."
-                        : "Se non carichi foto, l'AI usera' immagini professionali di stock.";
-                    })()}
-                  </p>
-                </div>
+                )}
 
                 {/* --- AI Image Generation Toggle --- */}
-                <div className="pt-4 border-t border-white/10">
+                <div>
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, generateImages: !prev.generateImages }))}
@@ -981,73 +1199,10 @@ function NewProjectContent() {
                       }`} />
                     </div>
                   </button>
-                  {formData.generateImages && formData.photos.length > 0 && (
-                    <p className="text-xs text-violet-400/80 mt-2 px-1">
-                      {language === "en"
-                        ? "Your photos always take priority over AI-generated images."
-                        : "Le tue foto hanno sempre la priorita' sulle immagini AI."}
-                    </p>
-                  )}
                 </div>
 
-                {/* --- Review Compatto + Genera --- */}
-                <div className="pt-6 border-t border-white/10 space-y-4">
-                  <h3 className="font-medium text-lg flex items-center gap-2">
-                    <CheckIcon className="w-5 h-5 text-emerald-400" />
-                    {language === "en" ? "Summary" : "Riepilogo"}
-                  </h3>
-                  <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500">Business:</span>{" "}
-                      <span className="text-white">{formData.businessName || "—"}</span>
-                    </div>
-                    {formData.tagline && (
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                        <span className="text-slate-500">{language === "en" ? "Tagline:" : "Slogan:"}</span>{" "}
-                        <span className="text-white">{formData.tagline}</span>
-                      </div>
-                    )}
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500">{language === "en" ? "Sections:" : "Sezioni:"}</span>{" "}
-                      <span className="text-white">{formData.selectedSections.length}</span>
-                    </div>
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500">CTA:</span>{" "}
-                      <span className="text-white">{getCtaOptions(language).find(c => c.id === formData.primaryCta)?.label}</span>
-                    </div>
-                    {selectedStyle && (
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2">
-                        <span className="text-slate-500">Template:</span>
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedStyle.primaryColor }} />
-                        <span className="text-white">{getStyleLabel(selectedStyle, language)}</span>
-                      </div>
-                    )}
-                    {formData.preferredStyle && !selectedStyle && (
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                        <span className="text-slate-500">{language === "en" ? "Style:" : "Stile:"}</span>{" "}
-                        <span className="text-white">{getStyleOptions(language).find(s => s.id === formData.preferredStyle)?.label}</span>
-                      </div>
-                    )}
-                    {formData.photos.length > 0 && (
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                        <span className="text-slate-500">{language === "en" ? "Photos:" : "Foto:"}</span>{" "}
-                        <span className="text-white">{formData.photos.length}</span>
-                      </div>
-                    )}
-                    {formData.logo && (
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2">
-                        <span className="text-slate-500">Logo:</span>
-                        <div className="w-6 h-6 rounded overflow-hidden relative"><Image src={formData.logo} alt="Logo" fill className="object-contain" /></div>
-                      </div>
-                    )}
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2">
-                      <span className="text-slate-500">{language === "en" ? "AI Images:" : "Immagini AI:"}</span>
-                      <span className={formData.generateImages ? "text-violet-400" : "text-slate-400"}>
-                        {formData.generateImages ? (language === "en" ? "Yes" : "Si") : "No"}
-                      </span>
-                    </div>
-                  </div>
-
+                {/* --- Generate Button --- */}
+                <div className="pt-4 space-y-4">
                   {isGenerating ? (
                     <div ref={generationRef} className="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
                       <GenerationExperience
@@ -1069,7 +1224,7 @@ function NewProjectContent() {
                         {language === "en" ? "Generate My Site" : "Genera il Mio Sito"}
                       </button>
                       <p className="text-center text-sm text-slate-500">
-                        {language === "en" ? "4-step AI pipeline — Estimated time: 40-60 seconds" : "Pipeline AI a 4 step — Tempo stimato: 40-60 secondi"}
+                        {language === "en" ? "AI pipeline — Estimated time: 40-60 seconds" : "Pipeline AI — Tempo stimato: 40-60 secondi"}
                       </p>
                     </>
                   )}

@@ -1,0 +1,104 @@
+<!-- Stats Luxury Minimal V4: ultra-minimal serif numbers with thin labels -->
+<section id="stats" class="stats-luxury-minimal py-24 md:py-36">
+  <style>
+    .stats-luxury-minimal {
+      background: var(--color-bg);
+    }
+    .stats-luxury-minimal .stats-container {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .stats-luxury-minimal .section-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+    .stats-luxury-minimal .section-header .overline {
+      font-size: 0.6875rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--color-text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .stats-luxury-minimal .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 400;
+      color: var(--color-text);
+      font-style: italic;
+    }
+    @media (min-width: 768px) {
+      .stats-luxury-minimal .section-header h2 { font-size: 2.25rem; }
+    }
+    .stats-luxury-minimal .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0;
+    }
+    .stats-luxury-minimal .stat-item {
+      flex: 1 1 50%;
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      position: relative;
+    }
+    @media (min-width: 768px) {
+      .stats-luxury-minimal .stat-item {
+        flex: 1 1 0;
+      }
+      .stats-luxury-minimal .stat-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 25%;
+        height: 50%;
+        width: 1px;
+        background: color-mix(in srgb, var(--color-text) 10%, transparent);
+      }
+    }
+    .stats-luxury-minimal .stat-number {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      font-weight: 300;
+      color: var(--color-text);
+      line-height: 1;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    @media (min-width: 768px) {
+      .stats-luxury-minimal .stat-number { font-size: 5rem; }
+    }
+    .stats-luxury-minimal .stat-divider {
+      width: 1.5rem;
+      height: 1px;
+      background: var(--color-primary);
+      margin: 0 auto 1rem;
+      opacity: 0.5;
+    }
+    .stats-luxury-minimal .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--color-text-muted);
+      font-weight: 400;
+    }
+  </style>
+
+  <div class="stats-container">
+    <div class="section-header" data-animate="fade-up">
+      <p class="overline">In Numeri</p>
+      <h2 data-animate="text-split" data-split-type="words">{{STATS_TITLE}}</h2>
+    </div>
+
+    <div class="stats-row" data-animate="stagger">
+      <!-- REPEAT:STATS_ITEMS -->
+      <div class="stat-item stagger-item" data-animate="fade-up">
+        <div class="stat-number" data-counter="{{STAT_NUMBER}}" data-counter-suffix="{{STAT_SUFFIX}}">0</div>
+        <div class="stat-divider"></div>
+        <p class="stat-label">{{STAT_LABEL}}</p>
+      </div>
+      <!-- /REPEAT:STATS_ITEMS -->
+    </div>
+  </div>
+</section>

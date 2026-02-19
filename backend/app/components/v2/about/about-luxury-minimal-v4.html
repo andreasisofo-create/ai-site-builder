@@ -1,0 +1,134 @@
+<style>
+  .about-luxury-v4 {
+    padding: 8rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .about-luxury-v4__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .about-luxury-v4__image-block {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/7;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 4rem;
+  }
+  .about-luxury-v4__image-block img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .about-luxury-v4__image-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+  }
+  .about-luxury-v4__image-text {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 4rem);
+    color: #fff;
+    font-weight: 400;
+    text-align: center;
+    letter-spacing: 0.05em;
+    max-width: 600px;
+    padding: 0 2rem;
+    line-height: 1.2;
+  }
+  .about-luxury-v4__image-text em {
+    font-style: italic;
+    color: var(--color-accent);
+  }
+  .about-luxury-v4__body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .about-luxury-v4__col {
+    text-align: center;
+  }
+  .about-luxury-v4__ornament {
+    width: 30px;
+    height: 1px;
+    background: var(--color-accent);
+    margin: 0 auto 2rem;
+  }
+  .about-luxury-v4__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .about-luxury-v4__text {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    line-height: 1.9;
+    margin: 0;
+  }
+  .about-luxury-v4__quote {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    color: var(--color-text);
+    font-style: italic;
+    line-height: 1.6;
+    margin: 0;
+    padding: 2rem 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+  .about-luxury-v4__quote-author {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-style: normal;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-top: 1rem;
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .about-luxury-v4__body {
+      grid-template-columns: 1fr 1fr;
+      text-align: left;
+    }
+    .about-luxury-v4__ornament { margin: 0 0 2rem; }
+    .about-luxury-v4__col { text-align: left; }
+  }
+</style>
+
+<section class="about-luxury-v4" id="about">
+  <div class="about-luxury-v4__inner">
+    <div class="about-luxury-v4__image-block" data-animate="clip-reveal">
+      <img src="{{IMAGE_URL}}" alt="{{IMAGE_ALT}}" loading="lazy">
+      <div class="about-luxury-v4__image-overlay">
+        <p class="about-luxury-v4__image-text" data-animate="text-reveal">{{IMAGE_QUOTE}}</p>
+      </div>
+    </div>
+
+    <div class="about-luxury-v4__body">
+      <div class="about-luxury-v4__col" data-animate="fade-up">
+        <div class="about-luxury-v4__ornament"></div>
+        <p class="about-luxury-v4__label">{{SECTION_LABEL}}</p>
+        <p class="about-luxury-v4__text">{{ABOUT_TEXT}}</p>
+      </div>
+      <div class="about-luxury-v4__col" data-animate="fade-up" data-delay="0.2">
+        <blockquote class="about-luxury-v4__quote">
+          {{ABOUT_QUOTE}}
+          <span class="about-luxury-v4__quote-author">{{QUOTE_AUTHOR}}</span>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>

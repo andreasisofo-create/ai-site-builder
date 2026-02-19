@@ -1,0 +1,132 @@
+<style>
+  .services-luxury-v4 {
+    padding: 8rem 0;
+    background: var(--color-bg);
+  }
+  .services-luxury-v4__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .services-luxury-v4__header {
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+  .services-luxury-v4__ornament {
+    width: 30px;
+    height: 1px;
+    background: var(--color-accent);
+    margin: 0 auto 1.5rem;
+  }
+  .services-luxury-v4__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1.25rem;
+  }
+  .services-luxury-v4__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0;
+  }
+  .services-luxury-v4__list {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+  .services-luxury-v4__item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .services-luxury-v4__item:nth-child(even) .services-luxury-v4__item-image {
+    order: -1;
+  }
+  .services-luxury-v4__item-image {
+    border-radius: 4px;
+    overflow: hidden;
+    aspect-ratio: 3/2;
+  }
+  .services-luxury-v4__item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .services-luxury-v4__item-content {
+    max-width: 420px;
+  }
+  .services-luxury-v4__item-num {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+  .services-luxury-v4__item-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    color: var(--color-text);
+    font-weight: 400;
+    line-height: 1.3;
+    margin: 0 0 1rem;
+  }
+  .services-luxury-v4__item-line {
+    width: 40px;
+    height: 1px;
+    background: var(--color-accent);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  .services-luxury-v4__item-text {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    line-height: 1.8;
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .services-luxury-v4__item {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+    .services-luxury-v4__item:nth-child(even) {
+      direction: rtl;
+    }
+    .services-luxury-v4__item:nth-child(even) > * {
+      direction: ltr;
+    }
+  }
+</style>
+
+<section class="services-luxury-v4" id="services">
+  <div class="services-luxury-v4__inner">
+    <header class="services-luxury-v4__header" data-animate="fade-up">
+      <div class="services-luxury-v4__ornament" data-animate="scale-in"></div>
+      <p class="services-luxury-v4__label">{{SECTION_LABEL}}</p>
+      <h2 class="services-luxury-v4__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="services-luxury-v4__list">
+      <!-- REPEAT:SERVICES -->
+      <article class="services-luxury-v4__item">
+        <div class="services-luxury-v4__item-image" data-animate="clip-reveal">
+          <img src="{{SERVICE_IMAGE}}" alt="{{SERVICE_TITLE}}" loading="lazy">
+        </div>
+        <div class="services-luxury-v4__item-content" data-animate="fade-up" data-delay="0.2">
+          <span class="services-luxury-v4__item-num">{{SERVICE_NUMBER}}</span>
+          <h3 class="services-luxury-v4__item-title">{{SERVICE_TITLE}}</h3>
+          <div class="services-luxury-v4__item-line"></div>
+          <p class="services-luxury-v4__item-text">{{SERVICE_DESCRIPTION}}</p>
+        </div>
+      </article>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

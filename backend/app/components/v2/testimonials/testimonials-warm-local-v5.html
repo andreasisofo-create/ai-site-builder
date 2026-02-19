@@ -1,0 +1,125 @@
+<!-- Testimonials Warm Local V5: warm speech-bubble style cards -->
+<section id="testimonials" class="testimonials-warm-local py-20 md:py-24">
+  <style>
+    .testimonials-warm-local {
+      background: color-mix(in srgb, var(--color-primary) 5%, var(--color-bg));
+    }
+    .testimonials-warm-local .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .testimonials-warm-local .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    @media (min-width: 768px) {
+      .testimonials-warm-local .section-header h2 { font-size: 2.25rem; }
+    }
+    .testimonials-warm-local .section-header p {
+      color: var(--color-text-muted);
+      max-width: 32rem;
+      margin: 0.75rem auto 0;
+    }
+    .testimonials-warm-local .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 768px) {
+      .testimonials-warm-local .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .testimonials-warm-local .bubble-card {
+      position: relative;
+    }
+    .testimonials-warm-local .bubble {
+      background: var(--color-bg);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .testimonials-warm-local .bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 2rem;
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 12px solid var(--color-bg);
+    }
+    .testimonials-warm-local .stars {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .testimonials-warm-local .stars svg {
+      width: 0.875rem;
+      height: 0.875rem;
+      fill: var(--color-accent, var(--color-primary));
+    }
+    .testimonials-warm-local .testimonial-text {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--color-text-muted);
+    }
+    .testimonials-warm-local .author-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-left: 0.5rem;
+    }
+    .testimonials-warm-local .author-avatar {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--color-bg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .testimonials-warm-local .author-name {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .testimonials-warm-local .author-role {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;">
+    <div class="section-header" data-animate="fade-up">
+      <h2 data-animate="text-split" data-split-type="words">{{TESTIMONIALS_TITLE}}</h2>
+      <p>{{TESTIMONIALS_SUBTITLE}}</p>
+    </div>
+
+    <div class="testimonials-grid" data-animate="stagger">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="bubble-card stagger-item" data-animate="fade-up">
+        <div class="bubble">
+          <div class="stars">
+            <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+            <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+            <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+            <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+            <svg viewBox="0 0 20 20"><path d="M10 1l2.39 6.17H19l-5.3 4.06L15.8 18 10 13.94 4.2 18l2.1-6.77L1 7.17h6.61z"/></svg>
+          </div>
+          <p class="testimonial-text">{{TESTIMONIAL_TEXT}}</p>
+        </div>
+        <div class="author-row">
+          <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="author-avatar" loading="lazy">
+          <div>
+            <p class="author-name">{{TESTIMONIAL_AUTHOR}}</p>
+            <p class="author-role">{{TESTIMONIAL_ROLE}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+</section>

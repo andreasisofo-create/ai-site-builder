@@ -1,15 +1,17 @@
 """
 Routes per gestione media: upload file, estrazione immagini da HTML,
 sostituzione immagini e aggiunta video embed.
+Includes wizard upload endpoints (no site_id required).
 """
 
+import base64
 import logging
 import os
 import re
 import uuid
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -53,7 +55,73 @@ class AddVideoRequest(BaseModel):
     after_section: str
 
 
+class UploadResponse(BaseModel):
+    url: str
+    filename: str
+    size: int
+    mime_type: str
+
+
+class Base64UploadRequest(BaseModel):
+    data: str
+    filename: str
+    mime_type: str
+
+
+# Mime type mapping for allowed extensions
+ALLOWED_MIME_TYPES = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+}
+
+
 # ============ HELPERS ============
+
+def _validate_and_save_upload(content: bytes, original_filename: str, user_id: int) -> UploadResponse:
+    """Validate an image upload and save it to the user's upload directory.
+    Returns an UploadResponse with the public URL and metadata."""
+    if not original_filename:
+        raise HTTPException(status_code=400, detail="Nome file mancante")
+
+    _, ext = os.path.splitext(original_filename.lower())
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Formato non supportato: '{ext}'. Formati accettati: {', '.join(ALLOWED_EXTENSIONS)}",
+        )
+
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File troppo grande ({len(content) / 1024 / 1024:.1f} MB). Massimo: 5 MB",
+        )
+
+    if len(content) == 0:
+        raise HTTPException(status_code=400, detail="File vuoto")
+
+    unique_name = f"{uuid.uuid4().hex}{ext}"
+    user_dir = os.path.join(UPLOAD_DIR, f"user_{user_id}")
+    os.makedirs(user_dir, exist_ok=True)
+
+    file_path = os.path.join(user_dir, unique_name)
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    url = f"/static/uploads/user_{user_id}/{unique_name}"
+    mime = ALLOWED_MIME_TYPES.get(ext, "application/octet-stream")
+
+    logger.info(f"Wizard upload: {url} ({len(content)} bytes) by user {user_id}")
+
+    return UploadResponse(
+        url=url,
+        filename=unique_name,
+        size=len(content),
+        mime_type=mime,
+    )
+
 
 def _get_user_site(db: Session, site_id: int, user_id: int) -> Site:
     """Fetch a site owned by the given user, or raise 404."""
@@ -397,3 +465,74 @@ async def add_video(
         status_code=500,
         detail=f"Impossibile trovare la chiusura della sezione '{section_id}'",
     )
+
+
+# ============ WIZARD UPLOAD ROUTES (no site_id required) ============
+
+@router.post("/upload-wizard", response_model=UploadResponse)
+@limiter.limit("30/minute")
+async def upload_wizard_file(
+    request: Request,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Upload a single image for the wizard (logo, gallery photo, etc.).
+    No site_id required -- files are stored in user-scoped directory.
+    Accepted formats: jpg, png, webp, gif. Max 5 MB.
+    """
+    content = await file.read()
+    return _validate_and_save_upload(content, file.filename or "", current_user.id)
+
+
+@router.post("/upload-multiple")
+@limiter.limit("10/minute")
+async def upload_multiple_files(
+    request: Request,
+    files: List[UploadFile] = File(...),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Upload multiple images at once for the wizard.
+    Same validation per file: images only, max 5 MB each.
+    Returns array of upload results.
+    """
+    if len(files) > 20:
+        raise HTTPException(status_code=400, detail="Massimo 20 file per richiesta")
+
+    results: List[dict] = []
+    errors: List[dict] = []
+
+    for i, file in enumerate(files):
+        try:
+            content = await file.read()
+            result = _validate_and_save_upload(content, file.filename or "", current_user.id)
+            results.append(result.model_dump())
+        except HTTPException as e:
+            errors.append({"index": i, "filename": file.filename or "", "error": e.detail})
+
+    return {"uploaded": results, "errors": errors}
+
+
+@router.post("/upload-base64", response_model=UploadResponse)
+@limiter.limit("20/minute")
+async def upload_base64_image(
+    request: Request,
+    body: Base64UploadRequest = Body(...),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Upload a base64 encoded image (e.g. logo exported from canvas).
+    Accepts: { data: "base64string", filename: "logo.png", mime_type: "image/png" }
+    """
+    # Strip data URI prefix if present (e.g. "data:image/png;base64,...")
+    b64_data = body.data
+    if "," in b64_data:
+        b64_data = b64_data.split(",", 1)[1]
+
+    try:
+        content = base64.b64decode(b64_data)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Dati base64 non validi")
+
+    return _validate_and_save_upload(content, body.filename, current_user.id)

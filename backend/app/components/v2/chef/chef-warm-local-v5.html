@@ -1,0 +1,138 @@
+<style>
+  .chef-warm-v5 {
+    padding: 5rem 0;
+    background: var(--color-bg);
+  }
+  .chef-warm-v5__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .chef-warm-v5__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .chef-warm-v5__emoji {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .chef-warm-v5__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: var(--color-text);
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .chef-warm-v5__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 450px;
+    margin: 0 auto;
+  }
+  .chef-warm-v5__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .chef-warm-v5__card {
+    background: color-mix(in srgb, var(--color-primary) 3%, var(--color-bg));
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+    transition: all 0.3s;
+  }
+  .chef-warm-v5__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 35px rgba(0,0,0,0.08);
+  }
+  .chef-warm-v5__card-img {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .chef-warm-v5__card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+  .chef-warm-v5__card:hover .chef-warm-v5__card-img img {
+    transform: scale(1.05);
+  }
+  .chef-warm-v5__card-body {
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .chef-warm-v5__card-name {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--color-text);
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+  }
+  .chef-warm-v5__card-role {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+  .chef-warm-v5__card-bio {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+  .chef-warm-v5__card-tag {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg));
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+  }
+  @media (min-width: 640px) {
+    .chef-warm-v5__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .chef-warm-v5 { padding: 7rem 0; }
+    .chef-warm-v5__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+
+<section class="chef-warm-v5" id="chef">
+  <div class="chef-warm-v5__inner">
+    <header class="chef-warm-v5__header" data-animate="fade-up">
+      <span class="chef-warm-v5__emoji">{{EMOJI_ICON}}</span>
+      <h2 class="chef-warm-v5__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="chef-warm-v5__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="chef-warm-v5__grid" data-animate="stagger">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <article class="chef-warm-v5__card stagger-item" data-animate="card-hover-3d">
+        <div class="chef-warm-v5__card-img">
+          <img src="{{MEMBER_IMAGE}}" alt="{{MEMBER_NAME}}" loading="lazy">
+        </div>
+        <div class="chef-warm-v5__card-body">
+          <h3 class="chef-warm-v5__card-name">{{MEMBER_NAME}}</h3>
+          <p class="chef-warm-v5__card-role">{{MEMBER_ROLE}}</p>
+          <p class="chef-warm-v5__card-bio">{{MEMBER_BIO}}</p>
+          <span class="chef-warm-v5__card-tag">{{MEMBER_SPECIALTY}}</span>
+        </div>
+      </article>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+</section>

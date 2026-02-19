@@ -1,0 +1,137 @@
+<style>
+  .about-clean-v2 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+  }
+  .about-clean-v2__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .about-clean-v2__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .about-clean-v2__image-wrap {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+  }
+  .about-clean-v2__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .about-clean-v2__image-badge {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+  }
+  .about-clean-v2__content {
+    max-width: 520px;
+  }
+  .about-clean-v2__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+  .about-clean-v2__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0 0 1.25rem;
+  }
+  .about-clean-v2__text {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.8;
+    margin: 0 0 2rem;
+  }
+  .about-clean-v2__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  }
+  .about-clean-v2__stat-num {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+  .about-clean-v2__stat-label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+  }
+  .about-clean-v2__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+    margin-top: 1.5rem;
+    transition: gap 0.3s;
+  }
+  .about-clean-v2__link:hover { gap: 0.75rem; }
+  .about-clean-v2__link svg { width: 16px; height: 16px; }
+  @media (min-width: 768px) {
+    .about-clean-v2__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .about-clean-v2 { padding: 8rem 0; }
+    .about-clean-v2__grid { gap: 5rem; }
+  }
+</style>
+
+<section class="about-clean-v2" id="about">
+  <div class="about-clean-v2__inner">
+    <div class="about-clean-v2__grid">
+      <div class="about-clean-v2__image-wrap" data-animate="clip-reveal">
+        <img src="{{IMAGE_URL}}" alt="{{IMAGE_ALT}}" loading="lazy">
+        <span class="about-clean-v2__image-badge">{{IMAGE_BADGE}}</span>
+      </div>
+      <div class="about-clean-v2__content">
+        <p class="about-clean-v2__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+        <h2 class="about-clean-v2__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+        <p class="about-clean-v2__text" data-animate="fade-up" data-delay="0.2">{{ABOUT_TEXT}}</p>
+        <div class="about-clean-v2__stats" data-animate="stagger">
+          <!-- REPEAT:STATS -->
+          <div class="stagger-item">
+            <div class="about-clean-v2__stat-num" data-counter="{{STAT_NUMBER}}">0</div>
+            <div class="about-clean-v2__stat-label">{{STAT_LABEL}}</div>
+          </div>
+          <!-- /REPEAT:STATS -->
+        </div>
+        <a href="#menu" class="about-clean-v2__link" data-animate="fade-up" data-delay="0.4">
+          {{CTA_TEXT}}
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

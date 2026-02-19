@@ -1,0 +1,971 @@
+{
+  "version": "2.0.0",
+  "description": "V2 component registry: cluster-based visual system with 5 distinct design aesthetics",
+  "clusters": {
+    "v1": { "id": "bold-visual", "name": "Bold Visual", "description": "Dramatic, cinematic, large imagery, bold typography, dark backgrounds" },
+    "v2": { "id": "clean-pro", "name": "Clean Pro", "description": "Clean grids, whitespace, professional, structured borders" },
+    "v3": { "id": "modern-tech", "name": "Modern Tech", "description": "Dark/gradient, glassmorphism, glow effects, animated accents" },
+    "v4": { "id": "luxury-minimal", "name": "Luxury Minimal", "description": "Elegant, serif, max whitespace, gold accents, editorial" },
+    "v5": { "id": "warm-local", "name": "Warm Local", "description": "Warm colors, rounded corners, friendly, organic shapes" }
+  },
+  "sections": {
+    "hero": {
+      "label": "Hero",
+      "required": true,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "hero-bold-visual-v1",
+          "file": "hero/hero-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Hero Bold Visual",
+          "description": "Dramatic fullscreen hero with background image, bold text overlay, dual CTAs",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT", "CTA_SECONDARY_TEXT", "IMAGE_URL", "BADGE_TEXT"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "hero-clean-pro-v2",
+          "file": "hero/hero-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Hero Clean Pro",
+          "description": "Clean split layout with structured content and professional imagery",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT", "IMAGE_URL"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "hero-modern-tech-v3",
+          "file": "hero/hero-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Hero Modern Tech",
+          "description": "Dark gradient hero with glassmorphism elements and glow effects",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT", "BADGE_TEXT"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "hero-luxury-minimal-v4",
+          "file": "hero/hero-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Hero Luxury Minimal",
+          "description": "Ultra-minimal hero with serif typography, max whitespace, elegant CTA",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT", "IMAGE_URL"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "hero-warm-local-v5",
+          "file": "hero/hero-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Hero Warm Local",
+          "description": "Warm friendly hero with rounded elements and organic layout",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT", "IMAGE_URL"],
+          "repeat_blocks": []
+        }
+      ]
+    },
+    "about": {
+      "label": "Chi Siamo",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "about-bold-visual-v1",
+          "file": "about/about-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "About Bold Visual",
+          "description": "Dramatic about section with image overlay, pull quote, and counter stats",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "IMAGE_URL", "IMAGE_ALT", "IMAGE_CAPTION", "ABOUT_TEXT", "ABOUT_QUOTE"],
+          "repeat_blocks": ["STATS"]
+        },
+        {
+          "id": "about-clean-pro-v2",
+          "file": "about/about-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "About Clean Pro",
+          "description": "Clean professional about with structured grid layout",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "IMAGE_URL", "IMAGE_ALT", "ABOUT_TEXT"],
+          "repeat_blocks": ["STATS"]
+        },
+        {
+          "id": "about-modern-tech-v3",
+          "file": "about/about-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "About Modern Tech",
+          "description": "Dark about section with glassmorphism cards and gradient accents",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "IMAGE_URL", "IMAGE_ALT", "ABOUT_TEXT"],
+          "repeat_blocks": ["STATS"]
+        },
+        {
+          "id": "about-luxury-minimal-v4",
+          "file": "about/about-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "About Luxury Minimal",
+          "description": "Elegant minimal about with serif typography and editorial layout",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "IMAGE_URL", "IMAGE_ALT", "ABOUT_TEXT"],
+          "repeat_blocks": ["STATS"]
+        },
+        {
+          "id": "about-warm-local-v5",
+          "file": "about/about-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "About Warm Local",
+          "description": "Warm friendly about with rounded cards and organic feel",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "IMAGE_URL", "IMAGE_ALT", "ABOUT_TEXT"],
+          "repeat_blocks": ["STATS"]
+        }
+      ]
+    },
+    "services": {
+      "label": "Servizi",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "services-bold-visual-v1",
+          "file": "services/services-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Services Bold Visual",
+          "description": "Bold service cards with images, overlays, and dramatic hover effects",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["SERVICES"]
+        },
+        {
+          "id": "services-clean-pro-v2",
+          "file": "services/services-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Services Clean Pro",
+          "description": "Clean professional service grid with icons and borders",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["SERVICES"]
+        },
+        {
+          "id": "services-modern-tech-v3",
+          "file": "services/services-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Services Modern Tech",
+          "description": "Dark service cards with gradient borders and glow effects",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["SERVICES"]
+        },
+        {
+          "id": "services-luxury-minimal-v4",
+          "file": "services/services-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Services Luxury Minimal",
+          "description": "Elegant minimal service list with serif headings and thin dividers",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["SERVICES"]
+        },
+        {
+          "id": "services-warm-local-v5",
+          "file": "services/services-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Services Warm Local",
+          "description": "Warm rounded service cards with friendly icons",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["SERVICES"]
+        }
+      ]
+    },
+    "stats": {
+      "label": "Statistiche",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "stats-bold-visual-v1",
+          "file": "stats/stats-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Stats Bold Visual",
+          "description": "Large animated counters on dark dramatic background with gradient accents",
+          "placeholders": ["STATS_TITLE", "STATS_SUBTITLE"],
+          "repeat_blocks": ["STATS_ITEMS"]
+        },
+        {
+          "id": "stats-clean-pro-v2",
+          "file": "stats/stats-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Stats Clean Pro",
+          "description": "Clean 4-column grid with borders, icons above numbers, professional look",
+          "placeholders": ["STATS_TITLE"],
+          "repeat_blocks": ["STATS_ITEMS"]
+        },
+        {
+          "id": "stats-modern-tech-v3",
+          "file": "stats/stats-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Stats Modern Tech",
+          "description": "Gradient glow cards on dark background with counter animation",
+          "placeholders": ["STATS_TITLE", "STATS_SUBTITLE"],
+          "repeat_blocks": ["STATS_ITEMS"]
+        },
+        {
+          "id": "stats-luxury-minimal-v4",
+          "file": "stats/stats-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Stats Luxury Minimal",
+          "description": "Ultra-minimal large serif numbers with thin labels and dividers",
+          "placeholders": ["STATS_TITLE"],
+          "repeat_blocks": ["STATS_ITEMS"]
+        },
+        {
+          "id": "stats-warm-local-v5",
+          "file": "stats/stats-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Stats Warm Local",
+          "description": "Warm background with rounded cards and circular icons",
+          "placeholders": ["STATS_TITLE", "STATS_SUBTITLE"],
+          "repeat_blocks": ["STATS_ITEMS"]
+        }
+      ]
+    },
+    "team": {
+      "label": "Team",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "team-bold-visual-v1",
+          "file": "team/team-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Team Bold Visual",
+          "description": "Large overlapping photo cards with gradient overlay on hover",
+          "placeholders": ["TEAM_TITLE", "TEAM_SUBTITLE"],
+          "repeat_blocks": ["TEAM_MEMBERS"]
+        },
+        {
+          "id": "team-clean-pro-v2",
+          "file": "team/team-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Team Clean Pro",
+          "description": "Clean grid with circular photos and professional card layout",
+          "placeholders": ["TEAM_TITLE", "TEAM_SUBTITLE"],
+          "repeat_blocks": ["TEAM_MEMBERS"]
+        },
+        {
+          "id": "team-modern-tech-v3",
+          "file": "team/team-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Team Modern Tech",
+          "description": "Dark cards with gradient borders and 3D hover effect",
+          "placeholders": ["TEAM_TITLE", "TEAM_SUBTITLE"],
+          "repeat_blocks": ["TEAM_MEMBERS"]
+        },
+        {
+          "id": "team-luxury-minimal-v4",
+          "file": "team/team-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Team Luxury Minimal",
+          "description": "Elegant editorial portraits with grayscale filter and serif names",
+          "placeholders": ["TEAM_TITLE"],
+          "repeat_blocks": ["TEAM_MEMBERS"]
+        },
+        {
+          "id": "team-warm-local-v5",
+          "file": "team/team-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Team Warm Local",
+          "description": "Warm rounded cards with friendly bios and decorative dots",
+          "placeholders": ["TEAM_TITLE", "TEAM_SUBTITLE"],
+          "repeat_blocks": ["TEAM_MEMBERS"]
+        }
+      ]
+    },
+    "testimonials": {
+      "label": "Testimonianze",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "testimonials-bold-visual-v1",
+          "file": "testimonials/testimonials-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Testimonials Bold Visual",
+          "description": "Spotlight cards on dark bg with large quote marks and star ratings",
+          "placeholders": ["TESTIMONIALS_TITLE"],
+          "repeat_blocks": ["TESTIMONIALS"]
+        },
+        {
+          "id": "testimonials-clean-pro-v2",
+          "file": "testimonials/testimonials-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Testimonials Clean Pro",
+          "description": "Card grid with star ratings and clean bordered layout",
+          "placeholders": ["TESTIMONIALS_TITLE"],
+          "repeat_blocks": ["TESTIMONIALS"]
+        },
+        {
+          "id": "testimonials-modern-tech-v3",
+          "file": "testimonials/testimonials-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Testimonials Modern Tech",
+          "description": "Glass cards on dark background with gradient glow lines",
+          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS_SUBTITLE"],
+          "repeat_blocks": ["TESTIMONIALS"]
+        },
+        {
+          "id": "testimonials-luxury-minimal-v4",
+          "file": "testimonials/testimonials-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Testimonials Luxury Minimal",
+          "description": "Large serif quotes in editorial stacked layout with elegant dividers",
+          "placeholders": ["TESTIMONIALS_TITLE"],
+          "repeat_blocks": ["TESTIMONIALS"]
+        },
+        {
+          "id": "testimonials-warm-local-v5",
+          "file": "testimonials/testimonials-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Testimonials Warm Local",
+          "description": "Warm speech-bubble style cards with star ratings",
+          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS_SUBTITLE"],
+          "repeat_blocks": ["TESTIMONIALS"]
+        }
+      ]
+    },
+    "faq": {
+      "label": "FAQ",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "faq-bold-visual-v1",
+          "file": "faq/faq-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "FAQ Bold Visual",
+          "description": "Bold accordion on dark background with dramatic open/close animation",
+          "placeholders": ["FAQ_TITLE"],
+          "repeat_blocks": ["FAQ_ITEMS"]
+        },
+        {
+          "id": "faq-clean-pro-v2",
+          "file": "faq/faq-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "FAQ Clean Pro",
+          "description": "Two-column layout with sticky header left and accordion right",
+          "placeholders": ["FAQ_TITLE", "FAQ_SUBTITLE"],
+          "repeat_blocks": ["FAQ_ITEMS"]
+        },
+        {
+          "id": "faq-modern-tech-v3",
+          "file": "faq/faq-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "FAQ Modern Tech",
+          "description": "Dark accordion cards with glow effect on active item",
+          "placeholders": ["FAQ_TITLE", "FAQ_SUBTITLE"],
+          "repeat_blocks": ["FAQ_ITEMS"]
+        },
+        {
+          "id": "faq-luxury-minimal-v4",
+          "file": "faq/faq-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "FAQ Luxury Minimal",
+          "description": "Ultra-minimal thin-line accordion with simple plus icon",
+          "placeholders": ["FAQ_TITLE"],
+          "repeat_blocks": ["FAQ_ITEMS"]
+        },
+        {
+          "id": "faq-warm-local-v5",
+          "file": "faq/faq-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "FAQ Warm Local",
+          "description": "Friendly accordion with warm rounded cards and tinted backgrounds",
+          "placeholders": ["FAQ_TITLE", "FAQ_SUBTITLE"],
+          "repeat_blocks": ["FAQ_ITEMS"]
+        }
+      ]
+    },
+    "cta": {
+      "label": "Call to Action",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "cta-bold-visual-v1",
+          "file": "cta/cta-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "CTA Bold Visual",
+          "description": "Full-width dark bg with gradient overlay and bold magnetic CTA button",
+          "placeholders": ["CTA_OVERLINE", "CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "cta-clean-pro-v2",
+          "file": "cta/cta-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "CTA Clean Pro",
+          "description": "Clean bordered card with subtle background tint and centered layout",
+          "placeholders": ["CTA_OVERLINE", "CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "cta-modern-tech-v3",
+          "file": "cta/cta-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "CTA Modern Tech",
+          "description": "Gradient text with glowing button and grid background pattern",
+          "placeholders": ["CTA_OVERLINE", "CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "cta-luxury-minimal-v4",
+          "file": "cta/cta-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "CTA Luxury Minimal",
+          "description": "Minimal CTA with thin-bordered button and vertical divider accents",
+          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "cta-warm-local-v5",
+          "file": "cta/cta-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "CTA Warm Local",
+          "description": "Warm gradient card with pill-shaped button and friendly note",
+          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL", "CTA_NOTE"],
+          "repeat_blocks": []
+        }
+      ]
+    },
+    "footer": {
+      "label": "Footer",
+      "required": true,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "footer-bold-visual-v1",
+          "file": "footer/footer-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Footer Bold Visual",
+          "description": "Bold 4-column dark footer with gradient top border and social icons",
+          "placeholders": ["BUSINESS_NAME", "FOOTER_DESCRIPTION", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "CURRENT_YEAR"],
+          "repeat_blocks": ["FOOTER_LINKS"]
+        },
+        {
+          "id": "footer-clean-pro-v2",
+          "file": "footer/footer-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Footer Clean Pro",
+          "description": "Clean multi-column footer with sitemap-style navigation",
+          "placeholders": ["BUSINESS_NAME", "FOOTER_DESCRIPTION", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "CURRENT_YEAR"],
+          "repeat_blocks": ["FOOTER_LINKS"]
+        },
+        {
+          "id": "footer-modern-tech-v3",
+          "file": "footer/footer-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Footer Modern Tech",
+          "description": "Dark footer with gradient accent line and glow on hover links",
+          "placeholders": ["BUSINESS_NAME", "FOOTER_DESCRIPTION", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "CURRENT_YEAR"],
+          "repeat_blocks": ["FOOTER_LINKS"]
+        },
+        {
+          "id": "footer-luxury-minimal-v4",
+          "file": "footer/footer-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Footer Luxury Minimal",
+          "description": "Minimal centered footer with just essentials and elegant spacing",
+          "placeholders": ["BUSINESS_NAME", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "CURRENT_YEAR"],
+          "repeat_blocks": ["FOOTER_LINKS"]
+        },
+        {
+          "id": "footer-warm-local-v5",
+          "file": "footer/footer-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Footer Warm Local",
+          "description": "Warm footer with contact icons, rounded social buttons, and friendly tone",
+          "placeholders": ["BUSINESS_NAME", "FOOTER_DESCRIPTION", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "CURRENT_YEAR"],
+          "repeat_blocks": ["FOOTER_LINKS"]
+        }
+      ]
+    },
+    "gallery": {
+      "label": "Galleria",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "gallery-bold-visual-v1",
+          "file": "gallery/gallery-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Gallery Bold Visual",
+          "description": "Dramatic masonry gallery with image zoom and caption overlays",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["GALLERY_ITEMS"]
+        },
+        {
+          "id": "gallery-clean-pro-v2",
+          "file": "gallery/gallery-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Gallery Clean Pro",
+          "description": "Clean grid gallery with professional hover effects",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["GALLERY_ITEMS"]
+        },
+        {
+          "id": "gallery-modern-tech-v3",
+          "file": "gallery/gallery-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Gallery Modern Tech",
+          "description": "Dark gallery with glow borders and glassmorphism overlays",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["GALLERY_ITEMS"]
+        },
+        {
+          "id": "gallery-luxury-minimal-v4",
+          "file": "gallery/gallery-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Gallery Luxury Minimal",
+          "description": "Elegant minimal gallery with editorial spacing",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["GALLERY_ITEMS"]
+        },
+        {
+          "id": "gallery-warm-local-v5",
+          "file": "gallery/gallery-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Gallery Warm Local",
+          "description": "Warm rounded gallery cards with friendly captions",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["GALLERY_ITEMS"]
+        }
+      ]
+    },
+    "contact": {
+      "label": "Contatti",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "contact-bold-visual-v1",
+          "file": "contact/contact-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Contact Bold Visual",
+          "description": "Dramatic contact with image bg, info icons, and bold form",
+          "placeholders": ["HEADLINE", "SUBTEXT", "IMAGE_URL", "IMAGE_ALT", "FORM_TITLE", "CTA_TEXT", "PLACEHOLDER_NAME", "PLACEHOLDER_EMAIL", "PLACEHOLDER_PHONE", "PLACEHOLDER_MESSAGE"],
+          "repeat_blocks": ["INFO_ITEMS"]
+        },
+        {
+          "id": "contact-clean-pro-v2",
+          "file": "contact/contact-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Contact Clean Pro",
+          "description": "Clean split contact form with structured info layout",
+          "placeholders": ["HEADLINE", "SUBTEXT", "FORM_TITLE", "CTA_TEXT", "PLACEHOLDER_NAME", "PLACEHOLDER_EMAIL", "PLACEHOLDER_PHONE", "PLACEHOLDER_MESSAGE"],
+          "repeat_blocks": ["INFO_ITEMS"]
+        },
+        {
+          "id": "contact-modern-tech-v3",
+          "file": "contact/contact-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Contact Modern Tech",
+          "description": "Dark contact form with glassmorphism and gradient accents",
+          "placeholders": ["HEADLINE", "SUBTEXT", "FORM_TITLE", "CTA_TEXT", "PLACEHOLDER_NAME", "PLACEHOLDER_EMAIL", "PLACEHOLDER_PHONE", "PLACEHOLDER_MESSAGE"],
+          "repeat_blocks": ["INFO_ITEMS"]
+        },
+        {
+          "id": "contact-luxury-minimal-v4",
+          "file": "contact/contact-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Contact Luxury Minimal",
+          "description": "Elegant minimal contact with serif typography and thin borders",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT", "PLACEHOLDER_NAME", "PLACEHOLDER_EMAIL", "PLACEHOLDER_MESSAGE"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "contact-warm-local-v5",
+          "file": "contact/contact-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Contact Warm Local",
+          "description": "Warm friendly contact form with rounded inputs and icons",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT", "PLACEHOLDER_NAME", "PLACEHOLDER_EMAIL", "PLACEHOLDER_PHONE", "PLACEHOLDER_MESSAGE"],
+          "repeat_blocks": ["INFO_ITEMS"]
+        }
+      ]
+    },
+    "process": {
+      "label": "Processo",
+      "required": false,
+      "pool": "shared",
+      "variants": [
+        {
+          "id": "process-bold-visual-v1",
+          "file": "process/process-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Process Bold Visual",
+          "description": "Dramatic stepped process with background image and bold numbering",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "BACKGROUND_IMAGE"],
+          "repeat_blocks": ["STEPS"]
+        },
+        {
+          "id": "process-modern-tech-v3",
+          "file": "process/process-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Process Modern Tech",
+          "description": "Dark process cards with gradient accents and glowing numbers",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["STEPS"]
+        },
+        {
+          "id": "process-luxury-minimal-v4",
+          "file": "process/process-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Process Luxury Minimal",
+          "description": "Elegant minimal process with serif numbering and thin lines",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["STEPS"]
+        }
+      ]
+    },
+    "showcase": {
+      "label": "Progetti / Portfolio",
+      "required": false,
+      "pool": "category:portfolio",
+      "variants": [
+        {
+          "id": "showcase-bold-visual-v1",
+          "file": "showcase/showcase-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Showcase Bold Visual",
+          "description": "Dramatic portfolio grid with image zoom and overlay captions",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["PROJECTS"]
+        },
+        {
+          "id": "showcase-modern-tech-v3",
+          "file": "showcase/showcase-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Showcase Modern Tech",
+          "description": "Dark portfolio cards with gradient borders and category badges",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["PROJECTS"]
+        },
+        {
+          "id": "showcase-luxury-minimal-v4",
+          "file": "showcase/showcase-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Showcase Luxury Minimal",
+          "description": "Elegant portfolio with editorial image layout and serif captions",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["PROJECTS"]
+        }
+      ]
+    },
+    "skills": {
+      "label": "Competenze",
+      "required": false,
+      "pool": "category:portfolio",
+      "variants": [
+        {
+          "id": "skills-bold-visual-v1",
+          "file": "skills/skills-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Skills Bold Visual",
+          "description": "Bold progress bars with animated counters and tool icons",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["SKILLS", "TOOLS"]
+        },
+        {
+          "id": "skills-modern-tech-v3",
+          "file": "skills/skills-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Skills Modern Tech",
+          "description": "Dark skill cards with glowing progress bars and percentage display",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["SKILLS"]
+        },
+        {
+          "id": "skills-luxury-minimal-v4",
+          "file": "skills/skills-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Skills Luxury Minimal",
+          "description": "Elegant circular progress indicators with serif labels",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["SKILLS"]
+        }
+      ]
+    },
+    "menu": {
+      "label": "Menu",
+      "required": false,
+      "pool": "category:ristorante",
+      "variants": [
+        {
+          "id": "menu-bold-visual-v1",
+          "file": "menu/menu-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Menu Bold Visual",
+          "description": "Dramatic menu with tab navigation and bold category headings",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT", "MENU_NOTE"],
+          "repeat_blocks": ["CATEGORIES", "MENU_ITEMS"]
+        },
+        {
+          "id": "menu-luxury-minimal-v4",
+          "file": "menu/menu-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Menu Luxury Minimal",
+          "description": "Elegant menu with serif names, thin dividers and dotted price lines",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "MENU_NOTE"],
+          "repeat_blocks": ["CATEGORIES", "MENU_ITEMS"]
+        },
+        {
+          "id": "menu-warm-local-v5",
+          "file": "menu/menu-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Menu Warm Local",
+          "description": "Warm friendly menu with emoji icons and rounded cards",
+          "placeholders": ["EMOJI_ICON", "HEADLINE", "SUBTEXT", "MENU_NOTE"],
+          "repeat_blocks": ["CATEGORIES", "MENU_ITEMS"]
+        }
+      ]
+    },
+    "booking": {
+      "label": "Prenotazione",
+      "required": false,
+      "pool": "category:ristorante",
+      "variants": [
+        {
+          "id": "booking-bold-visual-v1",
+          "file": "booking/booking-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Booking Bold Visual",
+          "description": "Dramatic booking form with background imagery and bold fields",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT", "CTA_TEXT"],
+          "repeat_blocks": ["INFO_ITEMS"]
+        },
+        {
+          "id": "booking-luxury-minimal-v4",
+          "file": "booking/booking-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Booking Luxury Minimal",
+          "description": "Elegant booking form with serif labels and thin borders",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT", "CTA_TEXT"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "booking-warm-local-v5",
+          "file": "booking/booking-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Booking Warm Local",
+          "description": "Warm friendly booking form with emoji icons and rounded inputs",
+          "placeholders": ["EMOJI_ICON", "HEADLINE", "SUBTEXT", "CTA_TEXT"],
+          "repeat_blocks": ["INFO_ITEMS"]
+        }
+      ]
+    },
+    "chef": {
+      "label": "Chef / Team Cucina",
+      "required": false,
+      "pool": "category:ristorante",
+      "variants": [
+        {
+          "id": "chef-bold-visual-v1",
+          "file": "chef/chef-bold-visual-v1.html",
+          "cluster": "v1",
+          "name": "Chef Bold Visual",
+          "description": "Dramatic chef spotlight with large image, bio and skill badges",
+          "placeholders": ["SECTION_LABEL", "CHEF_NAME", "CHEF_ROLE", "CHEF_BIO", "CHEF_QUOTE", "CHEF_IMAGE"],
+          "repeat_blocks": ["SKILLS"]
+        },
+        {
+          "id": "chef-luxury-minimal-v4",
+          "file": "chef/chef-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Chef Luxury Minimal",
+          "description": "Elegant chef portrait with editorial typography",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["TEAM"]
+        },
+        {
+          "id": "chef-warm-local-v5",
+          "file": "chef/chef-warm-local-v5.html",
+          "cluster": "v5",
+          "name": "Chef Warm Local",
+          "description": "Warm team cards with photos, bios and specialty tags",
+          "placeholders": ["EMOJI_ICON", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["TEAM"]
+        }
+      ]
+    },
+    "cases": {
+      "label": "Casi Studio",
+      "required": false,
+      "pool": "category:studio_professionale",
+      "variants": [
+        {
+          "id": "cases-clean-pro-v2",
+          "file": "cases/cases-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Cases Clean Pro",
+          "description": "Clean case study cards with categories, descriptions and result badges",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["CASES"]
+        },
+        {
+          "id": "cases-modern-tech-v3",
+          "file": "cases/cases-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Cases Modern Tech",
+          "description": "Dark case study cards with numbered badges and gradient borders",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["CASES"]
+        },
+        {
+          "id": "cases-luxury-minimal-v4",
+          "file": "cases/cases-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Cases Luxury Minimal",
+          "description": "Elegant minimal case studies with thin dividers and serif titles",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["CASES"]
+        }
+      ]
+    },
+    "certifications": {
+      "label": "Certificazioni",
+      "required": false,
+      "pool": "category:studio_professionale",
+      "variants": [
+        {
+          "id": "certifications-clean-pro-v2",
+          "file": "certifications/certifications-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Certifications Clean Pro",
+          "description": "Clean certification cards with icons, names and issuers",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["CERTIFICATIONS"]
+        },
+        {
+          "id": "certifications-modern-tech-v3",
+          "file": "certifications/certifications-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Certifications Modern Tech",
+          "description": "Dark certification badges with glow borders and gradient icons",
+          "placeholders": ["SECTION_LABEL", "HEADLINE", "SUBTEXT"],
+          "repeat_blocks": ["CERTIFICATIONS"]
+        },
+        {
+          "id": "certifications-luxury-minimal-v4",
+          "file": "certifications/certifications-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Certifications Luxury Minimal",
+          "description": "Elegant minimal certification list with thin lines",
+          "placeholders": ["SECTION_LABEL", "HEADLINE"],
+          "repeat_blocks": ["CERTIFICATIONS"]
+        }
+      ]
+    },
+    "consultation": {
+      "label": "Consulenza",
+      "required": false,
+      "pool": "category:studio_professionale",
+      "variants": [
+        {
+          "id": "consultation-clean-pro-v2",
+          "file": "consultation/consultation-clean-pro-v2.html",
+          "cluster": "v2",
+          "name": "Consultation Clean Pro",
+          "description": "Clean consultation booking form with professional layout",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "consultation-modern-tech-v3",
+          "file": "consultation/consultation-modern-tech-v3.html",
+          "cluster": "v3",
+          "name": "Consultation Modern Tech",
+          "description": "Dark consultation section with gradient form elements",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT"],
+          "repeat_blocks": []
+        },
+        {
+          "id": "consultation-luxury-minimal-v4",
+          "file": "consultation/consultation-luxury-minimal-v4.html",
+          "cluster": "v4",
+          "name": "Consultation Luxury Minimal",
+          "description": "Elegant minimal consultation CTA with serif typography",
+          "placeholders": ["HEADLINE", "SUBTEXT", "CTA_TEXT"],
+          "repeat_blocks": []
+        }
+      ]
+    }
+  },
+  "repeat_block_schemas": {
+    "STATS_ITEMS": {
+      "item_placeholders": ["STAT_ICON", "STAT_NUMBER", "STAT_SUFFIX", "STAT_LABEL"]
+    },
+    "TEAM_MEMBERS": {
+      "item_placeholders": ["MEMBER_IMAGE_URL", "MEMBER_NAME", "MEMBER_ROLE", "MEMBER_BIO"]
+    },
+    "TESTIMONIALS": {
+      "item_placeholders": ["TESTIMONIAL_TEXT", "TESTIMONIAL_AUTHOR", "TESTIMONIAL_ROLE", "TESTIMONIAL_AVATAR_URL"]
+    },
+    "FAQ_ITEMS": {
+      "item_placeholders": ["FAQ_QUESTION", "FAQ_ANSWER"]
+    },
+    "FOOTER_LINKS": {
+      "item_placeholders": ["LINK_URL", "LINK_TEXT"]
+    },
+    "SERVICES": {
+      "item_placeholders": ["SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION", "SERVICE_IMAGE"]
+    },
+    "GALLERY_ITEMS": {
+      "item_placeholders": ["GALLERY_IMAGE", "GALLERY_ALT", "GALLERY_CAPTION"]
+    },
+    "INFO_ITEMS": {
+      "item_placeholders": ["INFO_ICON", "INFO_TEXT"]
+    },
+    "STATS": {
+      "item_placeholders": ["STAT_NUMBER", "STAT_LABEL"]
+    },
+    "PROJECTS": {
+      "item_placeholders": ["PROJECT_IMAGE", "PROJECT_TITLE", "PROJECT_DESCRIPTION", "PROJECT_CATEGORY"]
+    },
+    "SKILLS": {
+      "item_placeholders": ["SKILL_NAME", "SKILL_LEVEL", "SKILL_ICON"]
+    },
+    "TOOLS": {
+      "item_placeholders": ["TOOL_ICON", "TOOL_NAME"]
+    },
+    "STEPS": {
+      "item_placeholders": ["STEP_NUMBER", "STEP_TITLE", "STEP_DESCRIPTION"]
+    },
+    "CATEGORIES": {
+      "item_placeholders": ["CATEGORY_NAME"]
+    },
+    "MENU_ITEMS": {
+      "item_placeholders": ["ITEM_NAME", "ITEM_DESCRIPTION", "ITEM_PRICE", "ITEM_EMOJI"]
+    },
+    "CASES": {
+      "item_placeholders": ["CASE_TITLE", "CASE_DESCRIPTION", "CASE_RESULT", "CASE_NUMBER", "CASE_CATEGORY", "CASE_RESULT_ICON"]
+    },
+    "CERTIFICATIONS": {
+      "item_placeholders": ["CERT_ICON", "CERT_NAME", "CERT_ISSUER", "CERT_YEAR"]
+    },
+    "TEAM": {
+      "item_placeholders": ["MEMBER_IMAGE", "MEMBER_NAME", "MEMBER_ROLE", "MEMBER_BIO", "MEMBER_SPECIALTY"]
+    }
+  },
+  "cluster_to_section_map": {
+    "_comment": "Maps which clusters are available for each section. Used by assembler to pick variant.",
+    "hero": ["v1", "v2", "v3", "v4", "v5"],
+    "about": ["v1", "v2", "v3", "v4", "v5"],
+    "services": ["v1", "v2", "v3", "v4", "v5"],
+    "stats": ["v1", "v2", "v3", "v4", "v5"],
+    "team": ["v1", "v2", "v3", "v4", "v5"],
+    "testimonials": ["v1", "v2", "v3", "v4", "v5"],
+    "faq": ["v1", "v2", "v3", "v4", "v5"],
+    "cta": ["v1", "v2", "v3", "v4", "v5"],
+    "footer": ["v1", "v2", "v3", "v4", "v5"],
+    "gallery": ["v1", "v2", "v3", "v4", "v5"],
+    "contact": ["v1", "v2", "v3", "v4", "v5"],
+    "process": ["v1", "v3", "v4"],
+    "showcase": ["v1", "v3", "v4"],
+    "skills": ["v1", "v3", "v4"],
+    "menu": ["v1", "v4", "v5"],
+    "booking": ["v1", "v4", "v5"],
+    "chef": ["v1", "v4", "v5"],
+    "cases": ["v2", "v3", "v4"],
+    "certifications": ["v2", "v3", "v4"],
+    "consultation": ["v2", "v3", "v4"]
+  },
+  "total_components": 82
+}

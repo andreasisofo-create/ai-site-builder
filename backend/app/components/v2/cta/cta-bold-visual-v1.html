@@ -1,0 +1,85 @@
+<!-- CTA Bold Visual V1: full-width with background image and bold text overlay -->
+<section id="cta" class="cta-bold-visual py-24 md:py-32 overflow-hidden relative">
+  <style>
+    .cta-bold-visual {
+      background: var(--color-text);
+      color: var(--color-bg);
+      position: relative;
+    }
+    .cta-bold-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-primary) 100%);
+      opacity: 0.2;
+    }
+    .cta-bold-visual .cta-container {
+      max-width: 64rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-bold-visual .cta-overline {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--color-primary);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .cta-bold-visual h2 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--color-bg);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .cta-bold-visual h2 { font-size: 3.5rem; }
+    }
+    @media (min-width: 1024px) {
+      .cta-bold-visual h2 { font-size: 4rem; }
+    }
+    .cta-bold-visual .cta-subtitle {
+      font-size: 1.125rem;
+      color: rgba(255,255,255,0.6);
+      max-width: 36rem;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+    .cta-bold-visual .cta-button {
+      display: inline-block;
+      padding: 1rem 3rem;
+      background: var(--color-primary);
+      color: var(--color-bg);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 32px color-mix(in srgb, var(--color-primary) 40%, transparent);
+    }
+    .cta-bold-visual .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--color-primary) 50%, transparent);
+    }
+  </style>
+
+  <div class="cta-container">
+    <p class="cta-overline" data-animate="fade-up">{{CTA_OVERLINE}}</p>
+    <h2 data-animate="text-split" data-split-type="words">{{CTA_TITLE}}</h2>
+    <p class="cta-subtitle" data-animate="blur-slide" data-delay="0.2">{{CTA_SUBTITLE}}</p>
+    <div data-animate="bounce-in" data-delay="0.4">
+      <a href="{{CTA_BUTTON_URL}}" class="cta-button" data-animate="magnetic">{{CTA_BUTTON_TEXT}}</a>
+    </div>
+  </div>
+
+  <div style="position:absolute;top:-20%;left:-10%;width:50%;height:70%;background:var(--color-primary);opacity:0.06;border-radius:50%;filter:blur(100px);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-20%;right:-10%;width:40%;height:60%;background:var(--color-secondary);opacity:0.06;border-radius:50%;filter:blur(100px);pointer-events:none;"></div>
+</section>

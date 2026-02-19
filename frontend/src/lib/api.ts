@@ -207,6 +207,51 @@ export async function generateWebsite(data: GenerateRequest): Promise<GenerateRe
   return handleResponse<GenerateResponse>(res);
 }
 
+// ============ V2 AI GENERATION (pgvector pipeline) ============
+
+export interface GenerateV2Request {
+  category: string;
+  description: string;
+  business_name?: string;
+  logo_base64?: string | null;
+  color_primary?: string;
+  client_ref?: string;
+}
+
+export interface GenerateV2Response {
+  success: boolean;
+  html?: string;
+  style_dna?: Record<string, any>;
+  layout_hash?: string;
+  components_used?: Record<string, any>;
+  sections?: string[];
+  tokens_input?: number;
+  tokens_output?: number;
+  error?: string;
+}
+
+export async function generateWebsiteV2(data: GenerateV2Request): Promise<GenerateV2Response> {
+  const headers = getAuthHeaders();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 180_000); // 3 min timeout
+  try {
+    const res = await fetch(`${API_BASE}/api/v2/generate/`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    return handleResponse<GenerateV2Response>(res);
+  } catch (err: any) {
+    if (err.name === "AbortError") {
+      return { success: false, error: "Timeout: la generazione ha impiegato troppo tempo." };
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 // ============ REFINE (CHAT AI) ============
 
 export interface RefineRequest {

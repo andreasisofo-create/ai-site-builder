@@ -1,0 +1,133 @@
+<!-- FAQ Bold Visual V1: large accordion with bold typography, dramatic open/close -->
+<section id="faq" class="faq-bold-visual py-24 md:py-32 overflow-hidden relative">
+  <style>
+    .faq-bold-visual {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+    .faq-bold-visual .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .faq-bold-visual .section-header .overline {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--color-primary);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .faq-bold-visual .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--color-bg);
+    }
+    @media (min-width: 768px) {
+      .faq-bold-visual .section-header h2 { font-size: 3rem; }
+    }
+    .faq-bold-visual .faq-list {
+      max-width: 48rem;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .faq-bold-visual .faq-item {
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    .faq-bold-visual .faq-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.75rem 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      color: var(--color-bg);
+    }
+    .faq-bold-visual .faq-trigger:focus { outline: 2px solid var(--color-primary); outline-offset: 4px; border-radius: 4px; }
+    .faq-bold-visual .faq-question {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 700;
+      transition: color 0.3s ease;
+    }
+    @media (min-width: 768px) {
+      .faq-bold-visual .faq-question { font-size: 1.375rem; }
+    }
+    .faq-bold-visual .faq-item.is-open .faq-question {
+      color: var(--color-primary);
+    }
+    .faq-bold-visual .faq-icon {
+      flex-shrink: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.4s ease, background 0.3s ease;
+    }
+    .faq-bold-visual .faq-item.is-open .faq-icon {
+      transform: rotate(45deg);
+      background: var(--color-primary);
+    }
+    .faq-bold-visual .faq-icon svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: var(--color-bg);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+    .faq-bold-visual .faq-answer {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.5s ease;
+    }
+    .faq-bold-visual .faq-answer-inner {
+      padding-bottom: 1.75rem;
+      padding-right: 3.5rem;
+    }
+    .faq-bold-visual .faq-answer-inner p {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.6);
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1;">
+    <div class="section-header" data-animate="fade-up">
+      <p class="overline">FAQ</p>
+      <h2 data-animate="text-split" data-split-type="words">{{FAQ_TITLE}}</h2>
+    </div>
+
+    <div class="faq-list" data-animate="stagger">
+      <!-- REPEAT:FAQ_ITEMS -->
+      <div class="faq-item stagger-item" data-animate="fade-up">
+        <button type="button" class="faq-trigger" onclick="var p=this.parentElement;var a=p.querySelector('.faq-answer');var icon=this.querySelector('.faq-icon');p.classList.toggle('is-open');if(p.classList.contains('is-open')){a.style.maxHeight=a.scrollHeight+'px';}else{a.style.maxHeight='0';}">
+          <span class="faq-question">{{FAQ_QUESTION}}</span>
+          <div class="faq-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg>
+          </div>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            <p>{{FAQ_ANSWER}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:FAQ_ITEMS -->
+    </div>
+  </div>
+
+  <div style="position:absolute;top:0;right:0;width:30%;height:100%;background:linear-gradient(to left,color-mix(in srgb, var(--color-primary) 5%, transparent),transparent);pointer-events:none;"></div>
+</section>

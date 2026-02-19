@@ -1,0 +1,118 @@
+<!-- FAQ Luxury Minimal V4: ultra-minimal accordion with thin lines -->
+<section id="faq" class="faq-luxury-minimal py-24 md:py-36">
+  <style>
+    .faq-luxury-minimal {
+      background: var(--color-bg);
+    }
+    .faq-luxury-minimal .faq-container {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .faq-luxury-minimal .section-header {
+      text-align: center;
+      margin-bottom: 4.5rem;
+    }
+    .faq-luxury-minimal .section-header .overline {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--color-text-muted);
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+    }
+    .faq-luxury-minimal .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 400;
+      color: var(--color-text);
+      font-style: italic;
+    }
+    @media (min-width: 768px) {
+      .faq-luxury-minimal .section-header h2 { font-size: 2.25rem; }
+    }
+    .faq-luxury-minimal .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .faq-luxury-minimal .faq-item {
+      border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    }
+    .faq-luxury-minimal .faq-item:last-child {
+      border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    }
+    .faq-luxury-minimal .faq-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.5rem 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      color: var(--color-text);
+    }
+    .faq-luxury-minimal .faq-trigger:focus { outline: 2px solid var(--color-primary); outline-offset: 4px; border-radius: 2px; }
+    .faq-luxury-minimal .faq-question {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+    }
+    @media (min-width: 768px) {
+      .faq-luxury-minimal .faq-question { font-size: 1.125rem; }
+    }
+    .faq-luxury-minimal .faq-icon {
+      flex-shrink: 0;
+      font-size: 1.25rem;
+      color: var(--color-text-muted);
+      transition: transform 0.4s ease;
+      font-weight: 300;
+      width: 1.5rem;
+      text-align: center;
+    }
+    .faq-luxury-minimal .faq-item.is-open .faq-icon {
+      transform: rotate(45deg);
+    }
+    .faq-luxury-minimal .faq-answer {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.5s ease;
+    }
+    .faq-luxury-minimal .faq-answer-inner {
+      padding-bottom: 1.5rem;
+      padding-right: 3rem;
+    }
+    .faq-luxury-minimal .faq-answer-inner p {
+      font-size: 0.9375rem;
+      line-height: 1.8;
+      color: var(--color-text-muted);
+    }
+  </style>
+
+  <div class="faq-container">
+    <div class="section-header" data-animate="fade-up">
+      <p class="overline">Domande Frequenti</p>
+      <h2 data-animate="text-split" data-split-type="words">{{FAQ_TITLE}}</h2>
+    </div>
+
+    <div class="faq-list" data-animate="stagger">
+      <!-- REPEAT:FAQ_ITEMS -->
+      <div class="faq-item stagger-item" data-animate="fade-up">
+        <button type="button" class="faq-trigger" onclick="var p=this.parentElement;var a=p.querySelector('.faq-answer');p.classList.toggle('is-open');if(p.classList.contains('is-open')){a.style.maxHeight=a.scrollHeight+'px';}else{a.style.maxHeight='0';}">
+          <span class="faq-question">{{FAQ_QUESTION}}</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            <p>{{FAQ_ANSWER}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:FAQ_ITEMS -->
+    </div>
+  </div>
+</section>

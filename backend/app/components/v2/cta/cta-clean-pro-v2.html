@@ -1,0 +1,71 @@
+<!-- CTA Clean Pro V2: clean centered CTA with border and subtle bg -->
+<section id="cta" class="cta-clean-pro py-20 md:py-24">
+  <style>
+    .cta-clean-pro {
+      background: var(--color-bg);
+    }
+    .cta-clean-pro .cta-card {
+      max-width: 56rem;
+      margin: 0 auto;
+      padding: 3.5rem 2rem;
+      text-align: center;
+      border-radius: 1.25rem;
+      border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+      background: color-mix(in srgb, var(--color-primary) 3%, var(--color-bg));
+    }
+    @media (min-width: 768px) {
+      .cta-clean-pro .cta-card { padding: 4.5rem 4rem; }
+    }
+    .cta-clean-pro .cta-overline {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--color-primary);
+      margin-bottom: 1.25rem;
+    }
+    .cta-clean-pro h2 {
+      font-family: var(--font-heading);
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 1rem;
+    }
+    @media (min-width: 768px) {
+      .cta-clean-pro h2 { font-size: 2.25rem; }
+    }
+    .cta-clean-pro .cta-subtitle {
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      max-width: 32rem;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+    }
+    .cta-clean-pro .cta-button {
+      display: inline-block;
+      padding: 0.875rem 2.5rem;
+      background: var(--color-primary);
+      color: var(--color-bg);
+      font-weight: 600;
+      font-size: 0.9375rem;
+      border-radius: 0.625rem;
+      text-decoration: none;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 16px color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
+    .cta-clean-pro .cta-button:hover {
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--color-primary) 35%, transparent);
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;">
+    <div class="cta-card" data-animate="fade-up">
+      <p class="cta-overline">{{CTA_OVERLINE}}</p>
+      <h2 data-animate="text-split" data-split-type="words">{{CTA_TITLE}}</h2>
+      <p class="cta-subtitle">{{CTA_SUBTITLE}}</p>
+      <div data-animate="bounce-in" data-delay="0.3">
+        <a href="{{CTA_BUTTON_URL}}" class="cta-button" data-animate="magnetic">{{CTA_BUTTON_TEXT}}</a>
+      </div>
+    </div>
+  </div>
+</section>

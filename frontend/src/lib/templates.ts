@@ -298,6 +298,11 @@ export const SECTION_LABELS: Record<string, string> = {
   cta: "Call to Action",
   contact: "Contatti / Form",
   footer: "Footer completo",
+  menu: "Menu / Listino",
+  programs: "Programmi / Corsi",
+  products: "Prodotti",
+  pricing: "Prezzi / Piani",
+  portfolio: "Portfolio / Lavori",
 };
 
 export const SECTION_LABELS_EN: Record<string, string> = {
@@ -311,6 +316,11 @@ export const SECTION_LABELS_EN: Record<string, string> = {
   cta: "Call to Action",
   contact: "Contact / Form",
   footer: "Full Footer",
+  menu: "Menu / Price List",
+  programs: "Programs / Courses",
+  products: "Products",
+  pricing: "Pricing / Plans",
+  portfolio: "Portfolio / Work",
 };
 
 export function getSectionLabels(lang: string): Record<string, string> {
@@ -448,6 +458,146 @@ export const STYLE_TO_MOOD: Record<string, { mood: string; primaryColor: string;
   "corporate": { mood: "corporate", primaryColor: "#2c3e50", secondaryColor: "#3498db" },
   "playful": { mood: "modern, creative", primaryColor: "#6366f1", secondaryColor: "#8b5cf6" },
 };
+
+// ============ V2 CATEGORIES (pgvector pipeline) ============
+
+export interface V2Category {
+  slug: string;
+  name: string;
+  nameEn: string;
+  description: string;
+  descriptionEn: string;
+  icon: string;
+  defaultCluster: string;
+  defaultColor: string;
+  /** Maps to backend CategoryBlueprint.sections_required */
+  sectionsRequired: string[];
+}
+
+export const V2_CATEGORIES: V2Category[] = [
+  {
+    slug: "ristorante",
+    name: "Ristorante",
+    nameEn: "Restaurant",
+    description: "Ristoranti, trattorie, pizzerie, bar",
+    descriptionEn: "Restaurants, trattorias, pizzerias, bars",
+    icon: "🍽️",
+    defaultCluster: "V1",
+    defaultColor: "#b8860b",
+    sectionsRequired: ["hero", "menu", "about", "gallery", "contact", "footer"],
+  },
+  {
+    slug: "studio_professionale",
+    name: "Studio Professionale",
+    nameEn: "Professional Firm",
+    description: "Studi legali, commercialisti, consulenti",
+    descriptionEn: "Law firms, accountants, consultants",
+    icon: "⚖️",
+    defaultCluster: "V2",
+    defaultColor: "#1a3c5e",
+    sectionsRequired: ["hero", "services", "about", "contact", "footer"],
+  },
+  {
+    slug: "portfolio",
+    name: "Portfolio",
+    nameEn: "Portfolio",
+    description: "Fotografi, designer, artisti, freelancer",
+    descriptionEn: "Photographers, designers, artists, freelancers",
+    icon: "🎨",
+    defaultCluster: "V4",
+    defaultColor: "#2d3436",
+    sectionsRequired: ["hero", "gallery", "about", "contact", "footer"],
+  },
+  {
+    slug: "fitness",
+    name: "Fitness",
+    nameEn: "Fitness",
+    description: "Palestre, personal trainer, centri sportivi",
+    descriptionEn: "Gyms, personal trainers, sports centers",
+    icon: "💪",
+    defaultCluster: "V1",
+    defaultColor: "#e84393",
+    sectionsRequired: ["hero", "programs", "about", "gallery", "contact", "footer"],
+  },
+  {
+    slug: "bellezza",
+    name: "Bellezza",
+    nameEn: "Beauty",
+    description: "Parrucchieri, estetisti, centri benessere",
+    descriptionEn: "Hairdressers, beauticians, wellness centers",
+    icon: "💅",
+    defaultCluster: "V1",
+    defaultColor: "#c5a04b",
+    sectionsRequired: ["hero", "services", "gallery", "about", "contact", "footer"],
+  },
+  {
+    slug: "salute",
+    name: "Salute",
+    nameEn: "Healthcare",
+    description: "Medici, dentisti, fisioterapisti, cliniche",
+    descriptionEn: "Doctors, dentists, physiotherapists, clinics",
+    icon: "🏥",
+    defaultCluster: "V2",
+    defaultColor: "#3B82F6",
+    sectionsRequired: ["hero", "services", "about", "team", "contact", "footer"],
+  },
+  {
+    slug: "saas",
+    name: "SaaS / Tech",
+    nameEn: "SaaS / Tech",
+    description: "Startup, prodotti digitali, landing page",
+    descriptionEn: "Startups, digital products, landing pages",
+    icon: "🚀",
+    defaultCluster: "V3",
+    defaultColor: "#6c5ce7",
+    sectionsRequired: ["hero", "features", "pricing", "about", "contact", "footer"],
+  },
+  {
+    slug: "ecommerce",
+    name: "E-commerce",
+    nameEn: "E-commerce",
+    description: "Negozi online, vetrine prodotti, shop",
+    descriptionEn: "Online shops, product showcases",
+    icon: "🛍️",
+    defaultCluster: "V3",
+    defaultColor: "#10B981",
+    sectionsRequired: ["hero", "products", "about", "contact", "footer"],
+  },
+  {
+    slug: "artigiani",
+    name: "Artigiani",
+    nameEn: "Craftsmen",
+    description: "Idraulici, elettricisti, falegnami, artigiani",
+    descriptionEn: "Plumbers, electricians, carpenters, craftsmen",
+    icon: "🔧",
+    defaultCluster: "V5",
+    defaultColor: "#d35400",
+    sectionsRequired: ["hero", "services", "about", "gallery", "contact", "footer"],
+  },
+  {
+    slug: "agenzia",
+    name: "Agenzia",
+    nameEn: "Agency",
+    description: "Agenzie marketing, comunicazione, digitali",
+    descriptionEn: "Marketing, communication, digital agencies",
+    icon: "📊",
+    defaultCluster: "V2",
+    defaultColor: "#8B5CF6",
+    sectionsRequired: ["hero", "services", "about", "portfolio", "contact", "footer"],
+  },
+];
+
+export function getV2CategoryName(cat: V2Category, lang: string): string {
+  return lang === "en" ? cat.nameEn : cat.name;
+}
+
+export function getV2CategoryDescription(cat: V2Category, lang: string): string {
+  return lang === "en" ? cat.descriptionEn : cat.description;
+}
+
+export function findV2CategoryBySlug(slug: string): V2Category | null {
+  return V2_CATEGORIES.find(c => c.slug === slug) || null;
+}
 
 // ============ HELPER: find style by ID ============
 export function findStyleById(styleId: string): { category: TemplateCategory; style: TemplateStyle } | null {

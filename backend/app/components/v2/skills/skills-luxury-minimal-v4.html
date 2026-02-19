@@ -1,0 +1,133 @@
+<style>
+  .skills-lux-v4 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .skills-lux-v4__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .skills-lux-v4__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .skills-lux-v4__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .skills-lux-v4__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .skills-lux-v4__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .skills-lux-v4__card {
+    padding: 2rem;
+    border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    border-radius: 4px;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  .skills-lux-v4__card:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
+  .skills-lux-v4__skill-name {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--color-text);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+  }
+  .skills-lux-v4__circle-wrap {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1rem;
+  }
+  .skills-lux-v4__circle-bg {
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-text) 8%, transparent);
+    stroke-width: 3;
+  }
+  .skills-lux-v4__circle-fill {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .skills-lux-v4__circle-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    color: var(--color-text);
+    font-weight: 400;
+  }
+  .skills-lux-v4__divider {
+    width: 30px;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-text) 15%, transparent);
+    margin: 1rem auto 0;
+  }
+  @media (min-width: 768px) {
+    .skills-lux-v4__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .skills-lux-v4 { padding: 8rem 0; }
+    .skills-lux-v4__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+  }
+</style>
+
+<section class="skills-lux-v4" id="skills">
+  <div class="skills-lux-v4__inner">
+    <header class="skills-lux-v4__header" data-animate="reveal-up">
+      <p class="skills-lux-v4__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="skills-lux-v4__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="skills-lux-v4__grid" data-animate="stagger">
+      <!-- REPEAT:SKILLS -->
+      <div class="skills-lux-v4__card stagger-item" data-animate="fade-up">
+        <div class="skills-lux-v4__circle-wrap">
+          <svg viewBox="0 0 100 100" width="100" height="100">
+            <circle class="skills-lux-v4__circle-bg" cx="50" cy="50" r="45" />
+            <circle class="skills-lux-v4__circle-fill" cx="50" cy="50" r="45"
+              stroke-dasharray="283"
+              stroke-dashoffset="283"
+              style="stroke-dashoffset: calc(283 - (283 * {{SKILL_LEVEL}}) / 100)" />
+          </svg>
+          <span class="skills-lux-v4__circle-text">{{SKILL_LEVEL}}%</span>
+        </div>
+        <div class="skills-lux-v4__skill-name">{{SKILL_NAME}}</div>
+        <div class="skills-lux-v4__divider"></div>
+      </div>
+      <!-- /REPEAT:SKILLS -->
+    </div>
+  </div>
+</section>

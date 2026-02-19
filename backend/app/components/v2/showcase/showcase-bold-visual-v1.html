@@ -1,0 +1,142 @@
+<style>
+  .showcase-bold-v1 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .showcase-bold-v1__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .showcase-bold-v1__header {
+    margin-bottom: 4rem;
+  }
+  .showcase-bold-v1__label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .showcase-bold-v1__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    color: var(--color-text);
+    line-height: 1.1;
+    margin: 0;
+    max-width: 700px;
+  }
+  .showcase-bold-v1__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .showcase-bold-v1__card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+  }
+  .showcase-bold-v1__image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .showcase-bold-v1__card:hover .showcase-bold-v1__image {
+    transform: scale(1.08);
+  }
+  .showcase-bold-v1__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+    transition: background 0.4s;
+  }
+  .showcase-bold-v1__card:hover .showcase-bold-v1__overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 70%);
+  }
+  .showcase-bold-v1__cat {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .showcase-bold-v1__card-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    line-height: 1.2;
+  }
+  .showcase-bold-v1__card-desc {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s, opacity 0.4s;
+  }
+  .showcase-bold-v1__card:hover .showcase-bold-v1__card-desc {
+    max-height: 100px;
+    opacity: 1;
+  }
+  @media (min-width: 768px) {
+    .showcase-bold-v1__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .showcase-bold-v1__card:first-child {
+      grid-column: span 2;
+      aspect-ratio: 16/9;
+    }
+  }
+  @media (min-width: 1024px) {
+    .showcase-bold-v1 { padding: 8rem 0; }
+    .showcase-bold-v1__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .showcase-bold-v1__card:first-child {
+      grid-column: span 2;
+      grid-row: span 2;
+      aspect-ratio: auto;
+    }
+  }
+</style>
+
+<section class="showcase-bold-v1" id="showcase">
+  <div class="showcase-bold-v1__inner">
+    <header class="showcase-bold-v1__header" data-animate="reveal-up">
+      <p class="showcase-bold-v1__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="showcase-bold-v1__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="showcase-bold-v1__grid" data-animate="stagger">
+      <!-- REPEAT:PROJECTS -->
+      <article class="showcase-bold-v1__card stagger-item" data-animate="fade-up">
+        <div class="showcase-bold-v1__image" style="background-image: url('{{PROJECT_IMAGE}}')" data-animate="image-zoom"></div>
+        <div class="showcase-bold-v1__overlay">
+          <span class="showcase-bold-v1__cat">{{PROJECT_CATEGORY}}</span>
+          <h3 class="showcase-bold-v1__card-title">{{PROJECT_TITLE}}</h3>
+          <p class="showcase-bold-v1__card-desc">{{PROJECT_DESCRIPTION}}</p>
+        </div>
+      </article>
+      <!-- /REPEAT:PROJECTS -->
+    </div>
+  </div>
+</section>

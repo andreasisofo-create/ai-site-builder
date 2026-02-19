@@ -1,0 +1,95 @@
+<!-- CTA Modern Tech V3: animated gradient background with glow button -->
+<section id="cta" class="cta-modern-tech py-24 md:py-32 overflow-hidden relative">
+  <style>
+    .cta-modern-tech {
+      background: #0a0a0f;
+      color: #f0f0f5;
+      position: relative;
+    }
+    .cta-modern-tech::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 15%, transparent), transparent 50%, color-mix(in srgb, var(--color-secondary) 10%, transparent));
+    }
+    .cta-modern-tech .cta-container {
+      max-width: 56rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-modern-tech .cta-badge {
+      display: inline-block;
+      padding: 0.375rem 1rem;
+      border-radius: 2rem;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+    .cta-modern-tech h2 {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #fff 40%, var(--color-primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    @media (min-width: 768px) {
+      .cta-modern-tech h2 { font-size: 3rem; }
+    }
+    .cta-modern-tech .cta-subtitle {
+      font-size: 1.0625rem;
+      color: rgba(255,255,255,0.5);
+      max-width: 32rem;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+    .cta-modern-tech .cta-glow-btn {
+      position: relative;
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      border-radius: 0.75rem;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: box-shadow 0.4s ease, transform 0.3s ease;
+      box-shadow: 0 0 30px color-mix(in srgb, var(--color-primary) 35%, transparent);
+    }
+    .cta-modern-tech .cta-glow-btn:hover {
+      box-shadow: 0 0 50px color-mix(in srgb, var(--color-primary) 50%, transparent),
+                  0 0 80px color-mix(in srgb, var(--color-secondary) 25%, transparent);
+      transform: translateY(-2px);
+    }
+    .cta-modern-tech .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                         linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+  </style>
+
+  <div class="grid-bg"></div>
+
+  <div class="cta-container">
+    <div class="cta-badge" data-animate="fade-up">{{CTA_OVERLINE}}</div>
+    <h2 data-animate="text-split" data-split-type="words">{{CTA_TITLE}}</h2>
+    <p class="cta-subtitle" data-animate="blur-slide" data-delay="0.2">{{CTA_SUBTITLE}}</p>
+    <div data-animate="bounce-in" data-delay="0.4">
+      <a href="{{CTA_BUTTON_URL}}" class="cta-glow-btn" data-animate="magnetic">{{CTA_BUTTON_TEXT}}</a>
+    </div>
+  </div>
+
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40%;height:40%;background:radial-gradient(ellipse,color-mix(in srgb, var(--color-primary) 10%, transparent),transparent 70%);pointer-events:none;"></div>
+</section>

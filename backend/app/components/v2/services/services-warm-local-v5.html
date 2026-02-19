@@ -1,0 +1,121 @@
+<style>
+  .services-warm-v5 {
+    padding: 5rem 0;
+    background: color-mix(in srgb, var(--color-primary) 3%, var(--color-bg));
+    position: relative;
+  }
+  .services-warm-v5__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .services-warm-v5__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .services-warm-v5__emoji {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .services-warm-v5__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: var(--color-text);
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .services-warm-v5__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 450px;
+    margin: 0 auto;
+  }
+  .services-warm-v5__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .services-warm-v5__card {
+    background: var(--color-bg);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+    transition: all 0.3s;
+    border: 1px solid transparent;
+  }
+  .services-warm-v5__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 35px rgba(0,0,0,0.08);
+    border-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  }
+  .services-warm-v5__card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--color-primary) 10%, var(--color-bg));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .services-warm-v5__card-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    color: var(--color-text);
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+  .services-warm-v5__card-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+  .services-warm-v5__card-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg));
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+  }
+  @media (min-width: 640px) {
+    .services-warm-v5__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .services-warm-v5 { padding: 7rem 0; }
+    .services-warm-v5__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+
+<section class="services-warm-v5" id="services">
+  <div class="services-warm-v5__inner">
+    <header class="services-warm-v5__header" data-animate="fade-up">
+      <span class="services-warm-v5__emoji">{{EMOJI_ICON}}</span>
+      <h2 class="services-warm-v5__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="services-warm-v5__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="services-warm-v5__grid" data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <article class="services-warm-v5__card stagger-item" data-animate="card-hover-3d">
+        <div class="services-warm-v5__card-icon">{{SERVICE_ICON}}</div>
+        <h3 class="services-warm-v5__card-title">{{SERVICE_TITLE}}</h3>
+        <p class="services-warm-v5__card-text">{{SERVICE_DESCRIPTION}}</p>
+        <span class="services-warm-v5__card-tag">{{SERVICE_TAG}}</span>
+      </article>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

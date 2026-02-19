@@ -1,0 +1,69 @@
+<!-- CTA Warm Local V5: warm card-style CTA with rounded button -->
+<section id="cta" class="cta-warm-local py-20 md:py-24">
+  <style>
+    .cta-warm-local {
+      background: var(--color-bg);
+    }
+    .cta-warm-local .cta-card {
+      max-width: 56rem;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      text-align: center;
+      border-radius: 2rem;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 10%, var(--color-bg)), color-mix(in srgb, var(--color-secondary) 8%, var(--color-bg)));
+      border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    }
+    @media (min-width: 768px) {
+      .cta-warm-local .cta-card { padding: 4rem 3rem; }
+    }
+    .cta-warm-local h2 {
+      font-family: var(--font-heading);
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 0.75rem;
+    }
+    @media (min-width: 768px) {
+      .cta-warm-local h2 { font-size: 2.25rem; }
+    }
+    .cta-warm-local .cta-subtitle {
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      max-width: 28rem;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+    }
+    .cta-warm-local .cta-button {
+      display: inline-block;
+      padding: 0.875rem 2.5rem;
+      background: var(--color-primary);
+      color: var(--color-bg);
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 3rem;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 16px color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
+    .cta-warm-local .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px color-mix(in srgb, var(--color-primary) 35%, transparent);
+    }
+    .cta-warm-local .cta-note {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      margin-top: 1rem;
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;">
+    <div class="cta-card" data-animate="fade-up">
+      <h2 data-animate="text-split" data-split-type="words">{{CTA_TITLE}}</h2>
+      <p class="cta-subtitle">{{CTA_SUBTITLE}}</p>
+      <div data-animate="bounce-in" data-delay="0.3">
+        <a href="{{CTA_BUTTON_URL}}" class="cta-button" data-animate="magnetic">{{CTA_BUTTON_TEXT}}</a>
+      </div>
+      <p class="cta-note" data-animate="fade-up" data-delay="0.4">{{CTA_NOTE}}</p>
+    </div>
+  </div>
+</section>

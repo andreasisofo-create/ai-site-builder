@@ -1,0 +1,146 @@
+<style>
+  .about-warm-v5 {
+    padding: 5rem 0;
+    background: var(--color-bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-warm-v5__bg-dots {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background-image: radial-gradient(var(--color-primary) 1.5px, transparent 1.5px);
+    background-size: 12px 12px;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+  .about-warm-v5__inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .about-warm-v5__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .about-warm-v5__emoji {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .about-warm-v5__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .about-warm-v5__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .about-warm-v5__timeline {
+    position: relative;
+    padding-left: 2.5rem;
+  }
+  .about-warm-v5__timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--color-primary), var(--color-accent));
+    border-radius: 2px;
+  }
+  .about-warm-v5__item {
+    position: relative;
+    padding: 1.5rem 0;
+  }
+  .about-warm-v5__item + .about-warm-v5__item {
+    border-top: 1px dashed color-mix(in srgb, var(--color-text) 10%, transparent);
+  }
+  .about-warm-v5__dot {
+    position: absolute;
+    left: -2.5rem;
+    top: 2rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    border: 3px solid var(--color-bg);
+    transform: translateX(calc(50% - 1.5px));
+  }
+  .about-warm-v5__year {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+  .about-warm-v5__item-title {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--color-text);
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+  .about-warm-v5__item-text {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+  .about-warm-v5__image {
+    margin-top: 3rem;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+  }
+  .about-warm-v5__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .about-warm-v5 { padding: 7rem 0; }
+    .about-warm-v5__timeline { padding-left: 3.5rem; }
+    .about-warm-v5__timeline::before { left: 0.5rem; }
+    .about-warm-v5__dot { left: -3rem; }
+  }
+</style>
+
+<section class="about-warm-v5" id="about">
+  <div class="about-warm-v5__bg-dots"></div>
+  <div class="about-warm-v5__inner">
+    <header class="about-warm-v5__header" data-animate="fade-up">
+      <span class="about-warm-v5__emoji">{{EMOJI_ICON}}</span>
+      <h2 class="about-warm-v5__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="about-warm-v5__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="about-warm-v5__timeline" data-animate="stagger">
+      <!-- REPEAT:TIMELINE_ITEMS -->
+      <article class="about-warm-v5__item stagger-item">
+        <div class="about-warm-v5__dot"></div>
+        <div class="about-warm-v5__year">{{YEAR}}</div>
+        <h3 class="about-warm-v5__item-title">{{ITEM_TITLE}}</h3>
+        <p class="about-warm-v5__item-text">{{ITEM_TEXT}}</p>
+      </article>
+      <!-- /REPEAT:TIMELINE_ITEMS -->
+    </div>
+
+    <div class="about-warm-v5__image" data-animate="scale-in" data-delay="0.3">
+      <img src="{{IMAGE_URL}}" alt="{{IMAGE_ALT}}" loading="lazy" data-animate="image-zoom">
+    </div>
+  </div>
+</section>

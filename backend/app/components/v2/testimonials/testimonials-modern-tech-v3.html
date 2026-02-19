@@ -1,0 +1,129 @@
+<!-- Testimonials Modern Tech V3: glass cards on dark background with marquee -->
+<section id="testimonials" class="testimonials-modern-tech py-24 md:py-32 overflow-hidden relative">
+  <style>
+    .testimonials-modern-tech {
+      background: #0a0a0f;
+      color: #f0f0f5;
+    }
+    .testimonials-modern-tech .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .testimonials-modern-tech .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    @media (min-width: 768px) {
+      .testimonials-modern-tech .section-header h2 { font-size: 2.5rem; }
+    }
+    .testimonials-modern-tech .section-header p {
+      color: rgba(255,255,255,0.5);
+      max-width: 32rem;
+      margin: 0.75rem auto 0;
+    }
+    .testimonials-modern-tech .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .testimonials-modern-tech .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .testimonials-modern-tech .glass-card {
+      position: relative;
+      border-radius: 1.25rem;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+      transition: box-shadow 0.4s ease;
+    }
+    .testimonials-modern-tech .glass-card:hover {
+      box-shadow: 0 0 40px color-mix(in srgb, var(--color-primary) 15%, transparent);
+    }
+    .testimonials-modern-tech .glass-inner {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(16px);
+      border-radius: 1.2rem;
+      padding: 2rem;
+    }
+    .testimonials-modern-tech .quote-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.75rem;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      font-size: 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
+    .testimonials-modern-tech .testimonial-text {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 1.5rem;
+    }
+    .testimonials-modern-tech .testimonial-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .testimonials-modern-tech .testimonial-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--color-primary);
+    }
+    .testimonials-modern-tech .testimonial-author {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .testimonials-modern-tech .testimonial-role {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+    }
+    .testimonials-modern-tech .glow-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .testimonials-modern-tech .glass-card:hover .glow-line {
+      opacity: 1;
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1;">
+    <div class="section-header" data-animate="fade-up">
+      <h2 data-animate="text-split" data-split-type="words">{{TESTIMONIALS_TITLE}}</h2>
+      <p>{{TESTIMONIALS_SUBTITLE}}</p>
+    </div>
+
+    <div class="testimonials-grid" data-animate="stagger">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="glass-card stagger-item" data-animate="scale-in">
+        <div class="glow-line"></div>
+        <div class="glass-inner">
+          <div class="quote-icon">&ldquo;</div>
+          <p class="testimonial-text">{{TESTIMONIAL_TEXT}}</p>
+          <div class="testimonial-footer">
+            <img src="{{TESTIMONIAL_AVATAR_URL}}" alt="{{TESTIMONIAL_AUTHOR}}" class="testimonial-avatar" loading="lazy">
+            <div>
+              <p class="testimonial-author">{{TESTIMONIAL_AUTHOR}}</p>
+              <p class="testimonial-role">{{TESTIMONIAL_ROLE}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;height:60%;background:radial-gradient(ellipse,color-mix(in srgb, var(--color-primary) 6%, transparent),transparent 70%);pointer-events:none;"></div>
+</section>

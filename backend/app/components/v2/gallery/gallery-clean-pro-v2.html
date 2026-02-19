@@ -1,0 +1,123 @@
+<style>
+  .gallery-clean-v2 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+  }
+  .gallery-clean-v2__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .gallery-clean-v2__header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+  .gallery-clean-v2__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+  .gallery-clean-v2__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+  }
+  .gallery-clean-v2__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 450px;
+    margin: 0 auto;
+  }
+  .gallery-clean-v2__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .gallery-clean-v2__item {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+  }
+  .gallery-clean-v2__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+  .gallery-clean-v2__item:hover img {
+    transform: scale(1.04);
+  }
+  .gallery-clean-v2__item-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .gallery-clean-v2__item:hover .gallery-clean-v2__item-overlay {
+    opacity: 1;
+  }
+  .gallery-clean-v2__item-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .gallery-clean-v2__item-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: #fff;
+    fill: none;
+  }
+  @media (min-width: 640px) {
+    .gallery-clean-v2__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .gallery-clean-v2 { padding: 8rem 0; }
+    .gallery-clean-v2__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+
+<section class="gallery-clean-v2" id="gallery">
+  <div class="gallery-clean-v2__inner">
+    <header class="gallery-clean-v2__header" data-animate="reveal-up">
+      <p class="gallery-clean-v2__label" data-animate="blur-in">{{SECTION_LABEL}}</p>
+      <h2 class="gallery-clean-v2__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="gallery-clean-v2__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="gallery-clean-v2__grid" data-animate="stagger">
+      <!-- REPEAT:GALLERY_ITEMS -->
+      <div class="gallery-clean-v2__item stagger-item">
+        <img src="{{GALLERY_IMAGE}}" alt="{{GALLERY_ALT}}" loading="lazy">
+        <div class="gallery-clean-v2__item-overlay">
+          <div class="gallery-clean-v2__item-icon">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:GALLERY_ITEMS -->
+    </div>
+  </div>
+</section>

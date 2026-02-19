@@ -1,0 +1,104 @@
+<style>
+  .process-lux-v4 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .process-lux-v4__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .process-lux-v4__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .process-lux-v4__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .process-lux-v4__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .process-lux-v4__steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .process-lux-v4__step {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 2.5rem 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  }
+  .process-lux-v4__step:last-child {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  }
+  .process-lux-v4__step-num {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.1em;
+  }
+  .process-lux-v4__step-title {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    color: var(--color-text);
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.3;
+  }
+  .process-lux-v4__step-desc {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .process-lux-v4__step {
+      grid-template-columns: 80px 1fr 1.5fr;
+      gap: 2rem;
+      align-items: start;
+      padding: 3rem 0;
+    }
+  }
+  @media (min-width: 1024px) {
+    .process-lux-v4 { padding: 8rem 0; }
+    .process-lux-v4__step {
+      grid-template-columns: 100px 1fr 1.8fr;
+      gap: 3rem;
+      padding: 3.5rem 0;
+    }
+  }
+</style>
+
+<section class="process-lux-v4" id="process">
+  <div class="process-lux-v4__inner">
+    <header class="process-lux-v4__header" data-animate="reveal-up">
+      <p class="process-lux-v4__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="process-lux-v4__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="process-lux-v4__steps">
+      <!-- REPEAT:STEPS -->
+      <div class="process-lux-v4__step" data-animate="fade-up">
+        <span class="process-lux-v4__step-num">{{STEP_NUMBER}}</span>
+        <h3 class="process-lux-v4__step-title">{{STEP_TITLE}}</h3>
+        <p class="process-lux-v4__step-desc">{{STEP_DESCRIPTION}}</p>
+      </div>
+      <!-- /REPEAT:STEPS -->
+    </div>
+  </div>
+</section>

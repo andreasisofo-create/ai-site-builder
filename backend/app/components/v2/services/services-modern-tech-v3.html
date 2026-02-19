@@ -1,0 +1,157 @@
+<style>
+  .services-tech-v3 {
+    padding: 6rem 0;
+    background: #0a0a0f;
+    position: relative;
+    overflow: hidden;
+  }
+  .services-tech-v3__glow {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+    opacity: 0.12;
+    background: var(--color-primary);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .services-tech-v3__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .services-tech-v3__header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+  .services-tech-v3__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+  .services-tech-v3__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+    line-height: 1.15;
+    margin: 0;
+  }
+  .services-tech-v3__bento {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .services-tech-v3__card {
+    position: relative;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    overflow: hidden;
+    transition: border-color 0.4s, transform 0.3s;
+  }
+  .services-tech-v3__card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 30%, transparent), transparent 60%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .services-tech-v3__card:hover::before {
+    opacity: 1;
+  }
+  .services-tech-v3__card:hover {
+    transform: translateY(-4px);
+    border-color: transparent;
+  }
+  .services-tech-v3__card--large {
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .services-tech-v3__card-glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    filter: blur(60px);
+    opacity: 0.1;
+    pointer-events: none;
+  }
+  .services-tech-v3__card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  .services-tech-v3__card-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: #fff;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+  }
+  .services-tech-v3__card-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+    margin: 0;
+  }
+  @media (min-width: 640px) {
+    .services-tech-v3__bento {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .services-tech-v3__card--large {
+      grid-column: span 2;
+    }
+  }
+  @media (min-width: 1024px) {
+    .services-tech-v3 { padding: 8rem 0; }
+    .services-tech-v3__bento {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .services-tech-v3__card--large {
+      grid-column: span 1;
+      grid-row: span 2;
+    }
+  }
+</style>
+
+<section class="services-tech-v3" id="services">
+  <div class="services-tech-v3__glow" data-animate="float"></div>
+  <div class="services-tech-v3__inner">
+    <header class="services-tech-v3__header" data-animate="reveal-up">
+      <p class="services-tech-v3__label" data-animate="blur-in">{{SECTION_LABEL}}</p>
+      <h2 class="services-tech-v3__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+    </header>
+
+    <div class="services-tech-v3__bento" data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <article class="services-tech-v3__card stagger-item" data-animate="tilt">
+        <div class="services-tech-v3__card-glow"></div>
+        <span class="services-tech-v3__card-icon">{{SERVICE_ICON}}</span>
+        <h3 class="services-tech-v3__card-title">{{SERVICE_TITLE}}</h3>
+        <p class="services-tech-v3__card-text">{{SERVICE_DESCRIPTION}}</p>
+      </article>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>

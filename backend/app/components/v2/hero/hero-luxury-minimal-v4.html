@@ -1,0 +1,116 @@
+<style>
+  .hero-luxury-v4 {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .hero-luxury-v4__content {
+    text-align: center;
+    padding: 2rem;
+    max-width: 700px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-luxury-v4__ornament {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--color-accent);
+    margin: 0 auto 2rem;
+  }
+  .hero-luxury-v4__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 2.5rem;
+  }
+  .hero-luxury-v4__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0 0 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .hero-luxury-v4__title em {
+    font-style: italic;
+    color: var(--color-accent);
+  }
+  .hero-luxury-v4__divider {
+    width: 60px;
+    height: 1px;
+    background: var(--color-accent);
+    margin: 0 auto 1.5rem;
+    opacity: 0.6;
+  }
+  .hero-luxury-v4__subtitle {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    line-height: 1.8;
+    margin: 0 0 3rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-luxury-v4__cta {
+    display: inline-block;
+    padding: 0.875rem 2.5rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    border: 1px solid var(--color-text);
+    text-decoration: none;
+    transition: all 0.4s;
+  }
+  .hero-luxury-v4__cta:hover {
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+  .hero-luxury-v4__corner {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    pointer-events: none;
+  }
+  .hero-luxury-v4__corner--tl {
+    top: 2rem; left: 2rem;
+    border-top: 1px solid var(--color-accent);
+    border-left: 1px solid var(--color-accent);
+    opacity: 0.3;
+  }
+  .hero-luxury-v4__corner--br {
+    bottom: 2rem; right: 2rem;
+    border-bottom: 1px solid var(--color-accent);
+    border-right: 1px solid var(--color-accent);
+    opacity: 0.3;
+  }
+  @media (min-width: 768px) {
+    .hero-luxury-v4__corner { width: 80px; height: 80px; }
+    .hero-luxury-v4__corner--tl { top: 3rem; left: 3rem; }
+    .hero-luxury-v4__corner--br { bottom: 3rem; right: 3rem; }
+  }
+</style>
+
+<section class="hero-luxury-v4" id="hero">
+  <div class="hero-luxury-v4__corner hero-luxury-v4__corner--tl" data-animate="fade-up" data-delay="0.6"></div>
+  <div class="hero-luxury-v4__corner hero-luxury-v4__corner--br" data-animate="fade-up" data-delay="0.6"></div>
+  <div class="hero-luxury-v4__content">
+    <span class="hero-luxury-v4__ornament" data-animate="scale-in"></span>
+    <p class="hero-luxury-v4__label" data-animate="fade-up">{{BADGE_TEXT}}</p>
+    <h1 class="hero-luxury-v4__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h1>
+    <div class="hero-luxury-v4__divider" data-animate="scale-in" data-delay="0.3"></div>
+    <p class="hero-luxury-v4__subtitle" data-animate="fade-up" data-delay="0.4">{{SUBTEXT}}</p>
+    <a href="#booking" class="hero-luxury-v4__cta" data-animate="magnetic">{{CTA_TEXT}}</a>
+  </div>
+</section>

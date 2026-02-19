@@ -1,0 +1,115 @@
+<!-- Team Warm Local V5: warm rounded cards with friendly bios -->
+<section id="team" class="team-warm-local py-20 md:py-24">
+  <style>
+    .team-warm-local {
+      background: var(--color-bg);
+    }
+    .team-warm-local .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .team-warm-local .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    @media (min-width: 768px) {
+      .team-warm-local .section-header h2 { font-size: 2.25rem; }
+    }
+    .team-warm-local .section-header p {
+      color: var(--color-text-muted);
+      max-width: 32rem;
+      margin: 0.75rem auto 0;
+    }
+    .team-warm-local .team-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .team-warm-local .team-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .team-warm-local .team-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .team-warm-local .team-card {
+      background: color-mix(in srgb, var(--color-primary) 4%, var(--color-bg));
+      border-radius: 1.5rem;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 8%, transparent);
+    }
+    .team-warm-local .team-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+    .team-warm-local .team-photo {
+      width: 5.5rem;
+      height: 5.5rem;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1.25rem;
+      border: 4px solid var(--color-bg);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .team-warm-local .team-name {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 0.25rem;
+    }
+    .team-warm-local .team-role {
+      font-size: 0.8125rem;
+      color: var(--color-primary);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .team-warm-local .team-bio {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+    .team-warm-local .team-dots {
+      display: flex;
+      gap: 0.375rem;
+      justify-content: center;
+      margin-top: 1.25rem;
+    }
+    .team-warm-local .team-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
+    .team-warm-local .team-dots span:first-child {
+      background: var(--color-primary);
+    }
+  </style>
+
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;">
+    <div class="section-header" data-animate="fade-up">
+      <h2 data-animate="text-split" data-split-type="words">{{TEAM_TITLE}}</h2>
+      <p>{{TEAM_SUBTITLE}}</p>
+    </div>
+
+    <div class="team-grid" data-animate="stagger">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <div class="team-card stagger-item" data-animate="fade-up">
+        <img src="{{MEMBER_IMAGE_URL}}" alt="{{MEMBER_NAME}}" class="team-photo" loading="lazy">
+        <h3 class="team-name">{{MEMBER_NAME}}</h3>
+        <p class="team-role">{{MEMBER_ROLE}}</p>
+        <p class="team-bio">{{MEMBER_BIO}}</p>
+        <div class="team-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+</section>

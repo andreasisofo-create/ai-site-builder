@@ -1,0 +1,198 @@
+<style>
+  .consult-clean-v2 {
+    padding: 6rem 0;
+    background: color-mix(in srgb, var(--color-primary) 2%, var(--color-bg));
+  }
+  .consult-clean-v2__inner {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .consult-clean-v2__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .consult-clean-v2__label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+  .consult-clean-v2__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--color-text);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+  }
+  .consult-clean-v2__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .consult-clean-v2__card {
+    background: var(--color-bg);
+    border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+  }
+  .consult-clean-v2__services {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .consult-clean-v2__service {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border: 1.5px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-text);
+    background: transparent;
+  }
+  .consult-clean-v2__service:hover {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 3%, var(--color-bg));
+  }
+  .consult-clean-v2__service-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .consult-clean-v2__service-label {
+    font-weight: 500;
+  }
+  .consult-clean-v2__service-duration {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+  .consult-clean-v2__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .consult-clean-v2__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .consult-clean-v2__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .consult-clean-v2__field-label {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+  .consult-clean-v2__input {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 0.875rem 1rem;
+    border: 1.5px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+    border-radius: 10px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+  .consult-clean-v2__input:focus {
+    border-color: var(--color-primary);
+  }
+  .consult-clean-v2__textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .consult-clean-v2__submit {
+    padding: 1rem 2rem;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+  }
+  .consult-clean-v2__submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
+  .consult-clean-v2__note {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-top: 1rem;
+  }
+  @media (min-width: 640px) {
+    .consult-clean-v2__row { grid-template-columns: 1fr 1fr; }
+    .consult-clean-v2__services { grid-template-columns: 1fr 1fr; }
+    .consult-clean-v2__card { padding: 3rem 2.5rem; }
+  }
+  @media (min-width: 1024px) {
+    .consult-clean-v2 { padding: 8rem 0; }
+  }
+</style>
+
+<section class="consult-clean-v2" id="consultation">
+  <div class="consult-clean-v2__inner">
+    <header class="consult-clean-v2__header" data-animate="reveal-up">
+      <p class="consult-clean-v2__label" data-animate="blur-in">{{SECTION_LABEL}}</p>
+      <h2 class="consult-clean-v2__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="consult-clean-v2__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="consult-clean-v2__card" data-animate="fade-up" data-delay="0.2">
+      <div class="consult-clean-v2__services" data-animate="stagger">
+        <!-- REPEAT:SERVICES -->
+        <div class="consult-clean-v2__service stagger-item">
+          <span class="consult-clean-v2__service-icon">{{SERVICE_ICON}}</span>
+          <span class="consult-clean-v2__service-label">{{SERVICE_NAME}}</span>
+          <span class="consult-clean-v2__service-duration">{{SERVICE_DURATION}}</span>
+        </div>
+        <!-- /REPEAT:SERVICES -->
+      </div>
+
+      <form class="consult-clean-v2__form">
+        <div class="consult-clean-v2__row">
+          <div class="consult-clean-v2__field">
+            <label class="consult-clean-v2__field-label">{{LABEL_NAME}}</label>
+            <input class="consult-clean-v2__input" type="text" placeholder="{{PLACEHOLDER_NAME}}" required>
+          </div>
+          <div class="consult-clean-v2__field">
+            <label class="consult-clean-v2__field-label">{{LABEL_EMAIL}}</label>
+            <input class="consult-clean-v2__input" type="email" placeholder="{{PLACEHOLDER_EMAIL}}" required>
+          </div>
+        </div>
+        <div class="consult-clean-v2__field">
+          <label class="consult-clean-v2__field-label">{{LABEL_PHONE}}</label>
+          <input class="consult-clean-v2__input" type="tel" placeholder="{{PLACEHOLDER_PHONE}}">
+        </div>
+        <div class="consult-clean-v2__field">
+          <label class="consult-clean-v2__field-label">{{LABEL_MESSAGE}}</label>
+          <textarea class="consult-clean-v2__input consult-clean-v2__textarea" placeholder="{{PLACEHOLDER_MESSAGE}}"></textarea>
+        </div>
+        <button type="submit" class="consult-clean-v2__submit" data-animate="magnetic">{{CTA_TEXT}}</button>
+      </form>
+      <p class="consult-clean-v2__note">{{FORM_NOTE}}</p>
+    </div>
+  </div>
+</section>

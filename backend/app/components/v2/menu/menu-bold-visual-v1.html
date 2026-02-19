@@ -1,0 +1,177 @@
+<style>
+  .menu-bold-v1 {
+    padding: 6rem 0;
+    background: var(--color-bg);
+  }
+  .menu-bold-v1__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .menu-bold-v1__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .menu-bold-v1__label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .menu-bold-v1__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    color: var(--color-text);
+    line-height: 1.1;
+    margin: 0 0 1rem;
+  }
+  .menu-bold-v1__subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .menu-bold-v1__tabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+  .menu-bold-v1__tab {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    border: 1.5px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .menu-bold-v1__tab:hover,
+  .menu-bold-v1__tab--active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+  }
+  .menu-bold-v1__category {
+    margin-bottom: 3rem;
+  }
+  .menu-bold-v1__cat-name {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--color-text);
+    font-weight: 700;
+    margin: 0 0 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-primary);
+    display: inline-block;
+  }
+  .menu-bold-v1__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .menu-bold-v1__item {
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--color-primary) 3%, var(--color-bg));
+    transition: all 0.3s;
+  }
+  .menu-bold-v1__item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  .menu-bold-v1__item-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .menu-bold-v1__item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .menu-bold-v1__item-info {
+    min-width: 0;
+  }
+  .menu-bold-v1__item-name {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    color: var(--color-text);
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+  }
+  .menu-bold-v1__item-desc {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .menu-bold-v1__item-price {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--color-primary);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  @media (min-width: 640px) {
+    .menu-bold-v1__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .menu-bold-v1 { padding: 8rem 0; }
+    .menu-bold-v1__item-img { width: 110px; height: 110px; }
+  }
+</style>
+
+<section class="menu-bold-v1" id="menu">
+  <div class="menu-bold-v1__inner">
+    <header class="menu-bold-v1__header" data-animate="reveal-up">
+      <p class="menu-bold-v1__label" data-animate="fade-up">{{SECTION_LABEL}}</p>
+      <h2 class="menu-bold-v1__title" data-animate="text-split" data-split-type="words">{{HEADLINE}}</h2>
+      <p class="menu-bold-v1__subtitle" data-animate="fade-up" data-delay="0.2">{{SUBTEXT}}</p>
+    </header>
+
+    <div class="menu-bold-v1__tabs" data-animate="fade-up" data-delay="0.3">
+      <!-- REPEAT:MENU_CATEGORIES -->
+      <button class="menu-bold-v1__tab">{{CATEGORY_NAME}}</button>
+      <!-- /REPEAT:MENU_CATEGORIES -->
+    </div>
+
+    <!-- REPEAT:MENU_CATEGORIES -->
+    <div class="menu-bold-v1__category">
+      <h3 class="menu-bold-v1__cat-name" data-animate="fade-left">{{CATEGORY_NAME}}</h3>
+      <div class="menu-bold-v1__grid" data-animate="stagger">
+        <!-- REPEAT:MENU_ITEMS -->
+        <article class="menu-bold-v1__item stagger-item">
+          <div class="menu-bold-v1__item-img">
+            <img src="{{ITEM_IMAGE}}" alt="{{ITEM_NAME}}" loading="lazy">
+          </div>
+          <div class="menu-bold-v1__item-info">
+            <h4 class="menu-bold-v1__item-name">{{ITEM_NAME}}</h4>
+            <p class="menu-bold-v1__item-desc">{{ITEM_DESCRIPTION}}</p>
+          </div>
+          <span class="menu-bold-v1__item-price">{{ITEM_PRICE}}</span>
+        </article>
+        <!-- /REPEAT:MENU_ITEMS -->
+      </div>
+    </div>
+    <!-- /REPEAT:MENU_CATEGORIES -->
+  </div>
+</section>
