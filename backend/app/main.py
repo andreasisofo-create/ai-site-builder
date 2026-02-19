@@ -189,20 +189,26 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Seed category blueprints fallito: {e}")
 
-    # Seed design knowledge (ChromaDB) if empty
-    try:
-        from app.services.design_knowledge import get_collection_stats
-        stats = get_collection_stats()
-        if stats.get("total_patterns", 0) == 0:
-            logger.info("ChromaDB vuoto - seeding design knowledge...")
-            from app.services.seed_design_knowledge import seed_all
-            seed_all()
+    # Seed design knowledge (ChromaDB) in background thread to avoid
+    # blocking the health check on Render (176 patterns take time to embed)
+    import threading
+
+    def _seed_chromadb():
+        try:
+            from app.services.design_knowledge import get_collection_stats
             stats = get_collection_stats()
-            logger.info(f"Design knowledge seeded: {stats['total_patterns']} patterns")
-        else:
-            logger.info(f"Design knowledge ready: {stats['total_patterns']} patterns")
-    except Exception as e:
-        logger.warning(f"Design knowledge non disponibile: {e}")
+            if stats.get("total_patterns", 0) == 0:
+                logger.info("ChromaDB vuoto - seeding design knowledge in background...")
+                from app.services.seed_design_knowledge import seed_all
+                seed_all()
+                stats = get_collection_stats()
+                logger.info(f"Design knowledge seeded: {stats['total_patterns']} patterns")
+            else:
+                logger.info(f"Design knowledge ready: {stats['total_patterns']} patterns")
+        except Exception as e:
+            logger.warning(f"Design knowledge non disponibile: {e}")
+
+    threading.Thread(target=_seed_chromadb, daemon=True).start()
 
     yield
 

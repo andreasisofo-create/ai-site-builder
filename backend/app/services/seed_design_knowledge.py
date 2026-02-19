@@ -2521,21 +2521,42 @@ function connectParticles(a, b, ctx) {
 
 
 def seed_all():
-    """Seed all design patterns into ChromaDB."""
-    count = 0
+    """Seed all design patterns into ChromaDB (batched for speed)."""
+    from app.services.design_knowledge import get_collection
+    col = get_collection()
+
+    ids = []
+    documents = []
+    metadatas = []
+
     for p in PATTERNS:
-        add_pattern(
-            pattern_id=p["id"],
-            content=p["content"],
-            category=p["category"],
-            tags=p.get("tags", []),
-            complexity=p.get("complexity", "medium"),
-            impact_score=p.get("impact_score", 5),
-            code_snippet=p.get("code", ""),
+        code_snippet = p.get("code", "")
+        metadata = {
+            "category": p["category"],
+            "tags": ",".join(p.get("tags", [])),
+            "complexity": p.get("complexity", "medium"),
+            "impact_score": p.get("impact_score", 5),
+        }
+        if code_snippet:
+            metadata["code_snippet"] = code_snippet[:4000]
+
+        document = f"{p['content']}\n\nCode:\n{code_snippet}" if code_snippet else p["content"]
+
+        ids.append(p["id"])
+        documents.append(document)
+        metadatas.append(metadata)
+
+    # Batch upsert all patterns at once (much faster than 176 individual calls)
+    BATCH_SIZE = 50
+    for i in range(0, len(ids), BATCH_SIZE):
+        col.upsert(
+            ids=ids[i:i + BATCH_SIZE],
+            documents=documents[i:i + BATCH_SIZE],
+            metadatas=metadatas[i:i + BATCH_SIZE],
         )
-        count += 1
-    print(f"Seeded {count} design patterns into ChromaDB.")
-    return count
+
+    print(f"Seeded {len(ids)} design patterns into ChromaDB.")
+    return len(ids)
 
 
 if __name__ == "__main__":
