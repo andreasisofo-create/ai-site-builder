@@ -2519,6 +2519,1427 @@ function connectParticles(a, b, ctx) {
     },
 ]
 
+# ====================================================
+# HTML SNIPPETS - Curated patterns from reference sites
+# and existing components (53 patterns)
+# ====================================================
+
+HTML_SNIPPETS = [
+    # ---- HERO SECTIONS (6) ----
+    {
+        "id": "hero_glassmorphism_morph",
+        "description": "Glassmorphism hero with morphing blobs background, frosted glass card, floating decorative panels. Uses CSS backdrop-filter with animated gradient blobs.",
+        "category": "html_snippets",
+        "tags": ["hero", "glassmorphism", "morph-bg", "frosted-glass", "float", "blur-in"],
+        "section_type": "hero",
+        "mood": "creative",
+        "code_snippet": """<section id="hero" class="min-h-screen relative overflow-hidden" style="background: var(--color-bg);">
+  <div class="absolute inset-0 z-0 overflow-hidden" data-animate="morph-bg">
+    <div class="absolute w-[600px] h-[600px] rounded-full blur-[100px] -top-[10%] -left-[5%]" style="background: var(--color-primary); opacity: 0.25;"></div>
+    <div class="absolute w-[500px] h-[500px] rounded-full blur-[120px] top-[30%] right-[5%]" style="background: var(--color-secondary); opacity: 0.2;"></div>
+    <div class="absolute w-[400px] h-[400px] rounded-full blur-[80px] bottom-[5%] left-[30%]" style="background: var(--color-accent); opacity: 0.15;"></div>
+  </div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 py-20 flex items-center min-h-screen">
+    <div class="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-12 max-w-2xl shadow-2xl" data-animate="blur-in" data-delay="0.2">
+      <h1 class="text-5xl md:text-7xl font-bold font-heading leading-tight mb-6" data-animate="text-split">{{HERO_TITLE}}</h1>
+      <p class="text-lg opacity-70 font-body mb-8">{{HERO_SUBTITLE}}</p>
+      <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-white transition-all" data-animate="magnetic" style="background: var(--color-primary);">{{HERO_CTA_TEXT}}</a>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "hero_linear_gradient_text",
+        "description": "Linear.app inspired hero with gradient text, ambient grid background, radial glow, eyebrow badge, and scroll hint indicator.",
+        "category": "html_snippets",
+        "tags": ["hero", "linear", "gradient-text", "grid-bg", "radial-glow", "badge"],
+        "section_type": "hero",
+        "mood": "modern",
+        "code_snippet": """<section id="hero" class="min-h-screen relative overflow-hidden" style="background: var(--color-bg);">
+  <div class="absolute inset-0 opacity-[0.04]" style="background-image: linear-gradient(var(--color-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-primary) 1px, transparent 1px); background-size: 60px 60px;"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[150px]" style="background: var(--color-primary); opacity: 0.08;"></div>
+  <div class="relative z-10 max-w-4xl mx-auto px-6 pt-32 pb-20 text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm mb-8 backdrop-blur-sm" style="border-color: color-mix(in srgb, var(--color-primary) 30%, transparent); background: color-mix(in srgb, var(--color-primary) 8%, transparent);" data-animate="blur-in">
+      <span class="w-2 h-2 rounded-full" style="background: var(--color-primary);"></span>{{HERO_BADGE}}
+    </div>
+    <h1 class="text-5xl md:text-7xl font-bold font-heading leading-tight mb-6" data-animate="text-split" style="background: linear-gradient(135deg, var(--color-text), var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{HERO_TITLE}}</h1>
+    <p class="text-xl opacity-60 font-body max-w-2xl mx-auto mb-10" data-animate="blur-slide">{{HERO_SUBTITLE}}</p>
+    <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white" data-animate="magnetic" style="background: var(--color-primary);">{{HERO_CTA_TEXT}}</a>
+  </div>
+</section>""",
+    },
+    {
+        "id": "hero_dark_bold_geometric",
+        "description": "Dark bold hero with geometric grid overlay, diagonal accent lines, massive typography, gradient accent underline, glow effects behind image.",
+        "category": "html_snippets",
+        "tags": ["hero", "dark", "bold", "geometric", "glow", "diagonal-lines"],
+        "section_type": "hero",
+        "mood": "bold",
+        "code_snippet": """<section id="hero" class="min-h-screen relative overflow-hidden" style="background: color-mix(in srgb, var(--color-text) 95%, black);">
+  <div class="absolute inset-0 z-0 opacity-[0.03]" style="background-image: linear-gradient(var(--color-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-primary) 1px, transparent 1px); background-size: 80px 80px;"></div>
+  <div class="absolute top-[5%] right-[10%] w-[500px] h-[500px] rounded-full blur-[120px]" style="background: var(--color-primary); opacity: 0.12;"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 py-16 flex items-center" style="min-height: calc(100vh - 80px);">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full">
+      <div class="lg:col-span-7">
+        <h1 class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-heading text-white leading-[1.05] mb-8" data-animate="text-split">{{HERO_TITLE}}</h1>
+        <div class="flex items-center gap-3 mb-8" data-animate="fade-right">
+          <div class="w-24 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent));"></div>
+          <div class="w-3 h-3 rounded-full" style="background: var(--color-accent);"></div>
+        </div>
+        <p class="text-lg text-white/50 font-body mb-12 max-w-xl" data-animate="blur-slide">{{HERO_SUBTITLE}}</p>
+        <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-3 px-10 py-5 font-bold rounded-xl text-white" data-animate="magnetic" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); box-shadow: 0 0 40px var(--color-primary);">{{HERO_CTA_TEXT}}</a>
+      </div>
+      <div class="lg:col-span-5 relative" data-animate="scale-in" data-parallax="0.4">
+        <div class="absolute -inset-8 rounded-3xl blur-2xl" style="background: var(--color-primary); opacity: 0.08;"></div>
+        <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="relative w-full rounded-2xl object-cover aspect-[3/4] brightness-90">
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "hero_video_fullscreen_overlay",
+        "description": "Fullscreen video hero with gradient overlay, centered text, scroll-down indicator. Inspired by Tiber Village luxury hospitality style.",
+        "category": "html_snippets",
+        "tags": ["hero", "video", "fullscreen", "overlay", "luxury", "cinematic"],
+        "section_type": "hero",
+        "mood": "elegant",
+        "code_snippet": """<section id="hero" class="relative h-screen overflow-hidden">
+  <video class="absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
+    <source src="{{HERO_VIDEO_URL}}" type="video/mp4">
+  </video>
+  <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);"></div>
+  <div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
+    <p class="text-sm uppercase tracking-[0.3em] text-white/60 mb-6 font-body" data-animate="blur-in">{{HERO_BADGE}}</p>
+    <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-bold text-white leading-tight mb-8" data-animate="text-split">{{HERO_TITLE}}</h1>
+    <p class="text-lg text-white/70 max-w-xl mb-10 font-body" data-animate="fade-up" data-delay="0.3">{{HERO_SUBTITLE}}</p>
+    <a href="{{HERO_CTA_URL}}" class="px-10 py-4 border-2 border-white text-white font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all" data-animate="magnetic">{{HERO_CTA_TEXT}}</a>
+  </div>
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40 animate-bounce">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+  </div>
+</section>""",
+    },
+    {
+        "id": "hero_split_image_text",
+        "description": "50/50 split hero with full-height image on one side and text content on the other. Clean corporate look with accent line separator.",
+        "category": "html_snippets",
+        "tags": ["hero", "split", "50-50", "image", "corporate", "clean"],
+        "section_type": "hero",
+        "mood": "modern",
+        "code_snippet": """<section id="hero" class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+  <div class="flex items-center px-8 lg:px-16 py-20 order-2 lg:order-1" style="background: var(--color-bg);">
+    <div class="max-w-lg">
+      <div class="w-16 h-1 rounded-full mb-8" style="background: var(--color-primary);" data-animate="fade-right"></div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold leading-tight mb-6" data-animate="text-split" style="color: var(--color-text);">{{HERO_TITLE}}</h1>
+      <p class="text-lg opacity-60 font-body mb-10" data-animate="blur-slide" data-delay="0.2">{{HERO_SUBTITLE}}</p>
+      <div class="flex flex-wrap gap-4" data-animate="fade-up" data-delay="0.4">
+        <a href="{{HERO_CTA_URL}}" class="px-8 py-4 rounded-lg font-bold text-white" data-animate="magnetic" style="background: var(--color-primary);">{{HERO_CTA_TEXT}}</a>
+        <a href="#about" class="px-8 py-4 rounded-lg font-bold border-2 hover:bg-black/5 transition-colors" style="border-color: var(--color-text); color: var(--color-text);">Scopri di più</a>
+      </div>
+    </div>
+  </div>
+  <div class="relative min-h-[50vh] lg:min-h-screen order-1 lg:order-2" data-animate="clip-reveal">
+    <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="absolute inset-0 w-full h-full object-cover">
+  </div>
+</section>""",
+    },
+    {
+        "id": "hero_centered_minimal_scroll",
+        "description": "Centered minimal hero with large heading, subtle gradient background, scroll progress indicator, and floating accent dots.",
+        "category": "html_snippets",
+        "tags": ["hero", "centered", "minimal", "scroll-hint", "gradient"],
+        "section_type": "hero",
+        "mood": "minimal",
+        "code_snippet": """<section id="hero" class="min-h-screen relative flex items-center justify-center" style="background: linear-gradient(180deg, var(--color-bg), color-mix(in srgb, var(--color-bg) 95%, var(--color-primary)));">
+  <div class="absolute top-[20%] left-[15%] w-3 h-3 rounded-full opacity-20" style="background: var(--color-primary);" data-animate="float"></div>
+  <div class="absolute bottom-[30%] right-[20%] w-2 h-2 rounded-full opacity-15" style="background: var(--color-accent);" data-animate="float" data-delay="0.5"></div>
+  <div class="text-center max-w-3xl px-6">
+    <h1 class="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6" data-animate="text-split" style="color: var(--color-text);">{{HERO_TITLE}}</h1>
+    <p class="text-xl opacity-50 font-body mb-12" data-animate="blur-in" data-delay="0.3">{{HERO_SUBTITLE}}</p>
+    <a href="{{HERO_CTA_URL}}" class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider group" data-animate="fade-up" data-delay="0.5" style="color: var(--color-primary);">
+      {{HERO_CTA_TEXT}}
+      <svg class="w-4 h-4 transition-transform group-hover:translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+    </a>
+  </div>
+</section>""",
+    },
+    # ---- NAVIGATION (4) ----
+    {
+        "id": "nav_transparent_scroll_frosted",
+        "description": "Nav bar that starts transparent over hero and transitions to frosted glass on scroll. Fixed position, logo left, links center, CTA right.",
+        "category": "html_snippets",
+        "tags": ["nav", "transparent", "frosted-glass", "scroll-transform", "fixed"],
+        "section_type": "nav",
+        "mood": "elegant",
+        "code_snippet": """<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" data-scroll-progress id="main-nav" style="background: transparent;">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#" class="text-xl font-heading font-bold text-white">{{BUSINESS_NAME}}</a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#about" class="text-sm text-white/80 hover:text-white transition-colors font-body">Chi Siamo</a>
+      <a href="#services" class="text-sm text-white/80 hover:text-white transition-colors font-body">Servizi</a>
+      <a href="#gallery" class="text-sm text-white/80 hover:text-white transition-colors font-body">Gallery</a>
+      <a href="#contact" class="text-sm text-white/80 hover:text-white transition-colors font-body">Contatti</a>
+    </div>
+    <a href="#contact" class="hidden md:inline-flex px-5 py-2 rounded-full text-sm font-bold text-white border border-white/30 hover:bg-white hover:text-black transition-all">Prenota</a>
+  </div>
+</nav>""",
+    },
+    {
+        "id": "nav_minimal_hamburger_overlay",
+        "description": "Minimal nav with hamburger menu that opens a fullscreen overlay with staggered link animations. Dark overlay with large centered links.",
+        "category": "html_snippets",
+        "tags": ["nav", "hamburger", "fullscreen-overlay", "stagger", "minimal"],
+        "section_type": "nav",
+        "mood": "minimal",
+        "code_snippet": """<nav class="fixed top-0 left-0 right-0 z-50 px-6 py-4" data-nav-scroll>
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="#" class="font-heading font-bold text-lg" style="color: var(--color-text);">{{BUSINESS_NAME}}</a>
+    <button class="hamburger-btn w-10 h-10 flex flex-col items-center justify-center gap-1.5 group" aria-label="Menu">
+      <span class="w-6 h-0.5 transition-all" style="background: var(--color-text);"></span>
+      <span class="w-4 h-0.5 transition-all group-hover:w-6" style="background: var(--color-text);"></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-overlay fixed inset-0 z-[100] pointer-events-none opacity-0 transition-opacity" style="background: var(--color-text);">
+  <div class="h-full flex flex-col items-center justify-center gap-8">
+    <a href="#about" class="text-4xl md:text-6xl font-heading font-bold text-white opacity-0" data-animate="fade-up" data-delay="0.1">Chi Siamo</a>
+    <a href="#services" class="text-4xl md:text-6xl font-heading font-bold text-white opacity-0" data-animate="fade-up" data-delay="0.2">Servizi</a>
+    <a href="#contact" class="text-4xl md:text-6xl font-heading font-bold text-white opacity-0" data-animate="fade-up" data-delay="0.3">Contatti</a>
+  </div>
+</div>""",
+    },
+    {
+        "id": "nav_topbar_centered",
+        "description": "Enterprise nav with top utility bar (phone, email) and main centered navigation below. Inspired by NOWNOW corporate style.",
+        "category": "html_snippets",
+        "tags": ["nav", "topbar", "enterprise", "corporate", "centered"],
+        "section_type": "nav",
+        "mood": "modern",
+        "code_snippet": """<div class="hidden md:block py-2 text-xs" style="background: var(--color-text); color: white;">
+  <div class="max-w-7xl mx-auto px-6 flex justify-between">
+    <span>{{BUSINESS_PHONE}} | {{BUSINESS_EMAIL}}</span>
+    <div class="flex gap-4">
+      <a href="#" class="hover:opacity-80">Facebook</a>
+      <a href="#" class="hover:opacity-80">Instagram</a>
+    </div>
+  </div>
+</div>
+<nav class="sticky top-0 z-50 border-b" style="background: var(--color-bg); border-color: color-mix(in srgb, var(--color-text) 10%, transparent);" data-nav-scroll>
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#" class="font-heading font-bold text-xl" style="color: var(--color-text);">{{BUSINESS_NAME}}</a>
+    <div class="hidden lg:flex items-center gap-8">
+      <a href="#services" class="text-sm font-body hover:opacity-70 transition-opacity" style="color: var(--color-text);">Servizi</a>
+      <a href="#about" class="text-sm font-body hover:opacity-70 transition-opacity" style="color: var(--color-text);">Chi Siamo</a>
+      <a href="#contact" class="text-sm font-body hover:opacity-70 transition-opacity" style="color: var(--color-text);">Contatti</a>
+    </div>
+    <a href="#contact" class="px-6 py-2 rounded text-sm font-bold text-white" style="background: var(--color-primary);" data-animate="magnetic">Contattaci</a>
+  </div>
+</nav>""",
+    },
+    {
+        "id": "nav_sidebar_vertical",
+        "description": "Vertical sidebar navigation for portfolio/creative sites. Fixed left side with logo top, links middle, social bottom.",
+        "category": "html_snippets",
+        "tags": ["nav", "sidebar", "vertical", "fixed", "creative", "portfolio"],
+        "section_type": "nav",
+        "mood": "creative",
+        "code_snippet": """<nav class="fixed left-0 top-0 bottom-0 w-20 z-50 hidden lg:flex flex-col items-center justify-between py-8 border-r" style="background: var(--color-bg); border-color: color-mix(in srgb, var(--color-text) 8%, transparent);">
+  <a href="#" class="font-heading font-bold text-xl" style="color: var(--color-primary);">{{LOGO_INITIALS}}</a>
+  <div class="flex flex-col gap-6">
+    <a href="#about" class="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform" style="color: var(--color-text);" title="Chi Siamo">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+    </a>
+    <a href="#services" class="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform" style="color: var(--color-text);" title="Servizi">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/></svg>
+    </a>
+    <a href="#contact" class="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform" style="color: var(--color-text);" title="Contatti">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+    </a>
+  </div>
+  <div class="flex flex-col gap-3 text-xs opacity-40" style="writing-mode: vertical-rl; color: var(--color-text);">Follow</div>
+</nav>""",
+    },
+    # ---- ABOUT SECTIONS (5) ----
+    {
+        "id": "about_magazine_asymmetric",
+        "description": "Magazine-style about with asymmetric 5/7 grid, pull-quote with border-left accent, overlapping image with decorative frame, stats horizontal strip.",
+        "category": "html_snippets",
+        "tags": ["about", "magazine", "asymmetric", "pull-quote", "stats-strip", "overlapping"],
+        "section_type": "about",
+        "mood": "elegant",
+        "code_snippet": """<section id="about" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+      <div class="lg:col-span-5 relative" data-animate="fade-right">
+        <div class="absolute -inset-4 border rounded-2xl -z-10" style="border-color: color-mix(in srgb, var(--color-primary) 15%, transparent);"></div>
+        <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="rounded-xl w-full object-cover aspect-[4/5]">
+        <div class="absolute -bottom-6 -right-6 w-32 h-32 rounded-xl" style="background: var(--color-primary); opacity: 0.1;"></div>
+      </div>
+      <div class="lg:col-span-7">
+        <p class="text-sm uppercase tracking-widest mb-4 font-body" style="color: var(--color-primary);" data-animate="fade-up">Chi Siamo</p>
+        <h2 class="text-4xl md:text-5xl font-heading font-bold mb-8" data-animate="text-split" style="color: var(--color-text);">{{ABOUT_TITLE}}</h2>
+        <blockquote class="border-l-4 pl-6 text-xl italic opacity-70 mb-8 font-body" style="border-color: var(--color-primary);" data-animate="fade-up">{{ABOUT_QUOTE}}</blockquote>
+        <p class="text-lg opacity-60 font-body leading-relaxed" data-animate="fade-up" data-delay="0.2">{{ABOUT_DESCRIPTION}}</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 pt-12 border-t" style="border-color: color-mix(in srgb, var(--color-text) 10%, transparent);">
+      <!-- REPEAT:STATS -->
+      <div class="text-center" data-animate="fade-up" data-delay="0.1">
+        <p class="text-4xl font-heading font-bold" style="color: var(--color-primary);" data-counter="{{STAT_VALUE}}">0</p>
+        <p class="text-sm opacity-50 font-body mt-2">{{STAT_LABEL}}</p>
+      </div>
+      <!-- /REPEAT:STATS -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "about_split_text_reveal",
+        "description": "Split section with text-reveal animation, large animated lines revealing on scroll. Inspired by Tiber Village luxury style.",
+        "category": "html_snippets",
+        "tags": ["about", "split", "text-reveal", "luxury", "scroll-animation"],
+        "section_type": "about",
+        "mood": "elegant",
+        "code_snippet": """<section id="about" class="py-32" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+      <div>
+        <p class="text-sm uppercase tracking-[0.2em] mb-6" style="color: var(--color-primary);" data-animate="blur-in">{{ABOUT_LABEL}}</p>
+        <h2 class="text-4xl md:text-6xl font-heading font-bold leading-tight mb-8" style="color: var(--color-text);" data-animate="text-reveal">{{ABOUT_TITLE}}</h2>
+        <div class="w-20 h-px mb-8" style="background: var(--color-primary);" data-animate="fade-right"></div>
+        <p class="text-lg opacity-60 font-body leading-relaxed" data-animate="fade-up" data-delay="0.3">{{ABOUT_DESCRIPTION}}</p>
+      </div>
+      <div class="relative" data-animate="clip-reveal" data-delay="0.2">
+        <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="w-full rounded-lg object-cover aspect-[3/4]">
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "about_timeline_vertical",
+        "description": "About section with vertical timeline showing company milestones. Center line with alternating left/right content cards.",
+        "category": "html_snippets",
+        "tags": ["about", "timeline", "milestones", "history", "stagger"],
+        "section_type": "about",
+        "mood": "modern",
+        "code_snippet": """<section id="about" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-4xl mx-auto px-6">
+    <p class="text-sm uppercase tracking-widest text-center mb-4" style="color: var(--color-primary);" data-animate="blur-in">La Nostra Storia</p>
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-center mb-20" data-animate="text-split" style="color: var(--color-text);">{{ABOUT_TITLE}}</h2>
+    <div class="relative">
+      <div class="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2" style="background: color-mix(in srgb, var(--color-primary) 20%, transparent);"></div>
+      <!-- REPEAT:MILESTONES -->
+      <div class="relative grid grid-cols-2 gap-8 mb-16" data-animate="fade-up" data-delay="0.1">
+        <div class="text-right pr-12">
+          <p class="text-3xl font-heading font-bold" style="color: var(--color-primary);">{{MILESTONE_YEAR}}</p>
+        </div>
+        <div class="pl-12">
+          <div class="absolute left-1/2 top-2 w-4 h-4 rounded-full -translate-x-1/2 border-4" style="background: var(--color-bg); border-color: var(--color-primary);"></div>
+          <h3 class="font-heading font-bold text-lg mb-2" style="color: var(--color-text);">{{MILESTONE_TITLE}}</h3>
+          <p class="opacity-60 font-body">{{MILESTONE_DESCRIPTION}}</p>
+        </div>
+      </div>
+      <!-- /REPEAT:MILESTONES -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "about_numbers_grid_bold",
+        "description": "Bold about section with large counter numbers in a grid, each with icon and description. Dark background variant with glow effects.",
+        "category": "html_snippets",
+        "tags": ["about", "numbers", "counters", "grid", "bold", "dark", "glow"],
+        "section_type": "about",
+        "mood": "bold",
+        "code_snippet": """<section id="about" class="py-24" style="background: var(--color-text);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-6" data-animate="text-split">{{ABOUT_TITLE}}</h2>
+      <p class="text-lg text-white/50 font-body max-w-2xl mx-auto" data-animate="fade-up">{{ABOUT_DESCRIPTION}}</p>
+    </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- REPEAT:STATS -->
+      <div class="relative p-8 rounded-2xl text-center group" style="background: color-mix(in srgb, var(--color-primary) 8%, transparent); border: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);" data-animate="scale-in" data-delay="0.1">
+        <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" style="background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent);"></div>
+        <p class="text-5xl font-heading font-bold text-white mb-3" data-counter="{{STAT_VALUE}}">0</p>
+        <p class="text-sm text-white/40 font-body">{{STAT_LABEL}}</p>
+      </div>
+      <!-- /REPEAT:STATS -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "about_two_column_video",
+        "description": "Two-column about with inline video player on one side and text content with feature list on the other. Inspired by NOWNOW enterprise style.",
+        "category": "html_snippets",
+        "tags": ["about", "video", "two-column", "features-list", "enterprise"],
+        "section_type": "about",
+        "mood": "modern",
+        "code_snippet": """<section id="about" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div class="relative rounded-2xl overflow-hidden" data-animate="scale-in">
+        <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="w-full aspect-video object-cover">
+        <div class="absolute inset-0 flex items-center justify-center">
+          <button class="w-16 h-16 rounded-full flex items-center justify-center text-white backdrop-blur-sm" style="background: color-mix(in srgb, var(--color-primary) 80%, transparent);">
+            <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm uppercase tracking-widest mb-4" style="color: var(--color-primary);" data-animate="blur-in">Chi Siamo</p>
+        <h2 class="text-3xl md:text-4xl font-heading font-bold mb-6" data-animate="text-split" style="color: var(--color-text);">{{ABOUT_TITLE}}</h2>
+        <p class="opacity-60 font-body mb-8 leading-relaxed" data-animate="fade-up">{{ABOUT_DESCRIPTION}}</p>
+        <ul class="space-y-4">
+          <!-- REPEAT:FEATURES -->
+          <li class="flex items-start gap-3" data-animate="fade-left" data-delay="0.1">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background: color-mix(in srgb, var(--color-primary) 15%, transparent);">
+              <svg class="w-3.5 h-3.5" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <span class="font-body" style="color: var(--color-text);">{{FEATURE_TEXT}}</span>
+          </li>
+          <!-- /REPEAT:FEATURES -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    # ---- SERVICES SECTIONS (6) ----
+    {
+        "id": "services_bento_grid",
+        "description": "Bento grid services layout with first card spanning 2 columns, icon boxes, 3D card hover effect. Modern SaaS-inspired grid with accent borders.",
+        "category": "html_snippets",
+        "tags": ["services", "bento", "grid", "card-hover-3d", "icon", "accent-border"],
+        "section_type": "services",
+        "mood": "modern",
+        "code_snippet": """<section id="services" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <p class="text-sm uppercase tracking-widest text-center mb-4" style="color: var(--color-primary);" data-animate="blur-in">I Nostri Servizi</p>
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-center mb-16" data-animate="text-split" style="color: var(--color-text);">{{SERVICES_TITLE}}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- REPEAT:SERVICES -->
+      <div class="group p-8 rounded-2xl border transition-all duration-300 hover:border-transparent" style="border-color: color-mix(in srgb, var(--color-text) 8%, transparent); background: var(--color-bg);" data-animate="card-hover-3d">
+        <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style="background: color-mix(in srgb, var(--color-primary) 10%, transparent);">
+          <span class="text-2xl">{{SERVICE_ICON}}</span>
+        </div>
+        <h3 class="text-xl font-heading font-bold mb-3" style="color: var(--color-text);">{{SERVICE_TITLE}}</h3>
+        <p class="opacity-60 font-body leading-relaxed">{{SERVICE_DESCRIPTION}}</p>
+        <div class="mt-6 h-0.5 w-0 group-hover:w-full transition-all duration-500 rounded-full" style="background: var(--color-primary);"></div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "services_cards_image_overlay",
+        "description": "Service cards with image, dark overlay on hover revealing description, arrow link. Inspired by NOWNOW service cards with swiper-compatible structure.",
+        "category": "html_snippets",
+        "tags": ["services", "cards", "image-overlay", "hover-reveal", "arrow-link"],
+        "section_type": "services",
+        "mood": "modern",
+        "code_snippet": """<section id="services" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold mb-16" data-animate="text-split" style="color: var(--color-text);">{{SERVICES_TITLE}}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- REPEAT:SERVICES -->
+      <div class="group relative rounded-2xl overflow-hidden aspect-[4/5]" data-animate="fade-up" data-delay="0.1">
+        <img src="{{SERVICE_IMAGE_URL}}" alt="{{SERVICE_TITLE}}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: color-mix(in srgb, var(--color-primary) 70%, black);"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-8">
+          <h3 class="text-2xl font-heading font-bold text-white mb-3">{{SERVICE_TITLE}}</h3>
+          <p class="text-white/70 font-body opacity-0 group-hover:opacity-100 transition-opacity duration-300 mb-4">{{SERVICE_DESCRIPTION}}</p>
+          <a href="#contact" class="inline-flex items-center gap-2 text-white font-bold text-sm uppercase tracking-wider">
+            Scopri <svg class="w-4 h-4 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        </div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "services_horizontal_scroll",
+        "description": "Horizontal scrolling services section with large cards. Desktop uses horizontal scroll via GSAP, mobile stacks vertically.",
+        "category": "html_snippets",
+        "tags": ["services", "horizontal-scroll", "gsap", "large-cards", "interactive"],
+        "section_type": "services",
+        "mood": "creative",
+        "code_snippet": """<section id="services" class="py-24 overflow-hidden" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6 mb-12">
+    <p class="text-sm uppercase tracking-widest mb-4" style="color: var(--color-primary);" data-animate="blur-in">Servizi</p>
+    <h2 class="text-4xl md:text-5xl font-heading font-bold" data-animate="text-split" style="color: var(--color-text);">{{SERVICES_TITLE}}</h2>
+  </div>
+  <div class="horizontal-section" data-animate="horizontal-scroll">
+    <div class="flex gap-8 px-6" style="width: max-content;">
+      <!-- REPEAT:SERVICES -->
+      <div class="w-[400px] flex-shrink-0 p-10 rounded-3xl border group" style="border-color: color-mix(in srgb, var(--color-text) 8%, transparent); background: var(--color-bg);" data-animate="tilt">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 transition-colors" style="background: color-mix(in srgb, var(--color-primary) 10%, transparent);">
+          <span class="text-3xl">{{SERVICE_ICON}}</span>
+        </div>
+        <h3 class="text-2xl font-heading font-bold mb-4" style="color: var(--color-text);">{{SERVICE_TITLE}}</h3>
+        <p class="opacity-60 font-body leading-relaxed">{{SERVICE_DESCRIPTION}}</p>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "services_icon_grid_dark",
+        "description": "Dark services grid with glowing icon boxes, border glow on hover. Each card has gradient icon background and primary color accent.",
+        "category": "html_snippets",
+        "tags": ["services", "dark", "icon-grid", "glow", "gradient-icon"],
+        "section_type": "services",
+        "mood": "bold",
+        "code_snippet": """<section id="services" class="py-24" style="background: var(--color-text);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-6" data-animate="text-split">{{SERVICES_TITLE}}</h2>
+      <p class="text-lg text-white/40 font-body max-w-2xl mx-auto" data-animate="fade-up">{{SERVICES_SUBTITLE}}</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- REPEAT:SERVICES -->
+      <div class="group p-8 rounded-2xl border border-white/5 hover:border-white/10 transition-all" data-animate="fade-up" data-delay="0.1">
+        <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+          <span class="text-2xl text-white">{{SERVICE_ICON}}</span>
+        </div>
+        <h3 class="text-xl font-heading font-bold text-white mb-3">{{SERVICE_TITLE}}</h3>
+        <p class="text-white/40 font-body leading-relaxed">{{SERVICE_DESCRIPTION}}</p>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "services_numbered_list",
+        "description": "Services as numbered list with large step numbers, horizontal line connector. Inspired by GMC Racing achievement cards.",
+        "category": "html_snippets",
+        "tags": ["services", "numbered", "list", "steps", "line-connector", "racing"],
+        "section_type": "services",
+        "mood": "bold",
+        "code_snippet": """<section id="services" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-5xl mx-auto px-6">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold mb-16" data-animate="text-split" style="color: var(--color-text);">{{SERVICES_TITLE}}</h2>
+    <div class="space-y-0">
+      <!-- REPEAT:SERVICES -->
+      <div class="group flex items-start gap-8 py-10 border-b transition-colors" style="border-color: color-mix(in srgb, var(--color-text) 8%, transparent);" data-animate="fade-up" data-delay="0.1">
+        <span class="text-6xl font-heading font-bold opacity-10 group-hover:opacity-30 transition-opacity" style="color: var(--color-primary);">{{SERVICE_NUMBER}}</span>
+        <div class="flex-1">
+          <h3 class="text-2xl font-heading font-bold mb-3" style="color: var(--color-text);">{{SERVICE_TITLE}}</h3>
+          <p class="opacity-60 font-body leading-relaxed max-w-xl">{{SERVICE_DESCRIPTION}}</p>
+        </div>
+        <svg class="w-6 h-6 opacity-0 group-hover:opacity-60 transition-all group-hover:translate-x-2 mt-2" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "services_tabs_content",
+        "description": "Services with tab navigation and content panels. Click a tab to reveal its service detail with image and description.",
+        "category": "html_snippets",
+        "tags": ["services", "tabs", "interactive", "content-panels", "switch"],
+        "section_type": "services",
+        "mood": "modern",
+        "code_snippet": """<section id="services" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <p class="text-sm uppercase tracking-widest text-center mb-4" style="color: var(--color-primary);" data-animate="blur-in">Servizi</p>
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-center mb-16" data-animate="text-split" style="color: var(--color-text);">{{SERVICES_TITLE}}</h2>
+    <div class="flex flex-wrap justify-center gap-3 mb-12">
+      <!-- REPEAT:SERVICES -->
+      <button class="service-tab px-6 py-3 rounded-full font-body text-sm font-bold transition-all border" style="border-color: color-mix(in srgb, var(--color-text) 10%, transparent); color: var(--color-text);" data-tab="{{SERVICE_ID}}">{{SERVICE_TITLE}}</button>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+    <div class="service-panels">
+      <!-- REPEAT:SERVICES -->
+      <div class="service-panel hidden grid grid-cols-1 lg:grid-cols-2 gap-12 items-center" data-panel="{{SERVICE_ID}}">
+        <div class="rounded-2xl overflow-hidden" data-animate="scale-in">
+          <img src="{{SERVICE_IMAGE_URL}}" alt="{{SERVICE_TITLE}}" class="w-full aspect-video object-cover">
+        </div>
+        <div>
+          <h3 class="text-3xl font-heading font-bold mb-4" style="color: var(--color-text);">{{SERVICE_TITLE}}</h3>
+          <p class="opacity-60 font-body leading-relaxed mb-6">{{SERVICE_DESCRIPTION}}</p>
+          <a href="#contact" class="inline-flex items-center gap-2 font-bold" style="color: var(--color-primary);" data-animate="magnetic">Richiedi Info</a>
+        </div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+</section>""",
+    },
+    # ---- GALLERY SECTIONS (4) ----
+    {
+        "id": "gallery_spotlight_featured",
+        "description": "Gallery with large featured hero image on top and smaller grid below. Expanding accent lines and corner accents on hover.",
+        "category": "html_snippets",
+        "tags": ["gallery", "spotlight", "featured", "grid", "accent-lines", "hover"],
+        "section_type": "gallery",
+        "mood": "elegant",
+        "code_snippet": """<section id="gallery" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold mb-16" data-animate="text-split" style="color: var(--color-text);">{{GALLERY_TITLE}}</h2>
+    <div class="mb-8" data-animate="scale-in">
+      <div class="relative group rounded-2xl overflow-hidden aspect-[21/9]">
+        <img src="{{GALLERY_FEATURED_URL}}" alt="{{GALLERY_FEATURED_ALT}}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- REPEAT:GALLERY_ITEMS -->
+      <div class="relative group rounded-xl overflow-hidden aspect-square" data-animate="fade-up" data-delay="0.1">
+        <img src="{{GALLERY_IMAGE_URL}}" alt="{{GALLERY_IMAGE_ALT}}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-animate="image-zoom">
+        <div class="absolute bottom-0 left-0 right-0 h-1 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" style="background: var(--color-primary);"></div>
+      </div>
+      <!-- /REPEAT:GALLERY_ITEMS -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "gallery_masonry_lightbox",
+        "description": "Masonry gallery layout with varying heights, click to open lightbox overlay. Smooth staggered entrance animations.",
+        "category": "html_snippets",
+        "tags": ["gallery", "masonry", "lightbox", "stagger", "varying-heights"],
+        "section_type": "gallery",
+        "mood": "creative",
+        "code_snippet": """<section id="gallery" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <p class="text-sm uppercase tracking-widest text-center mb-4" style="color: var(--color-primary);" data-animate="blur-in">Portfolio</p>
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-center mb-16" data-animate="text-split" style="color: var(--color-text);">{{GALLERY_TITLE}}</h2>
+    <div class="columns-2 md:columns-3 gap-4 space-y-4" data-animate="stagger">
+      <!-- REPEAT:GALLERY_ITEMS -->
+      <div class="break-inside-avoid group cursor-pointer relative rounded-xl overflow-hidden" data-animate="fade-up">
+        <img src="{{GALLERY_IMAGE_URL}}" alt="{{GALLERY_IMAGE_ALT}}" class="w-full object-cover transition-transform duration-500 group-hover:scale-105">
+        <div class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+        </div>
+      </div>
+      <!-- /REPEAT:GALLERY_ITEMS -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "gallery_carousel_numbered",
+        "description": "Gallery carousel with numbered slides, large current slide counter, navigation arrows. Inspired by Tiber Village carousel style.",
+        "category": "html_snippets",
+        "tags": ["gallery", "carousel", "numbered", "arrows", "slider", "luxury"],
+        "section_type": "gallery",
+        "mood": "elegant",
+        "code_snippet": """<section id="gallery" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex items-end justify-between mb-12">
+      <div>
+        <p class="text-sm uppercase tracking-widest mb-4" style="color: var(--color-primary);" data-animate="blur-in">Gallery</p>
+        <h2 class="text-4xl md:text-5xl font-heading font-bold" data-animate="text-split" style="color: var(--color-text);">{{GALLERY_TITLE}}</h2>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-5xl font-heading font-bold opacity-20" style="color: var(--color-text);">01</span>
+        <span class="text-sm opacity-40 font-body">/</span>
+        <span class="text-sm opacity-40 font-body">{{GALLERY_TOTAL}}</span>
+      </div>
+    </div>
+    <div class="relative overflow-hidden rounded-2xl">
+      <div class="flex transition-transform duration-700" id="gallery-track">
+        <!-- REPEAT:GALLERY_ITEMS -->
+        <div class="w-full flex-shrink-0 aspect-[16/9]">
+          <img src="{{GALLERY_IMAGE_URL}}" alt="{{GALLERY_IMAGE_ALT}}" class="w-full h-full object-cover">
+        </div>
+        <!-- /REPEAT:GALLERY_ITEMS -->
+      </div>
+    </div>
+    <div class="flex justify-center gap-4 mt-8">
+      <button class="w-12 h-12 rounded-full border flex items-center justify-center hover:scale-110 transition-transform" style="border-color: color-mix(in srgb, var(--color-text) 20%, transparent);">
+        <svg class="w-5 h-5" style="color: var(--color-text);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <button class="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-white" style="background: var(--color-primary);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "gallery_fullwidth_parallax",
+        "description": "Full-width gallery images stacked with parallax scroll effect. Each image takes full viewport width with text overlay.",
+        "category": "html_snippets",
+        "tags": ["gallery", "fullwidth", "parallax", "immersive", "scroll"],
+        "section_type": "gallery",
+        "mood": "bold",
+        "code_snippet": """<section id="gallery" class="relative" style="background: var(--color-text);">
+  <div class="text-center py-16 px-6">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-white" data-animate="text-split">{{GALLERY_TITLE}}</h2>
+  </div>
+  <!-- REPEAT:GALLERY_ITEMS -->
+  <div class="relative h-[70vh] overflow-hidden" data-parallax="0.3">
+    <img src="{{GALLERY_IMAGE_URL}}" alt="{{GALLERY_IMAGE_ALT}}" class="absolute inset-0 w-full h-full object-cover scale-110">
+    <div class="absolute inset-0 bg-black/30"></div>
+    <div class="absolute bottom-12 left-12">
+      <h3 class="text-3xl font-heading font-bold text-white" data-animate="fade-up">{{GALLERY_IMAGE_TITLE}}</h3>
+    </div>
+  </div>
+  <!-- /REPEAT:GALLERY_ITEMS -->
+</section>""",
+    },
+    # ---- TESTIMONIALS SECTIONS (3) ----
+    {
+        "id": "testimonials_masonry_glass",
+        "description": "Masonry testimonials with glassmorphism cards, floating decorative shapes, large quote SVG icon, avatar and name.",
+        "category": "html_snippets",
+        "tags": ["testimonials", "masonry", "glassmorphism", "quotes", "avatar", "decorative"],
+        "section_type": "testimonials",
+        "mood": "creative",
+        "code_snippet": """<section id="testimonials" class="py-24 relative overflow-hidden" style="background: color-mix(in srgb, var(--color-bg) 97%, var(--color-primary));">
+  <div class="absolute top-[10%] right-[5%] w-64 h-64 rounded-full blur-[80px]" style="background: var(--color-primary); opacity: 0.06;" data-animate="float"></div>
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-center mb-16" data-animate="text-split" style="color: var(--color-text);">{{TESTIMONIALS_TITLE}}</h2>
+    <div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="break-inside-avoid p-8 rounded-2xl backdrop-blur-sm border" style="background: color-mix(in srgb, var(--color-bg) 80%, transparent); border-color: color-mix(in srgb, var(--color-text) 5%, transparent);" data-animate="fade-up" data-delay="0.1">
+        <svg class="w-8 h-8 mb-4 opacity-20" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151C7.546 6.068 5.983 8.789 5.983 11H10v10H0z"/></svg>
+        <p class="opacity-70 font-body leading-relaxed mb-6">{{TESTIMONIAL_TEXT}}</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));"></div>
+          <div>
+            <p class="font-heading font-bold text-sm" style="color: var(--color-text);">{{TESTIMONIAL_AUTHOR}}</p>
+            <p class="text-xs opacity-40 font-body">{{TESTIMONIAL_ROLE}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "testimonials_single_large",
+        "description": "Single large testimonial displayed at a time with navigation dots. Centered layout, large quote, prominent author with photo.",
+        "category": "html_snippets",
+        "tags": ["testimonials", "single", "large", "centered", "dots-nav"],
+        "section_type": "testimonials",
+        "mood": "elegant",
+        "code_snippet": """<section id="testimonials" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <p class="text-sm uppercase tracking-widest mb-4" style="color: var(--color-primary);" data-animate="blur-in">Testimonianze</p>
+    <h2 class="text-4xl md:text-5xl font-heading font-bold mb-16" data-animate="text-split" style="color: var(--color-text);">{{TESTIMONIALS_TITLE}}</h2>
+    <div class="testimonial-slider">
+      <!-- REPEAT:TESTIMONIALS -->
+      <div class="testimonial-slide" data-animate="blur-slide">
+        <svg class="w-12 h-12 mx-auto mb-8 opacity-15" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151C7.546 6.068 5.983 8.789 5.983 11H10v10H0z"/></svg>
+        <p class="text-xl md:text-2xl font-body leading-relaxed opacity-70 mb-10">{{TESTIMONIAL_TEXT}}</p>
+        <img src="{{TESTIMONIAL_AVATAR}}" alt="{{TESTIMONIAL_AUTHOR}}" class="w-16 h-16 rounded-full mx-auto mb-4 object-cover">
+        <p class="font-heading font-bold" style="color: var(--color-text);">{{TESTIMONIAL_AUTHOR}}</p>
+        <p class="text-sm opacity-40 font-body">{{TESTIMONIAL_ROLE}}</p>
+      </div>
+      <!-- /REPEAT:TESTIMONIALS -->
+    </div>
+    <div class="flex justify-center gap-3 mt-10">
+      <span class="w-3 h-3 rounded-full cursor-pointer" style="background: var(--color-primary);"></span>
+      <span class="w-3 h-3 rounded-full cursor-pointer opacity-20" style="background: var(--color-text);"></span>
+      <span class="w-3 h-3 rounded-full cursor-pointer opacity-20" style="background: var(--color-text);"></span>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "testimonials_cards_horizontal_scroll",
+        "description": "Horizontal scrolling testimonial cards with star ratings. Snap scroll on mobile, smooth scroll on desktop.",
+        "category": "html_snippets",
+        "tags": ["testimonials", "horizontal-scroll", "cards", "star-rating", "snap-scroll"],
+        "section_type": "testimonials",
+        "mood": "modern",
+        "code_snippet": """<section id="testimonials" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6 mb-12">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold" data-animate="text-split" style="color: var(--color-text);">{{TESTIMONIALS_TITLE}}</h2>
+  </div>
+  <div class="flex gap-6 overflow-x-auto px-6 pb-4 snap-x snap-mandatory scrollbar-hide">
+    <!-- REPEAT:TESTIMONIALS -->
+    <div class="flex-shrink-0 w-[350px] snap-center p-8 rounded-2xl border" style="border-color: color-mix(in srgb, var(--color-text) 8%, transparent); background: var(--color-bg);" data-animate="fade-up" data-delay="0.1">
+      <div class="flex gap-1 mb-4">
+        <svg class="w-4 h-4" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <svg class="w-4 h-4" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <svg class="w-4 h-4" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <svg class="w-4 h-4" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <svg class="w-4 h-4" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+      </div>
+      <p class="opacity-70 font-body leading-relaxed mb-6">{{TESTIMONIAL_TEXT}}</p>
+      <p class="font-heading font-bold text-sm" style="color: var(--color-text);">{{TESTIMONIAL_AUTHOR}}</p>
+      <p class="text-xs opacity-40 font-body">{{TESTIMONIAL_ROLE}}</p>
+    </div>
+    <!-- /REPEAT:TESTIMONIALS -->
+  </div>
+</section>""",
+    },
+    # ---- CONTACT SECTIONS (3) ----
+    {
+        "id": "contact_split_form_info",
+        "description": "Split layout contact with floating-label form on left and info sidebar with gradient icon boxes on right.",
+        "category": "html_snippets",
+        "tags": ["contact", "form", "split-layout", "floating-label", "gradient-icons"],
+        "section_type": "contact",
+        "mood": "modern",
+        "code_snippet": """<section id="contact" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-16">
+      <div class="lg:col-span-3">
+        <h2 class="text-4xl md:text-5xl font-heading font-bold mb-8" data-animate="text-split" style="color: var(--color-text);">{{CONTACT_TITLE}}</h2>
+        <form class="space-y-6" data-animate="fade-up" data-delay="0.2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative">
+              <input type="text" id="name" placeholder=" " class="peer w-full px-4 py-4 rounded-xl border bg-transparent font-body transition-colors focus:outline-none" style="border-color: color-mix(in srgb, var(--color-text) 15%, transparent); color: var(--color-text);">
+              <label for="name" class="absolute left-4 top-4 text-sm opacity-40 font-body transition-all peer-focus:top-1 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs" style="color: var(--color-text);">Nome</label>
+            </div>
+            <div class="relative">
+              <input type="email" id="email" placeholder=" " class="peer w-full px-4 py-4 rounded-xl border bg-transparent font-body transition-colors focus:outline-none" style="border-color: color-mix(in srgb, var(--color-text) 15%, transparent); color: var(--color-text);">
+              <label for="email" class="absolute left-4 top-4 text-sm opacity-40 font-body transition-all peer-focus:top-1 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs" style="color: var(--color-text);">Email</label>
+            </div>
+          </div>
+          <div class="relative">
+            <textarea id="message" rows="5" placeholder=" " class="peer w-full px-4 py-4 rounded-xl border bg-transparent font-body transition-colors focus:outline-none resize-none" style="border-color: color-mix(in srgb, var(--color-text) 15%, transparent); color: var(--color-text);"></textarea>
+            <label for="message" class="absolute left-4 top-4 text-sm opacity-40 font-body transition-all peer-focus:top-1 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs" style="color: var(--color-text);">Messaggio</label>
+          </div>
+          <button type="submit" class="px-10 py-4 rounded-xl font-bold text-white transition-all hover:scale-105" data-animate="magnetic" style="background: var(--color-primary);">Invia Messaggio</button>
+        </form>
+      </div>
+      <div class="lg:col-span-2 space-y-6" data-animate="fade-left" data-delay="0.3">
+        <div class="p-6 rounded-2xl" style="background: color-mix(in srgb, var(--color-primary) 5%, var(--color-bg));">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <p class="font-heading font-bold mb-1" style="color: var(--color-text);">Indirizzo</p>
+          <p class="opacity-60 font-body text-sm">{{BUSINESS_ADDRESS}}</p>
+        </div>
+        <div class="p-6 rounded-2xl" style="background: color-mix(in srgb, var(--color-primary) 5%, var(--color-bg));">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <p class="font-heading font-bold mb-1" style="color: var(--color-text);">Email</p>
+          <p class="opacity-60 font-body text-sm">{{BUSINESS_EMAIL}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "contact_map_fullwidth",
+        "description": "Full-width map background with centered contact card overlay. Glassmorphism card floats over embedded map.",
+        "category": "html_snippets",
+        "tags": ["contact", "map", "fullwidth", "overlay-card", "glassmorphism"],
+        "section_type": "contact",
+        "mood": "elegant",
+        "code_snippet": """<section id="contact" class="relative h-[600px]">
+  <div class="absolute inset-0 bg-gray-200">
+    <iframe src="https://maps.google.com/maps?q={{BUSINESS_ADDRESS}}&output=embed" class="w-full h-full border-0" loading="lazy"></iframe>
+  </div>
+  <div class="absolute inset-0 flex items-center justify-center px-6">
+    <div class="backdrop-blur-xl bg-white/90 rounded-3xl p-10 max-w-md w-full shadow-2xl" data-animate="scale-in">
+      <h2 class="text-3xl font-heading font-bold mb-6" style="color: var(--color-text);">{{CONTACT_TITLE}}</h2>
+      <div class="space-y-4 mb-8">
+        <p class="flex items-center gap-3 font-body text-sm" style="color: var(--color-text);"><span style="color: var(--color-primary);">&#9679;</span> {{BUSINESS_ADDRESS}}</p>
+        <p class="flex items-center gap-3 font-body text-sm" style="color: var(--color-text);"><span style="color: var(--color-primary);">&#9679;</span> {{BUSINESS_PHONE}}</p>
+        <p class="flex items-center gap-3 font-body text-sm" style="color: var(--color-text);"><span style="color: var(--color-primary);">&#9679;</span> {{BUSINESS_EMAIL}}</p>
+      </div>
+      <a href="#" class="block w-full text-center px-8 py-4 rounded-xl font-bold text-white" data-animate="magnetic" style="background: var(--color-primary);">Contattaci</a>
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "contact_cta_banner_dark",
+        "description": "Dark CTA banner with large text and contact button. Gradient accent glow behind, minimal and impactful.",
+        "category": "html_snippets",
+        "tags": ["contact", "cta", "banner", "dark", "gradient-glow", "minimal"],
+        "section_type": "contact",
+        "mood": "bold",
+        "code_snippet": """<section id="contact" class="py-32 relative overflow-hidden" style="background: var(--color-text);">
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px]" style="background: var(--color-primary); opacity: 0.1;"></div>
+  <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+    <h2 class="text-4xl md:text-6xl lg:text-7xl font-heading font-bold text-white mb-8" data-animate="text-split">{{CONTACT_TITLE}}</h2>
+    <p class="text-xl text-white/40 font-body mb-12 max-w-2xl mx-auto" data-animate="fade-up" data-delay="0.2">{{CONTACT_SUBTITLE}}</p>
+    <div class="flex flex-wrap justify-center gap-6" data-animate="fade-up" data-delay="0.4">
+      <a href="mailto:{{BUSINESS_EMAIL}}" class="px-10 py-5 rounded-xl font-bold text-white text-lg transition-all hover:scale-105" data-animate="magnetic" style="background: var(--color-primary); box-shadow: 0 0 40px color-mix(in srgb, var(--color-primary) 40%, transparent);">{{CONTACT_CTA_TEXT}}</a>
+      <a href="tel:{{BUSINESS_PHONE}}" class="px-10 py-5 rounded-xl font-bold text-white/60 text-lg border border-white/10 hover:border-white/30 transition-all">{{BUSINESS_PHONE}}</a>
+    </div>
+  </div>
+</section>""",
+    },
+    # ---- FOOTER SECTIONS (3) ----
+    {
+        "id": "footer_gradient_four_column",
+        "description": "Dark gradient footer with 4-column grid, social icons, newsletter input, gradient accent line at top. Comprehensive footer with all links.",
+        "category": "html_snippets",
+        "tags": ["footer", "gradient", "four-column", "newsletter", "social-icons"],
+        "section_type": "footer",
+        "mood": "modern",
+        "code_snippet": """<footer style="background: linear-gradient(180deg, var(--color-text), color-mix(in srgb, var(--color-text) 90%, black));">
+  <div class="h-1" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent));"></div>
+  <div class="max-w-7xl mx-auto px-6 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div>
+        <p class="font-heading font-bold text-xl text-white mb-4">{{BUSINESS_NAME}}</p>
+        <p class="text-white/40 font-body text-sm leading-relaxed">{{FOOTER_DESCRIPTION}}</p>
+      </div>
+      <div>
+        <p class="font-heading font-bold text-white mb-4">Link Rapidi</p>
+        <div class="space-y-3">
+          <a href="#about" class="block text-white/40 hover:text-white text-sm font-body transition-colors">Chi Siamo</a>
+          <a href="#services" class="block text-white/40 hover:text-white text-sm font-body transition-colors">Servizi</a>
+          <a href="#gallery" class="block text-white/40 hover:text-white text-sm font-body transition-colors">Gallery</a>
+          <a href="#contact" class="block text-white/40 hover:text-white text-sm font-body transition-colors">Contatti</a>
+        </div>
+      </div>
+      <div>
+        <p class="font-heading font-bold text-white mb-4">Contatti</p>
+        <div class="space-y-3 text-white/40 text-sm font-body">
+          <p>{{BUSINESS_ADDRESS}}</p>
+          <p>{{BUSINESS_PHONE}}</p>
+          <p>{{BUSINESS_EMAIL}}</p>
+        </div>
+      </div>
+      <div>
+        <p class="font-heading font-bold text-white mb-4">Newsletter</p>
+        <div class="flex gap-2">
+          <input type="email" placeholder="La tua email" class="flex-1 px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-sm font-body focus:outline-none focus:border-white/20">
+          <button class="px-4 py-3 rounded-lg text-white font-bold text-sm" style="background: var(--color-primary);">Iscriviti</button>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-white/5 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-white/30 text-xs font-body">&copy; 2025 {{BUSINESS_NAME}}. Tutti i diritti riservati.</p>
+      <div class="flex gap-4">
+        <a href="#" class="text-white/30 hover:text-white transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557a9.83 9.83 0 01-2.828.775 4.932 4.932 0 002.165-2.724 9.864 9.864 0 01-3.127 1.195 4.916 4.916 0 00-8.384 4.482A13.944 13.944 0 011.671 3.149a4.822 4.822 0 001.523 6.574 4.903 4.903 0 01-2.229-.616v.061a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.224.084 4.937 4.937 0 004.604 3.417 9.868 9.868 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.054 0 14.002-7.496 14.002-13.986 0-.21 0-.423-.015-.634A9.936 9.936 0 0024 4.557z"/></svg></a>
+        <a href="#" class="text-white/30 hover:text-white transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>""",
+    },
+    {
+        "id": "footer_minimal_centered",
+        "description": "Minimal centered footer with logo, horizontal links, copyright. Clean and simple single-line layout.",
+        "category": "html_snippets",
+        "tags": ["footer", "minimal", "centered", "single-line", "clean"],
+        "section_type": "footer",
+        "mood": "minimal",
+        "code_snippet": """<footer class="py-12 border-t" style="border-color: color-mix(in srgb, var(--color-text) 8%, transparent); background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6 text-center">
+    <p class="font-heading font-bold text-xl mb-6" style="color: var(--color-text);">{{BUSINESS_NAME}}</p>
+    <div class="flex flex-wrap justify-center gap-8 mb-8">
+      <a href="#about" class="text-sm font-body opacity-50 hover:opacity-100 transition-opacity" style="color: var(--color-text);">Chi Siamo</a>
+      <a href="#services" class="text-sm font-body opacity-50 hover:opacity-100 transition-opacity" style="color: var(--color-text);">Servizi</a>
+      <a href="#gallery" class="text-sm font-body opacity-50 hover:opacity-100 transition-opacity" style="color: var(--color-text);">Gallery</a>
+      <a href="#contact" class="text-sm font-body opacity-50 hover:opacity-100 transition-opacity" style="color: var(--color-text);">Contatti</a>
+    </div>
+    <p class="text-xs opacity-30 font-body" style="color: var(--color-text);">&copy; 2025 {{BUSINESS_NAME}}. Tutti i diritti riservati.</p>
+  </div>
+</footer>""",
+    },
+    {
+        "id": "footer_cta_large",
+        "description": "Footer with large CTA section on top, then footer links below. The CTA area has gradient background and prominent call-to-action.",
+        "category": "html_snippets",
+        "tags": ["footer", "cta", "large", "gradient", "two-part"],
+        "section_type": "footer",
+        "mood": "bold",
+        "code_snippet": """<footer>
+  <div class="py-20 text-center" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-6" data-animate="text-split">{{FOOTER_CTA_TITLE}}</h2>
+    <p class="text-lg text-white/70 font-body mb-10 max-w-xl mx-auto">{{FOOTER_CTA_SUBTITLE}}</p>
+    <a href="#contact" class="inline-flex items-center gap-2 px-10 py-5 bg-white font-bold rounded-xl text-lg transition-all hover:scale-105" data-animate="magnetic" style="color: var(--color-primary);">{{FOOTER_CTA_TEXT}}</a>
+  </div>
+  <div class="py-8 px-6" style="background: var(--color-text);">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-white/30 text-xs font-body">&copy; 2025 {{BUSINESS_NAME}}</p>
+      <div class="flex gap-6">
+        <a href="#" class="text-white/30 hover:text-white text-xs font-body transition-colors">Privacy</a>
+        <a href="#" class="text-white/30 hover:text-white text-xs font-body transition-colors">Cookie</a>
+        <a href="#" class="text-white/30 hover:text-white text-xs font-body transition-colors">Termini</a>
+      </div>
+    </div>
+  </div>
+</footer>""",
+    },
+    # ---- CSS PATTERNS (8) ----
+    {
+        "id": "css_glassmorphism_card",
+        "description": "CSS pattern for glassmorphism card: frosted glass effect with backdrop-blur, semi-transparent background, subtle border. Works on both light and dark backgrounds.",
+        "category": "css_patterns",
+        "tags": ["glassmorphism", "frosted-glass", "backdrop-blur", "card", "transparent"],
+        "section_type": "generic",
+        "mood": "creative",
+        "code_snippet": """.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+/* Light variant */
+.glass-card--light {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}""",
+    },
+    {
+        "id": "css_gradient_text",
+        "description": "CSS pattern for gradient text: applies a linear gradient as text color using background-clip. Works with any gradient direction and colors.",
+        "category": "css_patterns",
+        "tags": ["gradient", "text", "background-clip", "typography", "color"],
+        "section_type": "generic",
+        "mood": "creative",
+        "code_snippet": """.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+/* Animated shimmer variant */
+.gradient-text--shimmer {
+  background-size: 200% auto;
+  animation: gradient-shift 3s ease infinite;
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}""",
+    },
+    {
+        "id": "css_hover_underline_expand",
+        "description": "CSS hover underline that expands from left to right using ::after pseudo-element with scaleX transform. Clean link hover effect.",
+        "category": "css_patterns",
+        "tags": ["hover", "underline", "expand", "link", "transform", "pseudo-element"],
+        "section_type": "generic",
+        "mood": "minimal",
+        "code_snippet": """.hover-underline {
+  position: relative;
+  display: inline-block;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-underline:hover::after {
+  transform: scaleX(1);
+}""",
+    },
+    {
+        "id": "css_card_hover_lift",
+        "description": "CSS card hover effect with subtle lift (translateY), shadow expansion, and optional border color change. Smooth 300ms transition.",
+        "category": "css_patterns",
+        "tags": ["card", "hover", "lift", "shadow", "translateY", "transition"],
+        "section_type": "generic",
+        "mood": "modern",
+        "code_snippet": """.card-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+.card-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+}""",
+    },
+    {
+        "id": "css_scrollbar_hide",
+        "description": "CSS to hide scrollbar while maintaining scroll functionality. Cross-browser compatible pattern for horizontal scroll containers.",
+        "category": "css_patterns",
+        "tags": ["scrollbar", "hide", "scroll", "horizontal", "cross-browser"],
+        "section_type": "generic",
+        "mood": "modern",
+        "code_snippet": """.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+/* Thin scrollbar variant */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-text) 15%, transparent) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px; height: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-text) 15%, transparent);
+  border-radius: 99px;
+}""",
+    },
+    {
+        "id": "css_fluid_typography_clamp",
+        "description": "CSS fluid typography using clamp() for responsive font sizing without media queries. Scales smoothly between min and max values.",
+        "category": "css_patterns",
+        "tags": ["typography", "fluid", "clamp", "responsive", "font-size"],
+        "section_type": "generic",
+        "mood": "modern",
+        "code_snippet": """/* Fluid typography scale using clamp() */
+.text-fluid-sm { font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem); }
+.text-fluid-base { font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem); }
+.text-fluid-lg { font-size: clamp(1.25rem, 1rem + 0.8vw, 1.75rem); }
+.text-fluid-xl { font-size: clamp(1.5rem, 1rem + 1.5vw, 2.5rem); }
+.text-fluid-2xl { font-size: clamp(2rem, 1.2rem + 2.5vw, 4rem); }
+.text-fluid-3xl { font-size: clamp(2.5rem, 1.5rem + 3.5vw, 5.5rem); }
+/* Hero: clamp(3rem, 2rem + 4vw, 7rem) for dramatic scaling */""",
+    },
+    {
+        "id": "css_border_glow_radial",
+        "description": "CSS pattern for radial gradient border glow that follows mouse position. Uses CSS custom properties updated via JS for mouse tracking.",
+        "category": "css_patterns",
+        "tags": ["border-glow", "radial-gradient", "mouse-follow", "linear-style", "interactive"],
+        "section_type": "generic",
+        "mood": "creative",
+        "code_snippet": """.border-glow {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+.border-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.15),
+    transparent 40%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+@media (hover: none) { .border-glow::before { display: none; } }
+/* JS: el.addEventListener('mousemove', e => { const r = el.getBoundingClientRect(); el.style.setProperty('--mouse-x', (e.clientX-r.left)+'px'); el.style.setProperty('--mouse-y', (e.clientY-r.top)+'px'); }) */""",
+    },
+    {
+        "id": "css_section_divider_shapes",
+        "description": "CSS SVG section dividers - wave, slant, and curve shapes between sections. Placed at bottom of sections using absolute positioning.",
+        "category": "css_patterns",
+        "tags": ["divider", "svg", "wave", "slant", "curve", "section-transition"],
+        "section_type": "generic",
+        "mood": "creative",
+        "code_snippet": """/* Wave divider at bottom of section */
+.section-divider-wave {
+  position: absolute; bottom: -1px; left: 0; right: 0;
+  line-height: 0;
+}
+/* Usage: <div class="section-divider-wave"><svg viewBox="0 0 1440 100" preserveAspectRatio="none" style="width:100%;height:60px;"><path fill="var(--next-section-bg)" d="M0,60 C360,100 720,0 1080,60 C1260,80 1380,40 1440,60 L1440,100 L0,100 Z"/></svg></div> */
+
+/* Slant divider */
+.section-divider-slant {
+  position: absolute; bottom: -1px; left: 0; right: 0;
+  line-height: 0;
+}
+/* Usage: <div class="section-divider-slant"><svg viewBox="0 0 1440 60" preserveAspectRatio="none" style="width:100%;height:60px;"><polygon fill="var(--next-section-bg)" points="0,60 1440,0 1440,60"/></svg></div> */""",
+    },
+    # ---- ANIMATION COMBOS (7) ----
+    {
+        "id": "anim_hero_entrance_sequence",
+        "description": "Animation combo for hero entrance: badge blur-in first, then title text-split, subtitle blur-slide delayed, CTA fade-up last. Creates a cinematic reveal sequence.",
+        "category": "animation_combos",
+        "tags": ["hero", "entrance", "sequence", "blur-in", "text-split", "cinematic"],
+        "section_type": "hero",
+        "mood": "creative",
+        "code_snippet": """<!-- Hero entrance sequence: staggered reveal -->
+<div data-animate="blur-in" data-delay="0">Badge/Label</div>
+<h1 data-animate="text-split" data-split-type="chars" data-delay="0.2">Title</h1>
+<p data-animate="blur-slide" data-delay="0.5" data-duration="1.2">Subtitle</p>
+<div data-animate="fade-up" data-delay="0.8">CTA buttons</div>
+<!-- Decorative elements enter simultaneously -->
+<div data-animate="float" data-delay="0">Floating shape</div>
+<div data-animate="morph-bg">Background blobs</div>""",
+    },
+    {
+        "id": "anim_card_grid_stagger",
+        "description": "Animation combo for card grids: container uses stagger, each card uses fade-up with incremental delays. Cards appear in cascade wave from first to last.",
+        "category": "animation_combos",
+        "tags": ["cards", "grid", "stagger", "cascade", "fade-up", "wave"],
+        "section_type": "generic",
+        "mood": "modern",
+        "code_snippet": """<!-- Card grid with cascade stagger -->
+<div class="grid grid-cols-3 gap-6" data-animate="stagger" data-stagger-amount="0.15">
+  <div class="card" data-animate="fade-up">Card 1</div>
+  <div class="card" data-animate="fade-up">Card 2</div>
+  <div class="card" data-animate="fade-up">Card 3</div>
+  <div class="card" data-animate="fade-up">Card 4</div>
+  <div class="card" data-animate="fade-up">Card 5</div>
+  <div class="card" data-animate="fade-up">Card 6</div>
+</div>
+<!-- Alternative: manual delay cascade -->
+<div data-animate="fade-up" data-delay="0.0">Card 1</div>
+<div data-animate="fade-up" data-delay="0.1">Card 2</div>
+<div data-animate="fade-up" data-delay="0.2">Card 3</div>""",
+    },
+    {
+        "id": "anim_scroll_reveal_section",
+        "description": "Animation combo for section reveals: section label blur-in, heading text-split, accent line fade-right, body text fade-up, image clip-reveal from side.",
+        "category": "animation_combos",
+        "tags": ["section", "reveal", "scroll", "text-split", "clip-reveal", "sequence"],
+        "section_type": "generic",
+        "mood": "elegant",
+        "code_snippet": """<!-- Section scroll reveal sequence -->
+<section>
+  <p data-animate="blur-in">Section Label</p>
+  <h2 data-animate="text-split" data-split-type="words">Section Title</h2>
+  <div class="accent-line" data-animate="fade-right" data-delay="0.2"></div>
+  <p data-animate="fade-up" data-delay="0.3">Body text paragraph</p>
+  <div data-animate="clip-reveal" data-delay="0.2">
+    <img src="image.jpg" alt="">
+  </div>
+</section>
+<!-- Stats counter row -->
+<div data-animate="fade-up" data-delay="0.4">
+  <span data-counter="150">0</span>
+</div>""",
+    },
+    {
+        "id": "anim_interactive_card_combo",
+        "description": "Animation combo for interactive cards: tilt on hover, 3D card effect, magnetic CTA button inside, image-zoom on the card image.",
+        "category": "animation_combos",
+        "tags": ["interactive", "tilt", "card-hover-3d", "magnetic", "image-zoom", "hover"],
+        "section_type": "generic",
+        "mood": "creative",
+        "code_snippet": """<!-- Interactive card with multiple effects -->
+<div class="card" data-animate="tilt" data-animate="card-hover-3d">
+  <div class="card-image" data-animate="image-zoom">
+    <img src="image.jpg" alt="">
+  </div>
+  <h3>Card Title</h3>
+  <p>Card description</p>
+  <a href="#" data-animate="magnetic">CTA Button</a>
+</div>
+<!-- Combine with border-glow for Linear-style effect -->
+<div class="border-glow" data-animate="tilt">
+  <!-- Card content -->
+</div>""",
+    },
+    {
+        "id": "anim_text_dramatic_reveal",
+        "description": "Animation combo for dramatic text reveals: use text-split with chars for headlines, text-reveal for secondary lines, typewriter for quotes or accent text.",
+        "category": "animation_combos",
+        "tags": ["text", "dramatic", "text-split", "text-reveal", "typewriter", "chars"],
+        "section_type": "generic",
+        "mood": "bold",
+        "code_snippet": """<!-- Dramatic text reveal combo -->
+<h1 data-animate="text-split" data-split-type="chars" data-duration="1.5">BOLD HEADLINE</h1>
+<h2 data-animate="text-reveal" data-delay="0.5">Supporting line</h2>
+<p data-animate="typewriter" data-delay="1.0" data-speed="50">A quote or tagline typed out...</p>
+
+<!-- Alternative: words split for longer headings -->
+<h1 data-animate="text-split" data-split-type="words">Multiple Word Heading</h1>
+
+<!-- Lines split for paragraph reveals -->
+<p data-animate="text-split" data-split-type="lines">
+  Long paragraph that reveals line by line as user scrolls.
+</p>""",
+    },
+    {
+        "id": "anim_parallax_depth_layers",
+        "description": "Animation combo for creating depth with parallax layers: background at 0.2 speed, midground at 0.5, foreground at 0.8. Creates immersive 3D scrolling.",
+        "category": "animation_combos",
+        "tags": ["parallax", "depth", "layers", "3d", "scrolling", "immersive"],
+        "section_type": "hero",
+        "mood": "creative",
+        "code_snippet": """<!-- Parallax depth layers -->
+<section class="relative min-h-screen overflow-hidden">
+  <!-- Background layer: slowest -->
+  <div class="absolute inset-0" data-parallax="0.2">
+    <img src="bg.jpg" class="w-full h-full object-cover scale-125" alt="">
+  </div>
+  <!-- Midground layer: medium -->
+  <div class="absolute bottom-0 left-0 right-0" data-parallax="0.5">
+    <img src="midground.png" class="w-full" alt="">
+  </div>
+  <!-- Foreground content: fastest -->
+  <div class="relative z-10" data-parallax="0.8">
+    <h1>Content moves fastest</h1>
+  </div>
+  <!-- Floating elements at different speeds -->
+  <div class="absolute" data-parallax="0.3" data-animate="float">Decoration</div>
+</section>""",
+    },
+    {
+        "id": "anim_page_transition_smooth",
+        "description": "Animation combo for smooth page-like transitions between sections: each section uses reveal-up with clip-path, creating a curtain-lift effect as user scrolls.",
+        "category": "animation_combos",
+        "tags": ["page-transition", "clip-path", "reveal-up", "curtain", "smooth", "scroll"],
+        "section_type": "generic",
+        "mood": "elegant",
+        "code_snippet": """<!-- Smooth section transitions with reveal -->
+<section data-animate="reveal-up" style="clip-path: inset(0 0 100% 0);">
+  <!-- Section 1 content reveals upward -->
+</section>
+
+<section data-animate="reveal-up" style="clip-path: inset(0 0 100% 0);">
+  <!-- Section 2 reveals after section 1 -->
+</section>
+
+<!-- Alternative: split-screen reveal -->
+<section data-animate="split-screen">
+  <div class="left-panel">Left content</div>
+  <div class="right-panel">Right content</div>
+</section>
+
+<!-- Horizontal scroll section -->
+<section class="horizontal-section" data-animate="horizontal-scroll">
+  <div class="flex" style="width: max-content;">
+    <div class="w-screen">Panel 1</div>
+    <div class="w-screen">Panel 2</div>
+    <div class="w-screen">Panel 3</div>
+  </div>
+</section>""",
+    },
+    # ---- EXTRA SECTIONS (4) ----
+    {
+        "id": "team_grid_hover_reveal",
+        "description": "Team section with photo grid, overlay with name/role on hover, social icons appear on hover. Clean corporate team layout.",
+        "category": "html_snippets",
+        "tags": ["team", "grid", "hover-reveal", "social-icons", "photo", "corporate"],
+        "section_type": "team",
+        "mood": "modern",
+        "code_snippet": """<section id="team" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <p class="text-sm uppercase tracking-widest text-center mb-4" style="color: var(--color-primary);" data-animate="blur-in">Il Team</p>
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-center mb-16" data-animate="text-split" style="color: var(--color-text);">{{TEAM_TITLE}}</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <div class="group relative rounded-2xl overflow-hidden aspect-[3/4]" data-animate="fade-up" data-delay="0.1">
+        <img src="{{MEMBER_IMAGE_URL}}" alt="{{MEMBER_NAME}}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <p class="font-heading font-bold text-white">{{MEMBER_NAME}}</p>
+          <p class="text-white/60 text-sm font-body">{{MEMBER_ROLE}}</p>
+        </div>
+      </div>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "pricing_three_column",
+        "description": "Three-column pricing section with highlighted recommended plan. Cards with feature lists, CTA buttons, popular badge.",
+        "category": "html_snippets",
+        "tags": ["pricing", "three-column", "cards", "popular-badge", "features-list"],
+        "section_type": "pricing",
+        "mood": "modern",
+        "code_snippet": """<section id="pricing" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-5xl mx-auto px-6">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-center mb-4" data-animate="text-split" style="color: var(--color-text);">{{PRICING_TITLE}}</h2>
+    <p class="text-lg text-center opacity-50 font-body mb-16" data-animate="fade-up">{{PRICING_SUBTITLE}}</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- REPEAT:PLANS -->
+      <div class="relative p-8 rounded-2xl border transition-all" style="border-color: color-mix(in srgb, var(--color-text) 8%, transparent); background: var(--color-bg);" data-animate="fade-up" data-delay="0.1">
+        <p class="font-heading font-bold text-lg mb-2" style="color: var(--color-text);">{{PLAN_NAME}}</p>
+        <p class="text-4xl font-heading font-bold mb-6" style="color: var(--color-primary);">{{PLAN_PRICE}}<span class="text-base opacity-40 font-body">/mese</span></p>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center gap-2 text-sm font-body opacity-60">
+            <svg class="w-4 h-4 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            {{PLAN_FEATURE}}
+          </li>
+        </ul>
+        <a href="#contact" class="block w-full text-center py-4 rounded-xl font-bold border transition-all hover:scale-105" style="border-color: var(--color-primary); color: var(--color-primary);" data-animate="magnetic">Scegli Piano</a>
+      </div>
+      <!-- /REPEAT:PLANS -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "features_bento_mixed_sizes",
+        "description": "Bento grid features with mixed card sizes: first card 2x2 featured, others 1x1. Decorative background icons, bottom accent line on hover.",
+        "category": "html_snippets",
+        "tags": ["features", "bento", "mixed-sizes", "featured-card", "accent-line", "hover"],
+        "section_type": "features",
+        "mood": "modern",
+        "code_snippet": """<section id="features" class="py-24" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <h2 class="text-4xl md:text-5xl font-heading font-bold text-center mb-16" data-animate="text-split" style="color: var(--color-text);">{{FEATURES_TITLE}}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-animate="stagger" data-stagger-amount="0.1">
+      <div class="md:col-span-2 md:row-span-2 p-10 rounded-2xl relative overflow-hidden group" style="background: color-mix(in srgb, var(--color-primary) 5%, var(--color-bg)); border: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);" data-animate="fade-up">
+        <div class="absolute top-6 right-6 text-8xl opacity-5 font-heading" style="color: var(--color-primary);">01</div>
+        <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style="background: color-mix(in srgb, var(--color-primary) 15%, transparent);"><span class="text-2xl">{{FEATURE_ICON}}</span></div>
+        <h3 class="text-2xl font-heading font-bold mb-4" style="color: var(--color-text);">{{FEATURE_TITLE}}</h3>
+        <p class="opacity-60 font-body leading-relaxed">{{FEATURE_DESCRIPTION}}</p>
+        <div class="absolute bottom-0 left-0 right-0 h-1 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" style="background: var(--color-primary);"></div>
+      </div>
+      <!-- REPEAT:FEATURES -->
+      <div class="p-8 rounded-2xl border group" style="border-color: color-mix(in srgb, var(--color-text) 6%, transparent); background: var(--color-bg);" data-animate="fade-up">
+        <span class="text-2xl mb-4 block">{{FEATURE_ICON}}</span>
+        <h3 class="font-heading font-bold mb-2" style="color: var(--color-text);">{{FEATURE_TITLE}}</h3>
+        <p class="text-sm opacity-50 font-body">{{FEATURE_DESCRIPTION}}</p>
+      </div>
+      <!-- /REPEAT:FEATURES -->
+    </div>
+  </div>
+</section>""",
+    },
+    {
+        "id": "cta_split_gradient",
+        "description": "CTA section split into two halves: left with text and button, right with gradient background and decorative pattern. Bold call-to-action placement.",
+        "category": "html_snippets",
+        "tags": ["cta", "split", "gradient", "bold", "decorative-pattern"],
+        "section_type": "cta",
+        "mood": "bold",
+        "code_snippet": """<section class="grid grid-cols-1 lg:grid-cols-2 min-h-[400px]">
+  <div class="flex items-center px-12 lg:px-20 py-16" style="background: var(--color-bg);">
+    <div>
+      <h2 class="text-3xl md:text-4xl font-heading font-bold mb-6" data-animate="text-split" style="color: var(--color-text);">{{CTA_TITLE}}</h2>
+      <p class="opacity-60 font-body mb-8 max-w-md" data-animate="fade-up" data-delay="0.2">{{CTA_DESCRIPTION}}</p>
+      <a href="#contact" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-white transition-all hover:scale-105" data-animate="magnetic" style="background: var(--color-primary);">{{CTA_BUTTON_TEXT}}</a>
+    </div>
+  </div>
+  <div class="relative overflow-hidden" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 30px 30px;"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border border-white/10"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full border border-white/10"></div>
+  </div>
+</section>""",
+    },
+]
+
+
+def _seed_curated_snippets(add_html_snippet_fn):
+    """Seed curated HTML snippets from HTML_SNIPPETS list."""
+    count = 0
+    for snippet in HTML_SNIPPETS:
+        try:
+            add_html_snippet_fn(
+                pattern_id=snippet["id"],
+                content=snippet["description"],
+                html_snippet=snippet["code_snippet"][:3000],
+                category=snippet["category"],
+                section_type=snippet.get("section_type", ""),
+                mood=snippet.get("mood", ""),
+                style_tags=",".join(snippet.get("tags", [])),
+                impact_score=7,
+            )
+            count += 1
+        except Exception as e:
+            print(f"Warning: Could not seed snippet {snippet['id']}: {e}")
+    print(f"Seeded {count} curated HTML snippets.")
+
 
 def seed_all():
     """Seed all design patterns into the SQLite FTS5 knowledge base.
@@ -2532,8 +3953,9 @@ def seed_all():
     )
 
     stats = get_collection_stats()
-    if stats.get("total_patterns", 0) >= len(PATTERNS):
-        print(f"Knowledge base already has {stats['total_patterns']} patterns, skipping seed.")
+    expected_min = len(PATTERNS) + len(HTML_SNIPPETS)
+    if stats.get("total_patterns", 0) >= expected_min:
+        print(f"Knowledge base already has {stats['total_patterns']} patterns (need {expected_min}), skipping seed.")
         return stats["total_patterns"]
 
     ids = []
@@ -2561,6 +3983,9 @@ def seed_all():
 
     # Seed HTML snippets from component templates
     _seed_component_snippets(add_html_snippet)
+
+    # Seed curated snippets from reference sites and design patterns
+    _seed_curated_snippets(add_html_snippet)
 
     final_stats = get_collection_stats()
     print(f"Seeded {final_stats['total_patterns']} design patterns (text + HTML).")
