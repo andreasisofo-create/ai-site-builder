@@ -1342,187 +1342,210 @@ STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
 STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     # --- Restaurant ---
     "restaurant-elegant": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01"],
-        "hero": ["hero-classic-01", "hero-editorial-01", "hero-typewriter-01"],
-        "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01"],
-        "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01"],
-        "gallery": ["gallery-spotlight-01", "gallery-lightbox-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01"],
-        "contact": ["contact-minimal-01", "contact-form-01", "contact-minimal-02"],
-        "footer": ["footer-centered-01", "footer-minimal-02", "footer-stacked-01"],
+        "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01", "nav-transparent-01"],
+        "hero": ["hero-classic-01", "hero-editorial-01", "hero-typewriter-01", "hero-parallax-01", "hero-video-bg-01", "hero-zen-01"],
+        "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01", "about-alternating-01", "about-timeline-01"],
+        "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01", "services-cards-grid-01", "services-process-steps-01"],
+        "gallery": ["gallery-spotlight-01", "gallery-lightbox-01", "gallery-masonry-01", "gallery-filmstrip-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-card-stack-01", "testimonials-masonry-01"],
+        "contact": ["contact-minimal-01", "contact-form-01", "contact-minimal-02", "contact-card-01", "contact-split-map-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01"],
+        "footer": ["footer-centered-01", "footer-minimal-02", "footer-stacked-01", "footer-sitemap-01", "footer-multi-col-01"],
     },
     "restaurant-cozy": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01"],
-        "hero": ["hero-organic-01", "hero-typewriter-01", "hero-classic-01"],
-        "about": ["about-split-scroll-01", "about-image-showcase-01", "about-magazine-01"],
-        "services": ["services-icon-list-01", "services-minimal-list-01", "services-alternating-rows-01"],
-        "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
-        "testimonials": ["testimonials-card-stack-01", "testimonials-spotlight-01", "testimonials-carousel-01"],
-        "contact": ["contact-card-01", "contact-minimal-01", "contact-form-01"],
-        "footer": ["footer-multi-col-01", "footer-centered-01", "footer-stacked-01"],
+        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-topbar-01"],
+        "hero": ["hero-organic-01", "hero-typewriter-01", "hero-classic-01", "hero-parallax-01", "hero-split-01", "hero-centered-02"],
+        "about": ["about-split-scroll-01", "about-image-showcase-01", "about-magazine-01", "about-alternating-01", "about-timeline-01"],
+        "services": ["services-icon-list-01", "services-minimal-list-01", "services-alternating-rows-01", "services-cards-grid-01", "services-process-steps-01"],
+        "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01", "gallery-filmstrip-01"],
+        "testimonials": ["testimonials-card-stack-01", "testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-masonry-01"],
+        "contact": ["contact-card-01", "contact-minimal-01", "contact-form-01", "contact-split-map-01", "contact-modern-form-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-02"],
+        "footer": ["footer-multi-col-01", "footer-centered-01", "footer-stacked-01", "footer-sitemap-01", "footer-minimal-02"],
     },
     "restaurant-modern": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-transparent-01"],
-        "hero": ["hero-zen-01", "hero-parallax-01", "hero-glassmorphism-01"],
-        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01"],
-        "services": ["services-tabs-01", "services-hover-reveal-01", "services-bento-02"],
-        "gallery": ["gallery-filmstrip-01", "gallery-masonry-01"],
-        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01"],
-        "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01"],
-        "footer": ["footer-minimal-02", "footer-gradient-01", "footer-cta-band-01"],
+        "nav": ["nav-minimal-01", "nav-centered-01", "nav-transparent-01", "nav-pill-01"],
+        "hero": ["hero-zen-01", "hero-parallax-01", "hero-glassmorphism-01", "hero-split-01", "hero-linear-01", "hero-video-bg-01"],
+        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01", "about-image-showcase-01", "about-magazine-01"],
+        "services": ["services-tabs-01", "services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-minimal-list-01"],
+        "gallery": ["gallery-filmstrip-01", "gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
+        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-spotlight-01"],
+        "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01", "contact-minimal-02", "contact-form-01"],
+        "cta": ["cta-gradient-banner-01", "cta-floating-card-01", "cta-split-image-01"],
+        "footer": ["footer-minimal-02", "footer-gradient-01", "footer-cta-band-01", "footer-asymmetric-01", "footer-social-01"],
     },
     # --- SaaS / Landing Page ---
     "saas-gradient": {
-        "nav": ["nav-minimal-01", "nav-classic-01", "nav-pill-01", "nav-split-cta-01"],
-        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01", "hero-rotating-01"],
-        "about": ["about-timeline-02", "about-bento-01", "about-split-cards-01"],
-        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01"],
-        "features": ["features-bento-01", "features-bento-grid-01", "features-hover-cards-01", "features-tabs-01"],
-        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-carousel-01"],
-        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01"],
-        "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01"],
-        "footer": ["footer-gradient-01", "footer-mega-01", "footer-cta-band-01"],
+        "nav": ["nav-minimal-01", "nav-classic-01", "nav-pill-01", "nav-split-cta-01", "nav-transparent-01"],
+        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01", "hero-rotating-01", "hero-glassmorphism-01"],
+        "about": ["about-timeline-02", "about-bento-01", "about-split-cards-01", "about-image-showcase-01", "about-alternating-01"],
+        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-tabs-01", "services-cards-grid-01"],
+        "features": ["features-bento-01", "features-bento-grid-01", "features-hover-cards-01", "features-tabs-01", "features-icon-showcase-01"],
+        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-carousel-01", "testimonials-card-stack-01", "testimonials-grid-01"],
+        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01", "cta-floating-card-02", "cta-split-image-01"],
+        "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01", "contact-form-01", "contact-minimal-02"],
+        "footer": ["footer-gradient-01", "footer-mega-01", "footer-cta-band-01", "footer-multi-col-01", "footer-sitemap-01"],
     },
     "saas-clean": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-pill-01"],
-        "hero": ["hero-centered-02", "hero-split-01", "hero-linear-01"],
-        "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02"],
-        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01"],
-        "features": ["features-icons-grid-01", "features-bento-01", "features-alternating-01", "features-icon-showcase-01"],
-        "testimonials": ["testimonials-grid-01", "testimonials-carousel-01", "testimonials-spotlight-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01"],
-        "contact": ["contact-form-01", "contact-modern-form-01", "contact-minimal-01"],
-        "footer": ["footer-sitemap-01", "footer-multi-col-01", "footer-cta-band-01"],
+        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-pill-01", "nav-topbar-01"],
+        "hero": ["hero-centered-02", "hero-split-01", "hero-linear-01", "hero-classic-01", "hero-gradient-03"],
+        "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02", "about-split-cards-01", "about-bento-01"],
+        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01", "services-icon-list-01", "services-alternating-rows-01"],
+        "features": ["features-icons-grid-01", "features-bento-01", "features-alternating-01", "features-icon-showcase-01", "features-comparison-01"],
+        "testimonials": ["testimonials-grid-01", "testimonials-carousel-01", "testimonials-spotlight-01", "testimonials-card-stack-01", "testimonials-masonry-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-floating-card-02", "cta-gradient-banner-01"],
+        "contact": ["contact-form-01", "contact-modern-form-01", "contact-minimal-01", "contact-split-map-01", "contact-card-01"],
+        "footer": ["footer-sitemap-01", "footer-multi-col-01", "footer-cta-band-01", "footer-centered-01", "footer-mega-01"],
     },
     "saas-dark": {
-        "nav": ["nav-minimal-01", "nav-classic-01", "nav-pill-01"],
-        "hero": ["hero-linear-01", "hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01", "hero-rotating-01"],
-        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01"],
-        "services": ["services-bento-02", "services-hover-expand-01", "services-hover-reveal-01"],
-        "features": ["features-bento-01", "features-hover-cards-01", "features-bento-grid-01", "features-tabs-01"],
-        "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01"],
-        "contact": ["contact-minimal-02", "contact-modern-form-01", "contact-card-01"],
-        "footer": ["footer-mega-01", "footer-gradient-01", "footer-cta-band-01"],
+        "nav": ["nav-minimal-01", "nav-classic-01", "nav-pill-01", "nav-transparent-01", "nav-split-cta-01"],
+        "hero": ["hero-linear-01", "hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01", "hero-rotating-01", "hero-gradient-03"],
+        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01", "about-timeline-02", "about-magazine-01"],
+        "services": ["services-bento-02", "services-hover-expand-01", "services-hover-reveal-01", "services-tabs-01", "services-minimal-list-01"],
+        "features": ["features-bento-01", "features-hover-cards-01", "features-bento-grid-01", "features-tabs-01", "features-comparison-01"],
+        "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01"],
+        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01"],
+        "contact": ["contact-minimal-02", "contact-modern-form-01", "contact-card-01", "contact-form-01", "contact-split-map-01"],
+        "footer": ["footer-mega-01", "footer-gradient-01", "footer-cta-band-01", "footer-asymmetric-01", "footer-social-01"],
     },
     # --- Portfolio ---
     "portfolio-gallery": {
         "nav": ["nav-centered-01", "nav-minimal-01", "nav-sidebar-01", "nav-transparent-01"],
-        "hero": ["hero-editorial-01", "hero-zen-01", "hero-typewriter-01"],
-        "about": ["about-image-showcase-01", "about-magazine-01", "about-split-scroll-01"],
-        "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
-        "services": ["services-minimal-list-01", "services-alternating-rows-01", "services-icon-list-01"],
-        "testimonials": ["testimonials-grid-01", "testimonials-spotlight-01", "testimonials-carousel-01"],
-        "contact": ["contact-minimal-01", "contact-minimal-02", "contact-form-01"],
-        "footer": ["footer-minimal-02", "footer-social-01", "footer-asymmetric-01"],
+        "hero": ["hero-editorial-01", "hero-zen-01", "hero-typewriter-01", "hero-parallax-01", "hero-video-bg-01"],
+        "about": ["about-image-showcase-01", "about-magazine-01", "about-split-scroll-01", "about-alternating-01", "about-timeline-02"],
+        "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01", "gallery-filmstrip-01"],
+        "services": ["services-minimal-list-01", "services-alternating-rows-01", "services-icon-list-01", "services-cards-grid-01", "services-hover-reveal-01"],
+        "testimonials": ["testimonials-grid-01", "testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-masonry-01", "testimonials-card-stack-01"],
+        "contact": ["contact-minimal-01", "contact-minimal-02", "contact-form-01", "contact-card-01", "contact-modern-form-01"],
+        "footer": ["footer-minimal-02", "footer-social-01", "footer-asymmetric-01", "footer-centered-01", "footer-stacked-01"],
     },
     "portfolio-minimal": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-transparent-01"],
-        "hero": ["hero-zen-01", "hero-typewriter-01", "hero-editorial-01"],
-        "about": ["about-alternating-01", "about-split-scroll-01", "about-image-showcase-01"],
-        "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01"],
-        "contact": ["contact-minimal-02", "contact-minimal-01", "contact-form-01"],
-        "footer": ["footer-centered-01", "footer-social-01"],
+        "nav": ["nav-minimal-01", "nav-centered-01", "nav-transparent-01", "nav-sidebar-01"],
+        "hero": ["hero-zen-01", "hero-typewriter-01", "hero-editorial-01", "hero-centered-02", "hero-classic-01"],
+        "about": ["about-alternating-01", "about-split-scroll-01", "about-image-showcase-01", "about-magazine-01", "about-timeline-01"],
+        "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01", "gallery-filmstrip-01"],
+        "services": ["services-minimal-list-01", "services-icon-list-01", "services-alternating-rows-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-grid-01", "testimonials-carousel-01"],
+        "contact": ["contact-minimal-02", "contact-minimal-01", "contact-form-01", "contact-card-01", "contact-modern-form-01"],
+        "footer": ["footer-centered-01", "footer-social-01", "footer-minimal-02", "footer-stacked-01", "footer-asymmetric-01"],
     },
     "portfolio-creative": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-sidebar-01"],
-        "hero": ["hero-linear-01", "hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01", "hero-physics-01"],
-        "about": ["about-bento-01", "about-split-cards-01", "about-timeline-02"],
-        "gallery": ["gallery-spotlight-01", "gallery-filmstrip-01", "gallery-masonry-01"],
-        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02"],
-        "contact": ["contact-card-01", "contact-modern-form-01", "contact-split-map-01"],
-        "footer": ["footer-gradient-01", "footer-asymmetric-01", "footer-social-01"],
+        "nav": ["nav-minimal-01", "nav-centered-01", "nav-sidebar-01", "nav-transparent-01", "nav-pill-01"],
+        "hero": ["hero-linear-01", "hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01", "hero-physics-01", "hero-rotating-01"],
+        "about": ["about-bento-01", "about-split-cards-01", "about-timeline-02", "about-image-showcase-01", "about-magazine-01"],
+        "gallery": ["gallery-spotlight-01", "gallery-filmstrip-01", "gallery-masonry-01", "gallery-lightbox-01"],
+        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02", "services-tabs-01", "services-cards-grid-01"],
+        "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01"],
+        "contact": ["contact-card-01", "contact-modern-form-01", "contact-split-map-01", "contact-minimal-02", "contact-form-01"],
+        "cta": ["cta-gradient-animated-01", "cta-floating-card-01", "cta-split-image-01"],
+        "footer": ["footer-gradient-01", "footer-asymmetric-01", "footer-social-01", "footer-cta-band-01", "footer-mega-01"],
     },
     # --- E-commerce / Shop ---
     "ecommerce-modern": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-topbar-01"],
-        "hero": ["hero-split-01", "hero-parallax-01", "hero-glassmorphism-01"],
-        "about": ["about-image-showcase-01", "about-bento-01", "about-alternating-01"],
-        "services": ["services-cards-grid-01", "services-hover-reveal-01", "services-tabs-01"],
-        "gallery": ["gallery-masonry-01", "gallery-filmstrip-01", "gallery-lightbox-01"],
-        "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-marquee-01"],
-        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01"],
-        "footer": ["footer-multi-col-01", "footer-mega-01", "footer-cta-band-01"],
+        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-topbar-01", "nav-pill-01"],
+        "hero": ["hero-split-01", "hero-parallax-01", "hero-glassmorphism-01", "hero-classic-01", "hero-gradient-03", "hero-centered-02"],
+        "about": ["about-image-showcase-01", "about-bento-01", "about-alternating-01", "about-split-cards-01", "about-magazine-01"],
+        "services": ["services-cards-grid-01", "services-hover-reveal-01", "services-tabs-01", "services-hover-expand-01", "services-icon-list-01"],
+        "features": ["features-icons-grid-01", "features-bento-01", "features-comparison-01", "features-hover-cards-01", "features-alternating-01"],
+        "gallery": ["gallery-masonry-01", "gallery-filmstrip-01", "gallery-lightbox-01", "gallery-spotlight-01"],
+        "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-marquee-01", "testimonials-masonry-01", "testimonials-spotlight-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-gradient-banner-01"],
+        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01", "contact-form-01", "contact-minimal-01"],
+        "footer": ["footer-multi-col-01", "footer-mega-01", "footer-cta-band-01", "footer-sitemap-01", "footer-stacked-01"],
     },
     "ecommerce-luxury": {
-        "nav": ["nav-centered-01", "nav-classic-01", "nav-topbar-01"],
-        "hero": ["hero-classic-01", "hero-editorial-01", "hero-video-bg-01"],
-        "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01"],
-        "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01"],
-        "gallery": ["gallery-spotlight-01", "gallery-lightbox-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01"],
-        "contact": ["contact-minimal-01", "contact-form-01", "contact-minimal-02"],
-        "footer": ["footer-centered-01", "footer-stacked-01", "footer-sitemap-01"],
+        "nav": ["nav-centered-01", "nav-classic-01", "nav-topbar-01", "nav-transparent-01"],
+        "hero": ["hero-classic-01", "hero-editorial-01", "hero-video-bg-01", "hero-parallax-01", "hero-zen-01", "hero-typewriter-01"],
+        "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01", "about-alternating-01", "about-timeline-01"],
+        "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01", "services-cards-grid-01", "services-process-steps-01"],
+        "features": ["features-icon-showcase-01", "features-alternating-01", "features-comparison-01", "features-icons-grid-01"],
+        "gallery": ["gallery-spotlight-01", "gallery-lightbox-01", "gallery-masonry-01", "gallery-filmstrip-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-card-stack-01", "testimonials-masonry-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01"],
+        "contact": ["contact-minimal-01", "contact-form-01", "contact-minimal-02", "contact-card-01", "contact-split-map-01"],
+        "footer": ["footer-centered-01", "footer-stacked-01", "footer-sitemap-01", "footer-multi-col-01", "footer-minimal-02"],
     },
     # --- Business ---
     "business-corporate": {
         "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01", "nav-split-cta-01"],
-        "hero": ["hero-split-01", "hero-classic-01", "hero-video-bg-01"],
-        "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02"],
-        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01"],
-        "features": ["features-comparison-01", "features-icons-grid-01", "features-alternating-01"],
-        "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-spotlight-01"],
-        "contact": ["contact-form-01", "contact-split-map-01", "contact-modern-form-01"],
-        "footer": ["footer-mega-01", "footer-sitemap-01", "footer-cta-band-01"],
+        "hero": ["hero-split-01", "hero-classic-01", "hero-video-bg-01", "hero-centered-02", "hero-parallax-01"],
+        "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02", "about-timeline-01", "about-magazine-01"],
+        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01", "services-alternating-rows-01", "services-icon-list-01"],
+        "features": ["features-comparison-01", "features-icons-grid-01", "features-alternating-01", "features-icon-showcase-01", "features-bento-01"],
+        "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-spotlight-01", "testimonials-card-stack-01", "testimonials-masonry-01"],
+        "team": ["team-grid-01", "team-carousel-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-gradient-banner-01"],
+        "contact": ["contact-form-01", "contact-split-map-01", "contact-modern-form-01", "contact-card-01", "contact-minimal-01"],
+        "footer": ["footer-mega-01", "footer-sitemap-01", "footer-cta-band-01", "footer-multi-col-01", "footer-stacked-01"],
     },
     "business-trust": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01"],
-        "hero": ["hero-classic-01", "hero-editorial-01", "hero-split-01"],
-        "about": ["about-timeline-01", "about-magazine-01", "about-image-showcase-01"],
-        "services": ["services-process-steps-01", "services-alternating-rows-01", "services-cards-grid-01"],
+        "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01", "nav-split-cta-01"],
+        "hero": ["hero-classic-01", "hero-editorial-01", "hero-split-01", "hero-centered-02", "hero-video-bg-01"],
+        "about": ["about-timeline-01", "about-magazine-01", "about-image-showcase-01", "about-alternating-01", "about-split-scroll-01"],
+        "services": ["services-process-steps-01", "services-alternating-rows-01", "services-cards-grid-01", "services-icon-list-01", "services-tabs-01"],
+        "features": ["features-icons-grid-01", "features-comparison-01", "features-alternating-01", "features-icon-showcase-01"],
         "team": ["team-grid-01", "team-carousel-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01"],
-        "contact": ["contact-split-map-01", "contact-form-01", "contact-modern-form-01"],
-        "footer": ["footer-sitemap-01", "footer-mega-01", "footer-stacked-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-card-stack-01", "testimonials-masonry-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-02"],
+        "contact": ["contact-split-map-01", "contact-form-01", "contact-modern-form-01", "contact-card-01", "contact-minimal-01"],
+        "footer": ["footer-sitemap-01", "footer-mega-01", "footer-stacked-01", "footer-multi-col-01", "footer-centered-01"],
     },
     "business-fresh": {
-        "nav": ["nav-centered-01", "nav-minimal-01", "nav-pill-01", "nav-split-cta-01"],
-        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-rotating-01"],
-        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-02"],
-        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02"],
-        "features": ["features-bento-01", "features-alternating-01", "features-bento-grid-01", "features-hover-cards-01"],
-        "testimonials": ["testimonials-carousel-01", "testimonials-marquee-01", "testimonials-masonry-01"],
-        "cta": ["cta-split-image-01", "cta-gradient-animated-01", "cta-floating-card-01"],
-        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01"],
-        "footer": ["footer-multi-col-01", "footer-gradient-01", "footer-cta-band-01"],
+        "nav": ["nav-centered-01", "nav-minimal-01", "nav-pill-01", "nav-split-cta-01", "nav-transparent-01"],
+        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-rotating-01", "hero-glassmorphism-01"],
+        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-02", "about-image-showcase-01", "about-alternating-01"],
+        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02", "services-tabs-01", "services-cards-grid-01"],
+        "features": ["features-bento-01", "features-alternating-01", "features-bento-grid-01", "features-hover-cards-01", "features-icon-showcase-01"],
+        "testimonials": ["testimonials-carousel-01", "testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-grid-01"],
+        "cta": ["cta-split-image-01", "cta-gradient-animated-01", "cta-floating-card-01", "cta-gradient-banner-01", "cta-floating-card-02"],
+        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01", "contact-form-01", "contact-minimal-02"],
+        "footer": ["footer-multi-col-01", "footer-gradient-01", "footer-cta-band-01", "footer-social-01", "footer-mega-01"],
     },
     # --- Blog / Magazine ---
     "blog-editorial": {
-        "nav": ["nav-centered-01", "nav-classic-01", "nav-transparent-01"],
-        "hero": ["hero-editorial-01", "hero-typewriter-01", "hero-zen-01"],
-        "about": ["about-alternating-01", "about-magazine-01", "about-split-scroll-01"],
-        "services": ["services-minimal-list-01", "services-icon-list-01", "services-alternating-rows-01"],
-        "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01"],
-        "contact": ["contact-card-01", "contact-minimal-01", "contact-form-01"],
-        "footer": ["footer-sitemap-01", "footer-centered-01", "footer-asymmetric-01"],
+        "nav": ["nav-centered-01", "nav-classic-01", "nav-transparent-01", "nav-topbar-01"],
+        "hero": ["hero-editorial-01", "hero-typewriter-01", "hero-zen-01", "hero-classic-01", "hero-split-01"],
+        "about": ["about-alternating-01", "about-magazine-01", "about-split-scroll-01", "about-image-showcase-01", "about-timeline-01"],
+        "services": ["services-minimal-list-01", "services-icon-list-01", "services-alternating-rows-01", "services-cards-grid-01", "services-process-steps-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-grid-01", "testimonials-carousel-01", "testimonials-card-stack-01", "testimonials-masonry-01"],
+        "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01", "gallery-filmstrip-01"],
+        "contact": ["contact-card-01", "contact-minimal-01", "contact-form-01", "contact-minimal-02", "contact-modern-form-01"],
+        "footer": ["footer-sitemap-01", "footer-centered-01", "footer-asymmetric-01", "footer-stacked-01", "footer-multi-col-01"],
     },
     "blog-dark": {
         "nav": ["nav-minimal-01", "nav-centered-01", "nav-pill-01", "nav-transparent-01"],
-        "hero": ["hero-neon-01", "hero-dark-bold-01", "hero-brutalist-01"],
-        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01"],
-        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01"],
-        "gallery": ["gallery-filmstrip-01", "gallery-masonry-01"],
-        "contact": ["contact-minimal-02", "contact-card-01", "contact-modern-form-01"],
-        "footer": ["footer-gradient-01", "footer-mega-01", "footer-social-01"],
+        "hero": ["hero-neon-01", "hero-dark-bold-01", "hero-brutalist-01", "hero-linear-01", "hero-animated-shapes-01"],
+        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01", "about-timeline-02", "about-magazine-01"],
+        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-tabs-01", "services-minimal-list-01"],
+        "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01"],
+        "gallery": ["gallery-filmstrip-01", "gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
+        "contact": ["contact-minimal-02", "contact-card-01", "contact-modern-form-01", "contact-form-01", "contact-split-map-01"],
+        "cta": ["cta-gradient-animated-01", "cta-floating-card-01", "cta-gradient-banner-01"],
+        "footer": ["footer-gradient-01", "footer-mega-01", "footer-social-01", "footer-asymmetric-01", "footer-cta-band-01"],
     },
     # --- Evento / Community ---
     "event-vibrant": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-pill-01", "nav-transparent-01"],
-        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01", "hero-physics-01", "hero-rotating-01"],
-        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01"],
-        "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02"],
+        "nav": ["nav-minimal-01", "nav-centered-01", "nav-pill-01", "nav-transparent-01", "nav-split-cta-01"],
+        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01", "hero-physics-01", "hero-rotating-01", "hero-neon-01"],
+        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01", "about-image-showcase-01", "about-alternating-01"],
+        "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02", "services-hover-reveal-01", "services-cards-grid-01"],
+        "features": ["features-bento-grid-01", "features-hover-cards-01", "features-tabs-01", "features-bento-01"],
         "team": ["team-carousel-01", "team-grid-01"],
-        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01"],
-        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01"],
-        "footer": ["footer-gradient-01", "footer-cta-band-01", "footer-social-01"],
+        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01"],
+        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01", "cta-floating-card-02", "cta-split-image-01"],
+        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01", "contact-form-01", "contact-minimal-02"],
+        "footer": ["footer-gradient-01", "footer-cta-band-01", "footer-social-01", "footer-mega-01", "footer-asymmetric-01"],
     },
     "event-minimal": {
-        "nav": ["nav-centered-01", "nav-classic-01", "nav-transparent-01"],
-        "hero": ["hero-centered-02", "hero-typewriter-01", "hero-zen-01"],
-        "about": ["about-timeline-01", "about-alternating-01", "about-split-scroll-01"],
-        "services": ["services-process-steps-01", "services-cards-grid-01", "services-icon-list-01"],
+        "nav": ["nav-centered-01", "nav-classic-01", "nav-transparent-01", "nav-minimal-01"],
+        "hero": ["hero-centered-02", "hero-typewriter-01", "hero-zen-01", "hero-editorial-01", "hero-classic-01"],
+        "about": ["about-timeline-01", "about-alternating-01", "about-split-scroll-01", "about-image-showcase-01", "about-magazine-01"],
+        "services": ["services-process-steps-01", "services-cards-grid-01", "services-icon-list-01", "services-minimal-list-01", "services-alternating-rows-01"],
         "team": ["team-grid-01", "team-carousel-01"],
-        "contact": ["contact-form-01", "contact-minimal-01", "contact-minimal-02"],
-        "footer": ["footer-minimal-02", "footer-stacked-01", "footer-centered-01"],
+        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-card-stack-01"],
+        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01"],
+        "contact": ["contact-form-01", "contact-minimal-01", "contact-minimal-02", "contact-card-01", "contact-split-map-01"],
+        "footer": ["footer-minimal-02", "footer-stacked-01", "footer-centered-01", "footer-sitemap-01", "footer-social-01"],
     },
 }
 
@@ -3097,6 +3120,105 @@ Return ONLY the JSON object, no explanation."""
         "brutalist": ["bold", "creative", "brutalist"],
     }
 
+    def _get_recent_component_usage(self, category: str, limit: int = 10) -> Dict[str, int]:
+        """Query recent generation logs to count component usage frequency.
+
+        Returns {variant_id: usage_count} for the last `limit` generations
+        in the same category. Used to penalize overused components.
+        Never breaks the pipeline — returns empty dict on any error.
+        """
+        try:
+            from app.core.database import SessionLocal
+            from app.models.generation_log import GenerationLog
+            db = SessionLocal()
+            try:
+                recent = (
+                    db.query(GenerationLog)
+                    .filter(GenerationLog.category == category)
+                    .order_by(GenerationLog.created_at.desc())
+                    .limit(limit)
+                    .all()
+                )
+                counts: Dict[str, int] = {}
+                for log in recent:
+                    if log.components_used:
+                        for variant_id in log.components_used.values():
+                            counts[variant_id] = counts.get(variant_id, 0) + 1
+                return counts
+            finally:
+                db.close()
+        except Exception as e:
+            logger.debug(f"[DataBinding] Diversity query failed (non-fatal): {e}")
+            return {}
+
+    def _diversity_weighted_choice(
+        self, pool: List[str], usage_counts: Dict[str, int], max_count: int = 10
+    ) -> str:
+        """Pick from pool with diversity weighting — less-used variants are preferred.
+
+        Each variant gets weight = max_count + 1 - usage_count (minimum 1).
+        This means a variant used 0 times has ~10x the chance of one used 10 times.
+        """
+        if not pool:
+            return ""
+        weights = []
+        for v in pool:
+            count = usage_counts.get(v, 0)
+            weight = max(1, max_count + 1 - count)
+            weights.append(weight)
+        # random.choices returns a list
+        return random.choices(pool, weights=weights, k=1)[0]
+
+    @staticmethod
+    def _compute_layout_hash(selections: Dict[str, str]) -> str:
+        """Compute a deterministic hash from the component selection.
+
+        Sorts by section name so the hash is order-independent.
+        Used to detect duplicate layouts across generations.
+        """
+        import hashlib
+        sorted_items = sorted(selections.items())
+        key = "|".join(f"{s}={v}" for s, v in sorted_items)
+        return hashlib.sha256(key.encode()).hexdigest()[:16]
+
+    def _log_generation(
+        self, category: str, template_style_id: str,
+        selections: Dict[str, str], theme_summary: Optional[Dict[str, str]] = None,
+    ) -> None:
+        """Log a generation to the database for diversity tracking.
+
+        Stores the layout_hash (unique constraint) and component selections.
+        On duplicate hash (exact same layout), skips silently.
+        Never breaks the pipeline.
+        """
+        try:
+            from app.core.database import SessionLocal
+            from app.models.generation_log import GenerationLog
+            db = SessionLocal()
+            try:
+                layout_hash = self._compute_layout_hash(selections)
+                log = GenerationLog(
+                    category=category,
+                    style_mood=template_style_id,
+                    color_primary=(theme_summary or {}).get("primary_color", ""),
+                    components_used=selections,
+                    layout_hash=layout_hash,
+                )
+                db.add(log)
+                db.commit()
+                logger.info(f"[DataBinding] Logged generation: hash={layout_hash}, style={template_style_id}")
+            except Exception as e:
+                db.rollback()
+                # Duplicate hash = same layout used before, that's OK
+                if "unique" in str(e).lower() or "duplicate" in str(e).lower():
+                    logger.debug(f"[DataBinding] Duplicate layout hash (expected): {e}")
+                else:
+                    logger.warning(f"[DataBinding] Generation log insert failed: {e}")
+            finally:
+                db.close()
+        except Exception as e:
+            logger.debug(f"[DataBinding] Generation logging failed (non-fatal): {e}")
+
     def _select_components_deterministic(
         self,
         template_style_id: str,
@@ -3104,75 +3226,106 @@ Return ONLY the JSON object, no explanation."""
         parsed_reference: Optional[Dict[str, Any]] = None,
         harmony_keywords: Optional[List[str]] = None,
     ) -> Dict[str, str]:
-        """Select component variants with randomization from curated pools.
+        """Select component variants with diversity-weighted randomization.
 
-        For each section, randomly picks from the STYLE_VARIANT_POOL if available.
-        Falls back to the fixed STYLE_VARIANT_MAP, then to _DEFAULT_SECTION_VARIANTS.
-        This ensures every generated site looks different even for the same template style.
+        For each section, picks from STYLE_VARIANT_POOL with a preference for
+        less-recently-used variants. Falls back to fixed map, then defaults.
 
-        When harmony_keywords is provided, prefer variants matching the harmony group
-        to ensure cross-section visual cohesion.
+        Diversity system:
+        - Queries last 10 generations for the same category
+        - Weights each variant inversely by recent usage count
+        - After selection, computes layout_hash and logs to DB
+        - If exact same layout was generated before, re-rolls up to 3 times
+
+        When harmony_keywords is provided, prefer variants matching the harmony group.
         When parsed_reference contains layout_style, prefer matching variants.
         """
         pool_map = STYLE_VARIANT_POOL.get(template_style_id, {})
         fixed_map = STYLE_VARIANT_MAP.get(template_style_id, {})
         available = self.assembler.get_variant_ids()
-        selections = {}
 
-        # Reference layout preference
-        ref_layout = (parsed_reference or {}).get("layout_style", "").lower().strip()
-        ref_keywords = self._LAYOUT_VARIANT_KEYWORDS.get(ref_layout, [])
+        # Get recent usage for diversity weighting
+        category = _get_category_from_style_id(template_style_id)
+        usage_counts = self._get_recent_component_usage(category)
 
-        for section in sections:
-            # Priority 1: Randomized pool for this style + section
-            pool = pool_map.get(section, [])
-            if pool:
-                # If reference layout matches, prefer matching variants
-                if ref_keywords:
-                    matching = [v for v in pool if any(kw in v.lower() for kw in ref_keywords)]
-                    if matching:
-                        selections[section] = random.choice(matching)
-                        continue
+        # Try up to 3 times to get a unique layout
+        max_attempts = 3 if usage_counts else 1
+        for attempt in range(max_attempts):
+            selections = {}
 
-                # If harmony group set, prefer variants matching the harmony keywords
-                if harmony_keywords:
-                    harmonious = [
-                        v for v in pool
-                        if any(kw in v.lower() for kw in harmony_keywords)
-                    ]
-                    if harmonious:
-                        selections[section] = random.choice(harmonious)
-                        continue
+            for section in sections:
+                # Priority 1: Randomized pool for this style + section
+                pool = pool_map.get(section, [])
+                if pool:
+                    # If reference layout matches, prefer matching variants
+                    ref_layout = (parsed_reference or {}).get("layout_style", "").lower().strip()
+                    ref_keywords = self._LAYOUT_VARIANT_KEYWORDS.get(ref_layout, [])
+                    if ref_keywords:
+                        matching = [v for v in pool if any(kw in v.lower() for kw in ref_keywords)]
+                        if matching:
+                            selections[section] = self._diversity_weighted_choice(matching, usage_counts)
+                            continue
 
-                selections[section] = random.choice(pool)
-            # Priority 2: Fixed deterministic map (fallback)
-            elif section in fixed_map:
-                selections[section] = fixed_map[section]
-            # Priority 3: Randomized pool for default section types (faq, pricing, etc.)
-            elif section in _DEFAULT_SECTION_VARIANT_POOLS:
-                selections[section] = random.choice(_DEFAULT_SECTION_VARIANT_POOLS[section])
-            # Priority 4: Fixed default for known section types
-            elif section in self._DEFAULT_SECTION_VARIANTS:
-                selections[section] = self._DEFAULT_SECTION_VARIANTS[section]
-            else:
-                # Last resort: pick first available variant for unknown sections
-                variants = available.get(section, [])
-                if variants:
-                    selections[section] = variants[0]
+                    # If harmony group set, prefer variants matching the harmony keywords
+                    if harmony_keywords:
+                        harmonious = [
+                            v for v in pool
+                            if any(kw in v.lower() for kw in harmony_keywords)
+                        ]
+                        if harmonious:
+                            selections[section] = self._diversity_weighted_choice(harmonious, usage_counts)
+                            continue
+
+                    selections[section] = self._diversity_weighted_choice(pool, usage_counts)
+                # Priority 2: Fixed deterministic map (fallback)
+                elif section in fixed_map:
+                    selections[section] = fixed_map[section]
+                # Priority 3: Randomized pool for default section types (faq, pricing, etc.)
+                elif section in _DEFAULT_SECTION_VARIANT_POOLS:
+                    pool = _DEFAULT_SECTION_VARIANT_POOLS[section]
+                    selections[section] = self._diversity_weighted_choice(pool, usage_counts)
+                # Priority 4: Fixed default for known section types
+                elif section in self._DEFAULT_SECTION_VARIANTS:
+                    selections[section] = self._DEFAULT_SECTION_VARIANTS[section]
                 else:
-                    logger.warning(
-                        f"[DataBinding] No variant available for section '{section}' "
-                        f"in style '{template_style_id}'"
-                    )
+                    # Last resort: pick first available variant for unknown sections
+                    variants = available.get(section, [])
+                    if variants:
+                        selections[section] = variants[0]
+                    else:
+                        logger.warning(
+                            f"[DataBinding] No variant available for section '{section}' "
+                            f"in style '{template_style_id}'"
+                        )
 
-        # Select nav style (not a section, handled separately by assembler)
-        nav_pool = pool_map.get("nav", [])
-        if nav_pool:
-            selections["nav"] = random.choice(nav_pool)
-        elif "nav" in fixed_map:
-            selections["nav"] = fixed_map["nav"]
+            # Select nav style (not a section, handled separately by assembler)
+            nav_pool = pool_map.get("nav", [])
+            if nav_pool:
+                selections["nav"] = self._diversity_weighted_choice(nav_pool, usage_counts)
+            elif "nav" in fixed_map:
+                selections["nav"] = fixed_map["nav"]
 
-        logger.info(f"[DataBinding] Randomized selection for '{template_style_id}': {selections}")
+            # Check for duplicate layout
+            layout_hash = self._compute_layout_hash(selections)
+            if attempt < max_attempts - 1:
+                try:
+                    from app.core.database import SessionLocal
+                    from app.models.generation_log import GenerationLog
+                    db = SessionLocal()
+                    try:
+                        existing = db.query(GenerationLog).filter(
+                            GenerationLog.layout_hash == layout_hash
+                        ).first()
+                        if existing:
+                            logger.info(f"[DataBinding] Layout hash collision on attempt {attempt + 1}, re-rolling...")
+                            continue  # Try again
+                    finally:
+                        db.close()
+                except Exception:
+                    pass  # DB error, just use this selection
+            break  # No collision or last attempt
+
+        logger.info(f"[DataBinding] Diversity selection for '{template_style_id}': {selections}")
         return selections
 
     async def _select_components(
@@ -3619,6 +3772,10 @@ RULES:
         if selection_result.get("success"):
             total_tokens_in += selection_result.get("tokens_input", 0)
             total_tokens_out += selection_result.get("tokens_output", 0)
+
+        # Log generation for diversity tracking (non-blocking)
+        category = _get_category_from_style_id(template_style_id)
+        self._log_generation(category, template_style_id or "", selections)
 
         # Send preview: layout + texts
         hero_texts = texts.get("hero", {})
