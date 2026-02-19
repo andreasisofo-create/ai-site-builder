@@ -20,7 +20,10 @@ from app.models.ad_ai_activity import AdAiActivity
 from app.models.ad_platform_config import AdPlatformConfig
 
 # V2 Component & Diversity System
-from app.models.component_v2 import ComponentV2
+try:
+    from app.models.component_v2 import ComponentV2
+except ImportError:
+    ComponentV2 = None  # pgvector not installed
 from app.models.generation_log import GenerationLog
 from app.models.generation_log_component import GenerationLogComponent
 from app.models.category_blueprint import CategoryBlueprint
