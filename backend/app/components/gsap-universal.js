@@ -1,5 +1,5 @@
 /* ============================================================
-   GSAP Universal Animation Engine v3.2
+   GSAP Universal Animation Engine v4.0
    Auto-injected in every generated site
    Effects: parallax, text-split, typewriter, magnetic, 3D tilt,
    floating, gradient-flow, blur-in, curtain, morphing, glass,
@@ -8,7 +8,11 @@
    card-hover-3d, draw-svg, split-screen, scroll-fade, pin-hero,
    section-reveal, text-rotate, sticky-cta, sticky-reveal,
    before-after, section-progress, parallax-layers, 3d-scroll,
-   scroll-snap-horizontal, data-parallax (standalone)
+   scroll-snap-horizontal, data-parallax (standalone),
+   ---- v4.0 NEW ----
+   text-fill, border-beam, spotlight, shimmer, ripple,
+   infinite-cards, number-ticker, particles-bg
+   + CSS Scroll-Driven Animations native layer
    Supports: data-delay, data-duration, data-ease, data-scrub
    Respects prefers-reduced-motion
    Skips heavy scroll effects on mobile/touch
@@ -150,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('[data-animate]').forEach(function (el) {
     var type = el.getAttribute('data-animate');
-    if (['stagger', 'parallax', 'text-split', 'typewriter', 'text-rotate', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal', 'sticky-cta', 'sticky-reveal', 'before-after', 'section-progress', 'parallax-layers', '3d-scroll', 'scroll-snap-horizontal'].indexOf(type) !== -1) return;
+    if (['stagger', 'parallax', 'text-split', 'typewriter', 'text-rotate', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal', 'sticky-cta', 'sticky-reveal', 'before-after', 'section-progress', 'parallax-layers', '3d-scroll', 'scroll-snap-horizontal', 'text-fill', 'border-beam', 'spotlight', 'shimmer', 'ripple', 'infinite-cards', 'number-ticker', 'particles-bg'].indexOf(type) !== -1) return;
     var config = animations[type];
     if (!config) { el.style.opacity = 1; return; }
 
@@ -1358,6 +1362,500 @@ document.addEventListener('DOMContentLoaded', function () {
       startAutoplay();
     }
   });
+
+  /* ==========================================================
+     v4.0 NEW EFFECTS (36-43)
+     ========================================================== */
+
+  /* ----------------------------------------------------------
+     36. TEXT FILL ON SCROLL (data-animate="text-fill")
+     Text starts muted and fills with bright color as user scrolls.
+     Uses background-clip:text + GSAP scrub on background-size.
+     Inspired by Aceternity/cameronknight's text fill technique.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="text-fill"]').forEach(function (el) {
+    var fillColor = el.getAttribute('data-fill-color') || 'var(--color-text, #f3f4f6)';
+    var mutedColor = el.getAttribute('data-muted-color') || 'var(--color-text-muted, #3f434a)';
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+
+    // Wrap text in a span if not already done
+    if (!el.querySelector('.text-fill-inner')) {
+      var inner = document.createElement('span');
+      inner.className = 'text-fill-inner';
+      inner.textContent = el.textContent;
+      el.textContent = '';
+      el.appendChild(inner);
+    }
+
+    var target = el.querySelector('.text-fill-inner');
+    target.style.cssText = '-webkit-background-clip:text;background-clip:text;color:transparent;display:inline;will-change:background-size;background-color:' + mutedColor + ';background-image:linear-gradient(135deg,' + fillColor + ' 50%,' + mutedColor + ' 60%);background-repeat:no-repeat;background-size:0% 200%;';
+    el.style.opacity = '1';
+
+    gsap.to(target, {
+      backgroundSize: '200% 200%',
+      ease: 'none',
+      delay: delay,
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 80%',
+        end: 'bottom 35%',
+        scrub: true
+      }
+    });
+  });
+
+  /* ----------------------------------------------------------
+     37. BORDER BEAM (data-animate="border-beam")
+     Animated light beam that travels along card borders.
+     Inspired by Magic UI's border-beam component.
+     Creates a pseudo-element with conic-gradient that rotates.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="border-beam"]').forEach(function (el) {
+    el.style.opacity = '1';
+    if (!el.style.position || el.style.position === 'static') {
+      el.style.position = 'relative';
+    }
+    el.style.overflow = 'hidden';
+
+    var beamColor = el.getAttribute('data-beam-color') || 'var(--color-primary, #3b82f6)';
+    var beamSize = el.getAttribute('data-beam-size') || '80';
+    var speed = parseFloat(el.getAttribute('data-duration') || 4);
+
+    var beam = document.createElement('div');
+    beam.className = 'border-beam-el';
+    beam.style.cssText = 'position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;z-index:1;overflow:hidden;';
+
+    var inner = document.createElement('div');
+    inner.style.cssText = 'position:absolute;inset:0;border-radius:inherit;background:conic-gradient(from 0deg,' + beamColor + ' 0deg,transparent ' + beamSize + 'deg,transparent 360deg);';
+
+    var mask = document.createElement('div');
+    mask.style.cssText = 'position:absolute;inset:1px;border-radius:inherit;background:var(--color-bg, #0a0a0a);';
+
+    beam.appendChild(inner);
+    beam.appendChild(mask);
+    el.appendChild(beam);
+
+    gsap.to(inner, {
+      rotation: 360,
+      duration: speed,
+      ease: 'none',
+      repeat: -1,
+      transformOrigin: 'center center'
+    });
+  });
+
+  /* ----------------------------------------------------------
+     38. SPOTLIGHT (data-animate="spotlight")
+     Mouse-following radial spotlight on section background.
+     Creates an ambient premium feel. Desktop only.
+     Inspired by Aceternity UI's Spotlight component.
+     ---------------------------------------------------------- */
+  if (!isMobile) {
+    document.querySelectorAll('[data-animate="spotlight"]').forEach(function (el) {
+      el.style.opacity = '1';
+      if (!el.style.position || el.style.position === 'static') {
+        el.style.position = 'relative';
+      }
+      el.style.overflow = 'hidden';
+
+      var spotColor = el.getAttribute('data-spot-color') || 'rgba(var(--color-primary-rgb, 59,130,246), 0.08)';
+      var spotSize = el.getAttribute('data-spot-size') || '600';
+
+      var spot = document.createElement('div');
+      spot.className = 'spotlight-el';
+      spot.style.cssText = 'position:absolute;width:' + spotSize + 'px;height:' + spotSize + 'px;border-radius:50%;pointer-events:none;z-index:0;opacity:0;transition:opacity 0.5s;background:radial-gradient(circle,' + spotColor + ' 0%,transparent 70%);transform:translate(-50%,-50%);';
+      el.appendChild(spot);
+
+      var spotX = gsap.quickTo(spot, 'left', { duration: 0.4, ease: 'power2.out' });
+      var spotY = gsap.quickTo(spot, 'top', { duration: 0.4, ease: 'power2.out' });
+
+      el.addEventListener('mousemove', function (e) {
+        var rect = el.getBoundingClientRect();
+        spotX(e.clientX - rect.left);
+        spotY(e.clientY - rect.top);
+        spot.style.opacity = '1';
+      });
+      el.addEventListener('mouseleave', function () {
+        spot.style.opacity = '0';
+      });
+    });
+  } else {
+    document.querySelectorAll('[data-animate="spotlight"]').forEach(function (el) {
+      el.style.opacity = '1';
+    });
+  }
+
+  /* ----------------------------------------------------------
+     39. SHIMMER EFFECT (data-animate="shimmer")
+     Diagonal light sweep across element on scroll or continuous.
+     Inspired by Magic UI's shimmer button.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="shimmer"]').forEach(function (el) {
+    el.style.opacity = '1';
+    if (!el.style.position || el.style.position === 'static') {
+      el.style.position = 'relative';
+    }
+    el.style.overflow = 'hidden';
+
+    var shimmer = document.createElement('div');
+    shimmer.className = 'shimmer-sweep';
+    shimmer.style.cssText = 'position:absolute;top:0;left:-100%;width:60%;height:100%;pointer-events:none;z-index:2;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.12) 45%,rgba(255,255,255,0.2) 50%,rgba(255,255,255,0.12) 55%,transparent 60%);';
+    el.appendChild(shimmer);
+
+    var continuous = el.getAttribute('data-shimmer-loop') === 'true';
+    var speed = parseFloat(el.getAttribute('data-duration') || 2);
+
+    if (continuous) {
+      gsap.to(shimmer, {
+        left: '200%', duration: speed, ease: 'power1.inOut',
+        repeat: -1, repeatDelay: 1.5
+      });
+    } else {
+      gsap.to(shimmer, {
+        left: '200%', duration: speed, ease: 'power1.inOut',
+        scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none none' }
+      });
+    }
+  });
+
+  /* ----------------------------------------------------------
+     40. RIPPLE ON CLICK (data-animate="ripple")
+     Material Design style click ripple effect.
+     Works on buttons, cards, any clickable element.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="ripple"]').forEach(function (el) {
+    el.style.opacity = '1';
+    if (!el.style.position || el.style.position === 'static') {
+      el.style.position = 'relative';
+    }
+    el.style.overflow = 'hidden';
+
+    var rippleColor = el.getAttribute('data-ripple-color') || 'rgba(255,255,255,0.3)';
+
+    el.addEventListener('click', function (e) {
+      var rect = el.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var maxDim = Math.max(rect.width, rect.height);
+
+      var ripple = document.createElement('span');
+      ripple.style.cssText = 'position:absolute;border-radius:50%;pointer-events:none;z-index:5;background:' + rippleColor + ';width:0;height:0;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);';
+      el.appendChild(ripple);
+
+      gsap.to(ripple, {
+        width: maxDim * 2.5, height: maxDim * 2.5, opacity: 0,
+        duration: 0.7, ease: 'power2.out',
+        onComplete: function () { ripple.remove(); }
+      });
+    });
+  });
+
+  /* ----------------------------------------------------------
+     41. INFINITE CARDS (data-animate="infinite-cards")
+     Horizontally scrolling card carousel with varied speeds.
+     Unlike marquee (for text/logos), this handles card elements
+     with individual hover-pause behavior.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="infinite-cards"]').forEach(function (el) {
+    el.style.opacity = '1';
+    el.style.overflow = 'hidden';
+
+    var track = el.querySelector('.infinite-track');
+    if (!track) return;
+    var speed = parseFloat(el.getAttribute('data-speed') || 40);
+    var dir = el.getAttribute('data-direction') === 'right' ? 1 : -1;
+    var pauseOnHover = el.getAttribute('data-pause-hover') !== 'false';
+
+    // Clone items for seamless loop
+    var items = track.children;
+    var origCount = items.length;
+    for (var ci = 0; ci < origCount; ci++) {
+      track.appendChild(items[ci].cloneNode(true));
+    }
+
+    track.style.display = 'flex';
+    track.style.gap = el.getAttribute('data-gap') || '1.5rem';
+    track.style.width = 'max-content';
+
+    var totalW = track.scrollWidth / 2;
+    var anim = gsap.fromTo(track,
+      { x: dir > 0 ? -totalW : 0 },
+      { x: dir > 0 ? 0 : -totalW, duration: speed, ease: 'none', repeat: -1 }
+    );
+
+    if (pauseOnHover) {
+      el.addEventListener('mouseenter', function () { anim.pause(); });
+      el.addEventListener('mouseleave', function () { anim.resume(); });
+    }
+  });
+
+  /* ----------------------------------------------------------
+     42. NUMBER TICKER (data-animate="number-ticker")
+     Slot-machine style rolling digits counter.
+     Each digit rolls independently from 0-9 to its target.
+     More visually exciting than the standard counter.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="number-ticker"]').forEach(function (el) {
+    var rawTarget = el.getAttribute('data-target') || el.textContent.trim();
+    var suffix = el.getAttribute('data-suffix') || '';
+    var prefix = el.getAttribute('data-prefix') || '';
+    var delay = parseFloat(el.getAttribute('data-delay') || 0);
+    var dur = parseFloat(el.getAttribute('data-duration') || 1.5);
+
+    el.innerHTML = '';
+    el.style.opacity = '1';
+    el.style.display = 'inline-flex';
+    el.style.overflow = 'hidden';
+
+    // Add prefix
+    if (prefix) {
+      var pSpan = document.createElement('span');
+      pSpan.textContent = prefix;
+      el.appendChild(pSpan);
+    }
+
+    // Create digit columns
+    var digits = rawTarget.replace(/[^0-9]/g, '').split('');
+    var separators = rawTarget.replace(/[0-9]/g, '|').split('|');
+
+    digits.forEach(function (digit, idx) {
+      // Add separator before this digit if it exists
+      if (separators[idx]) {
+        var sep = document.createElement('span');
+        sep.textContent = separators[idx];
+        el.appendChild(sep);
+      }
+
+      var col = document.createElement('span');
+      col.style.cssText = 'display:inline-block;overflow:hidden;height:1em;line-height:1;';
+
+      var strip = document.createElement('span');
+      strip.style.cssText = 'display:block;';
+      for (var d = 0; d <= 9; d++) {
+        var numEl = document.createElement('span');
+        numEl.textContent = d;
+        numEl.style.cssText = 'display:block;height:1em;line-height:1;';
+        strip.appendChild(numEl);
+      }
+      col.appendChild(strip);
+      el.appendChild(col);
+
+      var targetDigit = parseInt(digit);
+      gsap.fromTo(strip,
+        { y: 0 },
+        {
+          y: -targetDigit + 'em',
+          duration: dur + idx * 0.15,
+          delay: delay,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+        }
+      );
+    });
+
+    // Add trailing separator + suffix
+    if (separators[digits.length]) {
+      var trailSep = document.createElement('span');
+      trailSep.textContent = separators[digits.length];
+      el.appendChild(trailSep);
+    }
+    if (suffix) {
+      var sSpan = document.createElement('span');
+      sSpan.textContent = suffix;
+      el.appendChild(sSpan);
+    }
+  });
+
+  /* ----------------------------------------------------------
+     43. PARTICLES BACKGROUND (data-animate="particles-bg")
+     Lightweight floating particles using canvas.
+     No external dependencies — pure Canvas2D.
+     Adds depth and motion to hero/CTA sections.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="particles-bg"]').forEach(function (el) {
+    el.style.opacity = '1';
+    if (!el.style.position || el.style.position === 'static') {
+      el.style.position = 'relative';
+    }
+
+    var canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+    el.insertBefore(canvas, el.firstChild);
+
+    var ctx = canvas.getContext('2d');
+    var particleCount = parseInt(el.getAttribute('data-particle-count') || (isMobile ? 20 : 50));
+    var particleColor = el.getAttribute('data-particle-color') || 'var(--color-primary, #3b82f6)';
+
+    // Resolve CSS variable to actual color
+    var tempDiv = document.createElement('div');
+    tempDiv.style.color = particleColor;
+    document.body.appendChild(tempDiv);
+    var resolvedColor = getComputedStyle(tempDiv).color;
+    document.body.removeChild(tempDiv);
+
+    function resize() {
+      var rect = el.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var particles = [];
+    for (var pi = 0; pi < particleCount; pi++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2 + 0.5,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        alpha: Math.random() * 0.5 + 0.1
+      });
+    }
+
+    var _particleRAF;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(function (p) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = resolvedColor.replace('rgb(', 'rgba(').replace(')', ',' + p.alpha + ')');
+        ctx.fill();
+      });
+
+      // Draw connections between nearby particles (desktop only)
+      if (!isMobile) {
+        for (var a = 0; a < particles.length; a++) {
+          for (var b = a + 1; b < particles.length; b++) {
+            var dx = particles[a].x - particles[b].x;
+            var dy = particles[a].y - particles[b].y;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 120) {
+              ctx.beginPath();
+              ctx.moveTo(particles[a].x, particles[a].y);
+              ctx.lineTo(particles[b].x, particles[b].y);
+              ctx.strokeStyle = resolvedColor.replace('rgb(', 'rgba(').replace(')', ',' + (0.06 * (1 - dist / 120)) + ')');
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      _particleRAF = requestAnimationFrame(draw);
+    }
+
+    // Only animate when element is visible (performance)
+    var particleObserver = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) {
+        draw();
+      } else {
+        cancelAnimationFrame(_particleRAF);
+      }
+    }, { threshold: 0.1 });
+    particleObserver.observe(el);
+  });
+
+  /* ==========================================================
+     CSS SCROLL-DRIVEN ANIMATIONS — Native Layer
+     Progressive enhancement: adds CSS-native scroll animations
+     for browsers that support them (Chrome 115+).
+     These run on the compositor thread = zero JS overhead.
+     ========================================================== */
+  (function injectNativeScrollCSS() {
+    if (!CSS.supports || !CSS.supports('animation-timeline', 'view()')) return;
+
+    var nativeCSS = document.createElement('style');
+    nativeCSS.textContent = [
+      '/* Native CSS Scroll-Driven Animations (v4.0) */',
+      '@supports (animation-timeline: view()) {',
+      '  /* Fade-up native for elements with data-native-scroll */',
+      '  [data-native-scroll="fade-up"] {',
+      '    animation: nativeFadeUp linear both;',
+      '    animation-timeline: view();',
+      '    animation-range: entry 10% cover 40%;',
+      '  }',
+      '  @keyframes nativeFadeUp {',
+      '    from { opacity: 0; transform: translateY(40px); }',
+      '    to { opacity: 1; transform: translateY(0); }',
+      '  }',
+      '',
+      '  /* Scale-in native */',
+      '  [data-native-scroll="scale-in"] {',
+      '    animation: nativeScaleIn linear both;',
+      '    animation-timeline: view();',
+      '    animation-range: entry 10% cover 35%;',
+      '  }',
+      '  @keyframes nativeScaleIn {',
+      '    from { opacity: 0; transform: scale(0.85); }',
+      '    to { opacity: 1; transform: scale(1); }',
+      '  }',
+      '',
+      '  /* Blur-in native */',
+      '  [data-native-scroll="blur-in"] {',
+      '    animation: nativeBlurIn linear both;',
+      '    animation-timeline: view();',
+      '    animation-range: entry 5% cover 35%;',
+      '  }',
+      '  @keyframes nativeBlurIn {',
+      '    from { opacity: 0; filter: blur(12px); transform: translateY(20px); }',
+      '    to { opacity: 1; filter: blur(0px); transform: translateY(0); }',
+      '  }',
+      '',
+      '  /* Reveal-up native (clip-path) */',
+      '  [data-native-scroll="reveal-up"] {',
+      '    animation: nativeRevealUp linear both;',
+      '    animation-timeline: view();',
+      '    animation-range: entry 10% cover 40%;',
+      '  }',
+      '  @keyframes nativeRevealUp {',
+      '    from { clip-path: inset(100% 0 0 0); }',
+      '    to { clip-path: inset(0 0 0 0); }',
+      '  }',
+      '',
+      '  /* Slide-left native */',
+      '  [data-native-scroll="slide-left"] {',
+      '    animation: nativeSlideLeft linear both;',
+      '    animation-timeline: view();',
+      '    animation-range: entry 10% cover 40%;',
+      '  }',
+      '  @keyframes nativeSlideLeft {',
+      '    from { opacity: 0; transform: translateX(60px); }',
+      '    to { opacity: 1; transform: translateX(0); }',
+      '  }',
+      '',
+      '  /* Slide-right native */',
+      '  [data-native-scroll="slide-right"] {',
+      '    animation: nativeSlideRight linear both;',
+      '    animation-timeline: view();',
+      '    animation-range: entry 10% cover 40%;',
+      '  }',
+      '  @keyframes nativeSlideRight {',
+      '    from { opacity: 0; transform: translateX(-60px); }',
+      '    to { opacity: 1; transform: translateX(0); }',
+      '  }',
+      '',
+      '  /* Scroll progress indicator (native) */',
+      '  [data-native-scroll="progress"] {',
+      '    animation: nativeProgress linear;',
+      '    animation-timeline: scroll(root);',
+      '    transform-origin: left;',
+      '  }',
+      '  @keyframes nativeProgress {',
+      '    from { transform: scaleX(0); }',
+      '    to { transform: scaleX(1); }',
+      '  }',
+      '}'
+    ].join('\n');
+    document.head.appendChild(nativeCSS);
+  })();
 
   /* ----------------------------------------------------------
      29. LOADING REVEAL - fade out preloader
