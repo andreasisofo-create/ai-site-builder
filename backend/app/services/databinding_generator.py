@@ -4022,7 +4022,7 @@ RULES:
                         user_id=user_id,
                         site_id=site_id,
                         template_style=template_style_id,
-                        effects_used=effects_used,
+                        effects_json=effects_used,
                     )
                     _effect_db.add(usage)
                     _effect_db.commit()

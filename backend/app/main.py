@@ -159,7 +159,7 @@ async def lifespan(app: FastAPI):
                 "global_counters", "ad_leads", "ad_platform_configs", "ad_clients",
                 "ad_campaigns", "ad_optimization_logs", "ad_ai_activities",
                 "ad_metrics", "ad_wizard_progress", "ad_market_research",
-                "ad_strategies",
+                "ad_strategies", "effect_usage",
             ]
             with engine.connect() as conn:
                 for table in rls_tables:
