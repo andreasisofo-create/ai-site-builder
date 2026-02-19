@@ -1,69 +1,111 @@
-<!-- Pricing Toggle: toggle mensile/annuale con glassmorphism -->
-<section id="pricing" class="py-20 bg-[var(--color-bg)] overflow-hidden">
-  <div class="max-w-7xl mx-auto px-6">
+<!-- Pricing Toggle: Monthly/Annual toggle with smooth price animation, glassmorphism cards, border-beam on featured plan -->
+<section id="pricing" class="py-24 md:py-32 bg-[var(--color-bg)] overflow-hidden relative">
+
+  <!-- Ambient background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 left-[15%] w-96 h-96 bg-[var(--color-primary)]/4 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-20 right-[15%] w-80 h-80 bg-[var(--color-secondary)]/4 rounded-full blur-[100px]"></div>
+  </div>
+
+  <!-- Grid background -->
+  <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px); background-size: 48px 48px;"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
     <!-- Header -->
-    <div class="text-center mb-10" data-animate="fade-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Prezzi</p>
-      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4" data-animate="text-split" data-split-type="words">{{PRICING_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">{{PRICING_SUBTITLE}}</p>
+    <div class="text-center mb-8" data-animate="reveal-up">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 mb-6" data-animate="blur-in">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>
+        <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Prezzi</span>
+      </div>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{PRICING_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2">{{PRICING_SUBTITLE}}</p>
     </div>
 
     <!-- Toggle Switch -->
-    <div class="flex items-center justify-center gap-4 mb-16" data-animate="fade-up">
-      <span class="text-sm font-semibold text-[var(--color-text)] pricing-label-monthly">Mensile</span>
-      <button type="button" class="pricing-toggle relative w-14 h-7 bg-[var(--color-text)]/10 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50" onclick="this.classList.toggle('active'); this.closest('section').classList.toggle('show-annual');">
-        <span class="absolute left-1 top-1 w-5 h-5 bg-[var(--color-primary)] rounded-full transition-transform duration-300 shadow-md"></span>
+    <div class="flex items-center justify-center gap-4 mb-16 md:mb-20" data-animate="fade-up" data-delay="0.3">
+      <span class="text-sm font-semibold font-body prc-label-monthly text-[var(--color-text)]">Mensile</span>
+      <button
+        type="button"
+        id="prcToggleBtn"
+        class="prc-toggle relative w-16 h-8 rounded-full transition-all duration-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/40 focus:ring-offset-2"
+        style="background: var(--color-text); opacity: 0.15;"
+        onclick="togglePricingPeriod()"
+        role="switch"
+        aria-checked="false"
+        aria-label="Cambia periodo prezzo"
+      >
+        <span class="prc-toggle-knob absolute top-1 left-1 w-6 h-6 rounded-full shadow-md transition-all duration-400" style="background: var(--color-primary);"></span>
       </button>
-      <span class="text-sm font-semibold text-[var(--color-text-muted)] pricing-label-annual">Annuale <span class="text-[var(--color-primary)] text-xs ml-1">-20%</span></span>
+      <span class="text-sm font-semibold font-body prc-label-annual text-[var(--color-text-muted)]">
+        Annuale
+        <span class="inline-block ml-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--color-primary)]/10 text-[var(--color-primary)]">-20%</span>
+      </span>
     </div>
 
-    <!-- Pricing Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start" data-animate="stagger">
+    <!-- Pricing Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-start" data-animate="stagger">
       <!-- REPEAT:PRICING_PLANS -->
       <div class="stagger-item" data-animate="scale-in">
-        <div class="relative group rounded-2xl p-8 transition-all duration-500 border border-[var(--color-text)]/10 hover:border-[var(--color-primary)]/30 bg-[var(--color-bg-alt)]"
-             data-featured="{{PLAN_FEATURED}}"
-             data-animate="tilt">
-          <!-- Featured glassmorphism overlay -->
-          <div class="featured-glass absolute inset-0 rounded-2xl hidden" style="background: linear-gradient(135deg, var(--color-primary)/10, var(--color-secondary)/10); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);"></div>
+        <div
+          class="prc-card group relative rounded-2xl transition-all duration-500 hover:-translate-y-2"
+          data-featured="{{PLAN_FEATURED}}"
+          data-animate="tilt"
+        >
+          <!-- Border beam for featured plan -->
+          <div class="prc-beam absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 pointer-events-none">
+            <div class="absolute inset-[-1px] rounded-2xl" style="background: conic-gradient(from var(--prc-beam-angle, 0deg), transparent 0%, var(--color-primary) 10%, var(--color-secondary) 20%, transparent 30%); animation: prc-beam-rotate 4s linear infinite;"></div>
+          </div>
 
-          <div class="relative z-10">
-            <!-- Badge -->
-            <div class="hidden mb-4" data-featured-badge>
-              <span class="inline-block px-4 py-1 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-bold rounded-full uppercase tracking-wider">Consigliato</span>
-            </div>
+          <!-- Card inner -->
+          <div class="relative m-[1px] rounded-2xl bg-[var(--color-bg-alt)] overflow-hidden border border-[var(--color-text)]/8 group-hover:border-[var(--color-primary)]/20 transition-colors duration-500">
+            <!-- Featured gradient top bar -->
+            <div class="prc-featured-bar h-0 transition-all duration-300"></div>
 
-            <!-- Plan Name -->
-            <h3 class="text-xl font-bold font-heading text-[var(--color-text)] mb-2">{{PLAN_NAME}}</h3>
-            <p class="text-sm text-[var(--color-text-muted)] mb-6">{{PLAN_DESCRIPTION}}</p>
-
-            <!-- Price -->
-            <div class="mb-8">
-              <div class="flex items-baseline gap-1">
-                <span class="text-lg text-[var(--color-text-muted)]">&euro;</span>
-                <span class="text-5xl font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300" data-counter="{{PLAN_PRICE}}">0</span>
+            <div class="relative p-8 md:p-10">
+              <!-- Featured badge -->
+              <div class="prc-badge hidden mb-4">
+                <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase text-white" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+                  Consigliato
+                </span>
               </div>
-              <p class="text-sm text-[var(--color-text-muted)] mt-1">{{PLAN_PERIOD}}</p>
-            </div>
 
-            <!-- Features -->
-            <ul class="space-y-3 mb-10">
-              <!-- REPEAT:PLAN_FEATURES -->
-              <li class="flex items-start gap-3">
-                <div class="w-5 h-5 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg class="w-3 h-3 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                  </svg>
+              <!-- Plan name -->
+              <h3 class="text-xl md:text-2xl font-bold font-heading text-[var(--color-text)] mb-2">{{PLAN_NAME}}</h3>
+              <p class="text-sm text-[var(--color-text-muted)] font-body mb-8">{{PLAN_DESCRIPTION}}</p>
+
+              <!-- Price display -->
+              <div class="mb-8">
+                <div class="flex items-baseline gap-1">
+                  <span class="text-lg text-[var(--color-text-muted)] font-body">&euro;</span>
+                  <span class="prc-price-value text-5xl md:text-6xl font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-400" data-monthly="{{PLAN_PRICE}}" data-annual="{{PLAN_PRICE_ANNUAL}}">
+                    {{PLAN_PRICE}}
+                  </span>
                 </div>
-                <span class="text-sm text-[var(--color-text-muted)]">{{FEATURE_TEXT}}</span>
-              </li>
-              <!-- /REPEAT:PLAN_FEATURES -->
-            </ul>
+                <p class="text-sm text-[var(--color-text-muted)] font-body mt-1 prc-period-label">al mese</p>
+              </div>
 
-            <!-- CTA -->
-            <a href="{{PLAN_CTA_URL}}" class="block w-full py-4 text-center font-bold rounded-xl transition-all duration-300 bg-[var(--color-text)]/5 text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white" data-animate="magnetic">
-              {{PLAN_CTA_TEXT}}
-            </a>
+              <!-- Divider -->
+              <div class="h-px bg-[var(--color-text)]/8 mb-8"></div>
+
+              <!-- Features list -->
+              <ul class="space-y-4 mb-10">
+                <!-- REPEAT:PLAN_FEATURES -->
+                <li class="flex items-start gap-3">
+                  <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background: rgba(var(--color-primary-rgb), 0.1);">
+                    <svg class="w-3 h-3 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </div>
+                  <span class="text-sm text-[var(--color-text-muted)] font-body leading-relaxed">{{FEATURE_TEXT}}</span>
+                </li>
+                <!-- /REPEAT:PLAN_FEATURES -->
+              </ul>
+
+              <!-- CTA button -->
+              <a href="{{PLAN_CTA_URL}}" class="prc-cta block w-full py-4 text-center font-bold font-body rounded-xl transition-all duration-400 text-sm tracking-wide" data-animate="magnetic">
+                {{PLAN_CTA_TEXT}}
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -71,26 +113,123 @@
     </div>
   </div>
 
+  <!-- Pricing toggle JS -->
+  <script>
+    (function() {
+      var isAnnual = false;
+
+      window.togglePricingPeriod = function() {
+        isAnnual = !isAnnual;
+        var btn = document.getElementById('prcToggleBtn');
+        var knob = btn.querySelector('.prc-toggle-knob');
+        var labelM = document.querySelector('.prc-label-monthly');
+        var labelA = document.querySelector('.prc-label-annual');
+
+        btn.setAttribute('aria-checked', isAnnual ? 'true' : 'false');
+
+        if (isAnnual) {
+          knob.style.transform = 'translateX(2rem)';
+          btn.style.opacity = '1';
+          btn.style.background = 'var(--color-primary)';
+          labelM.style.color = 'var(--color-text-muted)';
+          labelA.style.color = 'var(--color-text)';
+        } else {
+          knob.style.transform = 'translateX(0)';
+          btn.style.opacity = '0.15';
+          btn.style.background = 'var(--color-text)';
+          labelM.style.color = 'var(--color-text)';
+          labelA.style.color = 'var(--color-text-muted)';
+        }
+
+        // Animate price values
+        var prices = document.querySelectorAll('.prc-price-value');
+        prices.forEach(function(el) {
+          var monthly = el.getAttribute('data-monthly') || '0';
+          var annual = el.getAttribute('data-annual') || monthly;
+          var target = isAnnual ? annual : monthly;
+          el.style.transform = 'translateY(-4px)';
+          el.style.opacity = '0';
+          setTimeout(function() {
+            el.textContent = target;
+            el.style.transform = 'translateY(4px)';
+            requestAnimationFrame(function() {
+              el.style.transform = 'translateY(0)';
+              el.style.opacity = '1';
+            });
+          }, 200);
+        });
+
+        // Update period labels
+        var labels = document.querySelectorAll('.prc-period-label');
+        labels.forEach(function(el) {
+          el.textContent = isAnnual ? 'al mese, fatturato annualmente' : 'al mese';
+        });
+      };
+    })();
+  </script>
+
   <style>
-    .pricing-toggle.active span {
-      transform: translateX(1.75rem);
+    @keyframes prc-beam-rotate {
+      from { --prc-beam-angle: 0deg; }
+      to { --prc-beam-angle: 360deg; }
     }
-    .pricing-toggle.active {
-      background-color: var(--color-primary);
+    @property --prc-beam-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
     }
-    [data-featured="true"] {
+
+    .prc-price-value {
+      transition: transform 0.3s ease, opacity 0.2s ease, color 0.4s ease;
+      display: inline-block;
+    }
+
+    /* Default CTA style */
+    .prc-cta {
+      background: rgba(var(--color-text-rgb, 128, 128, 128), 0.05);
+      color: var(--color-text);
+    }
+    .prc-cta:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    /* Featured plan styles */
+    .prc-card[data-featured="true"] {
+      z-index: 2;
+    }
+    .prc-card[data-featured="true"] > div:last-child {
       border-color: var(--color-primary) !important;
-      box-shadow: 0 20px 50px -12px rgba(0,0,0,0.12);
+      box-shadow: 0 25px 60px -12px rgba(0,0,0,0.15);
     }
-    [data-featured="true"] .featured-glass {
+    .prc-card[data-featured="true"] .prc-beam {
+      opacity: 1 !important;
+    }
+    .prc-card[data-featured="true"] .prc-badge {
       display: block !important;
     }
-    [data-featured="true"] [data-featured-badge] {
-      display: block !important;
+    .prc-card[data-featured="true"] .prc-featured-bar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
     }
-    [data-featured="true"] a {
+    .prc-card[data-featured="true"] .prc-cta {
       background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
       color: white;
+      box-shadow: 0 8px 24px -4px rgba(var(--color-primary-rgb), 0.3);
+    }
+    .prc-card[data-featured="true"] .prc-cta:hover {
+      box-shadow: 0 12px 32px -4px rgba(var(--color-primary-rgb), 0.4);
+      transform: translateY(-1px);
+    }
+
+    /* Scale featured on lg */
+    @media (min-width: 1024px) {
+      .prc-card[data-featured="true"] {
+        transform: scale(1.05);
+      }
+      .prc-card[data-featured="true"]:hover {
+        transform: scale(1.05) translateY(-0.5rem);
+      }
     }
   </style>
 </section>

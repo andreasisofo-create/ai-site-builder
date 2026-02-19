@@ -27,3 +27,6 @@ except ImportError:
 from app.models.generation_log import GenerationLog
 from app.models.generation_log_component import GenerationLogComponent
 from app.models.category_blueprint import CategoryBlueprint
+
+# Effect Diversifier
+from app.models.effect_usage import EffectUsage

@@ -1,8 +1,9 @@
 """
 Seed script for Design Knowledge ChromaDB.
-Populates the vector database with 100+ design patterns covering
+Populates the vector database with 175+ design patterns covering
 scroll effects, text animations, image effects, layout patterns,
-GSAP snippets, creative prompts, and more.
+GSAP snippets, creative prompts, Aceternity UI, Magic UI, UIverse,
+and modern interaction patterns.
 
 Run: python -m app.services.seed_design_knowledge
 """
@@ -1517,6 +1518,1004 @@ gsap.to(target, {
   border-radius: var(--radius-lg);
 }
 .nav-link:hover { background: var(--panel-hover); transform: translateX(4px); }""",
+    },
+    # --- CodePen: Highlighter SVG Draw Effect ---
+    {
+        "id": "codepen_svg_highlighter",
+        "content": """SVG hand-drawn highlighter effect for navigation menus and text emphasis. Each menu item
+has an SVG path positioned absolutely behind/around the text that looks like a hand-drawn circle or underline.
+On click (or hover), GSAP DrawSVGPlugin animates the stroke from 0% to 100%, creating the appearance of someone
+circling the word with a marker pen in real-time. Two overlapping SVG paths with different colors (a lighter
+background stroke and a darker foreground stroke) create depth and a natural pen-on-paper feel. The SVG uses
+preserveAspectRatio="none" so it stretches to fit any word length. Paths use quadratic bezier curves (Q commands)
+for organic, imperfect circular shapes. Reset animation on other items when a new one is selected. The effect
+works beautifully for portfolio navigation, service category selectors, or any interactive text menu where you
+want a playful, editorial, hand-crafted aesthetic. Can be adapted to underlines or squiggly lines instead of
+circles. Font pairing: bold uppercase sans-serif (900 weight) for maximum impact.""",
+        "category": "interactive_elements",
+        "tags": ["svg", "draw-svg", "highlighter", "hand-drawn", "navigation", "menu", "gsap", "stroke-animation", "editorial", "click-effect"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.link {
+  position: relative;
+  display: inline-flex;
+  font-size: 80px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #c2c1bd;
+  text-decoration: none;
+}
+.link:hover, .link.active { color: #1e1f21; }
+.word { position: relative; z-index: 1; }
+.highlighter {
+  position: absolute;
+  left: -50px; right: -50px; bottom: -20px;
+  width: calc(100% + 100px);
+  z-index: 2;
+  scale: 1.1;
+}
+/* SVG path: organic hand-drawn circle */
+<svg viewBox="0 0 220 80" preserveAspectRatio="none">
+  <path class="stroke-path stroke-path--2"
+    d="M 20 40 Q 10 10 70 15 Q 140 0 190 35 Q 210 55 180 65 Q 100 85 40 70 Q 15 60 30 45"
+    fill="none" stroke="#A0A7E1" stroke-width="5"
+    stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="stroke-path stroke-path--1"
+    d="M 20 40 Q 10 10 70 15 Q 140 0 190 35 Q 210 55 180 65 Q 100 85 40 70 Q 15 60 30 45"
+    fill="none" stroke="#3E4DC2" stroke-width="5"
+    stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+/* GSAP: */
+gsap.registerPlugin(DrawSVGPlugin);
+gsap.set(allPaths, { drawSVG: '0% 0%', opacity: 0 });
+container.addEventListener('click', () => {
+  gsap.to(allPaths, { drawSVG: '0% 0%', opacity: 0, duration: 0.3 });
+  gsap.to(paths, { drawSVG: '0% 100%', opacity: 1, duration: 0.8, ease: 'power2.out' });
+});""",
+    },
+
+    # ====================================================
+    # ACETERNITY UI EFFECTS (16)
+    # ====================================================
+    {
+        "id": "aceternity_spotlight",
+        "content": "Spotlight effect (Aceternity UI): a radial gradient glow that scales in from off-center, drawing attention to hero sections or featured cards. Starts invisible and scaled-down (50%), animates to full opacity and scale over 2s with a 0.75s delay. Uses a large CSS radial-gradient positioned absolutely behind the content. The glow color matches the brand primary. Best for dark backgrounds where the light cone is clearly visible. Creates a cinematic, stage-lighting feel perfect for SaaS hero sections and product showcases.",
+        "category": "visual_effects",
+        "tags": ["spotlight", "glow", "hero", "attention", "aceternity", "radial-gradient"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """@keyframes spotlight {
+  0% { opacity: 0; transform: translate(-72%, -62%) scale(0.5); }
+  100% { opacity: 1; transform: translate(-50%, -40%) scale(1); }
+}
+.spotlight {
+  position: absolute; top: 0; left: 0;
+  width: 140%; height: 200%;
+  background: radial-gradient(ellipse, rgba(var(--color-primary-rgb),0.15) 0%, transparent 70%);
+  animation: spotlight 2s ease 0.75s 1 forwards;
+  opacity: 0; pointer-events: none;
+}""",
+    },
+    {
+        "id": "aceternity_meteor_shower",
+        "content": "Meteor shower effect (Aceternity UI): animated diagonal beams that streak across a container background like falling stars. Multiple beams at 215-degree angle translate -500px horizontally while fading from full opacity to transparent. Each meteor has a randomized delay and duration (5-15s) for organic feel. Thin white/colored lines (1-2px width, 50-100px length) with a soft glow trail via box-shadow. Creates a magical, cosmic atmosphere. Best for dark hero sections, card backgrounds, and event pages. Spawn 10-30 meteors with random top/left positions.",
+        "category": "backgrounds",
+        "tags": ["meteor", "particles", "cosmic", "animated", "aceternity", "beams"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """@keyframes meteor {
+  0% { transform: rotate(215deg) translateX(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: rotate(215deg) translateX(-500px); opacity: 0; }
+}
+.meteor {
+  position: absolute; top: 50%; left: 50%;
+  width: 1px; height: 80px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 6px 2px rgba(255,255,255,0.3);
+  animation: meteor 5s linear infinite;
+}""",
+    },
+    {
+        "id": "aceternity_3d_card",
+        "content": "3D card tilt effect (Aceternity UI): card rotates towards the mouse pointer in 3D space using CSS perspective and transform. On mousemove, calculate rotateX and rotateY based on cursor position relative to card center (typically +/-15deg range). Card children can have translateZ values to create layered depth (icons float above, shadows below). Uses perspective: 1000px on parent, will-change: transform on card. Smooth transition on mouse-leave to reset rotation. Creates a premium, tactile feel for feature cards, pricing tiers, and portfolio items.",
+        "category": "card_designs",
+        "tags": ["3d", "tilt", "perspective", "hover", "aceternity", "interactive", "depth"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.card-3d-container { perspective: 1000px; }
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+.card-3d:hover { transform: rotateY(10deg) rotateX(-5deg); }
+.card-3d .card-float { transform: translateZ(50px); transition: transform 0.3s ease; }
+.card-3d .card-shadow { transform: translateZ(-20px); filter: blur(10px); opacity: 0.3; }
+/* JS: card.style.transform = `rotateY(${(x-cx)/rect.width*30}deg) rotateX(${-(y-cy)/rect.height*30}deg)` */""",
+    },
+    {
+        "id": "aceternity_background_beams",
+        "content": "Background beams effect (Aceternity UI): multiple SVG path-based beams that curve across the hero section background, creating organic light trails. Each beam follows a unique cubic bezier path, animated with stroke-dashoffset or motion path. Beams use gradient strokes (primary to transparent) with 1-3px width and soft glow via filter:blur. Stagger beam animations with different durations (3-8s) and delays for a living, breathing background. Best on dark backgrounds. Creates a futuristic, data-flow aesthetic perfect for SaaS, AI, and tech landing pages.",
+        "category": "backgrounds",
+        "tags": ["beams", "svg", "paths", "hero", "aceternity", "futuristic", "tech"],
+        "complexity": "high",
+        "impact_score": 9,
+        "code": """.beam-container { position: absolute; inset: 0; overflow: hidden; }
+.beam-path {
+  stroke: url(#beam-gradient); stroke-width: 2; fill: none;
+  stroke-dasharray: 500; stroke-dashoffset: 500;
+  animation: beam-draw 4s ease-in-out infinite alternate;
+  filter: blur(1px);
+}
+@keyframes beam-draw {
+  0% { stroke-dashoffset: 500; opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0.3; }
+}
+/* SVG: <path d="M0,200 C150,100 350,300 500,150 S800,50 1000,200" class="beam-path"/> */""",
+    },
+    {
+        "id": "aceternity_wavy_background",
+        "content": "Wavy background effect (Aceternity UI): animated SVG waves layered at the bottom or behind content, creating an organic, fluid motion. Multiple wave paths with different amplitudes, frequencies, and animation speeds produce a living ocean effect. Each wave layer has decreasing opacity (0.7, 0.5, 0.3) and different fill colors (primary shades). Animate via CSS transform translateX with different durations (5-15s). Best for creative sections, hero bottoms, and section dividers. Creates a calm, organic feel contrasting sharp geometric layouts.",
+        "category": "backgrounds",
+        "tags": ["waves", "svg", "organic", "animated", "aceternity", "fluid", "ocean"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """.wave-container { position: absolute; bottom: 0; left: 0; width: 200%; }
+.wave { animation: wave-move linear infinite; }
+.wave-1 { animation-duration: 7s; opacity: 0.7; }
+.wave-2 { animation-duration: 11s; opacity: 0.5; }
+.wave-3 { animation-duration: 15s; opacity: 0.3; }
+@keyframes wave-move {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+/* SVG wave: <path d="M0,100 C200,150 400,50 600,100 C800,150 1000,50 1200,100 V200 H0 Z"/> */""",
+    },
+    {
+        "id": "aceternity_aurora_background",
+        "content": "Aurora background effect (Aceternity UI): subtle northern lights animation using layered gradient blobs that shift position, scale, and color over time. Multiple absolutely-positioned divs (200-600px) with radial gradients in primary/accent colors, large blur (blur-3xl to blur-[100px]), and low opacity (5-20%). Animate with CSS keyframes changing transform translate and scale over 10-20s infinite loops. Each blob has different timing for organic, never-repeating movement. Creates an ethereal, premium atmosphere. Best for dark hero sections and full-page backgrounds on SaaS and creative sites.",
+        "category": "backgrounds",
+        "tags": ["aurora", "gradient", "blobs", "animated", "aceternity", "ethereal", "premium"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.aurora-blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0.15;
+  will-change: transform;
+}
+.aurora-1 {
+  width: 500px; height: 500px; top: -20%; left: 10%;
+  background: radial-gradient(circle, var(--color-primary), transparent 70%);
+  animation: aurora-drift-1 15s ease-in-out infinite alternate;
+}
+.aurora-2 {
+  width: 400px; height: 400px; bottom: -10%; right: 5%;
+  background: radial-gradient(circle, var(--color-accent), transparent 70%);
+  animation: aurora-drift-2 20s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift-1 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(100px,50px) scale(1.3); } }""",
+    },
+    {
+        "id": "aceternity_lamp_effect",
+        "content": "Lamp effect (Aceternity UI, inspired by Linear): a conic or radial gradient that appears to emanate from a point above the section heading, creating a dramatic desk lamp illumination. Uses a wide conic-gradient (from 270deg, primary color to transparent) positioned at top-center with scaleY animation expanding from 0 to 1. The light cone illuminates the heading below it. Often paired with a horizontal line or border at the emission point. Creates a dramatic, theatrical reveal for section titles. Best for dark backgrounds, landing page sections.",
+        "category": "visual_effects",
+        "tags": ["lamp", "light-cone", "linear", "dramatic", "aceternity", "section-header"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.lamp-container { position: relative; overflow: hidden; padding-top: 8rem; }
+.lamp-beam {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 60%; height: 300px;
+  background: conic-gradient(from 270deg at 50% 0%, var(--color-primary), transparent 35%, transparent 65%, var(--color-primary));
+  opacity: 0.2;
+  mask-image: linear-gradient(to bottom, white, transparent);
+  animation: lamp-on 1.5s ease-out forwards;
+}
+@keyframes lamp-on { from { transform: translateX(-50%) scaleY(0); } to { transform: translateX(-50%) scaleY(1); } }""",
+    },
+    {
+        "id": "aceternity_sparkles",
+        "content": "Sparkles effect (Aceternity UI): randomly positioned and timed sparkle particles that appear, scale up, rotate, and fade around text or elements. Each sparkle is a small SVG star (4-point or 6-point) with randomized size (4-12px), position, color (white or primary), animation delay (0-3s), and duration (1-3s). Keyframes: scale from 0 to 1 back to 0, with rotation 0 to 180deg, and opacity 0 to 1 to 0. Spawn 15-30 sparkles. Creates a magical, celebratory accent. Best for highlighting special text, prices, badges, or CTA buttons.",
+        "category": "visual_effects",
+        "tags": ["sparkles", "particles", "magical", "accent", "aceternity", "stars"],
+        "complexity": "low",
+        "impact_score": 7,
+        "code": """.sparkle-container { position: relative; display: inline-block; }
+.sparkle {
+  position: absolute; pointer-events: none;
+  animation: sparkle-anim var(--duration, 2s) ease-in-out var(--delay, 0s) infinite;
+}
+@keyframes sparkle-anim {
+  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+}
+/* SVG star: <svg width="12" height="12"><path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5Z" fill="currentColor"/></svg> */""",
+    },
+    {
+        "id": "aceternity_text_generate",
+        "content": "Text generate effect (Aceternity UI): text fades in word by word with a staggered delay, simulating AI text generation. Each word starts at opacity 0 with a slight blur(4px) and translateY(10px), then transitions to full visibility. Stagger delay of 50-100ms per word creates a natural, typewriter-like reveal. Uses IntersectionObserver to trigger on scroll or fires on page load for hero text. Different from typewriter because words appear simultaneously with stagger rather than sequentially. Creates a modern, AI-native feel for hero headlines.",
+        "category": "text_animations",
+        "tags": ["text-generate", "stagger", "word-reveal", "ai", "aceternity", "hero"],
+        "complexity": "low",
+        "impact_score": 8,
+        "code": """.text-generate span {
+  opacity: 0; filter: blur(4px); display: inline-block;
+  transform: translateY(10px);
+  animation: text-gen 0.4s ease forwards;
+  animation-delay: calc(var(--word-index) * 80ms);
+}
+@keyframes text-gen {
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+/* JS: text.split(' ').forEach((w,i) => span.style.setProperty('--word-index', i)) */""",
+    },
+    {
+        "id": "aceternity_hero_parallax",
+        "content": "Hero parallax effect (Aceternity UI): a scroll-driven layout where product images/screenshots rotate and translate in 3D as the user scrolls. The container has perspective:1000px, and child elements transform with rotateX, translateY, and translateZ values mapped to scroll progress. Images start rotated (rotateX 15-25deg) and flatten to 0deg as they scroll into full view. Creates a dramatic Apple-style product showcase. Often combined with a sticky container so the effect plays within a defined scroll range. Best for product landing pages and SaaS hero sections.",
+        "category": "scroll_animations",
+        "tags": ["parallax", "3d", "product", "scroll", "aceternity", "apple-style", "perspective"],
+        "complexity": "high",
+        "impact_score": 10,
+        "code": """.hero-parallax { perspective: 1000px; height: 200vh; }
+.hero-parallax-content {
+  position: sticky; top: 0; height: 100vh;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+.hero-parallax-images {
+  transform: rotateX(25deg) translateZ(-100px) translateY(var(--scroll-y, 0));
+  transition: transform 0.1s linear;
+}
+/* GSAP: gsap.to('.hero-parallax-images', { rotateX:0, translateZ:0, scrollTrigger:{ trigger:'.hero-parallax', start:'top top', end:'bottom top', scrub:true }}) */""",
+    },
+    {
+        "id": "aceternity_infinite_cards",
+        "content": "Infinite moving cards (Aceternity UI): a horizontal marquee of cards/testimonials that scrolls infinitely in a loop. Cards are duplicated to fill the track, then animated with translateX from 0 to -50% (since content is doubled). CSS animation with linear timing for seamless loop. Add pause-on-hover with animation-play-state:paused. Cards can scroll left or right. Multiple rows with different speeds create a dynamic testimonial wall. Essential for social proof sections, client logos, and testimonial showcases.",
+        "category": "micro_interactions",
+        "tags": ["marquee", "infinite", "cards", "loop", "aceternity", "testimonials", "social-proof"],
+        "complexity": "low",
+        "impact_score": 8,
+        "code": """.infinite-track {
+  display: flex; gap: 1.5rem; width: max-content;
+  animation: scroll-cards 30s linear infinite;
+}
+.infinite-track:hover { animation-play-state: paused; }
+@keyframes scroll-cards {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+/* Duplicate children in JS: track.innerHTML += track.innerHTML; */
+.infinite-card { flex-shrink: 0; width: 350px; }""",
+    },
+    {
+        "id": "aceternity_moving_border",
+        "content": "Moving border effect (Aceternity UI): an animated gradient that travels around the perimeter of a button or card border. Uses a conic-gradient that rotates 360deg continuously, masked to only show on the border area. The gradient has a bright segment (primary color) and transparent rest, creating a single light beam circling the element. Implementation: outer container with rotating conic-gradient background, inner element with solid background slightly inset (1-2px) to reveal the animated border. Perfect for CTAs, highlighted cards, and premium UI elements.",
+        "category": "micro_interactions",
+        "tags": ["moving-border", "animated", "gradient", "button", "aceternity", "cta", "premium"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """.moving-border {
+  position: relative; padding: 2px; border-radius: 12px; overflow: hidden;
+}
+.moving-border::before {
+  content: ''; position: absolute; inset: -50%;
+  background: conic-gradient(from 0deg, transparent 0%, var(--color-primary) 10%, transparent 20%);
+  animation: rotate-border 3s linear infinite;
+}
+@keyframes rotate-border { 100% { transform: rotate(360deg); } }
+.moving-border-inner {
+  position: relative; background: var(--color-bg); border-radius: 10px;
+  padding: 12px 24px; z-index: 1;
+}""",
+    },
+    {
+        "id": "aceternity_tracing_beam",
+        "content": "Tracing beam effect (Aceternity UI): an SVG line that draws itself along the page as the user scrolls, following the content flow. Uses a vertical SVG path with stroke-dasharray and stroke-dashoffset animated by scroll position. A gradient from primary to secondary colors the drawn portion. A glowing dot at the current draw position (filter:drop-shadow) acts as a scroll progress indicator. Best used alongside content sections (timeline, about, process steps) to guide the eye. Creates an elegant, connected reading experience.",
+        "category": "scroll_animations",
+        "tags": ["tracing-beam", "svg", "scroll-progress", "path", "aceternity", "timeline"],
+        "complexity": "high",
+        "impact_score": 8,
+        "code": """.tracing-beam-svg { position: absolute; left: 20px; top: 0; height: 100%; width: 20px; }
+.tracing-line {
+  stroke: url(#tracing-gradient); stroke-width: 2; fill: none;
+  stroke-dasharray: var(--path-length);
+  stroke-dashoffset: var(--path-length);
+  transition: stroke-dashoffset 0.1s linear;
+}
+.tracing-dot {
+  r: 5; fill: var(--color-primary);
+  filter: drop-shadow(0 0 6px var(--color-primary));
+}
+/* JS: window.addEventListener('scroll', () => { line.style.strokeDashoffset = pathLength * (1 - scrollProgress); }) */""",
+    },
+    {
+        "id": "aceternity_background_gradient_animation",
+        "content": "Background gradient animation (Aceternity UI): a smooth, slowly shifting background gradient that cycles through colors. Uses background-size: 400% 400% with a CSS keyframe animating background-position through all four corners. Gradient uses 3-4 colors (primary, secondary, accent variations). Duration 10-20s for subtle, hypnotic movement. Creates a living, breathing background that adds depth without distraction. Best for hero sections, full-page backgrounds, and CTA sections. Works on both dark and light themes.",
+        "category": "backgrounds",
+        "tags": ["gradient-animation", "background", "shifting", "aceternity", "smooth", "ambient"],
+        "complexity": "low",
+        "impact_score": 8,
+        "code": """.gradient-animate {
+  background: linear-gradient(-45deg, var(--color-primary), var(--color-secondary), var(--color-accent), var(--color-primary));
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
+}""",
+    },
+    {
+        "id": "aceternity_animated_tooltip",
+        "content": "Animated tooltip (Aceternity UI): a tooltip that scales in from the trigger point with a spring-like overshoot animation, follows mouse position horizontally within the trigger element bounds. Uses scale(0.5) to scale(1) with a cubic-bezier spring curve. Tooltip has a subtle backdrop-filter:blur, rounded corners, and a small arrow/triangle. The tooltip position updates on mousemove for a fluid, connected feel. Content can include images, text, or mini profiles. Creates a polished, interactive detail layer for team sections, feature explanations, and link previews.",
+        "category": "micro_interactions",
+        "tags": ["tooltip", "animated", "hover", "spring", "aceternity", "interactive", "detail"],
+        "complexity": "medium",
+        "impact_score": 7,
+        "code": """.animated-tooltip {
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%) scale(0.5); opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.2s ease;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+  border-radius: 8px; padding: 8px 12px; pointer-events: none;
+  white-space: nowrap; color: white; font-size: 0.875rem;
+}
+.tooltip-trigger:hover .animated-tooltip {
+  transform: translateX(-50%) scale(1); opacity: 1;
+}""",
+    },
+    {
+        "id": "aceternity_macbook_scroll",
+        "content": "Macbook scroll effect (Aceternity UI): a 3D laptop mockup where the screen content/image emerges and grows as the user scrolls. The laptop starts small and rotated, then scales up and flattens to show a full product screenshot. Uses perspective, rotateX, and scale transforms driven by GSAP ScrollTrigger scrub. The screen can show a video or animated demo. Creates an Apple-keynote-style product reveal. Best for SaaS product showcases, app launches, and feature highlights. Pin the section for the full scroll animation range.",
+        "category": "scroll_animations",
+        "tags": ["macbook", "product-reveal", "3d", "scroll", "aceternity", "apple", "showcase"],
+        "complexity": "high",
+        "impact_score": 10,
+        "code": """.macbook-section { height: 300vh; }
+.macbook-container {
+  position: sticky; top: 10vh; height: 80vh;
+  display: flex; align-items: center; justify-content: center;
+  perspective: 1200px;
+}
+.macbook-frame {
+  transform: rotateX(25deg) scale(0.6);
+  transform-origin: center bottom;
+  transition: transform 0.15s linear;
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+}
+/* GSAP: gsap.to('.macbook-frame', { rotateX:0, scale:1, scrollTrigger:{ trigger:'.macbook-section', scrub:1, pin:true }}) */""",
+    },
+
+    # ====================================================
+    # MAGIC UI EFFECTS (11)
+    # ====================================================
+    {
+        "id": "magicui_shimmer_button",
+        "content": "Shimmer button (Magic UI): a CTA button with a traveling light sweep across its surface. A linear gradient highlight (white at 10-15% opacity) slides horizontally across the button using background-position animation. The shimmer band is narrow against a wider background-size, creating a focused sweep. Animation alternates (ease-in-out infinite alternate) for continuous, premium feel. The button surface often has a subtle gradient base color. Creates an eye-catching, premium CTA that draws attention without being distracting. Perfect for primary action buttons.",
+        "category": "micro_interactions",
+        "tags": ["shimmer", "button", "cta", "shine", "magicui", "premium", "sweep"],
+        "complexity": "low",
+        "impact_score": 8,
+        "code": """.shimmer-btn {
+  position: relative; overflow: hidden;
+  background: var(--color-primary);
+  color: white; padding: 12px 32px;
+  border-radius: 12px; font-weight: 600;
+}
+.shimmer-btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer-slide 2s ease-in-out infinite alternate;
+}
+@keyframes shimmer-slide {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}""",
+    },
+    {
+        "id": "magicui_border_beam",
+        "content": "Border beam (Magic UI): an animated beam of light that travels along the border of a container. Uses a conic-gradient with a very narrow bright segment (5-10%) that rotates around the element. The beam is visible through a 1-2px transparent border gap. Creates a subtle, high-tech scanning effect on cards and containers. Often used on featured cards, notification banners, and dialog boxes. Pairs well with dark themes where the beam is clearly visible against dark card backgrounds.",
+        "category": "micro_interactions",
+        "tags": ["border-beam", "animated", "light", "scanning", "magicui", "card", "tech"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """.border-beam {
+  position: relative; border-radius: 16px; padding: 1px;
+  background: var(--color-bg-alt);
+  overflow: hidden;
+}
+.border-beam::before {
+  content: ''; position: absolute; inset: 0;
+  background: conic-gradient(from var(--beam-angle, 0deg), transparent 0%, transparent 85%, var(--color-primary) 90%, var(--color-accent) 95%, transparent 100%);
+  animation: beam-rotate 4s linear infinite;
+}
+.border-beam > * { position: relative; z-index: 1; background: var(--color-bg); border-radius: 15px; }
+@keyframes beam-rotate { 100% { --beam-angle: 360deg; } }
+/* Use @property for --beam-angle in browsers that support it */""",
+    },
+    {
+        "id": "magicui_magic_card",
+        "content": "Magic card (Magic UI): a card with a radial gradient spotlight that follows the mouse cursor. On mousemove, update CSS custom properties --mouse-x and --mouse-y with the cursor position relative to the card. A radial-gradient at that position creates a soft glow (primary color at 10-20% opacity, fading to transparent). The border also illuminates near the cursor using the same technique on a pseudo-element. Creates a premium, interactive card that feels alive. Best for feature grids, pricing cards, and bento layouts on dark themes.",
+        "category": "card_designs",
+        "tags": ["magic-card", "spotlight", "mouse-follow", "glow", "magicui", "interactive", "premium"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.magic-card {
+  position: relative; overflow: hidden;
+  background: var(--color-bg-alt); border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.magic-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(var(--color-primary-rgb),0.12), transparent 40%);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.magic-card:hover::before { opacity: 1; }
+/* JS: card.addEventListener('mousemove', e => { card.style.setProperty('--mouse-x', e.offsetX+'px'); card.style.setProperty('--mouse-y', e.offsetY+'px'); }) */""",
+    },
+    {
+        "id": "magicui_number_ticker",
+        "content": "Number ticker (Magic UI): animated counter that rolls digits like an odometer. Each digit column scrolls vertically through 0-9, landing on the target number. Uses translateY animation on a strip of stacked digits (0 through 9), with each digit position calculated as -(targetDigit * 10)%. Different digits animate with slight stagger for a cascading roll effect. Duration 1-2s with ease-out for satisfying deceleration. Great for stats sections, pricing displays, and dashboard numbers. More visually engaging than a simple counting animation.",
+        "category": "text_animations",
+        "tags": ["number-ticker", "counter", "odometer", "digits", "magicui", "stats", "rolling"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """.ticker-digit {
+  display: inline-block; overflow: hidden; height: 1em; line-height: 1;
+}
+.ticker-column {
+  display: flex; flex-direction: column;
+  animation: tick-roll 1.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation-delay: var(--digit-delay, 0s);
+}
+.ticker-column span { height: 1em; display: flex; align-items: center; justify-content: center; }
+@keyframes tick-roll {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(var(--target) * -1em)); }
+}
+/* JS: column.style.setProperty('--target', targetDigit) */""",
+    },
+    {
+        "id": "magicui_dock",
+        "content": "macOS dock effect (Magic UI): a horizontal icon bar where icons scale up as the mouse approaches them, with neighboring icons also scaling proportionally (creating a fisheye magnification). Calculate distance from mouse to each icon center, apply scale based on inverse distance (closest = scale 1.5-2x, neighbors scale 1.2-1.4x, far = scale 1x). Use GSAP or CSS transitions for smooth scaling. The dock container should expand its height to accommodate scaled icons. Creates a playful, familiar interaction for navigation bars and toolbars.",
+        "category": "micro_interactions",
+        "tags": ["dock", "macos", "fisheye", "scale", "magicui", "navigation", "icons"],
+        "complexity": "high",
+        "impact_score": 8,
+        "code": """.dock {
+  display: flex; align-items: flex-end; gap: 4px;
+  padding: 8px 12px; background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px); border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.dock-item {
+  width: 48px; height: 48px; border-radius: 12px;
+  transition: transform 0.2s cubic-bezier(0.2,0,0,1), width 0.2s;
+  transform-origin: bottom center;
+}
+/* JS: scale = 1 + maxScale * Math.max(0, 1 - Math.abs(mouseX - iconCenterX) / range) */
+.dock-item.active { transform: scale(1.6); width: 64px; }""",
+    },
+    {
+        "id": "magicui_globe",
+        "content": "Interactive 3D globe (Magic UI): a rotating wireframe or dotted globe rendered with Three.js or canvas, showing connection arcs between geographic points. The globe auto-rotates slowly and responds to mouse drag for manual rotation. Connection arcs animate from origin to destination with a traveling light point. Dots on the globe surface represent locations. Uses WebGL for smooth rendering. Creates a global, connected feel for international businesses, SaaS platforms, and tech companies. Best as a hero section background element or standalone interactive feature.",
+        "category": "visual_effects",
+        "tags": ["globe", "3d", "threejs", "interactive", "magicui", "global", "connections"],
+        "complexity": "high",
+        "impact_score": 9,
+        "code": """/* Three.js globe setup */
+const globe = new THREE.Mesh(
+  new THREE.SphereGeometry(1, 48, 48),
+  new THREE.MeshBasicMaterial({ wireframe: true, color: 0x6c5ce7, transparent: true, opacity: 0.3 })
+);
+/* Arc connections */
+function createArc(start, end) {
+  const curve = new THREE.QuadraticBezierCurve3(startVec, midVec, endVec);
+  return new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(50)),
+    new THREE.LineBasicMaterial({ color: 0x00cec9, transparent: true, opacity: 0.6 }));
+}
+/* Auto-rotate: globe.rotation.y += 0.002 per frame */""",
+    },
+    {
+        "id": "magicui_particles",
+        "content": "Particle field (Magic UI): a canvas-based particle system with floating dots that connect with lines when within proximity. Particles drift slowly with slight randomness. Mouse interaction: particles near the cursor are attracted or repelled (configurable). Connection lines fade with distance (opacity mapped to distance). Particle count adapts to screen size (50-150). Colors match the theme (white/primary on dark, gray on light). Creates a living, tech-forward background. Best for hero sections, about sections, and full-page backgrounds on tech/SaaS sites.",
+        "category": "backgrounds",
+        "tags": ["particles", "canvas", "connected", "floating", "magicui", "tech", "interactive"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """/* Canvas particle system */
+class Particle {
+  constructor(canvas) {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+    this.radius = Math.random() * 2 + 1;
+  }
+  draw(ctx) { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); }
+}
+function connectParticles(a, b, ctx) {
+  const dist = Math.hypot(a.x-b.x, a.y-b.y);
+  if (dist < 120) { ctx.globalAlpha = 1 - dist/120; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); }
+}""",
+    },
+    {
+        "id": "magicui_ripple",
+        "content": "Ripple button effect (Magic UI): concentric circles expand outward from the click point on a button, creating a material-design-inspired ripple. On click, inject a span at the click coordinates with scale(0) to scale(4) animation and opacity 0.4 to 0. Duration 600ms with ease-out. The ripple color is a lighter shade of the button background. Remove the span after animation completes. Can also be used on cards and interactive surfaces. Creates tactile, responsive feedback that confirms user interaction.",
+        "category": "micro_interactions",
+        "tags": ["ripple", "click", "material", "feedback", "magicui", "button", "tactile"],
+        "complexity": "low",
+        "impact_score": 7,
+        "code": """.ripple-btn { position: relative; overflow: hidden; }
+.ripple-btn .ripple-circle {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  transform: scale(0); animation: ripple-expand 0.6s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes ripple-expand {
+  to { transform: scale(4); opacity: 0; }
+}
+/* JS: btn.addEventListener('click', e => { const r = document.createElement('span'); r.className='ripple-circle';
+  r.style.left = (e.offsetX-10)+'px'; r.style.top = (e.offsetY-10)+'px';
+  r.style.width = r.style.height = '20px'; btn.appendChild(r); setTimeout(() => r.remove(), 600); }) */""",
+    },
+    {
+        "id": "magicui_shine_border",
+        "content": "Shine border (Magic UI): an animated rainbow or gradient shine that continuously sweeps around a card or container border. Uses a rotating conic-gradient background behind a solid inner container. The gradient includes multiple color stops (primary, accent, secondary) or rainbow colors. Unlike border-beam (single point), shine-border has a broad, smooth color sweep covering 30-50% of the perimeter at once. Animation: continuous rotation at 3-5s. Creates an eye-catching, premium highlight for featured content, testimonial cards, and promotional banners.",
+        "category": "visual_effects",
+        "tags": ["shine-border", "rainbow", "gradient", "card", "magicui", "featured", "highlight"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """.shine-border-wrapper {
+  position: relative; padding: 2px; border-radius: 16px;
+  background: conic-gradient(from var(--shine-angle, 0deg), #ff0080, #ff8c00, #40e0d0, #8b5cf6, #ff0080);
+  animation: shine-rotate 4s linear infinite;
+}
+@property --shine-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes shine-rotate { to { --shine-angle: 360deg; } }
+.shine-border-inner {
+  background: var(--color-bg); border-radius: 14px; padding: 24px;
+}""",
+    },
+    {
+        "id": "magicui_blur_fade",
+        "content": "Blur fade entrance (Magic UI): elements enter the viewport with a combination of blur and fade, clearing to sharp focus. Start with filter:blur(8-12px) and opacity:0, animate to blur(0) and opacity:1. Add translateY(20px) to translateY(0) for upward motion. Duration 0.6-0.8s with ease-out. Stagger children by 100-200ms for cascading clarity. Creates a dreamy, cinematic entrance that feels more premium than a simple fade. Best for hero content, section reveals, and image galleries.",
+        "category": "visual_effects",
+        "tags": ["blur-fade", "entrance", "dreamy", "cinematic", "magicui", "scroll-trigger", "premium"],
+        "complexity": "low",
+        "impact_score": 8,
+        "code": """.blur-fade {
+  opacity: 0; filter: blur(10px);
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, filter 0.7s ease, transform 0.7s ease;
+}
+.blur-fade.visible {
+  opacity: 1; filter: blur(0); transform: translateY(0);
+}
+.blur-fade:nth-child(1) { transition-delay: 0s; }
+.blur-fade:nth-child(2) { transition-delay: 0.15s; }
+.blur-fade:nth-child(3) { transition-delay: 0.3s; }
+/* JS: IntersectionObserver -> add 'visible' class on entry */""",
+    },
+    {
+        "id": "magicui_hyper_text",
+        "content": "Hyper text effect (Magic UI): text characters rapidly cycle through random characters before settling on the correct letter, creating a decryption/hacking animation. On hover or on load, each character cycles through 5-10 random alphanumeric characters with 30-50ms intervals before revealing the actual character. Characters settle left-to-right with stagger. Uses monospace font during animation for consistent width. Creates a tech, cyberpunk, or AI-decoded feel. Best for hero headlines, tech product names, and interactive section titles.",
+        "category": "text_animations",
+        "tags": ["hyper-text", "scramble", "decode", "hacking", "magicui", "tech", "cyberpunk"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """.hyper-text { font-family: 'Space Grotesk', monospace; display: inline-block; }
+.hyper-text span {
+  display: inline-block; min-width: 0.6em;
+  transition: opacity 0.1s;
+}
+/* JS: function scramble(el) {
+  const original = el.textContent;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let iterations = 0;
+  const interval = setInterval(() => {
+    el.textContent = original.split('').map((c, i) =>
+      i < iterations ? original[i] : chars[Math.floor(Math.random() * chars.length)]
+    ).join('');
+    if (iterations >= original.length) clearInterval(interval);
+    iterations += 1/3;
+  }, 30);
+} */""",
+    },
+
+    # ====================================================
+    # UIVERSE & CSS EFFECTS (10)
+    # ====================================================
+    {
+        "id": "uiverse_glassmorphism_panel",
+        "content": "Glassmorphism panel (UIverse): frosted glass UI elements using backdrop-filter:blur(20px) with semi-transparent backgrounds (rgba white 5-15%). Requires a vibrant background (gradient, image, or colored shapes) behind the glass element for the blur to be visible. Add a subtle 1px border with rgba(255,255,255,0.1-0.2) for edge definition. Multi-layer depth: stack glass panels with decreasing opacity for parallax depth. ~95% browser support in 2025. Best for navigation bars, modal dialogs, card overlays, and floating panels. Creates Apple-inspired premium UI.",
+        "category": "glassmorphism",
+        "tags": ["glassmorphism", "backdrop-filter", "glass", "frosted", "uiverse", "apple", "premium"],
+        "complexity": "low",
+        "impact_score": 9,
+        "code": """.glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}""",
+    },
+    {
+        "id": "uiverse_neumorphic_card",
+        "content": "Neumorphic card (UIverse): soft UI elements that appear extruded from or pressed into the background surface. Uses dual box-shadows: one light (top-left, white/lighter shade) and one dark (bottom-right, darker shade). The element background matches the parent background color exactly. For pressed/inset state, use inset shadows. Works best on soft, muted backgrounds (light gray, soft pastels). NOT suitable for dark themes. Creates a tactile, physical feel for buttons, cards, and input fields. Best for minimal, clean interfaces.",
+        "category": "card_designs",
+        "tags": ["neumorphism", "soft-ui", "shadow", "extruded", "uiverse", "tactile", "minimal"],
+        "complexity": "low",
+        "impact_score": 7,
+        "code": """.neumorphic {
+  background: #e0e5ec;
+  border-radius: 20px; padding: 24px;
+  box-shadow: 8px 8px 16px #b8bec7, -8px -8px 16px #ffffff;
+}
+.neumorphic-inset {
+  background: #e0e5ec;
+  border-radius: 20px; padding: 24px;
+  box-shadow: inset 4px 4px 8px #b8bec7, inset -4px -4px 8px #ffffff;
+}
+.neumorphic-btn:active {
+  box-shadow: inset 4px 4px 8px #b8bec7, inset -4px -4px 8px #ffffff;
+}""",
+    },
+    {
+        "id": "uiverse_gradient_border",
+        "content": "Gradient border technique (UIverse): create animated or static gradient borders on elements. Primary technique: background with padding-box + border-box trick. Set element background as solid-color padding-box, overlay with gradient border-box, and use a transparent border to reveal the gradient. Alternative: pseudo-element slightly larger than the parent with gradient background, main content on top. Animatable by rotating the gradient angle or shifting colors. Best for featured cards, highlighted sections, and premium UI elements.",
+        "category": "visual_effects",
+        "tags": ["gradient-border", "border", "technique", "uiverse", "featured", "css-trick"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """.gradient-border {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--color-bg), var(--color-bg)) padding-box,
+              linear-gradient(135deg, var(--color-primary), var(--color-accent)) border-box;
+  border-radius: 16px;
+}
+.gradient-border-animated {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--color-bg), var(--color-bg)) padding-box,
+              linear-gradient(var(--border-angle, 135deg), var(--color-primary), var(--color-accent), var(--color-primary)) border-box;
+  animation: border-rotate 4s linear infinite;
+}
+@property --border-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes border-rotate { to { --border-angle: 360deg; } }""",
+    },
+    {
+        "id": "uiverse_animated_toggle",
+        "content": "Animated toggle switch (UIverse): a beautifully animated on/off toggle with smooth state transitions. The thumb slides with a squish effect (scaleX(1.2) at midpoint), background color transitions from gray to primary. Add micro-interactions: checkmark/X icons that fade in/out, inner glow on active state, subtle bounce at rest position. Size the toggle 52x28px for comfortable touch targets. Creates polished form interactions for settings pages, preference panels, and theme switchers.",
+        "category": "form_design",
+        "tags": ["toggle", "switch", "animated", "form", "uiverse", "interaction", "settings"],
+        "complexity": "low",
+        "impact_score": 7,
+        "code": """.toggle {
+  width: 52px; height: 28px; border-radius: 14px;
+  background: #cbd5e1; cursor: pointer;
+  transition: background 0.3s ease; position: relative;
+}
+.toggle.active { background: var(--color-primary); }
+.toggle-thumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: transform 0.3s cubic-bezier(0.68,-0.55,0.27,1.55);
+}
+.toggle.active .toggle-thumb { transform: translateX(24px); }""",
+    },
+    {
+        "id": "uiverse_3d_flip_card",
+        "content": "3D flip card (UIverse): a card that rotates 180deg on hover to reveal back content. Uses transform-style:preserve-3d on the container, two absolutely-positioned faces (front and back), back face has backface-visibility:hidden and rotateY(180deg) default. On hover, container rotates 180deg on Y axis. Transition 0.6-0.8s with ease-in-out. Front shows preview (image, title), back shows details (description, CTA). Creates an interactive, game-like element for team members, service cards, and product features.",
+        "category": "card_designs",
+        "tags": ["flip-card", "3d", "hover", "reveal", "uiverse", "interactive", "two-sided"],
+        "complexity": "medium",
+        "impact_score": 8,
+        "code": """.flip-card { perspective: 1000px; width: 100%; height: 350px; cursor: pointer; }
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.flip-card:hover .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px; overflow: hidden;
+}
+.flip-back { transform: rotateY(180deg); }""",
+    },
+    {
+        "id": "uiverse_morphing_shapes",
+        "content": "CSS morphing shapes (UIverse): organic blob shapes that morph continuously using animated border-radius. Set border-radius with 8 values and animate between different configurations. Duration 8-15s, ease-in-out, infinite. Add subtle rotation for more organic movement. Use as decorative background elements, profile image masks, or section dividers. Multiple overlapping blobs with different colors and timing create a lava-lamp effect. Best for creative/artistic sites and as hero section decoration.",
+        "category": "visual_effects",
+        "tags": ["morphing", "blob", "organic", "border-radius", "uiverse", "decorative", "lava-lamp"],
+        "complexity": "low",
+        "impact_score": 7,
+        "code": """.morph-blob {
+  width: 300px; height: 300px;
+  background: var(--color-primary);
+  opacity: 0.15; filter: blur(40px);
+  animation: morph 10s ease-in-out infinite alternate;
+}
+@keyframes morph {
+  0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(0deg); }
+  25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  50% { border-radius: 50% 60% 40% 60% / 40% 50% 60% 50%; transform: rotate(90deg); }
+  75% { border-radius: 40% 60% 50% 50% / 60% 40% 60% 40%; }
+  100% { border-radius: 70% 30% 50% 50% / 30% 70% 40% 60%; transform: rotate(180deg); }
+}""",
+    },
+    {
+        "id": "uiverse_css_scroll_animations",
+        "content": "CSS-only scroll animations using animation-timeline:view() and scroll(). Modern browsers support scroll-driven animations without JavaScript. Elements with animation-timeline:view() animate based on their visibility in the viewport. Use animation-range to control when the animation starts and ends. Supports all standard CSS animations. Combine with animation-timeline:scroll() for scroll-progress-based effects. Reduces dependency on GSAP for simple entrance animations. Graceful fallback: elements show normally without animation in unsupported browsers.",
+        "category": "scroll_animations",
+        "tags": ["scroll-driven", "css-only", "view-timeline", "animation-timeline", "modern", "no-js"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.scroll-reveal {
+  animation: scroll-fade-up linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 100%;
+}
+@keyframes scroll-fade-up {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.scroll-progress {
+  transform-origin: left;
+  animation: grow-progress linear;
+  animation-timeline: scroll(root);
+}
+@keyframes grow-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }""",
+    },
+    {
+        "id": "uiverse_clip_path_transitions",
+        "content": "Clip-path transitions (UIverse/FreeFrontend): use CSS clip-path to create dramatic shape-based reveals and transitions. Animate clip-path between shapes: circle(0% at 50% 50%) to circle(150%), inset(50% 50% 50% 50%) to inset(0%), polygon shapes for diagonal wipes. Works for page transitions, image reveals, section entrances, and hover effects. Smooth with transition:clip-path 0.8s ease. Combine with IntersectionObserver for scroll-triggered reveals. Creates cinematic, editorial transitions. polygon() allows diamonds, triangles, and custom paths.",
+        "category": "visual_effects",
+        "tags": ["clip-path", "transitions", "shape", "reveal", "cinematic", "editorial", "wipe"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.clip-reveal-circle {
+  clip-path: circle(0% at 50% 50%);
+  transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.clip-reveal-circle.visible { clip-path: circle(150% at 50% 50%); }
+.clip-reveal-inset {
+  clip-path: inset(50% 50% 50% 50%);
+  transition: clip-path 0.6s ease-out;
+}
+.clip-reveal-inset.visible { clip-path: inset(0% 0% 0% 0%); }
+.clip-diagonal {
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  transition: clip-path 0.8s ease;
+}
+.clip-diagonal.visible { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }""",
+    },
+    {
+        "id": "uiverse_noise_texture",
+        "content": "Noise texture overlay (FreeFrontend): add a subtle film grain or noise texture to backgrounds for tactile, printed-paper feel. Use a tiny noise PNG as a repeating background-image with low opacity (3-8%) layered over gradients or solid colors. Alternatively, generate noise with CSS: a small SVG feTurbulence filter applied to a pseudo-element. The noise breaks the digital flatness and adds warmth. Best for creative, editorial, and luxury sites. Combine with a slight vignette (radial-gradient darker at edges) for photographic depth.",
+        "category": "backgrounds",
+        "tags": ["noise", "texture", "grain", "film", "editorial", "luxury", "tactile"],
+        "complexity": "low",
+        "impact_score": 7,
+        "code": """.noise-overlay::after {
+  content: ''; position: absolute; inset: 0;
+  opacity: 0.05; pointer-events: none; z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+.vignette::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%);
+  pointer-events: none;
+}""",
+    },
+    {
+        "id": "uiverse_gradient_mesh",
+        "content": "Gradient mesh background (FreeFrontend): a multi-color gradient with overlapping radial gradients positioned at different points, creating a mesh-like color blend similar to Figma's gradient mesh. Place 3-5 radial-gradient layers at different positions with different colors, sizes, and opacities. Each gradient is a separate background-image layer. The result is a rich, multi-dimensional color field that feels organic and premium. Animate individual gradient positions for subtle movement. Best for hero backgrounds, CTA sections, and landing pages.",
+        "category": "backgrounds",
+        "tags": ["gradient-mesh", "multi-color", "organic", "background", "premium", "figma-style"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.gradient-mesh {
+  background-color: #0f172a;
+  background-image:
+    radial-gradient(at 20% 30%, rgba(124,58,237,0.3) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(6,182,212,0.25) 0%, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(236,72,153,0.2) 0%, transparent 50%),
+    radial-gradient(at 90% 70%, rgba(34,211,238,0.15) 0%, transparent 50%);
+}
+.gradient-mesh-animated {
+  animation: mesh-shift 20s ease-in-out infinite alternate;
+}
+@keyframes mesh-shift {
+  0% { background-position: 0% 0%, 100% 0%, 50% 100%, 90% 70%; }
+  100% { background-position: 30% 20%, 70% 40%, 20% 60%, 60% 90%; }
+}""",
+    },
+
+    # ====================================================
+    # MODERN LAYOUT & INTERACTION PATTERNS (8)
+    # ====================================================
+    {
+        "id": "modern_bento_grid",
+        "content": "Bento grid layout: an asymmetric grid where cards have different sizes (1x1, 2x1, 1x2, 2x2) creating a magazine-like, visually dynamic layout. Use CSS grid with grid-template-columns:repeat(4, 1fr) and cards spanning different rows/columns via grid-column:span 2, grid-row:span 2. Featured content gets larger cards. Each card can contain different content types (stats, images, text, interactive elements). Mobile: stack to single column. Creates a modern, editorial feel popularized by Apple, Vercel, and Stripe. Essential for feature showcases and dashboards.",
+        "category": "layout_patterns",
+        "tags": ["bento", "grid", "asymmetric", "magazine", "apple", "vercel", "feature-showcase"],
+        "complexity": "medium",
+        "impact_score": 10,
+        "code": """.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(200px, auto);
+  gap: 1rem;
+}
+.bento-card { border-radius: 16px; padding: 24px; overflow: hidden; }
+.bento-card.span-2-col { grid-column: span 2; }
+.bento-card.span-2-row { grid-row: span 2; }
+.bento-card.span-2x2 { grid-column: span 2; grid-row: span 2; }
+@media (max-width: 768px) {
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-card.span-2-col, .bento-card.span-2x2 { grid-column: span 1; grid-row: span 1; }
+}""",
+    },
+    {
+        "id": "modern_sticky_scroll_sections",
+        "content": "Sticky scroll sections: content panels that stick to the viewport and stack/overlap as the user scrolls, creating a card-stacking or presentation effect. Each section is position:sticky with top:0 and increasing z-index. As you scroll past one section, the next one slides up and covers it. Add scale(0.95) and opacity reduction to departing sections for depth. Creates a presentation/slide-deck feel for storytelling, feature walkthroughs, and process explanations. Works with pure CSS.",
+        "category": "scroll_animations",
+        "tags": ["sticky", "stacking", "scroll", "presentation", "storytelling", "css-only", "sections"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.sticky-container { position: relative; }
+.sticky-section {
+  position: sticky; top: 0;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.sticky-section:nth-child(1) { z-index: 1; background: var(--color-bg); }
+.sticky-section:nth-child(2) { z-index: 2; background: var(--color-bg-alt); }
+.sticky-section:nth-child(3) { z-index: 3; background: var(--color-bg); }
+/* GSAP: ScrollTrigger to scale(0.9) + opacity(0.5) departing sections */""",
+    },
+    {
+        "id": "modern_text_reveal_scroll",
+        "content": "Text reveal on scroll: large text where each word or line transitions from muted/transparent to bold/visible as the scroll position advances. Words are wrapped in spans with initial opacity:0.2 and transition to opacity:1 based on scroll progress. Uses GSAP ScrollTrigger with scrub for smooth, scroll-synced animation. Each word triggers slightly after the previous one (stagger based on DOM position). Creates an editorial, manifesto-style reading experience. Best for mission statements, about sections, and storytelling pages. Font should be large (text-4xl to text-6xl).",
+        "category": "text_animations",
+        "tags": ["text-reveal", "scroll", "word-by-word", "editorial", "manifesto", "gsap", "scrub"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.text-reveal-container { max-width: 800px; margin: 0 auto; padding: 20vh 0; }
+.text-reveal-word {
+  display: inline-block; opacity: 0.15;
+  font-size: clamp(1.5rem, 4vw, 3.5rem);
+  font-weight: 700; line-height: 1.3;
+  transition: opacity 0.3s ease;
+}
+.text-reveal-word.active { opacity: 1; }
+/* GSAP: gsap.to('.text-reveal-word', { opacity:1, stagger:0.05,
+  scrollTrigger:{ trigger:'.text-reveal-container', start:'top 80%', end:'bottom 20%', scrub:1 }}) */""",
+    },
+    {
+        "id": "modern_parallax_depth_layers",
+        "content": "Parallax depth layers: multiple absolutely-positioned elements (shapes, images, text) that move at different speeds on scroll, creating a multi-plane 3D depth effect. Foreground elements move faster than background elements. Assign data-speed attributes (0.1 for far back, 0.5 for mid, 1.0 for foreground) and calculate translateY offset based on scroll * speed. Decorative elements (circles, lines, dots) at different depths add richness. Creates immersive, cinematic hero sections. Best combined with a focal content element in the mid-ground.",
+        "category": "scroll_animations",
+        "tags": ["parallax", "depth", "layers", "3d", "multi-plane", "immersive", "cinematic"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.parallax-container { position: relative; min-height: 100vh; overflow: hidden; }
+.parallax-layer {
+  position: absolute; will-change: transform;
+}
+.parallax-bg { z-index: 1; } /* data-speed="0.1" */
+.parallax-mid { z-index: 2; } /* data-speed="0.4" */
+.parallax-fg { z-index: 3; } /* data-speed="0.8" */
+/* GSAP: gsap.to('[data-speed]', { y: (i,el) => -ScrollTrigger.maxScroll(window) * el.dataset.speed,
+  ease:'none', scrollTrigger:{ scrub:true }}) */""",
+    },
+    {
+        "id": "modern_split_screen_hero",
+        "content": "Split-screen hero layout: viewport divided into two equal halves (50/50) with content on one side and media (image, video, 3D) on the other. The split can be vertical (side by side) or diagonal (using clip-path on the dividing line). On scroll, the two halves can slide apart or one can scroll away while the other stays sticky. Add a creative dividing line: gradient, animated, or jagged via SVG. Content side: heading + subtitle + CTA. Media side: full-bleed image or interactive element. Creates impact through contrast and simplicity.",
+        "category": "layout_patterns",
+        "tags": ["split-screen", "hero", "50-50", "contrast", "media", "sticky", "diagonal"],
+        "complexity": "medium",
+        "impact_score": 9,
+        "code": """.split-hero {
+  display: grid; grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+.split-content {
+  display: flex; flex-direction: column;
+  justify-content: center; padding: 4rem;
+}
+.split-media { position: relative; overflow: hidden; }
+.split-media img { width: 100%; height: 100%; object-fit: cover; }
+.split-diagonal .split-media {
+  clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+}
+@media (max-width: 768px) {
+  .split-hero { grid-template-columns: 1fr; }
+}""",
+    },
+    {
+        "id": "modern_scroll_snap_sections",
+        "content": "Scroll-snap full-page sections: each section takes 100vh and the page snaps to section boundaries during scrolling, creating a full-page scroll experience (like fullPage.js but CSS-only). Use scroll-snap-type:y mandatory on the container with overflow-y:scroll and height:100vh. Each section has scroll-snap-align:start. Add scroll-padding-top for fixed headers. Creates a presentation-style layout perfect for product showcases, portfolios, and landing pages. Mobile: consider disabling snap for better UX.",
+        "category": "scroll_animations",
+        "tags": ["scroll-snap", "full-page", "snap", "presentation", "css-only", "sections"],
+        "complexity": "low",
+        "impact_score": 8,
+        "code": """.snap-container {
+  height: 100vh; overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+.snap-section {
+  height: 100vh; scroll-snap-align: start;
+  display: flex; align-items: center; justify-content: center;
+}
+.snap-container { scroll-padding-top: 64px; }
+@media (max-width: 768px) {
+  .snap-container { scroll-snap-type: none; height: auto; overflow: visible; }
+  .snap-section { height: auto; min-height: 100vh; }
+}""",
+    },
+    {
+        "id": "modern_horizontal_scroll_section",
+        "content": "Horizontal scroll section: a section that scrolls horizontally while the user scrolls vertically. The container is pinned (position:sticky or GSAP ScrollTrigger pin) and content translates left as the user scrolls down. Calculate horizontal distance from content width minus viewport width. Content items are arranged in a flex row. Creates a unique, engaging experience for timelines, project galleries, and feature tours. The outer container height must equal the total horizontal scroll distance for proper scroll mapping.",
+        "category": "scroll_animations",
+        "tags": ["horizontal-scroll", "pin", "gallery", "timeline", "gsap", "unique", "tour"],
+        "complexity": "high",
+        "impact_score": 9,
+        "code": """.horizontal-section {
+  height: 400vh; position: relative;
+}
+.horizontal-sticky {
+  position: sticky; top: 0; height: 100vh;
+  overflow: hidden; display: flex; align-items: center;
+}
+.horizontal-track {
+  display: flex; gap: 2rem;
+  will-change: transform;
+}
+.horizontal-item { flex-shrink: 0; width: 80vw; max-width: 600px; }
+/* GSAP: gsap.to('.horizontal-track', { x: () => -(track.scrollWidth - window.innerWidth),
+  ease:'none', scrollTrigger:{ trigger:'.horizontal-section', start:'top top', end:'bottom bottom', scrub:1 }}) */""",
+    },
+    {
+        "id": "modern_cursor_glow_follower",
+        "content": "Cursor glow follower: a soft, blurred circle of light that follows the mouse cursor across the page, illuminating content underneath. The glow is a fixed-position div (200-400px, border-radius:50%, blur(60-100px), primary color at 5-15% opacity) that updates position on mousemove with slight easing for smooth trailing. Use pointer-events:none so it does not block interactions. On dark backgrounds, the glow subtly highlights whatever the user is looking at, creating a spotlight exploration feel. Only show on desktop (hover:hover media query).",
+        "category": "micro_interactions",
+        "tags": ["cursor-glow", "mouse-follow", "spotlight", "interactive", "desktop", "ambient"],
+        "complexity": "low",
+        "impact_score": 8,
+        "code": """.cursor-glow {
+  position: fixed; width: 300px; height: 300px;
+  border-radius: 50%; pointer-events: none; z-index: 9999;
+  background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.12), transparent 70%);
+  filter: blur(40px);
+  transform: translate(-50%, -50%);
+  transition: left 0.15s ease, top 0.15s ease;
+}
+@media (hover: none) { .cursor-glow { display: none; } }
+/* JS: document.addEventListener('mousemove', e => { glow.style.left = e.clientX+'px'; glow.style.top = e.clientY+'px'; }) */""",
     },
 ]
 

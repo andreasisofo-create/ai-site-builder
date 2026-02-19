@@ -397,6 +397,16 @@ class TemplateAssembler:
 </body>
 </html>"""
 
+        # Post-process: diversify GSAP effects across elements
+        try:
+            from app.services.effect_diversifier import diversify_effects
+            recent_effects = site_data.get("_recent_effects")
+            complete_html, effects_used = diversify_effects(complete_html, used_effects=recent_effects)
+            self._last_effects_used = effects_used
+        except Exception as e:
+            logger.warning(f"[Assembler] Effect diversifier skipped: {e}")
+            self._last_effects_used = {}
+
         return complete_html
 
     def _build_nav(self, site_data: Dict[str, Any], nav_style: str = "nav-classic-01") -> str:

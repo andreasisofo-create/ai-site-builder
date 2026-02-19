@@ -1382,7 +1382,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     "restaurant-modern": {
         "nav": ["nav-minimal-01", "nav-centered-01", "nav-transparent-01", "nav-pill-01"],
         "hero": ["hero-zen-01", "hero-parallax-01", "hero-glassmorphism-01", "hero-split-01", "hero-linear-01", "hero-video-bg-01", "hero-marquee-01"],
-        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01", "about-image-showcase-01", "about-magazine-01"],
+        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01", "about-image-showcase-01", "about-magazine-01", "about-split-scroll-01"],
         "services": ["services-tabs-01", "services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-minimal-list-01", "services-pricing-cards-01"],
         "gallery": ["gallery-filmstrip-01", "gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
         "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-spotlight-01", "testimonials-quote-wall-01"],
@@ -1393,9 +1393,9 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     # --- SaaS / Landing Page ---
     "saas-gradient": {
         "nav": ["nav-minimal-01", "nav-classic-01", "nav-pill-01", "nav-split-cta-01", "nav-transparent-01"],
-        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01", "hero-rotating-01", "hero-glassmorphism-01", "hero-floating-cards-01"],
+        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01", "hero-rotating-01", "hero-glassmorphism-01", "hero-floating-cards-01", "hero-aurora-01"],
         "about": ["about-timeline-02", "about-bento-01", "about-split-cards-01", "about-image-showcase-01", "about-alternating-01"],
-        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-tabs-01", "services-cards-grid-01", "services-pricing-cards-01"],
+        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-tabs-01", "services-cards-grid-01", "services-pricing-cards-01", "services-interactive-tabs-01"],
         "features": ["features-bento-01", "features-bento-grid-01", "features-hover-cards-01", "features-tabs-01", "features-icon-showcase-01", "features-showcase-01"],
         "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-carousel-01", "testimonials-card-stack-01", "testimonials-grid-01", "testimonials-quote-wall-01"],
         "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01", "cta-floating-card-02", "cta-split-image-01", "cta-countdown-01"],
@@ -1404,9 +1404,9 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "saas-clean": {
         "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-pill-01", "nav-topbar-01"],
-        "hero": ["hero-centered-02", "hero-split-01", "hero-linear-01", "hero-classic-01", "hero-gradient-03", "hero-counter-01"],
+        "hero": ["hero-centered-02", "hero-split-01", "hero-linear-01", "hero-classic-01", "hero-gradient-03", "hero-counter-01", "hero-aurora-01"],
         "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02", "about-split-cards-01", "about-bento-01"],
-        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01", "services-icon-list-01", "services-alternating-rows-01", "services-pricing-cards-01"],
+        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01", "services-icon-list-01", "services-alternating-rows-01", "services-pricing-cards-01", "services-interactive-tabs-01"],
         "features": ["features-icons-grid-01", "features-bento-01", "features-alternating-01", "features-icon-showcase-01", "features-comparison-01", "features-showcase-01"],
         "testimonials": ["testimonials-grid-01", "testimonials-carousel-01", "testimonials-spotlight-01", "testimonials-card-stack-01", "testimonials-masonry-01", "testimonials-rating-01"],
         "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-floating-card-02", "cta-gradient-banner-01", "cta-newsletter-01"],
@@ -1415,9 +1415,9 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "saas-dark": {
         "nav": ["nav-minimal-01", "nav-classic-01", "nav-pill-01", "nav-transparent-01", "nav-split-cta-01"],
-        "hero": ["hero-linear-01", "hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01", "hero-rotating-01", "hero-gradient-03", "hero-floating-cards-01"],
+        "hero": ["hero-linear-01", "hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01", "hero-rotating-01", "hero-gradient-03", "hero-floating-cards-01", "hero-spotlight-01"],
         "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01", "about-timeline-02", "about-magazine-01"],
-        "services": ["services-bento-02", "services-hover-expand-01", "services-hover-reveal-01", "services-tabs-01", "services-minimal-list-01", "services-pricing-cards-01"],
+        "services": ["services-bento-02", "services-hover-expand-01", "services-hover-reveal-01", "services-tabs-01", "services-minimal-list-01", "services-pricing-cards-01", "services-hover-cards-01"],
         "features": ["features-bento-01", "features-hover-cards-01", "features-bento-grid-01", "features-tabs-01", "features-comparison-01"],
         "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-quote-wall-01"],
         "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01", "cta-countdown-01"],
@@ -1437,7 +1437,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "portfolio-minimal": {
         "nav": ["nav-minimal-01", "nav-centered-01", "nav-transparent-01", "nav-sidebar-01"],
-        "hero": ["hero-zen-01", "hero-typewriter-01", "hero-editorial-01", "hero-centered-02", "hero-classic-01"],
+        "hero": ["hero-zen-01", "hero-typewriter-01", "hero-editorial-01", "hero-centered-02", "hero-classic-01", "hero-spotlight-01"],
         "about": ["about-alternating-01", "about-split-scroll-01", "about-image-showcase-01", "about-magazine-01", "about-timeline-01"],
         "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01", "gallery-filmstrip-01"],
         "services": ["services-minimal-list-01", "services-icon-list-01", "services-alternating-rows-01", "services-timeline-01"],
@@ -1447,10 +1447,10 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "portfolio-creative": {
         "nav": ["nav-minimal-01", "nav-centered-01", "nav-sidebar-01", "nav-transparent-01", "nav-pill-01"],
-        "hero": ["hero-linear-01", "hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01", "hero-physics-01", "hero-rotating-01", "hero-marquee-01"],
+        "hero": ["hero-linear-01", "hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01", "hero-physics-01", "hero-rotating-01", "hero-marquee-01", "hero-aurora-01"],
         "about": ["about-bento-01", "about-split-cards-01", "about-timeline-02", "about-image-showcase-01", "about-magazine-01"],
         "gallery": ["gallery-spotlight-01", "gallery-filmstrip-01", "gallery-masonry-01", "gallery-lightbox-01"],
-        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02", "services-tabs-01", "services-cards-grid-01"],
+        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02", "services-tabs-01", "services-cards-grid-01", "services-hover-cards-01"],
         "features": ["features-showcase-01", "features-bento-01", "features-hover-cards-01", "features-bento-grid-01"],
         "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-quote-wall-01"],
         "contact": ["contact-card-01", "contact-modern-form-01", "contact-split-map-01", "contact-minimal-02", "contact-form-01"],
@@ -1462,7 +1462,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-topbar-01", "nav-pill-01"],
         "hero": ["hero-split-01", "hero-parallax-01", "hero-glassmorphism-01", "hero-classic-01", "hero-gradient-03", "hero-centered-02", "hero-counter-01"],
         "about": ["about-image-showcase-01", "about-bento-01", "about-alternating-01", "about-split-cards-01", "about-magazine-01"],
-        "services": ["services-cards-grid-01", "services-hover-reveal-01", "services-tabs-01", "services-hover-expand-01", "services-icon-list-01", "services-pricing-cards-01"],
+        "services": ["services-cards-grid-01", "services-hover-reveal-01", "services-tabs-01", "services-hover-expand-01", "services-icon-list-01", "services-pricing-cards-01", "services-interactive-tabs-01"],
         "features": ["features-icons-grid-01", "features-bento-01", "features-comparison-01", "features-hover-cards-01", "features-alternating-01", "features-showcase-01"],
         "gallery": ["gallery-masonry-01", "gallery-filmstrip-01", "gallery-lightbox-01", "gallery-spotlight-01"],
         "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-marquee-01", "testimonials-masonry-01", "testimonials-spotlight-01", "testimonials-rating-01"],
@@ -1472,7 +1472,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "ecommerce-luxury": {
         "nav": ["nav-centered-01", "nav-classic-01", "nav-topbar-01", "nav-transparent-01"],
-        "hero": ["hero-classic-01", "hero-editorial-01", "hero-video-bg-01", "hero-parallax-01", "hero-zen-01", "hero-typewriter-01", "hero-counter-01"],
+        "hero": ["hero-classic-01", "hero-editorial-01", "hero-video-bg-01", "hero-parallax-01", "hero-zen-01", "hero-typewriter-01", "hero-counter-01", "hero-spotlight-01"],
         "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01", "about-alternating-01", "about-timeline-01"],
         "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01", "services-cards-grid-01", "services-process-steps-01", "services-timeline-01"],
         "features": ["features-icon-showcase-01", "features-alternating-01", "features-comparison-01", "features-icons-grid-01", "features-showcase-01"],
@@ -1487,7 +1487,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01", "nav-split-cta-01"],
         "hero": ["hero-split-01", "hero-classic-01", "hero-video-bg-01", "hero-centered-02", "hero-parallax-01", "hero-counter-01"],
         "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02", "about-timeline-01", "about-magazine-01"],
-        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01", "services-alternating-rows-01", "services-icon-list-01", "services-timeline-01"],
+        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01", "services-alternating-rows-01", "services-icon-list-01", "services-timeline-01", "services-hover-cards-01"],
         "features": ["features-comparison-01", "features-icons-grid-01", "features-alternating-01", "features-icon-showcase-01", "features-bento-01", "features-showcase-01"],
         "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-spotlight-01", "testimonials-card-stack-01", "testimonials-masonry-01", "testimonials-rating-01"],
         "team": ["team-grid-01", "team-carousel-01"],
@@ -1511,7 +1511,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
         "nav": ["nav-centered-01", "nav-minimal-01", "nav-pill-01", "nav-split-cta-01", "nav-transparent-01"],
         "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-rotating-01", "hero-glassmorphism-01", "hero-floating-cards-01"],
         "about": ["about-split-cards-01", "about-bento-01", "about-timeline-02", "about-image-showcase-01", "about-alternating-01"],
-        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02", "services-tabs-01", "services-cards-grid-01", "services-pricing-cards-01"],
+        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02", "services-tabs-01", "services-cards-grid-01", "services-pricing-cards-01", "services-interactive-tabs-01"],
         "features": ["features-bento-01", "features-alternating-01", "features-bento-grid-01", "features-hover-cards-01", "features-icon-showcase-01"],
         "testimonials": ["testimonials-carousel-01", "testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-grid-01", "testimonials-quote-wall-01"],
         "cta": ["cta-split-image-01", "cta-gradient-animated-01", "cta-floating-card-01", "cta-gradient-banner-01", "cta-floating-card-02", "cta-countdown-01"],
@@ -1533,7 +1533,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "blog-dark": {
         "nav": ["nav-minimal-01", "nav-centered-01", "nav-pill-01", "nav-transparent-01"],
-        "hero": ["hero-neon-01", "hero-dark-bold-01", "hero-brutalist-01", "hero-linear-01", "hero-animated-shapes-01", "hero-floating-cards-01"],
+        "hero": ["hero-neon-01", "hero-dark-bold-01", "hero-brutalist-01", "hero-linear-01", "hero-animated-shapes-01", "hero-floating-cards-01", "hero-spotlight-01"],
         "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01", "about-timeline-02", "about-magazine-01"],
         "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-tabs-01", "services-minimal-list-01"],
         "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-quote-wall-01"],
@@ -1545,9 +1545,9 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     # --- Evento / Community ---
     "event-vibrant": {
         "nav": ["nav-minimal-01", "nav-centered-01", "nav-pill-01", "nav-transparent-01", "nav-split-cta-01"],
-        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01", "hero-physics-01", "hero-rotating-01", "hero-neon-01", "hero-marquee-01"],
+        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01", "hero-physics-01", "hero-rotating-01", "hero-neon-01", "hero-marquee-01", "hero-aurora-01"],
         "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01", "about-image-showcase-01", "about-alternating-01"],
-        "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02", "services-hover-reveal-01", "services-cards-grid-01"],
+        "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02", "services-hover-reveal-01", "services-cards-grid-01", "services-hover-cards-01"],
         "features": ["features-bento-grid-01", "features-hover-cards-01", "features-tabs-01", "features-bento-01"],
         "team": ["team-carousel-01", "team-grid-01"],
         "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-quote-wall-01"],
@@ -1557,7 +1557,7 @@ STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
     },
     "event-minimal": {
         "nav": ["nav-centered-01", "nav-classic-01", "nav-transparent-01", "nav-minimal-01"],
-        "hero": ["hero-centered-02", "hero-typewriter-01", "hero-zen-01", "hero-editorial-01", "hero-classic-01", "hero-counter-01"],
+        "hero": ["hero-centered-02", "hero-typewriter-01", "hero-zen-01", "hero-editorial-01", "hero-classic-01", "hero-counter-01", "hero-aurora-01"],
         "about": ["about-timeline-01", "about-alternating-01", "about-split-scroll-01", "about-image-showcase-01", "about-magazine-01"],
         "services": ["services-process-steps-01", "services-cards-grid-01", "services-icon-list-01", "services-minimal-list-01", "services-alternating-rows-01", "services-timeline-01"],
         "team": ["team-grid-01", "team-carousel-01"],
@@ -3566,6 +3566,8 @@ Return ONLY the JSON object."""
         reference_urls: Optional[List[str]] = None,
         hero_type: Optional[str] = None,
         hero_video_url: Optional[str] = None,
+        user_id: Optional[int] = None,
+        site_id: Optional[int] = None,
     ) -> Dict[str, Any]:
         """
         Generate a website using the data-binding pipeline.
@@ -3591,6 +3593,8 @@ Return ONLY the JSON object."""
                     reference_urls=reference_urls,
                     hero_type=hero_type,
                     hero_video_url=hero_video_url,
+                    user_id=user_id,
+                    site_id=site_id,
                 ),
                 timeout=180.0,
             )
@@ -3614,6 +3618,8 @@ Return ONLY the JSON object."""
         reference_urls: Optional[List[str]] = None,
         hero_type: Optional[str] = None,
         hero_video_url: Optional[str] = None,
+        user_id: Optional[int] = None,
+        site_id: Optional[int] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens_in = 0
@@ -3981,6 +3987,19 @@ RULES:
         if photo_urls:
             site_data = self._inject_user_photos(site_data, photo_urls)
 
+        # Query recent effects for diversification (before assembly)
+        _effect_db = None
+        if user_id:
+            try:
+                from app.services.effect_diversifier import get_recent_effects
+                from app.core.database import SessionLocal
+                _effect_db = SessionLocal()
+                recent = get_recent_effects(_effect_db, user_id=user_id, limit=5)
+                site_data["_recent_effects"] = recent
+            except Exception as e:
+                logger.warning(f"[DataBinding] Could not fetch recent effects: {e}")
+                site_data["_recent_effects"] = []
+
         try:
             html_content = self.assembler.assemble(site_data)
             html_content = sanitize_output(html_content)
@@ -3988,7 +4007,37 @@ RULES:
             html_content = self._post_process_html(html_content)
         except Exception as e:
             logger.exception("[DataBinding] Assembly failed")
+            if _effect_db:
+                _effect_db.close()
             return {"success": False, "error": f"Errore assemblaggio: {str(e)}"}
+
+        # Save effect usage to DB (after assembly)
+        if user_id and _effect_db:
+            try:
+                from app.services.effect_diversifier import save_effect_usage
+                effects_used = getattr(self.assembler, '_last_effects_used', {})
+                if effects_used:
+                    from app.models.effect_usage import EffectUsage
+                    usage = EffectUsage(
+                        user_id=user_id,
+                        site_id=site_id,
+                        template_style=template_style_id,
+                        effects_used=effects_used,
+                    )
+                    _effect_db.add(usage)
+                    _effect_db.commit()
+                    logger.info(f"[DataBinding] Saved effect usage for user {user_id}")
+            except Exception as e:
+                logger.warning(f"[DataBinding] Could not save effect usage: {e}")
+                try:
+                    _effect_db.rollback()
+                except Exception:
+                    pass
+            finally:
+                _effect_db.close()
+                _effect_db = None
+        elif _effect_db:
+            _effect_db.close()
 
         if on_progress:
             on_progress(5, "Sito assemblato, controllo qualita'...", {

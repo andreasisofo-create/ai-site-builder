@@ -1,36 +1,55 @@
-<!-- About Split Scroll: sticky image left, scrolling content right -->
-<section id="about" class="py-24 lg:py-0 bg-[var(--color-bg)] overflow-hidden">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-0">
+<!-- About Split Scroll: left sticky image with clip-reveal, right side scrolling text and stats content -->
+<section id="about" class="py-24 lg:py-0 bg-[var(--color-bg)] relative overflow-hidden">
 
-      <!-- Left: sticky image column -->
-      <div class="relative lg:sticky lg:top-0 lg:h-screen flex items-center lg:pr-12" data-animate="reveal-right" data-parallax="0.3">
-        <div class="relative w-full">
-          <img
-            src="{{ABOUT_IMAGE_URL}}"
-            alt="{{ABOUT_IMAGE_ALT}}"
-            class="w-full h-[400px] lg:h-[70vh] object-cover rounded-2xl lg:rounded-3xl shadow-2xl"
-            loading="lazy"
-          />
-          <!-- Floating business name badge -->
-          <div class="absolute -bottom-4 -right-4 lg:-right-6 bg-[var(--color-primary)] text-white px-6 py-3 rounded-xl shadow-lg">
-            <p class="text-sm font-heading font-bold tracking-wide">{{BUSINESS_NAME}}</p>
+  <!-- Background subtle decoration -->
+  <div class="absolute top-1/3 right-0 w-[400px] h-[400px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.03) 0%, transparent 60%);"></div>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-0">
+
+      <!-- LEFT: Sticky Image Column -->
+      <div class="relative lg:sticky lg:top-0 lg:h-screen flex items-center lg:pr-16">
+        <div class="relative w-full" data-animate="clip-reveal" data-delay="0.1">
+          <!-- Main image -->
+          <div class="relative rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl" style="box-shadow: 0 25px 80px rgba(0,0,0,0.12);">
+            <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="w-full h-[400px] lg:h-[70vh] object-cover" loading="lazy">
+            <!-- Gradient overlays for blending -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+            <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.08), transparent 50%);"></div>
           </div>
-          <!-- Decorative accent line -->
-          <div class="hidden lg:block absolute top-1/2 -right-8 w-px h-32 bg-gradient-to-b from-transparent via-[var(--color-primary)] to-transparent -translate-y-1/2"></div>
+
+          <!-- Floating business name badge -->
+          <div class="absolute -bottom-4 -right-4 lg:-right-6 px-6 py-3 rounded-xl shadow-xl" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));" data-animate="fade-up" data-delay="0.4">
+            <p class="text-sm font-heading font-bold tracking-wide text-white">{{BUSINESS_NAME}}</p>
+          </div>
+
+          <!-- Decorative accent elements -->
+          <div class="hidden lg:block absolute -top-4 -left-4 w-24 h-24 rounded-2xl border border-[var(--color-primary)]/15 -z-10"></div>
+          <div class="hidden lg:block absolute top-1/2 -right-10 w-px h-32 -translate-y-1/2" style="background: linear-gradient(180deg, transparent, var(--color-primary), transparent); opacity: 0.3;"></div>
+
+          <!-- Floating stat pill -->
+          <div class="absolute top-6 left-6 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10" data-animate="blur-in" data-delay="0.5">
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+              <span class="font-body text-xs font-bold text-white">Eccellenza</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Right: scrolling content -->
+      <!-- RIGHT: Scrolling Content Column -->
       <div class="lg:py-32 lg:pl-12 space-y-12" data-animate="stagger">
-        <!-- Label -->
+
+        <!-- Section label -->
         <div class="stagger-item" data-animate="blur-in">
-          <p class="text-xs font-semibold tracking-[0.3em] uppercase text-[var(--color-primary)] mb-2">About Us</p>
-          <div class="w-10 h-px bg-[var(--color-primary)]"></div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-px" style="background: var(--color-primary);"></div>
+            <p class="font-body text-[11px] tracking-[0.4em] uppercase text-[var(--color-primary)] font-semibold">Chi Siamo</p>
+          </div>
         </div>
 
         <!-- Title -->
-        <div class="stagger-item" data-animate="clip-reveal">
+        <div class="stagger-item">
           <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[var(--color-text)] leading-tight" data-animate="text-split" data-split-type="words">
             {{ABOUT_TITLE}}
           </h2>
@@ -46,30 +65,34 @@
         <!-- Body text -->
         <div class="stagger-item" data-animate="reveal-up">
           <p class="text-[var(--color-text-muted)] leading-relaxed font-body text-base lg:text-lg">
-            {{ABOUT_TEXT}}
+            {{ABOUT_DESCRIPTION}}
           </p>
         </div>
 
         <!-- Divider -->
-        <div class="stagger-item w-full h-px bg-[var(--color-text)]/10" data-animate="scale-in"></div>
+        <div class="stagger-item" data-animate="scale-in">
+          <div class="w-full h-px" style="background: linear-gradient(90deg, var(--color-primary), transparent); opacity: 0.15;"></div>
+        </div>
 
-        <!-- Stats flowing down -->
+        <!-- Stats flowing vertically -->
         <div class="space-y-8">
           <!-- REPEAT:ABOUT_STATS -->
           <div class="stagger-item flex items-center gap-6 group" data-animate="reveal-left">
-            <div class="flex-shrink-0 w-20 h-20 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-text)]/5 flex items-center justify-center group-hover:bg-[var(--color-primary)]/10 transition-colors duration-300">
-              <span class="text-2xl md:text-3xl font-heading font-bold text-[var(--color-primary)]" data-counter="{{STAT_NUMBER}}">0</span>
+            <div class="flex-shrink-0 w-20 h-20 rounded-2xl border border-[var(--color-text)]/5 flex items-center justify-center group-hover:shadow-lg transition-all duration-500 relative overflow-hidden" style="background: var(--color-bg-alt);">
+              <span class="text-2xl md:text-3xl font-heading font-bold text-[var(--color-primary)] relative z-10" data-counter="{{STAT_NUMBER}}">0</span>
+              <!-- Hover glow -->
+              <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.08), transparent);"></div>
             </div>
             <div>
               <p class="text-base font-semibold text-[var(--color-text)] font-heading">{{STAT_LABEL}}</p>
-              <div class="mt-1 w-8 h-0.5 bg-[var(--color-primary)]/30 rounded-full group-hover:w-16 transition-all duration-500"></div>
+              <div class="mt-1.5 w-8 h-0.5 rounded-full group-hover:w-16 transition-all duration-500" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent));"></div>
             </div>
           </div>
           <!-- /REPEAT:ABOUT_STATS -->
         </div>
 
-        <!-- Bottom spacer for scroll room -->
-        <div class="h-8 lg:h-16"></div>
+        <!-- Bottom spacer for scroll room on desktop -->
+        <div class="h-8 lg:h-20"></div>
       </div>
     </div>
   </div>

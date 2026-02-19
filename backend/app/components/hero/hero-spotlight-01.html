@@ -1,0 +1,99 @@
+<!-- Hero Spotlight: Aceternity-style dark cinematic hero with mouse-following radial spotlight effect -->
+<section id="hero" class="min-h-screen relative overflow-hidden bg-[var(--color-bg)]" data-animate="spotlight">
+
+  <!-- Deep dark overlay for cinematic feel -->
+  <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at 50% 50%, transparent 0%, var(--color-bg) 70%);"></div>
+
+  <!-- Noise texture overlay -->
+  <div class="absolute inset-0 z-[1] opacity-[0.015] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E'); background-size: 128px 128px;"></div>
+
+  <!-- Subtle grid lines for depth -->
+  <div class="absolute inset-0 z-[1] opacity-[0.02]" style="background-image: linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px); background-size: 80px 80px;"></div>
+
+  <!-- Radial gradient glow (base, before spotlight takes over) -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full z-[2] pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 60%);"></div>
+
+  <!-- Decorative thin lines radiating from center -->
+  <div class="absolute inset-0 z-[2] pointer-events-none overflow-hidden hidden lg:block">
+    <div class="absolute top-[20%] left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent 10%, rgba(var(--color-primary-rgb), 0.04) 50%, transparent 90%);"></div>
+    <div class="absolute top-[80%] left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent 10%, rgba(var(--color-primary-rgb), 0.04) 50%, transparent 90%);"></div>
+    <div class="absolute top-0 bottom-0 left-[20%] w-px" style="background: linear-gradient(180deg, transparent 10%, rgba(var(--color-primary-rgb), 0.04) 50%, transparent 90%);"></div>
+    <div class="absolute top-0 bottom-0 right-[20%] w-px" style="background: linear-gradient(180deg, transparent 10%, rgba(var(--color-primary-rgb), 0.04) 50%, transparent 90%);"></div>
+  </div>
+
+  <!-- Floating accent orbs (very subtle) -->
+  <div class="absolute inset-0 z-[2] pointer-events-none">
+    <div data-animate="float" class="absolute top-[25%] left-[15%] w-2 h-2 rounded-full" style="background: var(--color-primary); opacity: 0.15; box-shadow: 0 0 20px rgba(var(--color-primary-rgb), 0.3);"></div>
+    <div data-animate="float" class="absolute top-[35%] right-[20%] w-1.5 h-1.5 rounded-full" style="background: var(--color-accent); opacity: 0.12; box-shadow: 0 0 15px var(--color-accent);"></div>
+    <div data-animate="float" class="absolute bottom-[30%] left-[25%] w-1 h-1 rounded-full" style="background: var(--color-secondary); opacity: 0.1; box-shadow: 0 0 12px var(--color-secondary);"></div>
+    <div data-animate="float" class="absolute bottom-[25%] right-[15%] w-2.5 h-2.5 rounded-full" style="background: var(--color-primary); opacity: 0.08; box-shadow: 0 0 25px rgba(var(--color-primary-rgb), 0.4);"></div>
+  </div>
+
+  <!-- === MAIN CONTENT === -->
+  <div class="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6 py-32">
+    <div class="max-w-5xl mx-auto">
+
+      <!-- Business name badge -->
+      <div class="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[var(--color-text)]/8 bg-[var(--color-bg-alt)]/30 backdrop-blur-sm mb-12" data-animate="blur-in" data-delay="0.1">
+        <span class="w-1.5 h-1.5 rounded-full" style="background: var(--color-primary); box-shadow: 0 0 8px rgba(var(--color-primary-rgb), 0.6);"></span>
+        <span class="font-body text-[11px] tracking-[0.35em] uppercase text-[var(--color-text-muted)]">{{BUSINESS_NAME}}</span>
+      </div>
+
+      <!-- Main headline — large, cinematic -->
+      <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl xl:text-[9rem] font-black leading-[0.9] tracking-tighter mb-8" data-animate="text-split" data-split-type="chars" data-duration="1.5">
+        <span style="background: linear-gradient(180deg, var(--color-text) 0%, var(--color-text) 50%, rgba(var(--color-text-muted), 0.4) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{HERO_TITLE}}</span>
+      </h1>
+
+      <!-- Decorative accent beam -->
+      <div class="flex items-center justify-center gap-6 mb-10" data-animate="scale-in" data-delay="0.3">
+        <div class="w-24 h-px" style="background: linear-gradient(90deg, transparent, rgba(var(--color-primary-rgb), 0.4));"></div>
+        <div class="w-3 h-3 rounded-full relative" style="background: var(--color-primary); opacity: 0.5;">
+          <div class="absolute inset-0 rounded-full animate-ping" style="background: var(--color-primary); opacity: 0.3;"></div>
+        </div>
+        <div class="w-24 h-px" style="background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.4), transparent);"></div>
+      </div>
+
+      <!-- Subtitle -->
+      <p class="font-body text-lg md:text-xl text-[var(--color-text-muted)] max-w-xl mx-auto leading-relaxed mb-14" data-animate="blur-slide" data-delay="0.35" data-duration="1.2">
+        {{HERO_SUBTITLE}}
+      </p>
+
+      <!-- CTA -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-5" data-animate="fade-up" data-delay="0.45">
+        <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="group relative inline-flex items-center gap-3 px-10 py-4 font-body text-sm font-bold tracking-wide text-white rounded-xl overflow-hidden transition-all duration-500" style="background: var(--color-primary); box-shadow: 0 0 30px rgba(var(--color-primary-rgb), 0.2), inset 0 1px 0 rgba(255,255,255,0.1);">
+          <span class="relative z-10">{{HERO_CTA_TEXT}}</span>
+          <svg class="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));"></div>
+          <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
+        </a>
+        <a href="#about" class="inline-flex items-center gap-2 px-6 py-4 rounded-xl font-body text-sm font-semibold text-[var(--color-text-muted)] border border-[var(--color-text)]/8 hover:border-[var(--color-primary)]/30 hover:text-[var(--color-text)] transition-all duration-300 backdrop-blur-sm">
+          Scopri di pi&ugrave;
+          <svg class="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Bottom scroll cue -->
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3" data-animate="fade-up" data-delay="0.6">
+      <div class="w-5 h-9 rounded-full border border-[var(--color-text)]/15 flex justify-center pt-2">
+        <div class="w-0.5 h-2.5 rounded-full bg-[var(--color-primary)]/50" style="animation: scrollBounce 2s infinite;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Corner accent decorations -->
+  <div class="absolute top-8 left-8 w-16 h-16 border-l border-t border-[var(--color-text)]/5 rounded-tl-lg z-[3] pointer-events-none hidden lg:block"></div>
+  <div class="absolute top-8 right-8 w-16 h-16 border-r border-t border-[var(--color-text)]/5 rounded-tr-lg z-[3] pointer-events-none hidden lg:block"></div>
+  <div class="absolute bottom-8 left-8 w-16 h-16 border-l border-b border-[var(--color-text)]/5 rounded-bl-lg z-[3] pointer-events-none hidden lg:block"></div>
+  <div class="absolute bottom-8 right-8 w-16 h-16 border-r border-b border-[var(--color-text)]/5 rounded-br-lg z-[3] pointer-events-none hidden lg:block"></div>
+
+  <!-- Bottom fade -->
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/15 to-transparent z-[5]"></div>
+
+  <style>
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(6px); opacity: 0.3; }
+    }
+  </style>
+</section>

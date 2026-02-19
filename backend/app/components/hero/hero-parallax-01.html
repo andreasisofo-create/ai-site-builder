@@ -1,58 +1,151 @@
-<!-- Hero Parallax: fullscreen parallax background with floating decorative elements -->
-<section id="hero" class="min-h-screen relative overflow-hidden bg-[var(--color-bg)]" data-animate="pin-hero" data-pin-duration="80%">
-  <!-- Parallax Background Image -->
-  <div class="absolute inset-0 z-0" data-animate="parallax" data-speed="0.4">
-    <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full h-full object-cover scale-110" loading="eager">
+<!-- Hero Parallax: Aceternity-inspired multi-layer parallax with floating product cards that shift at different scroll speeds -->
+<section id="hero" class="relative overflow-hidden bg-[var(--color-bg)]" style="min-height: 140vh;">
+
+  <!-- Background gradient layers -->
+  <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at 30% 20%, rgba(var(--color-primary-rgb), 0.08) 0%, transparent 50%);"></div>
+  <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at 70% 80%, rgba(var(--color-secondary-rgb, var(--color-primary-rgb)), 0.05) 0%, transparent 50%);"></div>
+
+  <!-- Subtle dot grid -->
+  <div class="absolute inset-0 z-0 opacity-[0.025]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+  <!-- === PARALLAX FLOATING CARDS LAYER === -->
+  <div class="absolute inset-0 z-[3] pointer-events-none overflow-hidden">
+
+    <!-- Card Row 1: Slow parallax (top) -->
+    <div class="absolute top-[15%] left-[5%] w-64 md:w-80" data-parallax="0.15" data-animate="fade-up" data-delay="0.3">
+      <div class="rounded-2xl overflow-hidden shadow-2xl border border-[var(--color-text)]/8 bg-[var(--color-bg-alt)]/90 backdrop-blur-md transform rotate-[-4deg] hover:rotate-0 transition-transform duration-700">
+        <div class="aspect-[4/3] bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-accent)]/10 flex items-center justify-center">
+          <div class="w-12 h-12 rounded-xl" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));"></div>
+        </div>
+        <div class="p-4">
+          <div class="h-2 w-3/4 rounded-full bg-[var(--color-text)]/8 mb-2"></div>
+          <div class="h-2 w-1/2 rounded-full bg-[var(--color-text)]/5"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Row 1: Medium parallax (top-right) -->
+    <div class="absolute top-[8%] right-[8%] w-56 md:w-72 hidden md:block" data-parallax="0.3" data-animate="fade-up" data-delay="0.5">
+      <div class="rounded-2xl overflow-hidden shadow-2xl border border-[var(--color-text)]/8 bg-[var(--color-bg-alt)]/90 backdrop-blur-md transform rotate-[3deg] hover:rotate-0 transition-transform duration-700">
+        <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full aspect-[16/10] object-cover" loading="eager">
+        <div class="p-3">
+          <div class="h-2 w-2/3 rounded-full bg-[var(--color-text)]/8"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Row 2: Fast parallax (mid-left) -->
+    <div class="absolute top-[45%] left-[3%] w-48 md:w-60 hidden lg:block" data-parallax="0.5" data-animate="fade-left" data-delay="0.6">
+      <div class="rounded-2xl overflow-hidden shadow-xl border border-[var(--color-text)]/8 bg-[var(--color-bg-alt)]/90 backdrop-blur-md transform rotate-[5deg] hover:rotate-0 transition-transform duration-700">
+        <div class="p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-8 h-8 rounded-lg" style="background: var(--color-primary);"></div>
+            <div>
+              <div class="h-2 w-20 rounded-full bg-[var(--color-text)]/10 mb-1"></div>
+              <div class="h-1.5 w-14 rounded-full bg-[var(--color-text)]/5"></div>
+            </div>
+          </div>
+          <div class="flex items-end gap-1.5 h-10">
+            <div class="w-4 rounded-sm" style="height: 35%; background: var(--color-primary); opacity: 0.3;"></div>
+            <div class="w-4 rounded-sm" style="height: 60%; background: var(--color-primary); opacity: 0.5;"></div>
+            <div class="w-4 rounded-sm" style="height: 45%; background: var(--color-primary); opacity: 0.4;"></div>
+            <div class="w-4 rounded-sm" style="height: 80%; background: var(--color-primary); opacity: 0.7;"></div>
+            <div class="w-4 rounded-sm" style="height: 100%; background: var(--color-primary); opacity: 0.9;"></div>
+            <div class="w-4 rounded-sm" style="height: 65%; background: var(--color-primary); opacity: 0.6;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Row 2: Very fast parallax (mid-right) -->
+    <div class="absolute top-[50%] right-[5%] w-52 md:w-64 hidden lg:block" data-parallax="0.6" data-animate="fade-right" data-delay="0.7">
+      <div class="rounded-2xl overflow-hidden shadow-xl border border-[var(--color-text)]/8 bg-[var(--color-bg-alt)]/90 backdrop-blur-md transform rotate-[-6deg] hover:rotate-0 transition-transform duration-700">
+        <div class="p-5">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-body text-[10px] tracking-wider uppercase text-[var(--color-text-muted)]">Performance</span>
+            <span class="w-2 h-2 rounded-full animate-pulse" style="background: var(--color-accent);"></span>
+          </div>
+          <p class="font-heading text-3xl font-bold mb-1" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">98.7%</p>
+          <div class="w-full h-1.5 rounded-full bg-[var(--color-text)]/5 mt-2">
+            <div class="h-full rounded-full w-[98%]" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent));"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom floating cards (slowest, foreground feel) -->
+    <div class="absolute bottom-[12%] left-[12%] w-44 hidden md:block" data-parallax="0.7" data-animate="fade-up" data-delay="0.8">
+      <div class="rounded-xl p-4 border border-[var(--color-text)]/8 bg-[var(--color-bg-alt)]/80 backdrop-blur-md shadow-lg transform rotate-[2deg]">
+        <div class="flex -space-x-2 mb-2">
+          <div class="w-7 h-7 rounded-full border-2 border-[var(--color-bg)]" style="background: var(--color-primary);"></div>
+          <div class="w-7 h-7 rounded-full border-2 border-[var(--color-bg)]" style="background: var(--color-secondary);"></div>
+          <div class="w-7 h-7 rounded-full border-2 border-[var(--color-bg)]" style="background: var(--color-accent);"></div>
+        </div>
+        <p class="font-body text-[10px] text-[var(--color-text-muted)]">+2.4k utenti attivi</p>
+      </div>
+    </div>
+
+    <div class="absolute bottom-[8%] right-[10%] w-40 hidden md:block" data-parallax="0.8" data-animate="fade-up" data-delay="0.9">
+      <div class="rounded-xl p-3 border border-[var(--color-text)]/8 bg-[var(--color-bg-alt)]/80 backdrop-blur-md shadow-lg transform rotate-[-3deg]">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4" style="color: var(--color-accent);" fill="currentColor" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+          <span class="font-body text-xs font-bold text-[var(--color-text)]">4.9/5</span>
+          <span class="font-body text-[10px] text-[var(--color-text-muted)]">(2.1k)</span>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Gradient Overlay -->
-  <div class="absolute inset-0 z-10" style="background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.6) 100%);"></div>
-  <div class="absolute inset-0 z-10" style="background: linear-gradient(135deg, var(--color-primary), transparent 60%); opacity: 0.3;"></div>
+  <!-- === MAIN CONTENT (center, fixed position feel) === -->
+  <div class="relative z-10 flex flex-col items-center justify-center text-center px-6" style="min-height: 100vh;">
+    <div class="max-w-5xl mx-auto">
 
-  <!-- Floating Decorative Elements -->
-  <div class="absolute inset-0 z-20 pointer-events-none overflow-hidden">
-    <!-- Floating circles -->
-    <div data-animate="float" class="absolute top-[15%] left-[8%] w-20 h-20 rounded-full border-2 border-white/10"></div>
-    <div data-animate="float" class="absolute top-[25%] right-[12%] w-32 h-32 rounded-full border border-[var(--color-accent)]/20"></div>
-    <div data-animate="float" class="absolute bottom-[20%] left-[15%] w-16 h-16 rounded-full bg-[var(--color-primary)]/10 backdrop-blur-sm"></div>
-    <div data-animate="float" class="absolute top-[60%] right-[8%] w-24 h-24 rounded-full bg-white/5 backdrop-blur-sm"></div>
-    <!-- Floating dots -->
-    <div data-animate="float" class="absolute top-[40%] left-[5%] w-3 h-3 rounded-full bg-[var(--color-accent)]/40"></div>
-    <div data-animate="float" class="absolute top-[30%] right-[25%] w-2 h-2 rounded-full bg-white/30"></div>
-    <div data-animate="float" class="absolute bottom-[35%] right-[18%] w-4 h-4 rounded-full bg-[var(--color-primary)]/30"></div>
-    <!-- Floating lines -->
-    <div data-animate="float" class="absolute top-[45%] left-[20%] w-20 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-    <div data-animate="float" class="absolute bottom-[40%] right-[30%] w-32 h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/20 to-transparent"></div>
-  </div>
+      <!-- Eyebrow -->
+      <div class="inline-flex items-center gap-3 mb-10" data-animate="blur-in" data-delay="0.1">
+        <div class="w-10 h-px" style="background: var(--color-primary);"></div>
+        <span class="font-body text-[11px] tracking-[0.4em] uppercase text-[var(--color-primary)]">{{BUSINESS_NAME}}</span>
+        <div class="w-10 h-px" style="background: var(--color-primary);"></div>
+      </div>
 
-  <!-- Content -->
-  <div class="relative z-30 min-h-screen flex flex-col items-center justify-center px-6 py-32">
-    <div class="max-w-5xl mx-auto text-center">
-      <h1 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-heading text-white leading-[1.05] mb-8" data-animate="text-split" data-split="words">
+      <!-- Main headline -->
+      <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.95] tracking-tight text-[var(--color-text)] mb-8" data-animate="text-split" data-split-type="chars" data-duration="1.2">
         {{HERO_TITLE}}
       </h1>
-      <p class="text-lg md:text-xl text-white/70 leading-relaxed mb-12 max-w-2xl mx-auto font-body" data-animate="blur-slide" data-delay="0.3" data-duration="1.2">
+
+      <!-- Decorative line -->
+      <div class="flex items-center justify-center gap-4 mb-8" data-animate="scale-in" data-delay="0.25">
+        <div class="w-20 h-0.5 rounded-full" style="background: linear-gradient(90deg, transparent, var(--color-primary));"></div>
+        <div class="w-2.5 h-2.5 rounded-full" style="background: var(--color-primary); opacity: 0.6;"></div>
+        <div class="w-20 h-0.5 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), transparent);"></div>
+      </div>
+
+      <!-- Subtitle -->
+      <p class="font-body text-lg md:text-xl text-[var(--color-text-muted)] max-w-2xl mx-auto leading-relaxed mb-12" data-animate="blur-slide" data-delay="0.3" data-duration="1.2">
         {{HERO_SUBTITLE}}
       </p>
-      <div class="flex flex-wrap justify-center gap-5" data-animate="bounce-in" data-delay="0.5">
-        <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="inline-flex items-center gap-3 px-10 py-4 text-lg font-bold rounded-full text-white shadow-2xl transition-all hover:scale-105 hover:shadow-[var(--color-primary)]/30" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
-          {{HERO_CTA_TEXT}}
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+
+      <!-- CTA buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-5" data-animate="fade-up" data-delay="0.4">
+        <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="group relative inline-flex items-center gap-3 px-10 py-4 font-body text-sm font-bold tracking-wide text-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(var(--color-primary-rgb),0.3)]" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+          <span class="relative z-10">{{HERO_CTA_TEXT}}</span>
+          <svg class="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
         </a>
-        <a href="#about" class="inline-flex items-center gap-2 px-10 py-4 text-lg font-semibold rounded-full text-white border-2 border-white/20 hover:bg-white/10 hover:border-white/40 transition-all">
-          Scopri di pi&ugrave;
+        <a href="#about" class="inline-flex items-center gap-2 font-body text-sm font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors group">
+          <span>Scopri di pi&ugrave;</span>
+          <svg class="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
         </a>
       </div>
     </div>
 
     <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2" data-animate="fade-up">
-      <div class="flex flex-col items-center gap-2">
-        <span class="text-xs uppercase tracking-widest text-white/40 font-body">Scroll</span>
-        <div class="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center pt-2">
-          <div class="w-1 h-3 bg-white/40 rounded-full" style="animation: scrollBounce 2s infinite;"></div>
-        </div>
-      </div>
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40" data-animate="fade-up" data-delay="0.6">
+      <span class="font-body text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-muted)]">Scroll</span>
+      <div class="w-px h-10 bg-gradient-to-b from-[var(--color-text-muted)] to-transparent"></div>
     </div>
   </div>
+
+  <!-- Bottom gradient fade -->
+  <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--color-bg)] to-transparent z-[4]"></div>
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-text)]/10 to-transparent z-[5]"></div>
 </section>

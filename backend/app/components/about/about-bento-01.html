@@ -1,48 +1,81 @@
-<!-- About Bento: Apple-inspired bento grid with varied cell sizes -->
-<section id="about" class="py-24 lg:py-32 bg-[var(--color-bg)] overflow-hidden">
-  <div class="max-w-7xl mx-auto px-6">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16" data-animate="reveal-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">Who We Are</p>
-      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{ABOUT_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{ABOUT_SUBTITLE}}</p>
+<!-- About Bento: Apple/Linear-inspired bento grid with mixed-size cards — image, stats, text, icon features -->
+<section id="about" class="py-24 lg:py-32 bg-[var(--color-bg)] relative overflow-hidden">
+
+  <!-- Background subtle decoration -->
+  <div class="absolute top-0 right-0 w-[600px] h-[600px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.03) 0%, transparent 60%);"></div>
+  <div class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-accent-rgb, var(--color-primary-rgb)), 0.02) 0%, transparent 60%);"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-3 mb-6" data-animate="blur-in">
+        <div class="w-8 h-px" style="background: var(--color-primary);"></div>
+        <span class="font-body text-[11px] tracking-[0.4em] uppercase text-[var(--color-primary)]">Chi Siamo</span>
+        <div class="w-8 h-px" style="background: var(--color-primary);"></div>
+      </div>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5 leading-tight" data-animate="text-split" data-split-type="words">{{ABOUT_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body text-lg leading-relaxed" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{ABOUT_SUBTITLE}}</p>
     </div>
 
-    <!-- Bento Grid -->
+    <!-- === BENTO GRID === -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[180px] md:auto-rows-[200px]" data-animate="stagger">
 
-      <!-- Large image cell: spans 2 cols x 2 rows -->
-      <div class="stagger-item md:col-span-2 md:row-span-2 relative rounded-3xl overflow-hidden shadow-lg group" data-animate="image-zoom" data-parallax="0.2">
-        <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+      <!-- Cell 1: Large Image — spans 2 cols x 2 rows -->
+      <div class="stagger-item md:col-span-2 md:row-span-2 relative rounded-3xl overflow-hidden group" data-animate="tilt">
+        <img src="{{ABOUT_IMAGE_URL}}" alt="{{ABOUT_IMAGE_ALT}}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+        <!-- Floating label on image -->
         <div class="absolute bottom-6 left-6 right-6">
-          <p class="text-white font-heading font-bold text-lg">{{BUSINESS_NAME}}</p>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 mb-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/80"></span>
+            <span class="font-body text-[10px] tracking-wider uppercase text-white/80">{{BUSINESS_NAME}}</span>
+          </div>
+          <p class="font-heading font-bold text-white text-xl leading-snug">La nostra storia</p>
         </div>
+        <!-- Glow on hover -->
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" style="box-shadow: inset 0 0 60px rgba(var(--color-primary-rgb), 0.1);"></div>
       </div>
 
-      <!-- Text cell: spans 2 cols -->
-      <div class="stagger-item lg:col-span-2 rounded-3xl bg-[var(--color-bg-alt)] p-8 flex flex-col justify-center shadow-sm border border-[var(--color-text)]/5" data-animate="card-hover-3d">
-        <p class="text-[var(--color-text-muted)] font-body leading-relaxed text-sm md:text-base">{{ABOUT_TEXT}}</p>
-        <div class="mt-4 w-12 h-1 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full"></div>
+      <!-- Cell 2: Description Text Card — spans 2 cols -->
+      <div class="stagger-item lg:col-span-2 rounded-3xl bg-[var(--color-bg-alt)] p-8 flex flex-col justify-center border border-[var(--color-text)]/5 shadow-sm hover:shadow-lg transition-all duration-500 group" data-animate="tilt">
+        <svg class="w-8 h-8 mb-4 opacity-40" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+        <p class="text-[var(--color-text-muted)] font-body leading-relaxed text-sm md:text-base">{{ABOUT_DESCRIPTION}}</p>
+        <div class="mt-5 w-12 h-1 rounded-full transition-all duration-500 group-hover:w-20" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
       </div>
 
-      <!-- Stat cells from repeat -->
+      <!-- Cell 3: Stats (repeatable) -->
       <!-- REPEAT:ABOUT_STATS -->
-      <div class="stagger-item rounded-3xl bg-[var(--color-bg-alt)] p-6 flex flex-col justify-center items-center text-center shadow-sm border border-[var(--color-text)]/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-500 group" data-animate="card-hover-3d">
-        <div class="w-14 h-14 rounded-2xl bg-[var(--color-primary)]/10 flex items-center justify-center mb-3 group-hover:bg-[var(--color-primary)]/20 transition-colors">
+      <div class="stagger-item rounded-3xl bg-[var(--color-bg-alt)] p-6 flex flex-col justify-center items-center text-center border border-[var(--color-text)]/5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-500 group" data-animate="tilt">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-3 transition-colors duration-300" style="background: rgba(var(--color-primary-rgb), 0.08);">
           <span class="text-2xl md:text-3xl font-heading font-bold text-[var(--color-primary)]" data-counter="{{STAT_NUMBER}}">0</span>
         </div>
         <p class="text-xs font-semibold tracking-wider uppercase text-[var(--color-text-muted)] font-body">{{STAT_LABEL}}</p>
+        <!-- Bottom accent line -->
+        <div class="mt-3 w-6 h-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: var(--color-primary);"></div>
       </div>
       <!-- /REPEAT:ABOUT_STATS -->
 
-      <!-- Accent gradient cell -->
-      <div class="stagger-item rounded-3xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] p-8 flex flex-col justify-center items-center text-center shadow-lg" data-animate="card-hover-3d">
-        <p class="text-white/90 font-heading font-bold text-lg leading-snug">Built with passion &amp; precision</p>
+      <!-- Cell 4: Gradient Accent Card -->
+      <div class="stagger-item rounded-3xl p-8 flex flex-col justify-center items-center text-center shadow-lg relative overflow-hidden" data-animate="tilt" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+        <!-- Pattern overlay -->
+        <div class="absolute inset-0 opacity-[0.06]" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 16px 16px;"></div>
+        <svg class="w-8 h-8 text-white/80 mb-3 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <p class="text-white/90 font-heading font-bold text-base leading-snug relative z-10">Innovazione &amp; passione</p>
+      </div>
+
+      <!-- Cell 5: Icon Feature Card -->
+      <div class="stagger-item rounded-3xl bg-[var(--color-bg-alt)] p-6 flex flex-col justify-center border border-[var(--color-text)]/5 shadow-sm hover:shadow-lg transition-all duration-500 group" data-animate="tilt">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(var(--color-primary-rgb), 0.1);">
+            <svg class="w-5 h-5" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <p class="font-heading font-bold text-sm text-[var(--color-text)]">Qualit&agrave; garantita</p>
+        </div>
+        <div class="w-full h-1 rounded-full bg-[var(--color-text)]/5">
+          <div class="h-full rounded-full w-[92%]" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent));"></div>
+        </div>
       </div>
     </div>
   </div>
-
-  <!-- Subtle bg decoration -->
-  <div class="absolute top-1/2 left-0 w-96 h-96 bg-[var(--color-primary)]/3 rounded-full blur-[120px] pointer-events-none -translate-y-1/2"></div>
 </section>

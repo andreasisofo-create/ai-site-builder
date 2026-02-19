@@ -218,6 +218,8 @@ async def _run_generation_background(
         )
         # Only databinding_generator supports photo_urls, template_style_id, reference_urls
         if generator is databinding_generator:
+            gen_kwargs["user_id"] = user_id
+            gen_kwargs["site_id"] = site_id
             if request.photo_urls:
                 gen_kwargs["photo_urls"] = request.photo_urls
             if request.template_style_id:

@@ -33,9 +33,25 @@
           "id": "hero-parallax-01",
           "file": "hero/hero-parallax-01.html",
           "name": "Parallax Hero",
-          "description": "Fullscreen con sfondo parallax, forme fluttuanti e text-split sul titolo",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["modern", "bold", "tech"]
+          "description": "Multi-layer parallax ispirato Aceternity con card UI fluttuanti a velocit\u00e0 diverse su scroll, analytics, stats e avatar",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT", "BUSINESS_NAME"],
+          "tags": ["modern", "bold", "tech", "parallax"]
+        },
+        {
+          "id": "hero-spotlight-01",
+          "file": "hero/hero-spotlight-01.html",
+          "name": "Spotlight Hero",
+          "description": "Hero cinematico scuro stile Aceternity con spotlight radiale che segue il mouse, orbs luminosi e cornici angolari",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "BUSINESS_NAME"],
+          "tags": ["bold", "tech", "modern", "dark"]
+        },
+        {
+          "id": "hero-aurora-01",
+          "file": "hero/hero-aurora-01.html",
+          "name": "Aurora Hero",
+          "description": "Effetto Aurora Boreale con blob gradiente CSS animati, stelline decorative e testo con gradiente aurora",
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT", "BUSINESS_NAME"],
+          "tags": ["modern", "tech", "bold", "creative"]
         },
         {
           "id": "hero-typewriter-01",
@@ -191,9 +207,9 @@
           "id": "about-timeline-01",
           "file": "about/about-timeline-01.html",
           "name": "About Timeline",
-          "description": "Timeline verticale con highlights alternati sx/dx e connettori",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_HIGHLIGHT_1", "ABOUT_HIGHLIGHT_2", "ABOUT_HIGHLIGHT_3", "ABOUT_HIGHLIGHT_NUM_1", "ABOUT_HIGHLIGHT_NUM_2", "ABOUT_HIGHLIGHT_NUM_3"],
-          "tags": ["modern", "bold", "tech"]
+          "description": "Timeline verticale con milestone alternate sx/dx, badge anno, counter animati e dot pulsanti sulla linea",
+          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_DESCRIPTION", "ABOUT_HIGHLIGHT_1", "ABOUT_HIGHLIGHT_2", "ABOUT_HIGHLIGHT_3", "ABOUT_HIGHLIGHT_NUM_1", "ABOUT_HIGHLIGHT_NUM_2", "ABOUT_HIGHLIGHT_NUM_3", "MILESTONE_YEAR_1", "MILESTONE_YEAR_2", "MILESTONE_YEAR_3", "MILESTONE_DESC_1", "MILESTONE_DESC_2", "MILESTONE_DESC_3"],
+          "tags": ["modern", "bold", "tech", "corporate"]
         },
         {
           "id": "about-image-showcase-01",
@@ -231,16 +247,16 @@
           "id": "about-bento-01",
           "file": "about/about-bento-01.html",
           "name": "About Bento Grid",
-          "description": "Griglia bento stile Apple con celle di dimensioni variate, immagine grande e stats compatte",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_IMAGE_URL", "ABOUT_IMAGE_ALT", "ABOUT_STATS", "BUSINESS_NAME"],
+          "description": "Griglia bento stile Apple/Linear con tilt cards, immagine 2x2, card testo, stats con counter e card gradiente accent",
+          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_DESCRIPTION", "ABOUT_IMAGE_URL", "ABOUT_IMAGE_ALT", "ABOUT_STATS", "BUSINESS_NAME"],
           "tags": ["modern", "tech", "bold"]
         },
         {
           "id": "about-split-scroll-01",
           "file": "about/about-split-scroll-01.html",
           "name": "About Split Scroll",
-          "description": "Split screen con immagine sticky a sinistra e contenuto scrollabile con stats a destra",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_IMAGE_URL", "ABOUT_IMAGE_ALT", "ABOUT_STATS", "BUSINESS_NAME"],
+          "description": "Split screen con immagine sticky clip-reveal a sinistra, badge business e contenuto scrollabile con stats a destra",
+          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_DESCRIPTION", "ABOUT_IMAGE_URL", "ABOUT_IMAGE_ALT", "ABOUT_STATS", "BUSINESS_NAME"],
           "tags": ["elegant", "modern", "cozy"]
         }
       ]
@@ -336,6 +352,22 @@
           "description": "Card stile pricing con barra gradiente top, icona, divider e CTA per ogni servizio",
           "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
           "tags": ["modern", "corporate", "bold"]
+        },
+        {
+          "id": "services-interactive-tabs-01",
+          "file": "services/services-interactive-tabs-01.html",
+          "name": "Services Interactive Tabs",
+          "description": "Interfaccia tab interattiva con icone, pannelli animati e card contenuto dettagliato per servizio",
+          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
+          "tags": ["modern", "tech", "bold"]
+        },
+        {
+          "id": "services-hover-cards-01",
+          "file": "services/services-hover-cards-01.html",
+          "name": "Services Hover Cards",
+          "description": "Card servizi con hover espansivo, icona grande animata e descrizione reveal al passaggio del mouse",
+          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
+          "tags": ["modern", "bold", "tech", "corporate"]
         }
       ]
     },

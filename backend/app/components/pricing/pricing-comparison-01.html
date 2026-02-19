@@ -1,63 +1,80 @@
-<!-- Pricing Comparison: Full-width comparison table (desktop) with mobile cards fallback -->
-<section id="pricing" class="py-24 bg-[var(--color-bg)] overflow-hidden">
-  <div class="max-w-6xl mx-auto px-6">
+<!-- Pricing Comparison: Full-width comparison table on desktop with feature rows, checkmarks/x-marks, responsive mobile card stacking -->
+<section id="pricing" class="py-24 md:py-32 bg-[var(--color-bg)] overflow-hidden relative">
+
+  <!-- Ambient background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[var(--color-primary)]/4 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-0 right-1/3 w-[400px] h-[400px] bg-[var(--color-secondary)]/4 rounded-full blur-[120px]"></div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-6 relative z-10">
     <!-- Header -->
-    <div class="text-center mb-16" data-animate="fade-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Confronta i Piani</p>
-      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-4" data-animate="text-split" data-split-type="words">{{PRICING_TITLE}}</h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg">{{PRICING_SUBTITLE}}</p>
+    <div class="text-center mb-16 md:mb-20" data-animate="reveal-up">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 mb-6" data-animate="blur-in">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>
+        <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Confronta i Piani</span>
+      </div>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{PRICING_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2">{{PRICING_SUBTITLE}}</p>
     </div>
 
-    <!-- Desktop: Comparison Table -->
-    <div class="hidden lg:block" data-animate="fade-up">
-      <div class="rounded-2xl border border-[var(--color-text)]/[0.08] overflow-hidden bg-[var(--color-bg-alt)]">
+    <!-- ============ DESKTOP: Comparison Table ============ -->
+    <div class="hidden lg:block" data-animate="fade-up" data-delay="0.3">
+      <div class="prc-cmp-table rounded-2xl border border-[var(--color-text)]/[0.08] overflow-hidden bg-[var(--color-bg-alt)] shadow-sm">
         <table class="w-full">
+          <!-- Table Header: Plan names + prices -->
           <thead>
             <tr>
-              <th class="text-left p-6 w-1/4 bg-[var(--color-bg-alt)]">
-                <span class="text-sm font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Funzionalit&agrave;</span>
+              <th class="text-left p-6 w-[30%] bg-[var(--color-bg-alt)]">
+                <span class="text-sm font-semibold text-[var(--color-text-muted)] uppercase tracking-wider font-body">Funzionalit&agrave;</span>
               </th>
               <!-- REPEAT:PRICING_PLANS -->
-              <th class="p-6 text-center pricing-th-col" data-featured="{{PLAN_FEATURED}}">
-                <div class="pricing-th-default">
-                  <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-1">{{PLAN_NAME}}</h3>
+              <th class="p-6 text-center prc-cmp-th" data-featured="{{PLAN_FEATURED}}">
+                <!-- Default header -->
+                <div class="prc-cmp-th-default">
+                  <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-2">{{PLAN_NAME}}</h3>
                   <div class="flex items-baseline justify-center gap-1 mb-1">
                     <span class="text-sm text-[var(--color-text-muted)]">&euro;</span>
                     <span class="text-3xl font-bold font-heading text-[var(--color-text)]">{{PLAN_PRICE}}</span>
                   </div>
-                  <p class="text-xs text-[var(--color-text-muted)]">{{PLAN_PERIOD}}</p>
+                  <p class="text-xs text-[var(--color-text-muted)] font-body">{{PLAN_PERIOD}}</p>
                 </div>
-                <div class="pricing-th-featured hidden rounded-t-xl -m-6 p-6" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
-                  <span class="inline-block px-3 py-0.5 bg-white/20 text-white text-xs font-bold rounded-full mb-2">Popolare</span>
-                  <h3 class="text-lg font-bold font-heading text-white mb-1">{{PLAN_NAME}}</h3>
+                <!-- Featured header -->
+                <div class="prc-cmp-th-featured hidden rounded-xl -mx-3 -mt-3 px-3 pt-3 pb-0" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+                  <span class="inline-block px-3 py-0.5 bg-white/20 text-white text-[10px] font-bold rounded-full mb-2 uppercase tracking-wider">Popolare</span>
+                  <h3 class="text-lg font-bold font-heading text-white mb-2">{{PLAN_NAME}}</h3>
                   <div class="flex items-baseline justify-center gap-1 mb-1">
                     <span class="text-sm text-white/70">&euro;</span>
                     <span class="text-3xl font-bold font-heading text-white">{{PLAN_PRICE}}</span>
                   </div>
-                  <p class="text-xs text-white/70">{{PLAN_PERIOD}}</p>
+                  <p class="text-xs text-white/70 font-body pb-3">{{PLAN_PERIOD}}</p>
                 </div>
               </th>
               <!-- /REPEAT:PRICING_PLANS -->
             </tr>
           </thead>
+
+          <!-- Table Body: Feature rows -->
           <tbody>
-            <!-- REPEAT:PRICING_PLANS -->
-            <tr class="border-t border-[var(--color-text)]/[0.05]">
-              <td class="p-5 text-sm text-[var(--color-text)]">{{PLAN_DESCRIPTION}}</td>
+            <!-- REPEAT:COMPARISON_FEATURES -->
+            <tr class="prc-cmp-row border-t border-[var(--color-text)]/[0.05] transition-colors duration-200 hover:bg-[var(--color-primary)]/[0.02]">
+              <td class="p-5 text-sm text-[var(--color-text)] font-body font-medium">{{FEATURE_NAME}}</td>
               <!-- REPEAT:PRICING_PLANS -->
               <td class="p-5 text-center">
-                <span class="text-sm text-[var(--color-text-muted)]">{{PLAN_FEATURES}}</span>
+                <span class="prc-cmp-val text-sm font-body">{{FEATURE_VALUE}}</span>
               </td>
               <!-- /REPEAT:PRICING_PLANS -->
             </tr>
-            <!-- /REPEAT:PRICING_PLANS -->
+            <!-- /REPEAT:COMPARISON_FEATURES -->
           </tbody>
+
+          <!-- Table Footer: CTA buttons -->
           <tfoot>
-            <tr class="border-t border-[var(--color-text)]/[0.08]">
+            <tr class="border-t-2 border-[var(--color-text)]/[0.08]">
               <td class="p-6"></td>
               <!-- REPEAT:PRICING_PLANS -->
               <td class="p-6 text-center">
-                <a href="{{PLAN_CTA_URL}}" class="inline-block px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 pricing-cta-btn" data-featured="{{PLAN_FEATURED}}">
+                <a href="{{PLAN_CTA_URL}}" class="prc-cmp-cta inline-block px-8 py-3.5 rounded-xl font-bold font-body text-sm tracking-wide transition-all duration-400" data-featured="{{PLAN_FEATURED}}" data-animate="magnetic">
                   {{PLAN_CTA_TEXT}}
                 </a>
               </td>
@@ -68,33 +85,55 @@
       </div>
     </div>
 
-    <!-- Mobile: Card layout -->
-    <div class="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-6" data-animate="stagger">
+    <!-- ============ MOBILE: Stacked Cards ============ -->
+    <div class="lg:hidden space-y-6" data-animate="stagger">
       <!-- REPEAT:PRICING_PLANS -->
       <div class="stagger-item" data-animate="fade-up">
-        <div class="rounded-2xl p-6 border border-[var(--color-text)]/[0.08] bg-[var(--color-bg-alt)] pricing-mobile-card" data-featured="{{PLAN_FEATURED}}">
-          <div class="pricing-mobile-default">
-            <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-1">{{PLAN_NAME}}</h3>
-            <div class="flex items-baseline gap-1 mb-1">
-              <span class="text-sm text-[var(--color-text-muted)]">&euro;</span>
-              <span class="text-4xl font-bold font-heading text-[var(--color-text)]">{{PLAN_PRICE}}</span>
+        <div class="prc-cmp-mobile rounded-2xl overflow-hidden border border-[var(--color-text)]/[0.08] bg-[var(--color-bg-alt)] transition-all duration-500" data-featured="{{PLAN_FEATURED}}">
+          <!-- Card header -->
+          <div class="prc-mob-header p-6 pb-4">
+            <div class="prc-mob-default">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-bold font-heading text-[var(--color-text)]">{{PLAN_NAME}}</h3>
+              </div>
+              <div class="flex items-baseline gap-1 mb-1">
+                <span class="text-sm text-[var(--color-text-muted)]">&euro;</span>
+                <span class="text-4xl font-bold font-heading text-[var(--color-text)]">{{PLAN_PRICE}}</span>
+              </div>
+              <p class="text-xs text-[var(--color-text-muted)] font-body">{{PLAN_PERIOD}}</p>
             </div>
-            <p class="text-xs text-[var(--color-text-muted)] mb-4">{{PLAN_PERIOD}}</p>
-            <p class="text-sm text-[var(--color-text-muted)] mb-6">{{PLAN_DESCRIPTION}}</p>
-            <p class="text-sm text-[var(--color-text-muted)] mb-6">{{PLAN_FEATURES}}</p>
-            <a href="{{PLAN_CTA_URL}}" class="block w-full py-3 text-center font-bold rounded-xl text-sm bg-[var(--color-text)]/5 text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white transition-all">{{PLAN_CTA_TEXT}}</a>
+            <div class="prc-mob-featured hidden">
+              <span class="inline-block px-3 py-0.5 bg-white/20 text-white text-[10px] font-bold rounded-full mb-3 uppercase tracking-wider">Popolare</span>
+              <h3 class="text-lg font-bold font-heading text-white mb-1">{{PLAN_NAME}}</h3>
+              <div class="flex items-baseline gap-1 mb-1">
+                <span class="text-sm text-white/70">&euro;</span>
+                <span class="text-4xl font-bold font-heading text-white">{{PLAN_PRICE}}</span>
+              </div>
+              <p class="text-xs text-white/70 font-body">{{PLAN_PERIOD}}</p>
+            </div>
           </div>
-          <div class="pricing-mobile-featured hidden rounded-2xl -m-6 p-6" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
-            <span class="inline-block px-3 py-0.5 bg-white/20 text-white text-xs font-bold rounded-full mb-3">Popolare</span>
-            <h3 class="text-lg font-bold font-heading text-white mb-1">{{PLAN_NAME}}</h3>
-            <div class="flex items-baseline gap-1 mb-1">
-              <span class="text-sm text-white/70">&euro;</span>
-              <span class="text-4xl font-bold font-heading text-white">{{PLAN_PRICE}}</span>
-            </div>
-            <p class="text-xs text-white/70 mb-4">{{PLAN_PERIOD}}</p>
-            <p class="text-sm text-white/70 mb-6">{{PLAN_DESCRIPTION}}</p>
-            <p class="text-sm text-white/70 mb-6">{{PLAN_FEATURES}}</p>
-            <a href="{{PLAN_CTA_URL}}" class="block w-full py-3 text-center font-bold rounded-xl text-sm bg-white/20 text-white hover:bg-white hover:text-[var(--color-primary)] transition-all backdrop-blur-sm">{{PLAN_CTA_TEXT}}</a>
+
+          <!-- Divider -->
+          <div class="h-px mx-6 bg-[var(--color-text)]/[0.06]"></div>
+
+          <!-- Features list -->
+          <div class="p-6 pt-4">
+            <p class="text-sm text-[var(--color-text-muted)] font-body mb-4">{{PLAN_DESCRIPTION}}</p>
+            <ul class="space-y-3 mb-6">
+              <!-- REPEAT:PLAN_FEATURES -->
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background: rgba(var(--color-primary-rgb), 0.1);">
+                  <svg class="w-3 h-3 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                  </svg>
+                </div>
+                <span class="text-sm text-[var(--color-text-muted)] font-body">{{FEATURE_TEXT}}</span>
+              </li>
+              <!-- /REPEAT:PLAN_FEATURES -->
+            </ul>
+            <a href="{{PLAN_CTA_URL}}" class="prc-cmp-mob-cta block w-full py-3.5 text-center font-bold font-body rounded-xl text-sm tracking-wide transition-all duration-400" data-featured="{{PLAN_FEATURED}}" data-animate="magnetic">
+              {{PLAN_CTA_TEXT}}
+            </a>
           </div>
         </div>
       </div>
@@ -103,15 +142,63 @@
   </div>
 
   <style>
-    .pricing-th-col[data-featured="true"] .pricing-th-default { display: none; }
-    .pricing-th-col[data-featured="true"] .pricing-th-featured { display: block !important; }
-    .pricing-th-col[data-featured="true"] { background: var(--color-primary); background: linear-gradient(180deg, transparent, var(--color-primary)/5); }
-    .pricing-cta-btn { background: var(--color-text); color: var(--color-bg); }
-    .pricing-cta-btn:hover { opacity: 0.85; }
-    .pricing-cta-btn[data-featured="true"] { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; }
-    .pricing-mobile-card[data-featured="true"] .pricing-mobile-default { display: none; }
-    .pricing-mobile-card[data-featured="true"] .pricing-mobile-featured { display: block !important; }
-    .pricing-mobile-card[data-featured="true"] { border-color: var(--color-primary); box-shadow: 0 20px 50px -12px rgba(0,0,0,0.12); }
-    table tbody tr:nth-child(even) { background: var(--color-bg); }
+    /* Desktop table styles */
+    .prc-cmp-row:nth-child(even) {
+      background: rgba(var(--color-text-rgb, 128, 128, 128), 0.015);
+    }
+
+    /* Featured column header */
+    .prc-cmp-th[data-featured="true"] .prc-cmp-th-default { display: none; }
+    .prc-cmp-th[data-featured="true"] .prc-cmp-th-featured { display: block !important; }
+    .prc-cmp-th[data-featured="true"] {
+      background: linear-gradient(180deg, transparent, rgba(var(--color-primary-rgb), 0.04));
+    }
+
+    /* Checkmark and X styling for comparison values */
+    .prc-cmp-val { color: var(--color-text-muted); }
+
+    /* Desktop CTA buttons */
+    .prc-cmp-cta {
+      background: rgba(var(--color-text-rgb, 128, 128, 128), 0.06);
+      color: var(--color-text);
+    }
+    .prc-cmp-cta:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+    .prc-cmp-cta[data-featured="true"] {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      box-shadow: 0 8px 24px -4px rgba(var(--color-primary-rgb), 0.3);
+    }
+    .prc-cmp-cta[data-featured="true"]:hover {
+      box-shadow: 0 12px 32px -4px rgba(var(--color-primary-rgb), 0.4);
+      transform: translateY(-2px);
+    }
+
+    /* Mobile featured card */
+    .prc-cmp-mobile[data-featured="true"] {
+      border-color: var(--color-primary);
+      box-shadow: 0 20px 50px -12px rgba(0,0,0,0.12);
+    }
+    .prc-cmp-mobile[data-featured="true"] .prc-mob-header {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    }
+    .prc-cmp-mobile[data-featured="true"] .prc-mob-default { display: none; }
+    .prc-cmp-mobile[data-featured="true"] .prc-mob-featured { display: block !important; }
+
+    /* Mobile CTA buttons */
+    .prc-cmp-mob-cta {
+      background: rgba(var(--color-text-rgb, 128, 128, 128), 0.05);
+      color: var(--color-text);
+    }
+    .prc-cmp-mob-cta:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+    .prc-cmp-mob-cta[data-featured="true"] {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+    }
   </style>
 </section>

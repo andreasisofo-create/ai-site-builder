@@ -1,87 +1,118 @@
-<!-- About Timeline: layout verticale con highlights alternati sx/dx -->
-<section id="about" class="py-20 bg-[var(--color-bg-alt)] overflow-hidden">
-  <div class="max-w-7xl mx-auto px-6">
-    <!-- Header -->
-    <div class="text-center mb-16" data-animate="reveal-up">
-      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4" data-animate="blur-in">Chi Siamo</p>
-      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4" data-animate="text-split" data-split-type="words">
+<!-- About Timeline: vertical milestone timeline with alternating left/right cards and animated connecting line -->
+<section id="about" class="py-24 lg:py-32 bg-[var(--color-bg-alt)] relative overflow-hidden">
+
+  <!-- Background decorative shapes -->
+  <div class="absolute top-20 left-0 w-80 h-80 rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.04) 0%, transparent 60%);"></div>
+  <div class="absolute bottom-20 right-0 w-64 h-64 rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-secondary-rgb, var(--color-primary-rgb)), 0.03) 0%, transparent 60%);"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+    <!-- Section Header -->
+    <div class="text-center mb-20">
+      <div class="inline-flex items-center gap-3 mb-6" data-animate="blur-in">
+        <div class="w-8 h-px" style="background: var(--color-primary);"></div>
+        <span class="font-body text-[11px] tracking-[0.4em] uppercase text-[var(--color-primary)]">La Nostra Storia</span>
+        <div class="w-8 h-px" style="background: var(--color-primary);"></div>
+      </div>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5 leading-tight" data-animate="text-split" data-split-type="words">
         {{ABOUT_TITLE}}
       </h2>
-      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto">
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body text-lg leading-relaxed" data-animate="blur-slide" data-delay="0.2" data-duration="1">
         {{ABOUT_SUBTITLE}}
       </p>
     </div>
 
-    <!-- About Text -->
-    <div class="max-w-3xl mx-auto text-center mb-20" data-animate="blur-in">
-      <p class="text-lg text-[var(--color-text-muted)] leading-relaxed">
-        {{ABOUT_TEXT}}
+    <!-- About Description -->
+    <div class="max-w-3xl mx-auto text-center mb-20" data-animate="fade-up" data-delay="0.15">
+      <p class="text-lg text-[var(--color-text-muted)] leading-relaxed font-body">
+        {{ABOUT_DESCRIPTION}}
       </p>
     </div>
 
-    <!-- Timeline -->
-    <div class="relative max-w-4xl mx-auto" data-animate="stagger">
-      <!-- Vertical Line -->
-      <div class="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[var(--color-primary)] to-transparent hidden md:block"></div>
-      <div class="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[var(--color-primary)] to-transparent md:hidden"></div>
+    <!-- === TIMELINE === -->
+    <div class="relative max-w-5xl mx-auto" data-animate="stagger">
 
-      <!-- Highlight 1 - Left -->
-      <div class="stagger-item relative flex flex-col md:flex-row items-center mb-16 md:mb-20">
-        <!-- Content Left -->
-        <div class="w-full md:w-1/2 md:pr-12 md:text-right pl-16 md:pl-0">
-          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg border border-[var(--color-text)]/5 hover:shadow-xl transition-shadow duration-300">
-            <div class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-primary)] mb-3" data-counter="{{ABOUT_HIGHLIGHT_NUM_1}}">0</div>
-            <p class="text-[var(--color-text)] font-semibold font-heading text-lg">{{ABOUT_HIGHLIGHT_1}}</p>
+      <!-- Central vertical line -->
+      <div class="absolute left-6 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-0.5 hidden md:block" style="background: linear-gradient(180deg, transparent, var(--color-primary), var(--color-primary), transparent);"></div>
+      <!-- Mobile vertical line -->
+      <div class="absolute left-6 top-0 bottom-0 w-0.5 md:hidden" style="background: linear-gradient(180deg, transparent, var(--color-primary), var(--color-primary), transparent);"></div>
+
+      <!-- Milestone 1 — LEFT side -->
+      <div class="stagger-item relative flex flex-col md:flex-row items-start md:items-center mb-16 md:mb-24">
+        <!-- Content (left on desktop) -->
+        <div class="w-full md:w-1/2 md:pr-16 pl-16 md:pl-0 md:text-right" data-animate="reveal-right">
+          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-xl border border-[var(--color-text)]/5 hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
+            <!-- Year badge -->
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style="background: rgba(var(--color-primary-rgb), 0.08);">
+              <span class="font-heading text-sm font-bold text-[var(--color-primary)]">{{MILESTONE_YEAR_1}}</span>
+            </div>
+            <div class="text-4xl md:text-5xl font-bold font-heading mb-3" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="{{ABOUT_HIGHLIGHT_NUM_1}}">0</div>
+            <p class="text-[var(--color-text)] font-semibold font-heading text-lg mb-2">{{ABOUT_HIGHLIGHT_1}}</p>
+            <p class="text-sm text-[var(--color-text-muted)] font-body">{{MILESTONE_DESC_1}}</p>
+            <!-- Decorative corner accent -->
+            <div class="absolute top-0 right-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(135deg, transparent 50%, rgba(var(--color-primary-rgb), 0.05) 50%);"></div>
           </div>
         </div>
-        <!-- Dot -->
-        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-5 h-5 rounded-full bg-[var(--color-primary)] border-4 border-[var(--color-bg-alt)] shadow-lg z-10">
-          <div class="absolute inset-0 rounded-full bg-[var(--color-primary)] animate-ping opacity-20"></div>
+        <!-- Dot on line -->
+        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-8 md:top-1/2 md:-translate-y-1/2 z-10">
+          <div class="w-5 h-5 rounded-full border-4 border-[var(--color-bg-alt)] shadow-lg relative" style="background: var(--color-primary);">
+            <div class="absolute inset-0 rounded-full animate-ping opacity-20" style="background: var(--color-primary);"></div>
+          </div>
         </div>
-        <!-- Spacer Right -->
+        <!-- Empty space (right on desktop) -->
         <div class="hidden md:block w-1/2"></div>
       </div>
 
-      <!-- Highlight 2 - Right -->
-      <div class="stagger-item relative flex flex-col md:flex-row items-center mb-16 md:mb-20">
-        <!-- Spacer Left -->
+      <!-- Milestone 2 — RIGHT side -->
+      <div class="stagger-item relative flex flex-col md:flex-row items-start md:items-center mb-16 md:mb-24">
+        <!-- Empty space (left on desktop) -->
         <div class="hidden md:block w-1/2"></div>
-        <!-- Dot -->
-        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-5 h-5 rounded-full bg-[var(--color-secondary)] border-4 border-[var(--color-bg-alt)] shadow-lg z-10">
-          <div class="absolute inset-0 rounded-full bg-[var(--color-secondary)] animate-ping opacity-20"></div>
+        <!-- Dot on line -->
+        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-8 md:top-1/2 md:-translate-y-1/2 z-10">
+          <div class="w-5 h-5 rounded-full border-4 border-[var(--color-bg-alt)] shadow-lg relative" style="background: var(--color-secondary);">
+            <div class="absolute inset-0 rounded-full animate-ping opacity-20" style="background: var(--color-secondary);"></div>
+          </div>
         </div>
-        <!-- Content Right -->
-        <div class="w-full md:w-1/2 md:pl-12 pl-16 md:text-left">
-          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg border border-[var(--color-text)]/5 hover:shadow-xl transition-shadow duration-300">
-            <div class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-secondary)] mb-3" data-counter="{{ABOUT_HIGHLIGHT_NUM_2}}">0</div>
-            <p class="text-[var(--color-text)] font-semibold font-heading text-lg">{{ABOUT_HIGHLIGHT_2}}</p>
+        <!-- Content (right on desktop) -->
+        <div class="w-full md:w-1/2 md:pl-16 pl-16" data-animate="reveal-left">
+          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-xl border border-[var(--color-text)]/5 hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style="background: rgba(var(--color-secondary-rgb, var(--color-primary-rgb)), 0.08);">
+              <span class="font-heading text-sm font-bold" style="color: var(--color-secondary);">{{MILESTONE_YEAR_2}}</span>
+            </div>
+            <div class="text-4xl md:text-5xl font-bold font-heading mb-3" style="background: linear-gradient(135deg, var(--color-secondary), var(--color-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="{{ABOUT_HIGHLIGHT_NUM_2}}">0</div>
+            <p class="text-[var(--color-text)] font-semibold font-heading text-lg mb-2">{{ABOUT_HIGHLIGHT_2}}</p>
+            <p class="text-sm text-[var(--color-text-muted)] font-body">{{MILESTONE_DESC_2}}</p>
+            <div class="absolute top-0 left-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(225deg, transparent 50%, rgba(var(--color-secondary-rgb, var(--color-primary-rgb)), 0.05) 50%);"></div>
           </div>
         </div>
       </div>
 
-      <!-- Highlight 3 - Left -->
-      <div class="stagger-item relative flex flex-col md:flex-row items-center">
-        <!-- Content Left -->
-        <div class="w-full md:w-1/2 md:pr-12 md:text-right pl-16 md:pl-0">
-          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg border border-[var(--color-text)]/5 hover:shadow-xl transition-shadow duration-300">
-            <div class="text-4xl md:text-5xl font-bold font-heading text-[var(--color-accent)] mb-3" data-counter="{{ABOUT_HIGHLIGHT_NUM_3}}">0</div>
-            <p class="text-[var(--color-text)] font-semibold font-heading text-lg">{{ABOUT_HIGHLIGHT_3}}</p>
+      <!-- Milestone 3 — LEFT side -->
+      <div class="stagger-item relative flex flex-col md:flex-row items-start md:items-center">
+        <!-- Content (left on desktop) -->
+        <div class="w-full md:w-1/2 md:pr-16 pl-16 md:pl-0 md:text-right" data-animate="reveal-right">
+          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-xl border border-[var(--color-text)]/5 hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style="background: rgba(var(--color-accent-rgb, var(--color-primary-rgb)), 0.08);">
+              <span class="font-heading text-sm font-bold" style="color: var(--color-accent);">{{MILESTONE_YEAR_3}}</span>
+            </div>
+            <div class="text-4xl md:text-5xl font-bold font-heading mb-3" style="background: linear-gradient(135deg, var(--color-accent), var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="{{ABOUT_HIGHLIGHT_NUM_3}}">0</div>
+            <p class="text-[var(--color-text)] font-semibold font-heading text-lg mb-2">{{ABOUT_HIGHLIGHT_3}}</p>
+            <p class="text-sm text-[var(--color-text-muted)] font-body">{{MILESTONE_DESC_3}}</p>
+            <div class="absolute bottom-0 right-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(315deg, transparent 50%, rgba(var(--color-accent-rgb, var(--color-primary-rgb)), 0.05) 50%);"></div>
           </div>
         </div>
-        <!-- Dot -->
-        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-5 h-5 rounded-full bg-[var(--color-accent)] border-4 border-[var(--color-bg-alt)] shadow-lg z-10">
-          <div class="absolute inset-0 rounded-full bg-[var(--color-accent)] animate-ping opacity-20"></div>
+        <!-- Dot on line -->
+        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-8 md:top-1/2 md:-translate-y-1/2 z-10">
+          <div class="w-5 h-5 rounded-full border-4 border-[var(--color-bg-alt)] shadow-lg relative" style="background: var(--color-accent);">
+            <div class="absolute inset-0 rounded-full animate-ping opacity-20" style="background: var(--color-accent);"></div>
+          </div>
         </div>
-        <!-- Spacer Right -->
+        <!-- Empty space -->
         <div class="hidden md:block w-1/2"></div>
       </div>
 
-      <!-- Decorative end dot -->
-      <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 -bottom-4 w-3 h-3 rounded-full bg-[var(--color-primary)]/40"></div>
+      <!-- End dot -->
+      <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 -bottom-3 w-3 h-3 rounded-full" style="background: rgba(var(--color-primary-rgb), 0.3);"></div>
     </div>
   </div>
-
-  <!-- Decorative shapes -->
-  <div class="absolute top-20 left-0 w-64 h-64 bg-[var(--color-primary)]/5 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute bottom-20 right-0 w-48 h-48 bg-[var(--color-secondary)]/5 rounded-full blur-3xl pointer-events-none"></div>
 </section>
