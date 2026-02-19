@@ -191,7 +191,7 @@ async def lifespan(app: FastAPI):
 
     # Seed design knowledge (SQLite FTS5 store with BM25 ranking)
     try:
-        from app.services.design_knowledge import get_collection_stats
+        from app.services.design_knowledge import get_collection_stats, get_category_guide
         stats = get_collection_stats()
         if stats.get("total_patterns", 0) == 0:
             logger.info("Design knowledge vuoto - seeding...")
@@ -201,6 +201,15 @@ async def lifespan(app: FastAPI):
             logger.info(f"Design knowledge seeded: {stats['total_patterns']} patterns")
         else:
             logger.info(f"Design knowledge ready: {stats['total_patterns']} patterns")
+
+        # Seed category design guides if not present
+        if not get_category_guide("restaurant"):
+            logger.info("Category design guides vuote - seeding...")
+            from app.services.seed_category_guides import seed_category_guides
+            count = seed_category_guides()
+            logger.info(f"Category design guides seeded: {count} categories")
+        else:
+            logger.info("Category design guides ready")
     except Exception as e:
         logger.warning(f"Design knowledge non disponibile: {e}")
 

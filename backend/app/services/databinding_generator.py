@@ -77,6 +77,13 @@ try:
 except Exception:
     _has_reference_sites = False
 
+# Color palette generator (Adobe Color-style harmony)
+try:
+    from app.services.color_palette import generate_palette as _generate_harmony_palette
+    _has_palette_gen = True
+except Exception:
+    _has_palette_gen = False
+
 # URL analyzer for reference websites
 try:
     from app.services.url_analyzer import analyze_reference_url, format_analysis_for_prompt
@@ -2817,10 +2824,34 @@ class DataBindingGenerator:
         has_exact_colors = bool(parsed_reference and parsed_reference.get("primary_color"))
 
         style_hint = ""
+        harmony_palette_hint = ""
         if style_preferences:
             # When reference has exact colors, skip template color hints (they conflict)
             if style_preferences.get("primary_color") and not has_exact_colors:
                 style_hint += f"Primary color requested: {style_preferences['primary_color']}. "
+                # Generate full harmony palette as strong color guidance
+                if _has_palette_gen:
+                    try:
+                        category_label = template_style_id.split("-")[0] if template_style_id else "business"
+                        palette = _generate_harmony_palette(
+                            base_hex=style_preferences["primary_color"],
+                            scheme=style_preferences.get("color_scheme", "auto"),
+                            category=category_label,
+                        )
+                        harmony_palette_hint = f"""
+=== HARMONY PALETTE (generated from user's chosen color — use as strong guidance) ===
+primary_color: {palette['primary_color']}
+secondary_color: {palette['secondary_color']}
+accent_color: {palette['accent_color']}
+bg_color: {palette['bg_color']}
+bg_alt_color: {palette['bg_alt_color']}
+text_color: {palette['text_color']}
+text_muted_color: {palette['text_muted_color']}
+Use these colors as your starting point. You may adjust slightly for the business personality but keep the harmony intact.
+=== END HARMONY PALETTE ===
+"""
+                    except Exception as e:
+                        logger.warning(f"[DataBinding] Harmony palette generation failed: {e}")
             if style_preferences.get("secondary_color") and not has_exact_colors:
                 style_hint += f"Secondary color requested: {style_preferences['secondary_color']}. "
             if style_preferences.get("mood"):
@@ -2963,6 +2994,7 @@ Return ONLY valid JSON, no markdown, no explanation.
 {exact_colors_block}{reference_override}
 BUSINESS: {business_name} - {business_description[:1200]}
 {style_hint}
+{harmony_palette_hint}
 {palette_hint}
 {variety_hint}
 {reference_font_hint}

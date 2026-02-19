@@ -86,6 +86,23 @@ def _ensure_db() -> None:
             END;
 
             CREATE INDEX IF NOT EXISTS idx_patterns_category ON patterns(category);
+
+            -- Category design guides table
+            CREATE TABLE IF NOT EXISTS category_guides (
+                category TEXT PRIMARY KEY,
+                structure TEXT NOT NULL DEFAULT '',
+                visual_style TEXT NOT NULL DEFAULT '',
+                ux_patterns TEXT NOT NULL DEFAULT '',
+                hero_section TEXT NOT NULL DEFAULT '',
+                content_strategy TEXT NOT NULL DEFAULT '',
+                animations TEXT NOT NULL DEFAULT '',
+                cta_design TEXT NOT NULL DEFAULT '',
+                photo_treatment TEXT NOT NULL DEFAULT '',
+                typography TEXT NOT NULL DEFAULT '',
+                common_mistakes TEXT NOT NULL DEFAULT '',
+                trends_2025 TEXT NOT NULL DEFAULT '',
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         """)
     finally:
         con.close()
@@ -359,6 +376,11 @@ def get_creative_context(
     """
     context_parts: List[str] = []
 
+    # PRIORITY 0: Category-specific design guide (comprehensive expert knowledge)
+    category_guide_text = get_category_guide_prompt(category_label)
+    if category_guide_text:
+        context_parts.append(category_guide_text)
+
     # PRIORITY 1: Professional blueprint for this business category
     blueprint_query = f"{category_label} professional website blueprint design guide"
     blueprints = search_patterns(blueprint_query, n_results=4, category="professional_blueprints")
@@ -430,6 +452,96 @@ def get_creative_context(
                     context_parts.append(f"- {meta['code_snippet'][:400]}")
 
     return "\n".join(context_parts) if context_parts else ""
+
+
+# ---------------------------------------------------------------------------
+# Category Design Guides
+# ---------------------------------------------------------------------------
+
+def upsert_category_guide(category: str, guide: Dict[str, str]) -> None:
+    """Insert or update a category design guide."""
+    con = _get_conn()
+    try:
+        con.execute(
+            """INSERT OR REPLACE INTO category_guides
+               (category, structure, visual_style, ux_patterns, hero_section,
+                content_strategy, animations, cta_design, photo_treatment,
+                typography, common_mistakes, trends_2025)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                category,
+                guide.get("structure", ""),
+                guide.get("visual_style", ""),
+                guide.get("ux_patterns", ""),
+                guide.get("hero_section", ""),
+                guide.get("content_strategy", ""),
+                guide.get("animations", ""),
+                guide.get("cta_design", ""),
+                guide.get("photo_treatment", ""),
+                guide.get("typography", ""),
+                guide.get("common_mistakes", ""),
+                guide.get("trends_2025", ""),
+            ),
+        )
+        con.commit()
+    finally:
+        con.close()
+
+
+def get_category_guide(category: str) -> Optional[Dict[str, str]]:
+    """Get the design guide for a specific category. Returns None if not found."""
+    con = _get_conn()
+    try:
+        row = con.execute(
+            "SELECT * FROM category_guides WHERE category = ?", (category,)
+        ).fetchone()
+        if not row:
+            return None
+        return {
+            "category": row["category"],
+            "structure": row["structure"],
+            "visual_style": row["visual_style"],
+            "ux_patterns": row["ux_patterns"],
+            "hero_section": row["hero_section"],
+            "content_strategy": row["content_strategy"],
+            "animations": row["animations"],
+            "cta_design": row["cta_design"],
+            "photo_treatment": row["photo_treatment"],
+            "typography": row["typography"],
+            "common_mistakes": row["common_mistakes"],
+            "trends_2025": row["trends_2025"],
+        }
+    finally:
+        con.close()
+
+
+def get_category_guide_prompt(category: str) -> str:
+    """Get a formatted prompt string with design guidance for the category.
+    This is the main function called by the generation pipeline."""
+    guide = get_category_guide(category)
+    if not guide:
+        return ""
+
+    parts = [f"## DESIGN GUIDE: {category.upper()} WEBSITE"]
+    field_labels = {
+        "structure": "Site Structure & Section Flow",
+        "visual_style": "Visual Style & Colors",
+        "ux_patterns": "UX Patterns & Navigation",
+        "hero_section": "Hero Section Design",
+        "content_strategy": "Content Strategy",
+        "animations": "Animations & Scroll Effects",
+        "cta_design": "CTA & Button Design",
+        "photo_treatment": "Photo & Image Treatment",
+        "typography": "Typography Rules",
+        "common_mistakes": "AVOID These Mistakes",
+        "trends_2025": "Current Trends (2025-2026)",
+    }
+    for field, label in field_labels.items():
+        value = guide.get(field, "")
+        if value:
+            parts.append(f"\n### {label}\n{value}")
+
+    return "\n".join(parts)
 
 
 def get_collection_stats() -> dict:

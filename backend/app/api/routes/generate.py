@@ -654,6 +654,31 @@ async def test_generation(
 
 # ============ UPGRADE / PAYMENT ============
 
+class PaletteRequest(BaseModel):
+    base_color: str  # hex e.g. "#E63946"
+    scheme: str = "auto"  # complementary, analogous, triadic, split_complementary, monochromatic, auto
+    category: str = ""  # business category for auto scheme selection
+    dark_mode: Optional[bool] = None
+
+
+@router.post("/palette")
+async def generate_color_palette(data: PaletteRequest):
+    """Generate a full 7-token color palette from a single base color."""
+    from app.services.color_palette import generate_palette, get_all_schemes
+    try:
+        if data.scheme == "all":
+            return {"success": True, "palettes": get_all_schemes(data.base_color, data.dark_mode)}
+        palette = generate_palette(
+            base_hex=data.base_color,
+            scheme=data.scheme,
+            category=data.category,
+            dark_mode=data.dark_mode,
+        )
+        return {"success": True, "palette": palette, "scheme": data.scheme}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 class UpgradeRequest(BaseModel):
     plan: str  # "base" o "premium"
 

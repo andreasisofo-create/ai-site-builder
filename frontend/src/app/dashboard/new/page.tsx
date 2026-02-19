@@ -70,14 +70,79 @@ function hslToHex(h: number, s: number, l: number): string {
   return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-function generatePaletteFromPrimary(primary: string): string[] {
+type HarmonyScheme = "complementary" | "analogous" | "triadic" | "split_complementary" | "monochromatic";
+
+const HARMONY_LABELS: Record<HarmonyScheme, { it: string; en: string }> = {
+  complementary: { it: "Complementare", en: "Complementary" },
+  analogous: { it: "Analogo", en: "Analogous" },
+  triadic: { it: "Triadico", en: "Triadic" },
+  split_complementary: { it: "Comp. Diviso", en: "Split Comp." },
+  monochromatic: { it: "Monocromatico", en: "Monochromatic" },
+};
+
+const CATEGORY_DEFAULT_SCHEME: Record<string, HarmonyScheme> = {
+  ristorante: "analogous",
+  studio_professionale: "monochromatic",
+  portfolio: "triadic",
+  fitness: "complementary",
+  bellezza: "analogous",
+  salute: "split_complementary",
+  saas: "split_complementary",
+  ecommerce: "complementary",
+  artigiani: "analogous",
+  agenzia: "split_complementary",
+};
+
+function clampL(l: number, shift: number): number {
+  return Math.max(15, Math.min(85, l + shift));
+}
+
+function generateHarmony(h: number, s: number, l: number, scheme: HarmonyScheme): { secondary: [number, number, number]; accent: [number, number, number] } {
+  switch (scheme) {
+    case "complementary":
+      return {
+        secondary: [(h + 180) % 360, Math.max(s - 10, 30), clampL(l, -5)],
+        accent: [(h + 180) % 360, Math.min(s + 15, 100), clampL(l, 10)],
+      };
+    case "analogous":
+      return {
+        secondary: [(h + 30) % 360, Math.max(s - 5, 30), clampL(l, -8)],
+        accent: [(h + 330) % 360, Math.min(s + 10, 100), clampL(l, 5)],
+      };
+    case "triadic":
+      return {
+        secondary: [(h + 120) % 360, Math.max(s - 10, 30), clampL(l, -5)],
+        accent: [(h + 240) % 360, Math.min(s + 5, 100), clampL(l, 5)],
+      };
+    case "split_complementary":
+      return {
+        secondary: [(h + 150) % 360, Math.max(s - 10, 30), clampL(l, -5)],
+        accent: [(h + 210) % 360, Math.min(s + 10, 100), clampL(l, 8)],
+      };
+    case "monochromatic":
+      return {
+        secondary: [h, Math.max(s - 20, 20), clampL(l, -15)],
+        accent: [h, Math.min(s + 15, 100), clampL(l, 15)],
+      };
+  }
+}
+
+function generatePaletteFromPrimary(primary: string, scheme: HarmonyScheme = "split_complementary"): string[] {
   const [h, s, l] = hexToHsl(primary);
+  const { secondary, accent } = generateHarmony(h, s, l, scheme);
+  const dark = l < 40;
+  const bg = dark
+    ? hslToHex(h, Math.max(s - 50, 5), 8)
+    : hslToHex(h, Math.max(s - 60, 5), 97);
+  const text = dark
+    ? hslToHex(h, Math.max(s - 60, 5), 93)
+    : hslToHex(h, Math.max(s - 50, 10), 12);
   return [
     primary,
-    hslToHex((h + 30) % 360, Math.min(s + 10, 100), Math.max(l - 10, 20)),
-    hslToHex((h + 180) % 360, Math.max(s - 20, 20), 60),
-    hslToHex(h, Math.max(s - 40, 5), 97),
-    hslToHex(h, Math.max(s - 30, 10), 12),
+    hslToHex(...secondary),
+    hslToHex(...accent),
+    bg,
+    text,
   ];
 }
 
@@ -186,6 +251,7 @@ function NewProjectContent() {
   const [selectedStyle, setSelectedStyle] = useState<TemplateStyle | null>(initialStyle);
   const [selectedV2Category, setSelectedV2Category] = useState<V2Category | null>(null);
   const [colorPalette, setColorPalette] = useState<string[]>(["#3b82f6", "#2563eb", "#93c5fd", "#f0f7ff", "#0c1a30"]);
+  const [colorScheme, setColorScheme] = useState<HarmonyScheme>("split_complementary");
   const [isGenerating, setIsGenerating] = useState(false);
   const [createdSiteId, setCreatedSiteId] = useState<number | null>(null);
   const [showAdvancedTemplate, setShowAdvancedTemplate] = useState(true);
@@ -496,6 +562,10 @@ function NewProjectContent() {
           mood: selectedV2Category.slug,
         };
       }
+      // Pass color harmony scheme to backend for palette generation
+      if (stylePrefs) {
+        (stylePrefs as Record<string, string>).color_scheme = colorScheme;
+      }
 
       // Map V2-specific section types to V1 equivalents
       const mappedSections = formData.selectedSections.map(
@@ -566,7 +636,9 @@ function NewProjectContent() {
   // When V2 category changes, update palette and sections
   const handleV2CategorySelect = (cat: V2Category) => {
     setSelectedV2Category(cat);
-    setColorPalette(generatePaletteFromPrimary(cat.defaultColor));
+    const scheme = CATEGORY_DEFAULT_SCHEME[cat.slug] || "split_complementary";
+    setColorScheme(scheme);
+    setColorPalette(generatePaletteFromPrimary(cat.defaultColor, scheme));
     // Auto-set sections from blueprint
     setFormData(prev => ({
       ...prev,
@@ -575,7 +647,12 @@ function NewProjectContent() {
   };
 
   const handlePrimaryColorChange = (color: string) => {
-    setColorPalette(generatePaletteFromPrimary(color));
+    setColorPalette(generatePaletteFromPrimary(color, colorScheme));
+  };
+
+  const handleSchemeChange = (scheme: HarmonyScheme) => {
+    setColorScheme(scheme);
+    setColorPalette(generatePaletteFromPrimary(colorPalette[0], scheme));
   };
 
   const handlePaletteSelect = (palette: string[]) => {
@@ -746,6 +823,24 @@ function NewProjectContent() {
                         <p className="text-xs text-slate-500 font-mono">{colorPalette[0]}</p>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Harmony scheme selector */}
+                  <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                    {(Object.keys(HARMONY_LABELS) as HarmonyScheme[]).map((scheme) => (
+                      <button
+                        key={scheme}
+                        type="button"
+                        onClick={() => handleSchemeChange(scheme)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                          colorScheme === scheme
+                            ? "bg-blue-600 text-white"
+                            : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        {language === "en" ? HARMONY_LABELS[scheme].en : HARMONY_LABELS[scheme].it}
+                      </button>
+                    ))}
                   </div>
 
                   {/* Auto-generated palette preview */}
