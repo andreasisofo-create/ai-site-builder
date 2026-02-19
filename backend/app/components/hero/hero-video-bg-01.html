@@ -1,9 +1,8 @@
-<!-- Hero Video Background: fullscreen with dark overlay, centered text, flip-up title -->
+<!-- Hero Video Background: fullscreen with YouTube video background, dark overlay, flip-up title -->
 <section id="hero" class="min-h-screen relative overflow-hidden bg-[var(--color-text)]">
   <!-- Video/Image Background -->
   <div class="absolute inset-0 z-0">
-    <img src="{{HERO_IMAGE_URL}}" alt="{{HERO_IMAGE_ALT}}" class="w-full h-full object-cover scale-105" loading="eager">
-    <!-- Video play button overlay indicator (shows this is a video-style hero) -->
+    {{HERO_VIDEO_EMBED}}
   </div>
 
   <!-- Multi-layer dark overlay -->

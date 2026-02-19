@@ -2741,6 +2741,8 @@ Return ONLY the JSON object."""
         photo_urls: Optional[List[str]] = None,
         template_style_id: Optional[str] = None,
         reference_urls: Optional[List[str]] = None,
+        hero_type: Optional[str] = None,
+        hero_video_url: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Generate a website using the data-binding pipeline.
@@ -2764,6 +2766,8 @@ Return ONLY the JSON object."""
                     photo_urls=photo_urls,
                     template_style_id=template_style_id,
                     reference_urls=reference_urls,
+                    hero_type=hero_type,
+                    hero_video_url=hero_video_url,
                 ),
                 timeout=180.0,
             )
@@ -2785,6 +2789,8 @@ Return ONLY the JSON object."""
         photo_urls: Optional[List[str]] = None,
         template_style_id: Optional[str] = None,
         reference_urls: Optional[List[str]] = None,
+        hero_type: Optional[str] = None,
+        hero_video_url: Optional[str] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens_in = 0
@@ -3091,6 +3097,11 @@ RULES:
             sections, self.assembler.get_variant_ids()
         ))
 
+        # Override hero variant if user selected video hero
+        if hero_type == "video" and "hero" in selections:
+            selections["hero"] = "hero-video-bg-01"
+            logger.info("[DataBinding] Hero override: using hero-video-bg-01 (user selected video)")
+
         if selection_result.get("success"):
             total_tokens_in += selection_result.get("tokens_input", 0)
             total_tokens_out += selection_result.get("tokens_output", 0)
@@ -3121,6 +3132,16 @@ RULES:
             contact_info=contact_info,
             sections=sections,
         )
+
+        # Inject YouTube video embed into hero if user selected video hero
+        if hero_type == "video" and hero_video_url:
+            video_embed = self._build_youtube_embed(hero_video_url)
+            if video_embed:
+                for comp in site_data.get("components", []):
+                    if comp.get("variant_id") == "hero-video-bg-01":
+                        comp["data"]["HERO_VIDEO_EMBED"] = video_embed
+                        logger.info(f"[DataBinding] Injected YouTube video embed into hero")
+                        break
 
         # Inject stock photos as default (replace ugly placehold.co grey boxes)
         # Only if no AI images were generated — stock photos are the fallback
@@ -4309,6 +4330,23 @@ RULES:
                     f"&background={bg}&color=fff&size=80&bold=true&format=svg"
                 )
         return data
+
+    @staticmethod
+    def _build_youtube_embed(video_url: str) -> Optional[str]:
+        """Convert a YouTube URL to a fullscreen background iframe embed."""
+        import re as _re
+        match = _re.search(r'(?:v=|youtu\.be/|embed/)([a-zA-Z0-9_-]{11})', video_url)
+        if not match:
+            return None
+        video_id = match.group(1)
+        return (
+            f'<iframe src="https://www.youtube.com/embed/{video_id}'
+            f'?autoplay=1&mute=1&loop=1&playlist={video_id}'
+            f'&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"'
+            f' class="absolute inset-0 w-full h-full pointer-events-none"'
+            f' style="transform: scale(1.2);"'
+            f' frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>'
+        )
 
     def _inject_stock_photos(self, site_data: Dict[str, Any], template_style_id: Optional[str] = None) -> Dict[str, Any]:
         """Replace placehold.co grey boxes with high-quality Unsplash stock photos.

@@ -512,6 +512,8 @@ function NewProjectContent() {
         site_id: site.id,
         template_style_id: effectiveTemplateStyle,
         generate_images: formData.generateImages,
+        hero_type: formData.heroType,
+        hero_video_url: formData.heroType === "video" ? formData.heroVideoUrl : undefined,
       });
 
       if (!generateResult.success) throw new Error(generateResult.error || (language === "en" ? "Error starting generation" : "Errore nell'avvio della generazione"));

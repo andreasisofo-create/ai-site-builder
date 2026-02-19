@@ -66,8 +66,8 @@
           "file": "hero/hero-video-bg-01.html",
           "name": "Video Background Hero",
           "description": "Hero fullscreen con sfondo video/immagine, overlay scuro e flip-up title",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["bold", "modern", "corporate"]
+          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_VIDEO_EMBED"],
+          "tags": ["bold", "modern", "corporate", "video"]
         },
         {
           "id": "hero-animated-shapes-01",

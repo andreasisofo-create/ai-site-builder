@@ -178,6 +178,8 @@ export interface GenerateRequest {
   site_id?: number;
   template_style_id?: string;
   generate_images?: boolean;
+  hero_type?: "simple" | "video" | "gallery";
+  hero_video_url?: string;
 }
 
 export interface GenerateResponse {

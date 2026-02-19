@@ -54,6 +54,8 @@ class GenerateRequest(BaseModel):
     photo_urls: Optional[List[str]] = None  # List of base64 data URLs from user uploads
     template_style_id: Optional[str] = None  # Frontend template style ID for deterministic variant selection
     generate_images: bool = False  # If True, generate AI images via Flux/fal.ai
+    hero_type: Optional[str] = None  # "simple" | "video" | "gallery"
+    hero_video_url: Optional[str] = None  # YouTube URL for video hero
 
 
 class RefineRequest(BaseModel):
@@ -222,6 +224,10 @@ async def _run_generation_background(
                 gen_kwargs["template_style_id"] = request.template_style_id
             if request.reference_urls:
                 gen_kwargs["reference_urls"] = request.reference_urls
+            if request.hero_type:
+                gen_kwargs["hero_type"] = request.hero_type
+            if request.hero_video_url:
+                gen_kwargs["hero_video_url"] = request.hero_video_url
 
         result = await generator.generate(**gen_kwargs)
 
