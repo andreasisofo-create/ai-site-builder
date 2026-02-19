@@ -297,8 +297,8 @@ export default function Editor() {
 
   const handleMediaUpload = async (file: File) => {
     if (!site) return;
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error(language === "en" ? "File too large (max 10MB)" : "File troppo grande (max 10MB)");
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(language === "en" ? "File too large (max 5MB)" : "File troppo grande (max 5MB)");
       return;
     }
     setUploadingFile(true);

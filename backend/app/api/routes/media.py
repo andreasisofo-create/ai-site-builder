@@ -15,6 +15,7 @@ from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.rate_limiter import limiter
 from app.core.security import get_current_active_user
@@ -110,7 +111,8 @@ def _validate_and_save_upload(content: bytes, original_filename: str, user_id: i
     with open(file_path, "wb") as f:
         f.write(content)
 
-    url = f"/static/uploads/user_{user_id}/{unique_name}"
+    base = settings.RENDER_EXTERNAL_URL or ""
+    url = f"{base}/static/uploads/user_{user_id}/{unique_name}"
     mime = ALLOWED_MIME_TYPES.get(ext, "application/octet-stream")
 
     logger.info(f"Wizard upload: {url} ({len(content)} bytes) by user {user_id}")
@@ -253,7 +255,9 @@ async def upload_media(
     with open(file_path, "wb") as f:
         f.write(content)
 
-    url = f"/static/uploads/{site_id}/{unique_name}"
+    # Build absolute URL so images work in srcdoc iframes (editor preview)
+    base = settings.RENDER_EXTERNAL_URL or ""
+    url = f"{base}/static/uploads/{site_id}/{unique_name}"
     logger.info(f"File uploaded: {url} ({len(content)} bytes) by user {current_user.id}")
 
     return {"url": url, "filename": unique_name}
