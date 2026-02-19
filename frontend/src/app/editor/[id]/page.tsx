@@ -805,12 +805,15 @@ export default function Editor() {
                 setShowMediaPanel(false);
                 setChatOpen(!chatOpen);
               }}
+              disabled={!liveHtml}
               className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                chatOpen && !showGuidePanel && !showMediaPanel
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:text-white hover:bg-white/5"
+                !liveHtml
+                  ? "text-slate-500 cursor-not-allowed opacity-50"
+                  : chatOpen && !showGuidePanel && !showMediaPanel
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-300 hover:text-white hover:bg-white/5"
               }`}
-              title={language === "en" ? "Edit with AI" : "Modifica con AI"}
+              title={!liveHtml ? (language === "en" ? "Generate site first" : "Prima genera il sito") : (language === "en" ? "Edit with AI" : "Modifica con AI")}
             >
               <ChatBubbleLeftRightIcon className="w-4 h-4" />
               <span className="hidden md:inline">{language === "en" ? "AI Chat" : "Chat AI"}</span>

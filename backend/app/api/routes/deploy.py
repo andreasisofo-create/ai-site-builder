@@ -55,6 +55,11 @@ async def _deploy_to_vps(site: Site) -> dict:
             status_code=503,
             detail="Servizio deploy VPS non configurato. Contatta l'amministratore.",
         )
+    if not settings.VPS_DEPLOY_SECRET:
+        raise HTTPException(
+            status_code=503,
+            detail="VPS_DEPLOY_SECRET non configurato. Contatta l'amministratore.",
+        )
 
     _validate_slug(site.slug)
 

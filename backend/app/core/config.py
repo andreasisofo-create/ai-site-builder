@@ -182,6 +182,9 @@ class Settings(BaseSettings):
     N8N_WEBHOOK_REPORT_DAILY: str = "report-daily"
     N8N_WEBHOOK_KEYWORD_RESEARCH: str = "keyword-research"
 
+    # Frontend URL (for OAuth redirects, email verification links)
+    FRONTEND_URL: str = "https://site-generator-v2.vercel.app"
+
     # Render
     RENDER_EXTERNAL_URL: str = ""  # Populated automatically by Render
     

@@ -2,7 +2,8 @@
 
 // Chiama il backend Render direttamente (con CORS).
 // Il proxy Vercel rewrite perde l'header Authorization su redirect cross-origin.
-export const API_BASE = "https://ai-site-builder-jz2g.onrender.com";
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "https://ai-site-builder-jz2g.onrender.com";
 
 /** Ottiene il token JWT dal localStorage */
 function getToken(): string | null {

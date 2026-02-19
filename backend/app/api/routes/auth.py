@@ -72,7 +72,7 @@ GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 MICROSOFT_AUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize"
 MICROSOFT_TOKEN_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
 
-FRONTEND_URL = "https://site-generator-v2.vercel.app"
+FRONTEND_URL = settings.FRONTEND_URL
 
 
 # ============= ROUTES =============
