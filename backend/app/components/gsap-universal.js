@@ -12,6 +12,8 @@
    ---- v4.0 NEW ----
    text-fill, border-beam, spotlight, shimmer, ripple,
    infinite-cards, number-ticker, particles-bg
+   ---- v4.1 PIXY-INSPIRED ----
+   rubber-text, marquee-tape, cursor-follow
    + CSS Scroll-Driven Animations native layer
    Supports: data-delay, data-duration, data-ease, data-scrub
    Respects prefers-reduced-motion
@@ -154,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('[data-animate]').forEach(function (el) {
     var type = el.getAttribute('data-animate');
-    if (['stagger', 'parallax', 'text-split', 'typewriter', 'text-rotate', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal', 'sticky-cta', 'sticky-reveal', 'before-after', 'section-progress', 'parallax-layers', '3d-scroll', 'scroll-snap-horizontal', 'text-fill', 'border-beam', 'spotlight', 'shimmer', 'ripple', 'infinite-cards', 'number-ticker', 'particles-bg'].indexOf(type) !== -1) return;
+    if (['stagger', 'parallax', 'text-split', 'typewriter', 'text-rotate', 'float', 'marquee', 'tilt', 'magnetic', 'gradient-flow', 'morph-bg', 'text-reveal', 'stagger-scale', 'clip-reveal', 'blur-slide', 'rotate-3d', 'image-zoom', 'card-hover-3d', 'draw-svg', 'split-screen', 'scroll-fade', 'pin-hero', 'section-reveal', 'sticky-cta', 'sticky-reveal', 'before-after', 'section-progress', 'parallax-layers', '3d-scroll', 'scroll-snap-horizontal', 'text-fill', 'border-beam', 'spotlight', 'shimmer', 'ripple', 'infinite-cards', 'number-ticker', 'particles-bg', 'rubber-text', 'marquee-tape'].indexOf(type) !== -1) return;
     var config = animations[type];
     if (!config) { el.style.opacity = 1; return; }
 
@@ -1762,6 +1764,213 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { threshold: 0.1 });
     particleObserver.observe(el);
   });
+
+  /* ==========================================================
+     v4.1 PIXY-INSPIRED EFFECTS (44-46)
+     ========================================================== */
+
+  /* ----------------------------------------------------------
+     44. RUBBER LETTERS (data-animate="rubber-text")
+     Each letter wraps in a span and scales with elastic bounce
+     on mouseenter. Creates a playful, agency-quality hover
+     effect. Inspired by Pixy template's rubber letter technique.
+     Desktop only — on mobile just shows text normally.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="rubber-text"]').forEach(function (el) {
+    el.style.opacity = '1';
+    if (isMobile) return;
+
+    var text = el.textContent;
+    var scaleAmount = parseFloat(el.getAttribute('data-rubber-scale') || 1.35);
+    el.innerHTML = '';
+    el.setAttribute('aria-label', text);
+
+    text.split('').forEach(function (char) {
+      var span = document.createElement('span');
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      span.style.display = 'inline-block';
+      span.style.willChange = 'transform';
+      span.style.cursor = 'default';
+      el.appendChild(span);
+
+      var isAnimating = false;
+      span.addEventListener('mouseenter', function () {
+        if (isAnimating) return;
+        isAnimating = true;
+        gsap.to(span, {
+          scaleX: scaleAmount,
+          scaleY: scaleAmount,
+          duration: 0.4,
+          ease: 'elastic.out(1, 0.3)',
+          onComplete: function () { isAnimating = false; }
+        });
+      });
+      span.addEventListener('mouseleave', function () {
+        gsap.to(span, {
+          scaleX: 1,
+          scaleY: 1,
+          duration: 0.6,
+          ease: 'elastic.out(1, 0.3)'
+        });
+      });
+    });
+
+    // Scroll entrance: stagger the letters in from below
+    gsap.fromTo(el.children,
+      { y: 20, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.5, stagger: 0.02, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+      }
+    );
+  });
+
+  /* ----------------------------------------------------------
+     45. MARQUEE TAPE (data-animate="marquee-tape")
+     Full-width diagonal or horizontal tape strip with pill-shaped
+     items. Auto-clones for seamless infinite loop. Supports:
+       - data-tape-speed (default 25s)
+       - data-tape-direction="left|right" (default left)
+       - data-tape-angle (CSS rotate, default 0)
+       - data-tape-gap (gap between items, default 2rem)
+     Children become pill-shaped tags automatically.
+     Inspired by Pixy template's marquee tape sections.
+     ---------------------------------------------------------- */
+  document.querySelectorAll('[data-animate="marquee-tape"]').forEach(function (el) {
+    el.style.opacity = '1';
+    el.style.overflow = 'hidden';
+    el.style.whiteSpace = 'nowrap';
+
+    var angle = el.getAttribute('data-tape-angle') || '0';
+    if (angle !== '0') {
+      el.style.transform = 'rotate(' + angle + 'deg)';
+      el.style.marginLeft = '-2%';
+      el.style.width = '104%';
+    }
+
+    var track = el.querySelector('.tape-track') || el;
+    var items = track.querySelectorAll('.tape-item');
+    if (!items.length) {
+      // If no .tape-item children, wrap direct text nodes / children
+      var children = Array.prototype.slice.call(track.children);
+      if (!children.length) return;
+      items = children;
+    }
+
+    // Style items as pills
+    items.forEach(function (item) {
+      item.style.display = 'inline-flex';
+      item.style.alignItems = 'center';
+      item.style.whiteSpace = 'nowrap';
+      item.style.flexShrink = '0';
+    });
+
+    // Ensure track is flex
+    track.style.display = 'inline-flex';
+    track.style.alignItems = 'center';
+    track.style.gap = el.getAttribute('data-tape-gap') || '2rem';
+    track.style.willChange = 'transform';
+
+    // Clone for seamless loop (3x for safety with wide screens)
+    var origHTML = track.innerHTML;
+    track.innerHTML = origHTML + origHTML + origHTML;
+
+    var speed = parseFloat(el.getAttribute('data-tape-speed') || 25);
+    var dir = el.getAttribute('data-tape-direction') === 'right' ? 1 : -1;
+    var totalW = track.scrollWidth / 3;
+
+    var tapeAnim = gsap.fromTo(track,
+      { x: dir > 0 ? -totalW : 0 },
+      { x: dir > 0 ? 0 : -totalW, duration: speed, ease: 'none', repeat: -1 }
+    );
+
+    // Pause on hover for readability
+    el.addEventListener('mouseenter', function () { tapeAnim.timeScale(0.3); });
+    el.addEventListener('mouseleave', function () { tapeAnim.timeScale(1); });
+  });
+
+  /* ----------------------------------------------------------
+     46. CUSTOM CURSOR FOLLOWER (enhanced cursor-glow)
+     Upgrades the basic cursor-glow to a visible circle that:
+       - Follows the mouse with smooth interpolation
+       - Expands on hover over links, buttons, [data-cursor]
+       - Changes to dot on text content
+       - Hides on mobile / touch devices
+     Applied globally when any element has data-cursor-follow
+     or when the CSS var --cursor-follow is set to "true".
+     Coexists with the existing cursor-glow (section 25).
+     ---------------------------------------------------------- */
+  var hasCursorFollow = document.querySelector('[data-cursor-follow]') ||
+    getComputedStyle(document.documentElement).getPropertyValue('--cursor-follow').trim() === 'true';
+
+  if (hasCursorFollow && !isMobile && window.matchMedia('(hover: hover)').matches) {
+    // Hide default cursor
+    var cursorStyle = document.createElement('style');
+    cursorStyle.textContent = [
+      '*, *::before, *::after { cursor: none !important; }',
+      '.cursor-dot { position: fixed; width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary, #3b82f6); pointer-events: none; z-index: 99999; mix-blend-mode: difference; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, background 0.3s; }',
+      '.cursor-ring { position: fixed; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--color-primary, #3b82f6); pointer-events: none; z-index: 99998; opacity: 0.5; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, opacity 0.3s, border-color 0.3s; }',
+      '.cursor-ring.is-hover { width: 60px; height: 60px; opacity: 0.8; border-color: var(--color-accent, var(--color-primary, #3b82f6)); }',
+      '.cursor-ring.is-text { width: 4px; height: 4px; opacity: 0; }',
+      '.cursor-dot.is-hover { width: 12px; height: 12px; background: var(--color-accent, var(--color-primary, #3b82f6)); }',
+      '.cursor-dot.is-hidden, .cursor-ring.is-hidden { opacity: 0; }'
+    ].join('\n');
+    document.head.appendChild(cursorStyle);
+
+    var dot = document.createElement('div');
+    dot.className = 'cursor-dot';
+    document.body.appendChild(dot);
+
+    var ring = document.createElement('div');
+    ring.className = 'cursor-ring';
+    document.body.appendChild(ring);
+
+    // Smooth follow with different speeds (dot faster, ring slower)
+    var dotX = gsap.quickTo(dot, 'left', { duration: 0.15, ease: 'power2.out' });
+    var dotY = gsap.quickTo(dot, 'top', { duration: 0.15, ease: 'power2.out' });
+    var ringX = gsap.quickTo(ring, 'left', { duration: 0.5, ease: 'power3.out' });
+    var ringY = gsap.quickTo(ring, 'top', { duration: 0.5, ease: 'power3.out' });
+
+    document.addEventListener('mousemove', function (e) {
+      dotX(e.clientX);
+      dotY(e.clientY);
+      ringX(e.clientX);
+      ringY(e.clientY);
+    });
+
+    // Hover states
+    var hoverTargets = 'a, button, [role="button"], input[type="submit"], .btn, [data-animate="magnetic"], [data-cursor="pointer"]';
+    var textTargets = 'p, span, h1, h2, h3, h4, h5, h6, li, td, th, label, blockquote';
+
+    document.addEventListener('mouseover', function (e) {
+      var target = e.target;
+      if (target.closest(hoverTargets)) {
+        dot.classList.add('is-hover');
+        ring.classList.add('is-hover');
+      } else if (target.matches(textTargets) && !target.closest(hoverTargets)) {
+        ring.classList.add('is-text');
+      }
+    });
+
+    document.addEventListener('mouseout', function (e) {
+      var target = e.target;
+      if (target.closest(hoverTargets) || target.matches(textTargets)) {
+        dot.classList.remove('is-hover');
+        ring.classList.remove('is-hover');
+        ring.classList.remove('is-text');
+      }
+    });
+
+    // Hide when mouse leaves window
+    document.addEventListener('mouseleave', function () {
+      dot.classList.add('is-hidden');
+      ring.classList.add('is-hidden');
+    });
+    document.addEventListener('mouseenter', function () {
+      dot.classList.remove('is-hidden');
+      ring.classList.remove('is-hidden');
+    });
+  }
 
   /* ==========================================================
      CSS SCROLL-DRIVEN ANIMATIONS — Native Layer

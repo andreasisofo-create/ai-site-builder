@@ -34,6 +34,14 @@ from app.services.kimi_client import kimi, kimi_refine, kimi_text
 from app.services.template_assembler import assembler as template_assembler
 from app.services.sanitizer import sanitize_input, sanitize_output
 from app.services.quality_control import qc_pipeline
+from app.services.generation_tracker import (
+    get_recently_used,
+    pick_avoiding_recent,
+    pick_variant_avoiding_recent,
+    record_generation,
+    build_diversity_prompt_block,
+    cleanup_old_records,
+)
 
 # AI Image generation (Flux/fal.ai) - graceful fallback if not available
 try:
@@ -262,13 +270,23 @@ FALLBACK_THEME_POOL = [
 ]
 
 
-def _pick_variety_context() -> Dict[str, Any]:
+def _pick_variety_context(category: str = "") -> Dict[str, Any]:
     """Pick blended personality, color mood, and font pairing for this generation.
 
+    Uses generation_tracker to avoid recently used combinations.
     Instead of a single personality, picks two and blends them (70/30 ratio)
     to produce more original and less robotic output.
     """
-    primary, secondary = random.sample(PERSONALITY_POOL, 2)
+    recently_used = get_recently_used(category=category, limit=15)
+
+    # Pick personality with anti-repetition
+    primary = pick_avoiding_recent(
+        PERSONALITY_POOL,
+        recently_used.get("personalities", set()),
+        key_fn=lambda p: p["name"],
+    )
+    remaining = [p for p in PERSONALITY_POOL if p["name"] != primary["name"]]
+    secondary = random.choice(remaining) if remaining else primary
     blended = {
         "name": f"{primary['name']}+{secondary['name']}",
         "directive": (
@@ -280,10 +298,26 @@ def _pick_variety_context() -> Dict[str, Any]:
         ),
         "headline_style": f"primarily {primary['headline_style']}, with touches of {secondary['headline_style']}",
     }
+
+    # Pick color mood avoiding recent ones
+    color_mood = pick_avoiding_recent(
+        COLOR_MOOD_POOL,
+        recently_used.get("color_moods", set()),
+        key_fn=lambda m: m["mood"],
+    )
+
+    # Pick font pairing avoiding recent headings
+    font_pairing = pick_avoiding_recent(
+        FONT_PAIRING_POOL,
+        recently_used.get("font_headings", set()),
+        key_fn=lambda f: f["heading"],
+    )
+
     return {
         "personality": blended,
-        "color_mood": random.choice(COLOR_MOOD_POOL),
-        "font_pairing": random.choice(FONT_PAIRING_POOL),
+        "color_mood": color_mood,
+        "font_pairing": font_pairing,
+        "_recently_used": recently_used,  # Pass through for downstream use
     }
 
 
@@ -2989,6 +3023,13 @@ The reference uses MINIMAL/CLEAN typography. Use one of these pairings:
         # Style-specific theme direction (colors, fonts, layout tokens for sub-style)
         style_theme_hint = _get_style_theme_hint(template_style_id) if not has_exact_colors else ""
 
+        # --- DIVERSITY: inject creative seed and anti-repetition hints ---
+        diversity_block = ""
+        if not has_exact_colors and not has_reference:
+            category = _get_category_from_style_id(template_style_id)
+            recently_used = (variety_context or {}).get("_recently_used")
+            diversity_block = build_diversity_prompt_block(category, recently_used)
+
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
 {exact_colors_block}{reference_override}
@@ -3000,6 +3041,7 @@ BUSINESS: {business_name} - {business_description[:1200]}
 {reference_font_hint}
 {theme_photo_hint}
 {style_theme_hint}
+{diversity_block}
 
 === COLOR THEORY RULES (follow these for professional palettes) ===
 - PRIMARY: The brand's emotional core. Ask: "What feeling should this business evoke?" Warm = trust/comfort (amber, coral). Cool = innovation/clarity (blue, teal). Bold = energy/passion (red, purple).
@@ -3256,9 +3298,22 @@ Avoid generic placeholder descriptions. The site will feature REAL business phot
         # === STYLE-SPECIFIC TONE (overrides broad category tone) ===
         style_tone_block = _get_style_tone(template_style_id)
 
+        # === DIVERSITY: inject creative direction seed for unique copy ===
+        texts_diversity_block = ""
+        if variety_context:
+            from app.services.generation_tracker import generate_creative_seed
+            recently_used = variety_context.get("_recently_used")
+            seed = generate_creative_seed(category, recently_used)
+            texts_diversity_block = f"""
+=== CREATIVE DIRECTION (make this copy UNIQUE) ===
+{seed['creative_direction']}
+Write copy that fits this creative vision. Every section should feel like it belongs to THIS specific site, not a template.
+=== END CREATIVE DIRECTION ===
+"""
+
         prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.
 Return ONLY valid JSON, no markdown.
-{reference_tone_hint}{knowledge_hint}{reference_hint}{photo_hint}
+{reference_tone_hint}{knowledge_hint}{reference_hint}{photo_hint}{texts_diversity_block}
 === ABSOLUTE BANNED PHRASES (using ANY of these = automatic failure) ===
 - "Benvenuti" / "Benvenuto" (in any form)
 - "Siamo un'azienda" / "Siamo un team" / "Siamo leader"
@@ -3503,8 +3558,10 @@ Return ONLY the JSON object, no explanation."""
 
         Returns {variant_id: usage_count} for the last `limit` generations
         in the same category. Used to penalize overused components.
+        Tries PostgreSQL first, falls back to SQLite tracker.
         Never breaks the pipeline — returns empty dict on any error.
         """
+        # Try PostgreSQL first (production)
         try:
             from app.core.database import SessionLocal
             from app.models.generation_log import GenerationLog
@@ -3522,11 +3579,25 @@ Return ONLY the JSON object, no explanation."""
                     if log.components_used:
                         for variant_id in log.components_used.values():
                             counts[variant_id] = counts.get(variant_id, 0) + 1
-                return counts
+                if counts:
+                    return counts
             finally:
                 db.close()
         except Exception as e:
-            logger.debug(f"[DataBinding] Diversity query failed (non-fatal): {e}")
+            logger.debug(f"[DataBinding] PostgreSQL diversity query failed, trying SQLite: {e}")
+
+        # Fallback to SQLite tracker (always available, no DB setup needed)
+        try:
+            recently_used = get_recently_used(category=category, limit=limit)
+            component_usage = recently_used.get("components", {})
+            # Flatten {section: {variant: count}} -> {variant: count}
+            flat: Dict[str, int] = {}
+            for section_data in component_usage.values():
+                for variant_id, count in section_data.items():
+                    flat[variant_id] = flat.get(variant_id, 0) + count
+            return flat
+        except Exception as e:
+            logger.debug(f"[DataBinding] SQLite diversity query also failed (non-fatal): {e}")
             return {}
 
     def _diversity_weighted_choice(
@@ -3562,19 +3633,45 @@ Return ONLY the JSON object, no explanation."""
     def _log_generation(
         self, category: str, template_style_id: str,
         selections: Dict[str, str], theme_summary: Optional[Dict[str, str]] = None,
+        variety_context: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """Log a generation to the database for diversity tracking.
+        """Log a generation to both PostgreSQL and SQLite tracker for diversity tracking.
 
-        Stores the layout_hash (unique constraint) and component selections.
-        On duplicate hash (exact same layout), skips silently.
+        Stores the layout_hash, component selections, and variety choices.
         Never breaks the pipeline.
         """
+        layout_hash = self._compute_layout_hash(selections)
+
+        # Always log to SQLite tracker (lightweight, always available)
+        try:
+            theme = theme_summary or {}
+            variety = variety_context or {}
+            personality = variety.get("personality", {})
+            color_mood = variety.get("color_mood", {})
+            font_pair = variety.get("font_pairing", {})
+            record_generation(
+                category=category,
+                style_id=template_style_id,
+                color_primary=theme.get("primary_color", ""),
+                color_mood=color_mood.get("mood", ""),
+                font_heading=font_pair.get("heading", theme.get("font_heading", "")),
+                font_body=font_pair.get("body", theme.get("font_body", "")),
+                personality=personality.get("name", ""),
+                components=selections,
+                layout_hash=layout_hash,
+                theme=theme,
+            )
+            # Periodic cleanup (keep last 200)
+            cleanup_old_records(200)
+        except Exception as e:
+            logger.debug(f"[DataBinding] SQLite tracker logging failed (non-fatal): {e}")
+
+        # Also log to PostgreSQL (production, if available)
         try:
             from app.core.database import SessionLocal
             from app.models.generation_log import GenerationLog
             db = SessionLocal()
             try:
-                layout_hash = self._compute_layout_hash(selections)
                 log = GenerationLog(
                     category=category,
                     style_mood=template_style_id,
@@ -3587,7 +3684,6 @@ Return ONLY the JSON object, no explanation."""
                 logger.info(f"[DataBinding] Logged generation: hash={layout_hash}, style={template_style_id}")
             except Exception as e:
                 db.rollback()
-                # Duplicate hash = same layout used before, that's OK
                 if "unique" in str(e).lower() or "duplicate" in str(e).lower():
                     logger.debug(f"[DataBinding] Duplicate layout hash (expected): {e}")
                 else:
@@ -3595,7 +3691,7 @@ Return ONLY the JSON object, no explanation."""
             finally:
                 db.close()
         except Exception as e:
-            logger.debug(f"[DataBinding] Generation logging failed (non-fatal): {e}")
+            logger.debug(f"[DataBinding] PostgreSQL logging failed (non-fatal): {e}")
 
     def _select_components_deterministic(
         self,
@@ -3687,9 +3783,11 @@ Return ONLY the JSON object, no explanation."""
             elif "nav" in fixed_map:
                 selections["nav"] = fixed_map["nav"]
 
-            # Check for duplicate layout
+            # Check for duplicate layout (try PostgreSQL, fallback to SQLite tracker)
             layout_hash = self._compute_layout_hash(selections)
             if attempt < max_attempts - 1:
+                is_duplicate = False
+                # Try PostgreSQL
                 try:
                     from app.core.database import SessionLocal
                     from app.models.generation_log import GenerationLog
@@ -3698,13 +3796,19 @@ Return ONLY the JSON object, no explanation."""
                         existing = db.query(GenerationLog).filter(
                             GenerationLog.layout_hash == layout_hash
                         ).first()
-                        if existing:
-                            logger.info(f"[DataBinding] Layout hash collision on attempt {attempt + 1}, re-rolling...")
-                            continue  # Try again
+                        is_duplicate = existing is not None
                     finally:
                         db.close()
                 except Exception:
-                    pass  # DB error, just use this selection
+                    # Fallback to SQLite tracker
+                    try:
+                        recently_used = get_recently_used(category=category, limit=20)
+                        is_duplicate = layout_hash in recently_used.get("layout_hashes", set())
+                    except Exception:
+                        pass
+                if is_duplicate:
+                    logger.info(f"[DataBinding] Layout hash collision on attempt {attempt + 1}, re-rolling...")
+                    continue  # Try again
             break  # No collision or last attempt
 
         logger.info(f"[DataBinding] Diversity selection for '{template_style_id}': {selections}")
@@ -3975,8 +4079,8 @@ RULES:
             # If reference_analysis was passed in already, parse it too
             parsed_reference = _parse_reference_analysis(reference_analysis)
 
-        # === PICK VARIETY CONTEXT (random personality, color mood, font pairing) ===
-        variety = _pick_variety_context()
+        # === PICK VARIETY CONTEXT (anti-repetition personality, color mood, font pairing) ===
+        variety = _pick_variety_context(category=_get_category_from_style_id(template_style_id))
         # When user specified colors, disable color_mood to avoid contradictions
         user_has_colors = bool(style_preferences and style_preferences.get("primary_color"))
         if user_has_colors:
@@ -4167,7 +4271,10 @@ RULES:
 
         # Log generation for diversity tracking (non-blocking)
         category = _get_category_from_style_id(template_style_id)
-        self._log_generation(category, template_style_id or "", selections)
+        self._log_generation(
+            category, template_style_id or "", selections,
+            theme_summary=theme, variety_context=variety,
+        )
 
         # Send preview: layout + texts
         hero_texts = texts.get("hero", {})

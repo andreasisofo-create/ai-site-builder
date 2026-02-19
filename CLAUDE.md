@@ -3,7 +3,7 @@
 ## Overview
 AI-powered website builder (SaaS). Users choose a template, fill in business info, and the system generates a complete one-page website with GSAP animations.
 
-**Stack**: Next.js 14 (frontend, Vercel) + FastAPI (backend, Render) + PostgreSQL + Kimi K2.5 AI + ChromaDB
+**Stack**: Next.js 14 (frontend, Vercel) + FastAPI (backend, Render) + PostgreSQL + Gemini 2.5 Pro/Flash AI (via OpenRouter) + ChromaDB
 
 ## Architecture
 
@@ -16,8 +16,8 @@ AI-powered website builder (SaaS). Users choose a template, fill in business inf
 
 ### Backend (FastAPI, Python)
 - **Two generation pipelines**:
-  1. `databinding_generator.py` — PRIMARY: Kimi generates JSON → TemplateAssembler builds HTML from pre-built components. Faster, consistent, GSAP guaranteed.
-  2. `ai_service.py` — FALLBACK: Kimi generates complete HTML directly. Used for custom-free style.
+  1. `databinding_generator.py` — PRIMARY: Gemini generates JSON → TemplateAssembler builds HTML from pre-built components. Faster, consistent, GSAP guaranteed.
+  2. `ai_service.py` — FALLBACK: Gemini generates complete HTML directly. Used for custom-free style.
 - **Component system**: 85 HTML templates in `backend/app/components/` organized by section type (hero/, about/, services/, etc.)
 - **GSAP engine**: `gsap-universal.js` (v3.0, 29 effects) auto-injected into every generated site
 - **ChromaDB**: Vector database with 105 design patterns, queried during generation for creative context
@@ -29,7 +29,10 @@ AI-powered website builder (SaaS). Users choose a template, fill in business inf
 | `frontend/src/lib/templates.ts` | 8 categories, 19 template styles, preview HTML generators |
 | `frontend/src/app/dashboard/page.tsx` | Dashboard with template gallery (iframe previews) |
 | `frontend/src/app/dashboard/new/page.tsx` | 3-step creation wizard |
-| `backend/app/services/databinding_generator.py` | Main generation pipeline (Kimi JSON → templates) |
+| `backend/app/services/databinding_generator.py` | Main generation pipeline (Gemini JSON → templates) |
+| `backend/app/services/kimi_client.py` | Provider-agnostic AI client (legacy name, uses Gemini via OpenRouter) |
+| `backend/app/services/color_palette.py` | Color harmony palette generation (5 schemes) |
+| `backend/app/services/seed_category_guides.py` | Per-category design knowledge (8 categories × 11 fields) |
 | `backend/app/services/ai_service.py` | Direct HTML generation pipeline (fallback) |
 | `backend/app/services/template_assembler.py` | Assembles HTML from component templates |
 | `backend/app/services/design_knowledge.py` | ChromaDB vector DB service |
@@ -61,16 +64,18 @@ The `gsap-universal.js` engine supports these `data-animate` attributes:
 - **Modifiers**: data-delay, data-duration, data-ease, data-speed, data-split-type
 
 ## Generation Pipeline (databinding_generator.py)
-1. **Query ChromaDB** for creative context (local, instant)
-2. **Step 1+2 (parallel)**: Theme JSON (colors, fonts) + Texts JSON (all section content)
-3. **Step 3**: Component selection (deterministic via STYLE_VARIANT_MAP)
-4. **Step 4**: TemplateAssembler builds complete HTML
+1. **Query ChromaDB** for creative context + category design guide (local, instant)
+2. **Color palette**: If user picked a primary color, generate harmony palette (5 schemes) as AI hint
+3. **Step 1+2 (parallel)**: Theme JSON (colors, fonts) + Texts JSON (all section content) via Gemini 2.5 Pro
+4. **Step 3**: Component selection (deterministic via STYLE_VARIANT_MAP)
+5. **Step 4**: TemplateAssembler builds complete HTML with WCAG contrast enforcement
 
 ## Deployment
 - **Frontend**: Vercel (auto-deploy from GitHub) — `site-generator-v2.vercel.app`
 - **Backend**: Render (auto-deploy from GitHub) — `site-builder-api.onrender.com`
 - **Database**: PostgreSQL on Render
-- **AI**: Kimi K2.5 via Moonshot API (`api.moonshot.cn/v1`)
+- **AI**: Gemini 2.5 Pro (generation) + Gemini 2.5 Flash (refine/text) via OpenRouter
+- **AI Client**: `kimi_client.py` — provider-agnostic, legacy name. Routes to Gemini via OpenRouter API
 
 ## Recent Work (Feb 2026)
 1. Restructured wizard from 5 steps to 3 steps
@@ -80,13 +85,19 @@ The `gsap-universal.js` engine supports these `data-animate` attributes:
 5. Enhanced AI prompts: creative copywriting rules, banned generic text, bold design directives
 6. Fixed STYLE_VARIANT_MAP: all 19 styles now have backend component mappings
 7. Enhanced 17+ HTML component templates with rich animations
+8. Switched AI from Kimi K2.5 to Gemini 2.5 Pro/Flash via OpenRouter
+9. Added color harmony palette system (5 schemes: complementary, analogous, triadic, split-comp, mono)
+10. Added per-category design guides database (8 categories × 11 design rules)
+11. Added WCAG AA contrast enforcement in template_assembler and databinding_generator
+12. Added HTML sanitizer + image placeholder generator + quality control system
 
 ## Important Notes
 - User speaks Italian. Content generation is in Italian.
-- ChromaDB auto-seeds on startup (105 patterns) via main.py lifespan hook
+- ChromaDB auto-seeds on startup (105 patterns) + category design guides (8 categories) via main.py lifespan hook
 - The AI prompts explicitly ban generic phrases like "benvenuti", "siamo un'azienda"
 - Font pairings are enforced: heading fonts with CHARACTER (Playfair, Space Grotesk, Sora, DM Serif), not system defaults
 - All section headings must use `data-animate="text-split"`, all CTAs must use `data-animate="magnetic"`
+- AI client class is named `KimiClient` for legacy reasons but actually uses Gemini via OpenRouter. Do NOT reference "Kimi" in new code/comments — use "Gemini" or "AI"
 
 ## TODO: Next Session ("riprendiamo")
 When the user says "riprendiamo", implement these 3 features:
