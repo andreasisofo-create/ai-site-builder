@@ -136,20 +136,26 @@ const CATEGORY_PALETTES: Record<string, string[][]> = {
 };
 
 // ============ V2 CATEGORY → V1 TEMPLATE STYLE MAPPING ============
-// Maps V2 category slugs to V1 template_style_id for the databinding pipeline.
-// The V1 pipeline is production-ready (background, progress tracking, battle-tested).
-const V2_TO_V1_STYLE: Record<string, string> = {
-  ristorante: "restaurant-elegant",
-  studio_professionale: "business-trust",
-  portfolio: "portfolio-gallery",
-  fitness: "business-fresh",
-  bellezza: "portfolio-creative",
-  salute: "business-corporate",
-  saas: "saas-gradient",
-  ecommerce: "ecommerce-modern",
-  artigiani: "business-corporate",
-  agenzia: "saas-gradient",
+// Maps V2 category slugs to V1 template_style_id pool for the databinding pipeline.
+// A random style is picked each generation to ensure visual diversity.
+const V2_TO_V1_STYLES: Record<string, string[]> = {
+  ristorante: ["restaurant-elegant", "restaurant-cozy", "restaurant-modern"],
+  studio_professionale: ["business-trust", "business-corporate", "business-fresh"],
+  portfolio: ["portfolio-gallery", "portfolio-minimal", "portfolio-creative"],
+  fitness: ["business-fresh", "saas-clean", "business-corporate"],
+  bellezza: ["portfolio-creative", "portfolio-minimal", "ecommerce-luxury"],
+  salute: ["business-corporate", "business-trust", "saas-clean"],
+  saas: ["saas-gradient", "saas-clean", "saas-dark"],
+  ecommerce: ["ecommerce-modern", "ecommerce-luxury"],
+  artigiani: ["business-corporate", "business-fresh", "business-trust"],
+  agenzia: ["saas-gradient", "saas-dark", "business-fresh"],
 };
+
+function pickRandomV1Style(v2Category: string): string {
+  const pool = V2_TO_V1_STYLES[v2Category];
+  if (!pool || pool.length === 0) return "business-corporate";
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 
 // Maps V2-specific section types to V1 equivalents (V1 has no templates for these)
 const V2_SECTION_TO_V1: Record<string, string> = {
@@ -480,7 +486,7 @@ function NewProjectContent() {
       // Always use V1 (databinding) pipeline - runs in background, saves progress, battle-tested.
       // When V2 category is selected, map it to the closest V1 template_style_id.
       const effectiveTemplateStyle = selectedStyle?.id
-        || (selectedV2Category ? V2_TO_V1_STYLE[selectedV2Category.slug] : undefined);
+        || (selectedV2Category ? pickRandomV1Style(selectedV2Category.slug) : undefined);
 
       // If V2 category selected but no style prefs set, derive from V2 category palette
       if (selectedV2Category && !stylePrefs) {

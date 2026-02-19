@@ -366,8 +366,8 @@ async def replace_image(
     if data.old_src not in site.html_content:
         raise HTTPException(status_code=404, detail="Immagine non trovata nell'HTML del sito")
 
-    # Perform replacement
-    updated_html = site.html_content.replace(data.old_src, data.new_src)
+    # Replace only the first occurrence of old_src (not all duplicates)
+    updated_html = site.html_content.replace(data.old_src, data.new_src, 1)
     site.html_content = updated_html
 
     # Save version
