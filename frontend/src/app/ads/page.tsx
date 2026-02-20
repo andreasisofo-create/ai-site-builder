@@ -15,8 +15,201 @@ import Footer from "@/components/sections/Footer";
 import { useLanguage, translations } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth-context";
 
-// Pack slug mapping (order matches translations.adsPage.pricing.packs)
-const PACK_SLUGS = ["pack-presenza", "pack-clienti", "pack-crescita", "pack-premium"];
+// Ads pricing data — matches pack-ads-equipe.md
+const ADS_CHANNELS = {
+    meta: {
+        label: "Meta Ads",
+        subtitle: "Instagram & Facebook",
+        plans: [
+            {
+                name: "META BASE",
+                slug: "meta-ads-base",
+                fee: "\u20AC199",
+                percent: "15%",
+                setup: "\u20AC299 setup",
+                desc: "Controllo 2x/settimana, report mensile, supporto email 48h.",
+                features: [
+                    "Campagne illimitate Instagram & Facebook",
+                    "Contenuti AI illimitati (post, grafiche, video)",
+                    "A/B testing automatico",
+                    "DM automatici ai lead",
+                    "Tracking Pixel + Conversions API",
+                    "Ottimizzazione settimanale",
+                    "Report mensile",
+                ],
+                budget: "da \u20AC300 a \u20AC800/mese",
+                example: "Budget \u20AC500 \u2192 \u20AC199 + \u20AC75 = \u20AC274/mese",
+            },
+            {
+                name: "META PRO",
+                slug: "meta-ads-pro",
+                fee: "\u20AC349",
+                percent: "12%",
+                setup: "\u20AC199 setup",
+                desc: "Controllo giornaliero, review creativit\u00E0, dashboard live.",
+                features: [
+                    "Tutto di META BASE",
+                    "Controllo giornaliero campagne",
+                    "Ottimizzazione 3x/settimana",
+                    "Review umana ogni creativit\u00E0",
+                    "Dashboard live in tempo reale",
+                    "Report quindicinale",
+                    "Supporto chat prioritario 24h",
+                    "Consulenza strategica trimestrale",
+                ],
+                budget: "da \u20AC800 a \u20AC2.500/mese",
+                example: "Budget \u20AC1.200 \u2192 \u20AC349 + \u20AC144 = \u20AC493/mese",
+                highlight: true,
+            },
+            {
+                name: "META ELITE",
+                slug: "meta-ads-elite",
+                fee: "\u20AC549",
+                percent: "10%",
+                setup: "Setup incluso (min. 6 mesi)",
+                desc: "Alert real-time, ottimizzazione quotidiana, call mensile.",
+                features: [
+                    "Tutto di META PRO",
+                    "Alert real-time + intervento immediato",
+                    "Ottimizzazione quotidiana",
+                    "Supervisione completa creativit\u00E0",
+                    "Report settimanale + Dashboard live",
+                    "Supporto dedicato entro 4h",
+                    "Consulenza strategica mensile con call",
+                ],
+                budget: "da \u20AC2.500/mese in su",
+                example: "Budget \u20AC3.000 \u2192 \u20AC549 + \u20AC300 = \u20AC849/mese",
+            },
+        ],
+    },
+    google: {
+        label: "Google Ads",
+        subtitle: "Ricerca, Display & Maps",
+        plans: [
+            {
+                name: "GOOGLE BASE",
+                slug: "google-ads-base",
+                fee: "\u20AC249",
+                percent: "15%",
+                setup: "\u20AC299 setup",
+                desc: "Campagne Ricerca, Display, Maps, Shopping. Report mensile.",
+                features: [
+                    "Campagne illimitate (Ricerca, Display, Maps, Shopping)",
+                    "Keyword research + negative keywords AI",
+                    "Annunci RSA + tutte le estensioni",
+                    "Landing page AI illimitate",
+                    "Remarketing Display automatico",
+                    "Tracking conversioni completo",
+                    "Ottimizzazione settimanale",
+                    "Report mensile",
+                ],
+                budget: "da \u20AC500 a \u20AC1.000/mese",
+                example: "Budget \u20AC700 \u2192 \u20AC249 + \u20AC105 = \u20AC354/mese",
+            },
+            {
+                name: "GOOGLE PRO",
+                slug: "google-ads-pro",
+                fee: "\u20AC399",
+                percent: "12%",
+                setup: "\u20AC199 setup",
+                desc: "Quality Score ottimizzato, analisi competitor, dashboard live.",
+                features: [
+                    "Tutto di GOOGLE BASE",
+                    "Controllo giornaliero campagne",
+                    "Ottimizzazione attiva Quality Score",
+                    "Ottimizzazione bid 3x/settimana",
+                    "Dashboard live in tempo reale",
+                    "Analisi competitor con review umana",
+                    "Report quindicinale",
+                    "Supporto chat prioritario 24h",
+                    "Consulenza strategica trimestrale",
+                ],
+                budget: "da \u20AC1.000 a \u20AC3.000/mese",
+                example: "Budget \u20AC1.500 \u2192 \u20AC399 + \u20AC180 = \u20AC579/mese",
+                highlight: true,
+            },
+            {
+                name: "GOOGLE ELITE",
+                slug: "google-ads-elite",
+                fee: "\u20AC649",
+                percent: "10%",
+                setup: "Setup incluso (min. 6 mesi)",
+                desc: "Quality Score 7+, report competitor dedicato, call mensile.",
+                features: [
+                    "Tutto di GOOGLE PRO",
+                    "Target Quality Score 7+ (-20/30% CPC)",
+                    "Alert real-time + ottimizzazione quotidiana",
+                    "Report competitor dedicato con analisi",
+                    "Report settimanale + Dashboard live",
+                    "Supporto dedicato entro 4h",
+                    "Consulenza strategica mensile con call",
+                ],
+                budget: "da \u20AC3.000/mese in su",
+                example: "Budget \u20AC4.000 \u2192 \u20AC649 + \u20AC400 = \u20AC1.049/mese",
+            },
+        ],
+    },
+    combo: {
+        label: "Combo Meta + Google",
+        subtitle: "Entrambi i canali, prezzo scontato",
+        plans: [
+            {
+                name: "COMBO BASE",
+                slug: "combo-ads-base",
+                fee: "\u20AC379",
+                percent: "14%",
+                setup: "\u20AC399 setup",
+                desc: "Risparmi \u20AC69/mese. Retargeting cross-platform e report unificato.",
+                features: [
+                    "Tutto di META BASE + GOOGLE BASE",
+                    "Retargeting cross-platform",
+                    "Report unificato mensile",
+                    "Strategia cross-canale AI",
+                    "Percentuale ridotta: 14% vs 15%",
+                ],
+                budget: "da \u20AC600 a \u20AC1.500/mese",
+                example: "Budget \u20AC1.000 \u2192 \u20AC379 + \u20AC140 = \u20AC519/mese",
+            },
+            {
+                name: "COMBO PRO",
+                slug: "combo-ads-pro",
+                fee: "\u20AC639",
+                percent: "11%",
+                setup: "\u20AC249 setup",
+                desc: "Risparmi \u20AC109/mese. Attribution multi-touch e strategia coordinata.",
+                features: [
+                    "Tutto di META PRO + GOOGLE PRO",
+                    "Strategia cross-canale con operatore",
+                    "Retargeting cross-platform avanzato",
+                    "Attribution multi-touch",
+                    "Report unificato quindicinale",
+                    "Call strategica trimestrale",
+                    "Percentuale ridotta: 11% vs 12%",
+                ],
+                budget: "da \u20AC1.500 a \u20AC4.000/mese",
+                example: "Budget \u20AC2.500 \u2192 \u20AC639 + \u20AC275 = \u20AC914/mese",
+                highlight: true,
+            },
+            {
+                name: "COMBO ELITE",
+                slug: "combo-ads-elite",
+                fee: "\u20AC999",
+                percent: "9%",
+                setup: "Setup incluso (min. 6 mesi)",
+                desc: "Risparmi \u20AC199/mese. Account manager dedicato, la % pi\u00F9 bassa.",
+                features: [
+                    "Tutto di META ELITE + GOOGLE ELITE",
+                    "Account manager dedicato",
+                    "Attribution multi-touch avanzato",
+                    "Report settimanale unificato + Call mensile",
+                    "Percentuale pi\u00F9 bassa: 9%",
+                ],
+                budget: "da \u20AC4.000/mese in su",
+                example: "Budget \u20AC5.000 \u2192 \u20AC999 + \u20AC450 = \u20AC1.449/mese",
+            },
+        ],
+    },
+};
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -309,8 +502,7 @@ function ContentCreation() {
 
 // ============ PRICING ============
 function AdsPricing() {
-    const { language } = useLanguage();
-    const txt = translations[language].adsPage;
+    const [activeChannel, setActiveChannel] = useState<"meta" | "google" | "combo">("meta");
     const router = useRouter();
     const { isAuthenticated } = useAuth();
 
@@ -322,50 +514,90 @@ function AdsPricing() {
         router.push(`/checkout?service=${slug}`);
     };
 
+    const channels = [
+        { key: "meta" as const, label: "Meta Ads", icon: Smartphone },
+        { key: "google" as const, label: "Google Ads", icon: Search },
+        { key: "combo" as const, label: "Combo", icon: Zap },
+    ];
+
+    const channel = ADS_CHANNELS[activeChannel];
+
     return (
         <section id="prezzi-ads" className="py-20 lg:py-28 bg-[#0f0f23]">
             <div className="container mx-auto px-6">
-                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mb-16">
+                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mb-12">
                     <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">
-                        {txt.pricing.title}
+                        Pack Ads. Prezzi trasparenti.
                     </h2>
-                    <p className="text-gray-400 text-lg">
-                        {txt.pricing.subtitle}
+                    <p className="text-gray-400 text-lg mb-8">
+                        Fee fisso + percentuale sul budget. L&apos;AI lavora senza limiti su ogni livello.
                     </p>
+
+                    {/* Channel tabs */}
+                    <div className="inline-flex bg-[#16162a] rounded-xl p-1 border border-white/5">
+                        {channels.map((ch) => {
+                            const Icon = ch.icon;
+                            return (
+                                <button
+                                    key={ch.key}
+                                    onClick={() => setActiveChannel(ch.key)}
+                                    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                                        activeChannel === ch.key
+                                            ? "bg-[#22C55E] text-white shadow-lg"
+                                            : "text-gray-400 hover:text-white"
+                                    }`}
+                                >
+                                    <Icon className="w-4 h-4" />
+                                    {ch.label}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </motion.div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-8">
-                    {txt.pricing.packs.map((plan, idx) => {
-                        const highlight = idx === 2;
-                        const tag = "tag" in plan ? plan.tag : undefined;
-                        const slug = PACK_SLUGS[idx];
+                {/* Channel subtitle */}
+                <div className="text-center mb-8">
+                    <p className="text-sm text-gray-500">{channel.subtitle}</p>
+                </div>
+
+                {/* Plans grid */}
+                <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-8">
+                    {channel.plans.map((plan, idx) => {
+                        const highlight = "highlight" in plan && plan.highlight;
                         return (
                             <motion.div
-                                key={idx}
-                                initial="hidden" whileInView="visible" viewport={{ once: true }}
-                                variants={fadeUp} transition={{ duration: 0.4, delay: idx * 0.1 }}
-                                className={`relative p-6 rounded-2xl flex flex-col h-full transition-all ${highlight
-                                    ? "bg-gradient-to-b from-[#22C55E]/15 to-[#16162a] border-2 border-[#22C55E] shadow-[0_0_40px_-10px_rgba(34,197,94,0.3)] scale-[1.02] z-10"
-                                    : "bg-[#16162a] border border-white/5 hover:border-white/20"
-                                    }`}
+                                key={`${activeChannel}-${idx}`}
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true }}
+                                variants={fadeUp}
+                                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                                className={`relative p-6 rounded-2xl flex flex-col h-full transition-all ${
+                                    highlight
+                                        ? "bg-gradient-to-b from-[#22C55E]/15 to-[#16162a] border-2 border-[#22C55E] shadow-[0_0_40px_-10px_rgba(34,197,94,0.3)] scale-[1.02] z-10"
+                                        : "bg-[#16162a] border border-white/5 hover:border-white/20"
+                                }`}
                             >
-                                {highlight && tag && (
+                                {highlight && (
                                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#22C55E] text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
-                                        {tag}
+                                        CONSIGLIATO
                                     </div>
                                 )}
+
                                 <div className="mb-6">
                                     <h3 className="text-lg font-bold text-white mb-1">{plan.name}</h3>
                                     <p className="text-sm text-gray-400 mb-4 min-h-[40px]">{plan.desc}</p>
                                     <div className="flex flex-col">
-                                        <div className="flex items-baseline">
-                                            <span className="text-3xl font-bold text-white tracking-tight">{plan.price}</span>
-                                            <span className="text-gray-500 ml-1 text-sm">{plan.subscription}</span>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-3xl font-bold text-white tracking-tight">{plan.fee}</span>
+                                            <span className="text-gray-500 text-sm">/mese</span>
+                                            <span className="text-[#22C55E] text-sm font-bold">+ {plan.percent} budget</span>
                                         </div>
-                                        <span className="text-xs text-[#22C55E] font-semibold uppercase tracking-wide mt-1">{plan.setup}</span>
+                                        <span className="text-xs text-gray-500 mt-1">{plan.setup}</span>
                                     </div>
                                 </div>
-                                <ul className="space-y-3 mb-8 flex-grow">
+
+                                <ul className="space-y-3 mb-6 flex-grow">
                                     {plan.features.map((feat, i) => (
                                         <li key={i} className="flex items-start gap-2">
                                             <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
@@ -373,26 +605,57 @@ function AdsPricing() {
                                         </li>
                                     ))}
                                 </ul>
+
+                                {/* Budget example */}
+                                <div className="p-3 rounded-lg bg-white/5 border border-white/5 mb-4">
+                                    <p className="text-xs text-gray-500 mb-0.5">Budget consigliato: {plan.budget}</p>
+                                    <p className="text-xs text-gray-300 font-medium">{plan.example}</p>
+                                </div>
+
                                 <button
-                                    onClick={() => handleCheckout(slug)}
-                                    className={`w-full py-3 rounded-xl font-bold text-sm text-center transition-all flex items-center justify-center gap-2 ${highlight
-                                        ? "bg-[#22C55E] hover:bg-[#16A34A] text-white shadow-lg"
-                                        : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
-                                        }`}
+                                    onClick={() => handleCheckout(plan.slug)}
+                                    className={`w-full py-3 rounded-xl font-bold text-sm text-center transition-all flex items-center justify-center gap-2 ${
+                                        highlight
+                                            ? "bg-[#22C55E] hover:bg-[#16A34A] text-white shadow-lg"
+                                            : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                                    }`}
                                 >
-                                    {txt.pricing.packs[idx].cta}
+                                    Scegli {plan.name}
                                 </button>
                             </motion.div>
                         );
                     })}
                 </div>
 
+                {/* Cross-sell AI Builder */}
+                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="max-w-3xl mx-auto mb-8">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 p-5 rounded-2xl bg-[#16162a] border border-[#0090FF]/20">
+                        <div className="flex-grow">
+                            <p className="text-sm font-bold text-white">Aggiungi un sito AI Builder e risparmi il 15%</p>
+                            <p className="text-xs text-gray-400 mt-1">
+                                Starter a <span className="text-[#0090FF] font-bold">&euro;16,90/mese</span> &middot; Pro a <span className="text-[#0090FF] font-bold">&euro;33/mese</span> con qualsiasi pack Ads.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => router.push("/prezzi")}
+                            className="flex items-center gap-1 px-4 py-2 rounded-lg bg-[#0090FF]/10 text-[#0090FF] text-sm font-bold border border-[#0090FF]/20 hover:bg-[#0090FF]/20 transition-all whitespace-nowrap"
+                        >
+                            Vedi AI Builder <ArrowRight className="w-4 h-4" />
+                        </button>
+                    </div>
+                </motion.div>
+
+                {/* Notes */}
                 <div className="text-center space-x-4">
-                    {txt.pricing.notes.map((note, idx) => (
-                        <span key={idx} className="text-sm text-gray-500 bg-[#16162a] px-4 py-2 rounded-full border border-white/5">
-                            {note}
-                        </span>
-                    ))}
+                    <span className="text-sm text-gray-500 bg-[#16162a] px-4 py-2 rounded-full border border-white/5">
+                        Prezzi IVA esclusa
+                    </span>
+                    <span className="text-sm text-gray-500 bg-[#16162a] px-4 py-2 rounded-full border border-white/5">
+                        Budget pubblicitario escluso
+                    </span>
+                    <span className="text-sm text-gray-500 bg-[#16162a] px-4 py-2 rounded-full border border-white/5">
+                        Sconto 15% pagamento annuale
+                    </span>
                 </div>
             </div>
         </section>
