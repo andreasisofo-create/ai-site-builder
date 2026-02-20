@@ -1,0 +1,362 @@
+<!-- Component: contact-fitx-01 -->
+<!-- Tags: imported -->
+<section id="contact" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+button,
+input,
+optgroup,
+select,
+textarea { font-family: inherit;
+
+  font-size: 100%;
+
+  line-height: 1.15;
+
+  margin: 0; }
+button,
+input { overflow: visible; }
+button,
+select { text-transform: none; }
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] { -webkit-appearance: button; }
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner { border-style: none;
+  padding: 0; }
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring { outline: 1px dotted ButtonText; }
+textarea { overflow: auto; }
+body,
+button,
+input,
+select,
+textarea { color: var(--color-text-muted);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.5;
+  position: relative;
+  background-color: var(--color-bg); }
+p { margin: 0 0 20px 0; }
+h1,
+h2,
+.banner-page .title-page,
+h3,
+h4,
+.rs-team-1 .title,
+.rs-team-single .title,
+h5 { font-family: var(--font-body);
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 20px; }
+h2, .banner-page .title-page { font-size: 2.857em;
+  line-height: normal; }
+.content-wrap { padding: 100px 0; }
+.section { position: relative; }
+.section-heading, .rs-feature-box-1 .title { font-size: 28px;
+  line-height: 1em;
+  margin-bottom: 20px;
+  margin-top: 0;
+  padding-bottom: 5px;
+  position: relative;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase; }
+.section-heading:after, .rs-feature-box-1 .title:after { content: '';
+    display: block;
+    vertical-align: bottom;
+    width: 76px;
+    height: 1px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    background-color: var(--color-primary); }
+.section-heading.light, .rs-feature-box-1 .light.title { color: var(--color-primary); }
+.section-heading.light span, .rs-feature-box-1 .light.title span { color: var(--color-bg); }
+.section-heading.light:after, .rs-feature-box-1 .light.title:after { background: var(--color-bg); }
+.section-heading.text-center:after, .rs-feature-box-1 .text-center.title:after { margin-left: auto;
+    margin-right: auto; }
+.section-heading.text-right:after, .rs-feature-box-1 .text-right.title:after { margin-left: auto; }
+.subheading { margin-top: -20px;
+  margin-bottom: 30px;
+  color: var(--color-text-muted);
+  font-size: 16px; }
+.subheading.text-center { width: 60%;
+    margin-left: auto;
+    margin-right: auto; }
+.bg-gray { background-color: var(--color-text); }
+.banner-page .content-wrap { padding: 60px 0; }
+.btn, .btn-primary, .btn-secondary, .btn-primary.disabled, .btn-light, .btn-ghost-light, .banner .wrap-caption .btn-primary { font-size: 14px;
+  color: var(--color-bg);
+  padding: 13px 40px;
+  border: 0;
+  min-width: 150px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  border-radius: 0; }
+.btn-primary { background-color: var(--color-primary);
+  color: var(--color-text); }
+.btn-primary:hover { background-color: var(--color-text);
+    color: var(--color-primary); }
+.btn-primary.disabled { background-color: var(--color-primary);
+  color: var(--color-text); }
+.btn-primary.disabled:hover { background-color: var(--color-text);
+    color: var(--color-primary); }
+.box-icon-1 .body-content h1, .box-icon-1 .body-content h2, .box-icon-1 .body-content .banner-page .title-page, .banner-page .box-icon-1 .body-content .title-page, .box-icon-1 .body-content h3, .box-icon-1 .body-content h4, .box-icon-1 .body-content .rs-team-1 .title, .rs-team-1 .box-icon-1 .body-content .title, .box-icon-1 .body-content .rs-team-single .title, .rs-team-single .box-icon-1 .body-content .title, .box-icon-1 .body-content h5 { font-weight: 700;
+    color: var(--color-text);
+    font-style: italic; }
+.box-icon-2 .body-content h1, .box-icon-2 .body-content h2, .box-icon-2 .body-content .banner-page .title-page, .banner-page .box-icon-2 .body-content .title-page, .box-icon-2 .body-content h3, .box-icon-2 .body-content h4, .box-icon-2 .body-content .rs-team-1 .title, .rs-team-1 .box-icon-2 .body-content .title, .box-icon-2 .body-content .rs-team-single .title, .rs-team-single .box-icon-2 .body-content .title, .box-icon-2 .body-content h5 { font-weight: 700;
+    color: var(--color-text);
+    font-style: italic; }
+.rs-icon-2.text-center { text-align: center; }
+.rs-icon-2.text-center .fa { width: 80px;
+      height: 80px;
+      padding-top: 22px;
+      margin-bottom: 20px; }
+.rs-icon-2.text-center .info-icon { display: block; }
+.rs-icon-info-3.text-center { text-align: center; }
+.rs-icon-info-3.text-center .fa { width: 80px;
+      height: 80px;
+      padding-top: 22px;
+      margin-bottom: 20px; }
+.rs-icon-info-3.text-center .info-icon { display: block; }
+.rs-icon-funfact .body-content h1, .rs-icon-funfact .body-content h2, .rs-icon-funfact .body-content .banner-page .title-page, .banner-page .rs-icon-funfact .body-content .title-page, .rs-icon-funfact .body-content h3, .rs-icon-funfact .body-content h4, .rs-icon-funfact .body-content .rs-team-1 .title, .rs-team-1 .rs-icon-funfact .body-content .title, .rs-icon-funfact .body-content .rs-team-single .title, .rs-team-single .rs-icon-funfact .body-content .title, .rs-icon-funfact .body-content h4, .rs-icon-funfact .body-content .rs-team-1 .title, .rs-team-1 .rs-icon-funfact .body-content .title, .rs-icon-funfact .body-content .rs-team-single .title, .rs-team-single .rs-icon-funfact .body-content .title, .rs-icon-funfact .body-content h5, .rs-icon-funfact .body-content h6 { clear: none;
+    margin-bottom: 0;
+    color: var(--color-bg); }
+.rs-icon-funfact .body-content p { color: var(--color-primary); }
+.rs-funfact .box-fun h2, .rs-funfact .box-fun .banner-page .title-page, .banner-page .rs-funfact .box-fun .title-page { position: absolute;
+      top: 0;
+      width: 100%;
+      text-align: center; }
+.box-image-1 .body-content h1, .box-image-1 .body-content h2, .box-image-1 .body-content .banner-page .title-page, .banner-page .box-image-1 .body-content .title-page, .box-image-1 .body-content h3, .box-image-1 .body-content h4, .box-image-1 .body-content .rs-team-1 .title, .rs-team-1 .box-image-1 .body-content .title, .box-image-1 .body-content .rs-team-single .title, .rs-team-single .box-image-1 .body-content .title, .box-image-1 .body-content h5 { font-weight: 700;
+    color: var(--color-text); }
+.form-comment .form-control,
+.form-contact .form-control,
+.contact .form-control { height: 45px;
+  background-color: var(--color-bg);
+  border: 1px solid rgba(153, 153, 153, 0.2);
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 0.9;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+  filter: alpha(opacity=90); }
+.form-comment textarea.form-control,
+.form-contact textarea.form-control,
+.contact textarea.form-control { height: auto; }
+.form-comment .btn.disabled, .form-comment .disabled.btn-primary, .form-comment .disabled.btn-secondary, .form-comment .disabled.btn-light, .form-comment .disabled.btn-ghost-light, .form-comment .btn[disabled], .form-comment [disabled].btn-primary, .form-comment [disabled].btn-secondary, .form-comment [disabled].btn-light, .form-comment [disabled].btn-ghost-light, .form-comment fieldset[disabled] .btn, .form-comment fieldset[disabled] .btn-primary, .form-comment fieldset[disabled] .btn-secondary, .form-comment fieldset[disabled] .btn-light, .form-comment fieldset[disabled] .btn-ghost-light,
+.form-contact .btn.disabled,
+.form-contact .disabled.btn-primary,
+.form-contact .disabled.btn-secondary,
+.form-contact .disabled.btn-light,
+.form-contact .disabled.btn-ghost-light,
+.form-contact .btn[disabled],
+.form-contact [disabled].btn-primary,
+.form-contact [disabled].btn-secondary,
+.form-contact [disabled].btn-light,
+.form-contact [disabled].btn-ghost-light,
+.form-contact fieldset[disabled] .btn,
+.form-contact fieldset[disabled] .btn-primary,
+.form-contact fieldset[disabled] .btn-secondary,
+.form-contact fieldset[disabled] .btn-light,
+.form-contact fieldset[disabled] .btn-ghost-light,
+.contact .btn.disabled,
+.contact .disabled.btn-primary,
+.contact .disabled.btn-secondary,
+.contact .disabled.btn-light,
+.contact .disabled.btn-ghost-light,
+.contact .btn[disabled],
+.contact [disabled].btn-primary,
+.contact [disabled].btn-secondary,
+.contact [disabled].btn-light,
+.contact [disabled].btn-ghost-light,
+.contact fieldset[disabled] .btn,
+.contact fieldset[disabled] .btn-primary,
+.contact fieldset[disabled] .btn-secondary,
+.contact fieldset[disabled] .btn-light,
+.contact fieldset[disabled] .btn-ghost-light { opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: alpha(opacity=100); }
+.form-contact-dark .form-control { height: 45px;
+  background-color: var(--color-text);
+  border: 1px solid var(--color-text);
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 0.9;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+  filter: alpha(opacity=90); }
+.form-contact-dark textarea.form-control { height: auto; }
+.form-contact-dark .btn.disabled, .form-contact-dark .disabled.btn-primary, .form-contact-dark .disabled.btn-secondary, .form-contact-dark .disabled.btn-light, .form-contact-dark .disabled.btn-ghost-light, .form-contact-dark .btn[disabled], .form-contact-dark [disabled].btn-primary, .form-contact-dark [disabled].btn-secondary, .form-contact-dark [disabled].btn-light, .form-contact-dark [disabled].btn-ghost-light, .form-contact-dark fieldset[disabled] .btn, .form-contact-dark fieldset[disabled] .btn-primary, .form-contact-dark fieldset[disabled] .btn-secondary, .form-contact-dark fieldset[disabled] .btn-light, .form-contact-dark fieldset[disabled] .btn-ghost-light { opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: alpha(opacity=100); }
+.form-subscribe .btn, .form-subscribe .btn-primary, .form-subscribe .btn-secondary, .form-subscribe .btn-light, .form-subscribe .btn-ghost-light, .form-subscribe .banner .wrap-caption .btn-primary, .banner .wrap-caption .form-subscribe .btn-primary { min-height: 52px; }
+.rs-accordion .card .btn, .rs-accordion .card .btn-primary, .rs-accordion .card .btn-secondary, .rs-accordion .card .btn-light, .rs-accordion .card .btn-ghost-light { display: block;
+    width: 100%;
+    text-align: left;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    border-radius: 0;
+    background-color: var(--color-text);
+    color: var(--color-bg);
+    font-size: initial;
+    font-weight: 700; }
+.rs-accordion .card .btn.collapsed, .rs-accordion .card .collapsed.btn-primary, .rs-accordion .card .collapsed.btn-secondary, .rs-accordion .card .collapsed.btn-light, .rs-accordion .card .collapsed.btn-ghost-light { color: var(--color-bg);
+      background-color: var(--color-primary); }
+.rs-accordion .card .btn:focus, .rs-accordion .card .btn-primary:focus, .rs-accordion .card .btn-secondary:focus, .rs-accordion .card .btn-light:focus, .rs-accordion .card .btn-ghost-light:focus { text-decoration: none; }
+.rs-accordion .title .btn, .rs-accordion .title .btn-primary, .rs-accordion .title .btn-secondary, .rs-accordion .title .btn-light, .rs-accordion .title .btn-ghost-light { padding: 10px 30px;
+    position: relative; }
+.rs-accordion .title .btn:hover, .rs-accordion .title .btn-primary:hover, .rs-accordion .title .btn-secondary:hover, .rs-accordion .title .btn-light:hover, .rs-accordion .title .btn-ghost-light:hover, .rs-accordion .title .btn:active, .rs-accordion .title .btn-primary:active, .rs-accordion .title .btn-secondary:active, .rs-accordion .title .btn-light:active, .rs-accordion .title .btn-ghost-light:active { text-decoration: none; }
+.rs-accordion .title .btn:before, .rs-accordion .title .btn-primary:before, .rs-accordion .title .btn-secondary:before, .rs-accordion .title .btn-light:before, .rs-accordion .title .btn-ghost-light:before { content: "\29BE";
+      font-family: Arial;
+      color: var(--color-bg);
+      font-size: 24px;
+      position: absolute;
+      top: 7px;
+      right: 20px;
+      line-height: 1; }
+.rs-accordion .title .btn.collapsed:before, .rs-accordion .title .collapsed.btn-primary:before, .rs-accordion .title .collapsed.btn-secondary:before, .rs-accordion .title .collapsed.btn-light:before, .rs-accordion .title .collapsed.btn-ghost-light:before { content: "\29BF";
+      color: var(--color-bg); }
+.rs-box-widget h1, .rs-box-widget h2, .rs-box-widget .banner-page .title-page, .banner-page .rs-box-widget .title-page, .rs-box-widget h3, .rs-box-widget h4, .rs-box-widget .rs-team-1 .title, .rs-team-1 .rs-box-widget .title, .rs-box-widget .rs-team-single .title, .rs-team-single .rs-box-widget .title, .rs-box-widget h5, .rs-box-widget h6 { color: var(--color-primary);
+    margin-top: 0;
+    margin-bottom: 0; }
+.topbar .row { min-height: 40px; }
+.contact-info > div { display: inline-block;
+    margin-right: 40px;
+    margin-top: 6px; }
+.contact-info > div:last-child { margin-right: 0; }
+.banner .owl-theme div:not(.owl-controls) { height: 100%;
+      overflow: hidden; }
+.banner .wrap-caption .btn-primary { background-color: var(--color-primary);
+    color: var(--color-text);
+    border: 1px solid var(--color-primary); }
+.banner .wrap-caption .btn-primary:hover { background-color: transparent;
+      color: var(--color-primary);
+      border-color: var(--color-primary); }
+.banner .wrap-caption p { color: var(--color-bg);
+    padding: 0; }
+.banner .wrap-caption p.bg { background-color: rgba(153, 153, 153, 0.5);
+      padding: 20px; }
+.banner .text-center > .wrap-caption { width: 80%;
+  margin: 0 auto;
+  text-align: center; }
+#cd-google-map .col-md-12 { padding: 0; }
+.cta-1 .body-action .btn, .cta-1 .body-action .btn-primary, .cta-1 .body-action .btn-secondary, .cta-1 .body-action .btn-light, .cta-1 .body-action .btn-ghost-light { display: inline-block;
+    overflow: hidden;
+    backface-visibility: hidden;
+    position: relative;
+    padding: 15px 35px; }
+.cta-overlap .body-action .btn, .cta-overlap .body-action .btn-primary, .cta-overlap .body-action .btn-secondary, .cta-overlap .body-action .btn-light, .cta-overlap .body-action .btn-ghost-light { display: inline-block;
+      overflow: hidden;
+      backface-visibility: hidden;
+      position: relative;
+      padding: 15px 35px; }
+.cta-info p { margin-bottom: 0; }
+.footer .footer-item .footer-subscribe input[type=email] { width: 100%;
+      background: var(--color-bg);
+      padding: 10px 57px 10px 17px;
+      min-height: 38px;
+      max-width: 480px;
+      -webkit-border-radius: 0;
+      -moz-border-radius: 0;
+      -ms-border-radius: 0;
+      border-radius: 0;
+      border: 0; }
+.footer .footer-item .footer-subscribe input[type=email]:focus { background: var(--color-bg);
+        -webkit-border-radius: 2px;
+        -moz-border-radius: 2px;
+        -ms-border-radius: 2px;
+        border-radius: 2px;
+        -webkit-box-shadow: 0 0 0 2px var(--color-primary);
+        -moz-box-shadow: 0 0 0 2px var(--color-primary);
+        box-shadow: 0 0 0 2px var(--color-primary);
+        border-color: transparent; }
+.footer .footer-item .footer-subscribe input[type=submit] { position: absolute;
+      left: 0;
+      top: 0;
+      visibility: hidden; }
+.footer .footer-item .footer-subscribe p { font-size: 13px;
+      margin-top: 16px; }
+@media (max-width: 767px) {
+  .section-heading, .rs-feature-box-1 .title { font-size: 32px; }
+  .banner .wrap-caption .btn, .banner .wrap-caption .btn-secondary, .banner .wrap-caption .btn-light, .banner .wrap-caption .btn-ghost-light, .banner .wrap-caption .btn-primary { padding: 13px 20px;
+        margin-top: 5px;
+        margin-bottom: 5px; }
+  .banner .text-center > .wrap-caption { width: 100%; }
+}
+</style>
+<div id="contact" class="section bg-gray">
+		<div class="content-wrap">
+			<div class="container">
+				<div data-animate="stagger" class="row">
+
+					<div class="col-sm-12 col-md-12">
+						<h2 data-animate="text-split" data-split-type="words" class="section-heading text-center">{{CONTACT_TITLE}}</h2>
+						<p data-animate="blur-slide" data-delay="0.2" class="subheading text-center">{{CONTACT_TEXT}}</p>
+					</div>
+
+				</div>
+
+				<div data-animate="stagger" class="row mt-5">
+
+					<div class="col-sm-12 col-md-12">
+						<form action="#" class="form-contact form-contact-dark" id="contactForm" data-toggle="validator">
+							<div data-animate="stagger" class="row">
+								<div class="col-sm-6 col-md-6">
+									<div class="form-group">
+										<input type="text" class="form-control" id="p_name" placeholder="Enter Name" required="">
+										<div class="help-block with-errors"></div>
+									</div>
+								</div>
+								<div class="col-sm-6 col-md-6">
+									<div class="form-group">
+										<input type="email" class="form-control" id="p_email" placeholder="Enter Email" required="">
+										<div class="help-block with-errors"></div>
+									</div>
+								</div>
+								<div class="col-sm-6 col-md-6">
+									<div class="form-group">
+										<input type="text" class="form-control" id="p_subject" placeholder="Subject">
+										<div class="help-block with-errors"></div>
+									</div>
+								</div>
+								<div class="col-sm-6 col-md-6">
+									<div class="form-group">
+										<input type="text" class="form-control" id="p_phone" placeholder="Enter Phone Number">
+										<div class="help-block with-errors"></div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								 <textarea id="p_message" class="form-control" rows="6" placeholder="Enter Your Message"></textarea>
+								<div class="help-block with-errors"></div>
+							</div>
+							<div class="form-group">
+								<div class="text-center">
+									<div id="success"></div>
+									<button type="submit" class="btn btn-primary">SEND MESSAGE</button>
+								</div>
+							</div>
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+  </div>
+</section>

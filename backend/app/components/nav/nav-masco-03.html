@@ -1,0 +1,544 @@
+<!-- Component: nav-masco-03 -->
+<!-- Tags: flex, animated -->
+<section id="nav" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+a { color: inherit;
+  text-decoration: inherit; }
+button,
+input,
+optgroup,
+select,
+textarea { font-family: inherit;
+
+  font-feature-settings: inherit;
+
+  font-variation-settings: inherit;
+
+  font-size: 100%;
+
+  font-weight: inherit;
+
+  line-height: inherit;
+
+  color: inherit;
+
+  margin: 0;
+
+  padding: 0; }
+button,
+select { text-transform: none; }
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] { -webkit-appearance: button;
+
+  background-color: transparent;
+
+  background-image: none; }
+ol,
+ul,
+menu { list-style: none;
+  margin: 0;
+  padding: 0; }
+button,
+[role="button"] { cursor: pointer; }
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object { display: block;
+
+  vertical-align: middle; }
+img,
+video { max-width: 100%;
+  height: auto; }
+a,
+  button { transition-property: all;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+.btn { position: relative;
+  border-width: 2px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  line-height: 1.5;
+  transition-property: all;
+  transition-duration: 400ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+.btn-animation { overflow: hidden; }
+.btn-animation::before { position: absolute;
+  left: -10%;
+  top: -110%;
+  height: 0px;
+  width: 120%;
+  border-radius: 50%;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  padding-bottom: 120%;
+  content: var(--tw-content);
+  transform: translate3d(0, 68%, 0) scale3d(0, 0, 0); }
+.btn-animation::after { position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 100%;
+  width: 100%;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  transform: translate3d(0, -100%, 0);
+  content: var(--tw-content);
+  transition: transform 0.4s cubic-bezier(0.1, 0, 0.3, 1); }
+.btn-animation:hover { --tw-bg-opacity: 1;
+  background-color: rgb(10 16 47 / var(--tw-bg-opacity)); }
+.btn-animation:hover::before { transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  content: var(--tw-content);
+  transition: transform 0.4s cubic-bezier(0.1, 0, 0.3, 1); }
+.btn-animation:hover::after { transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: 400ms;
+  transition-duration: 500ms;
+  transition-timing-function: linear;
+  content: var(--tw-content);
+  transform: translate3d(0, 0, 0); }
+.btn-animation span { position: relative;
+  z-index: 10;
+  display: block; }
+.btn-animation:hover span { animation: fill-up-initial 0.3s forwards, fill-up-end 0.3s forwards 0.3s; }
+.btn-text { font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  transition-property: all;
+  transition-duration: 400ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+.is-blue { --tw-border-opacity: 1;
+  border-color: rgb(49 71 255 / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: rgb(49 71 255 / var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity)); }
+.is-blue:hover { background-color: transparent;
+  --tw-text-opacity: 1;
+  color: rgb(49 71 255 / var(--tw-text-opacity)); }
+.is-rounded { border-radius: 50px; }
+.block { display: block; }
+.flex { display: flex; }
+.hidden { display: none; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-6 { gap: 1.5rem; }
+.gap-x-8 { -moz-column-gap: 2rem;
+       column-gap: 2rem; }
+.py-3 { padding-top: 0.75rem;
+  padding-bottom: 0.75rem; }
+.container-default { margin-left: auto;
+  margin-right: auto;
+  max-width: 1400px;
+  padding-left: 1rem;
+  padding-right: 1rem; }
+.breadcrumb-nav li { position: relative;
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity)); }
+.breadcrumb-nav li::after { position: absolute;
+  right: -2rem;
+  top: 50%;
+  height: 1.25rem;
+  width: 1.25rem;
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  background-image: url(../img/icons/icon-black-chevron-right-solid.svg);
+  content: var(--tw-content);
+  background-size: cover; }
+.breadcrumb-nav li:last-child { font-weight: 600;
+  --tw-text-opacity: 1;
+  color: rgb(49 71 255 / var(--tw-text-opacity)); }
+.breadcrumb-nav li:last-child::after { content: var(--tw-content);
+  background-image: none; }
+.breadcrumb-nav a { font-weight: 600;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms; }
+.breadcrumb-nav a:hover { --tw-text-opacity: 1;
+  color: rgb(49 71 255 / var(--tw-text-opacity)); }
+.accordion-item.active .accordion-icon-1 span:last-child { --tw-rotate: -90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  opacity: 0;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms; }
+.accordion-item .accordion-icon-6 span:first-child { --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity)); }
+.accordion-item.active .accordion-icon-6 span:first-child { --tw-bg-opacity: 1;
+  background-color: rgb(0 0 255 / var(--tw-bg-opacity)); }
+.accordion-item.active .accordion-icon-6 span:last-child { --tw-rotate: -90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  opacity: 0;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms; }
+.process-tab img:first-child { opacity: 1; }
+.process-tab img:last-child { opacity: 0; }
+.process-tab.active img:first-child { opacity: 0; }
+.process-tab.active img:last-child { opacity: 1; }
+.group:hover .group-hover\:-translate-y-5 { --tw-translate-y: -1.25rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:-translate-y-full { --tw-translate-y: -100%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:translate-x-0 { --tw-translate-x: 0px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:translate-x-2 { --tw-translate-x: 0.5rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:translate-x-full { --tw-translate-x: 100%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:translate-y-0 { --tw-translate-y: 0px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:scale-105 { --tw-scale-x: 1.05;
+  --tw-scale-y: 1.05;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:scale-110 { --tw-scale-x: 1.1;
+  --tw-scale-y: 1.1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:scale-x-100 { --tw-scale-x: 1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:border-ColorAtomicTangerine { --tw-border-opacity: 1;
+  border-color: rgb(255 153 102 / var(--tw-border-opacity)); }
+.group:hover .group-hover\:border-\[\var(--color-accent, var(--color-secondary))\] { --tw-border-opacity: 1;
+  border-color: rgb(246 85 16 / var(--tw-border-opacity)); }
+.group:hover .group-hover\:bg-ColorAtomicTangerine { --tw-bg-opacity: 1;
+  background-color: rgb(255 153 102 / var(--tw-bg-opacity)); }
+.group:hover .group-hover\:bg-\[\var(--color-accent, var(--color-secondary))\] { --tw-bg-opacity: 1;
+  background-color: rgb(246 85 16 / var(--tw-bg-opacity)); }
+.group:hover .group-hover\:bg-\[\var(--color-bg)\] { --tw-bg-opacity: 1;
+  background-color: rgb(246 249 240 / var(--tw-bg-opacity)); }
+.group:hover .group-hover\:text-ColorAtomicTangerine { --tw-text-opacity: 1;
+  color: rgb(255 153 102 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-ColorBlue { --tw-text-opacity: 1;
+  color: rgb(49 71 255 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-ColorPurple { --tw-text-opacity: 1;
+  color: rgb(162 89 255 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-ColorViolet { --tw-text-opacity: 1;
+  color: rgb(75 42 173 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-\[\var(--color-bg)\] { --tw-text-opacity: 1;
+  color: rgb(246 249 240 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-black { --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:opacity-0 { opacity: 0; }
+.group:hover .group-hover\:opacity-100 { opacity: 1; }
+.group:hover .group-hover\:after\:scale-x-100::after { content: var(--tw-content);
+  --tw-scale-x: 1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+a { color:inherit;text-decoration:inherit }
+button,input,optgroup,select,textarea { font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0 }
+button,select { text-transform:none }
+[type=button],[type=reset],[type=submit],button { -webkit-appearance:button;background-color:initial;background-image:none }
+menu,ol,ul { list-style:none;margin:0;padding:0 }
+[role=button],button { cursor:pointer }
+audio,canvas,embed,iframe,img,object,svg,video { display:block;vertical-align:middle }
+img,video { max-width:100%;height:auto }
+.block { display:block }
+.flex { display:flex }
+.hidden { display:none }
+.items-center { align-items:center }
+.justify-between { justify-content:space-between }
+.gap-6 { gap:1.5rem }
+.gap-x-8 { -moz-column-gap:2rem;column-gap:2rem }
+.py-3 { padding-top:.75rem;padding-bottom:.75rem }
+.group:hover .group-hover\:-translate-y-5 { --tw-translate-y:-1.25rem }
+.group:hover .group-hover\:-translate-y-5,.group:hover .group-hover\:-translate-y-full { transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:-translate-y-full { --tw-translate-y:-100% }
+.group:hover .group-hover\:translate-x-0 { --tw-translate-x:0px }
+.group:hover .group-hover\:translate-x-0,.group:hover .group-hover\:translate-x-2 { transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:translate-x-2 { --tw-translate-x:0.5rem }
+.group:hover .group-hover\:translate-x-full { --tw-translate-x:100% }
+.group:hover .group-hover\:translate-x-full,.group:hover .group-hover\:translate-y-0 { transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:translate-y-0 { --tw-translate-y:0px }
+.group:hover .group-hover\:scale-105 { --tw-scale-x:1.05;--tw-scale-y:1.05 }
+.group:hover .group-hover\:scale-105,.group:hover .group-hover\:scale-110 { transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:scale-110 { --tw-scale-x:1.1;--tw-scale-y:1.1 }
+.group:hover .group-hover\:scale-x-100 { --tw-scale-x:1;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:border-ColorAtomicTangerine { --tw-border-opacity:1;border-color:rgb(255 153 102/var(--tw-border-opacity)) }
+.group:hover .group-hover\:border-\[\var(--color-accent, var(--color-secondary))\] { --tw-border-opacity:1;border-color:rgb(246 85 16/var(--tw-border-opacity)) }
+.group:hover .group-hover\:bg-ColorAtomicTangerine { --tw-bg-opacity:1;background-color:rgb(255 153 102/var(--tw-bg-opacity)) }
+.group:hover .group-hover\:bg-\[\var(--color-accent, var(--color-secondary))\] { --tw-bg-opacity:1;background-color:rgb(246 85 16/var(--tw-bg-opacity)) }
+.group:hover .group-hover\:bg-\[\var(--color-bg)\] { --tw-bg-opacity:1;background-color:rgb(246 249 240/var(--tw-bg-opacity)) }
+.group:hover .group-hover\:text-ColorAtomicTangerine { --tw-text-opacity:1;color:rgb(255 153 102/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-ColorBlue { --tw-text-opacity:1;color:rgb(49 71 255/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-ColorPurple { --tw-text-opacity:1;color:rgb(162 89 255/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-ColorViolet { --tw-text-opacity:1;color:rgb(75 42 173/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-\[\var(--color-bg)\] { --tw-text-opacity:1;color:rgb(246 249 240/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-black { --tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity)) }
+.group:hover .group-hover\:opacity-0 { opacity:0 }
+.group:hover .group-hover\:opacity-100 { opacity:1 }
+.group:hover .group-hover\:after\:scale-x-100:after { content:var(--tw-content);--tw-scale-x:1;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+@media (min-width: 576px) {
+  .container-default { padding-left: 2rem;
+    padding-right: 2rem; }
+}
+@media (min-width: 768px) {
+  .container-default { padding-left: 2.5rem;
+    padding-right: 2.5rem; }
+}
+@media (min-width: 992px) {
+  .container-default { padding-left: 2rem;
+    padding-right: 2rem; }
+}
+@media (min-width: 1200px) {
+  .container-default { padding-left: 2.5rem;
+    padding-right: 2.5rem; }
+}
+@media (min-width: 1400px) {
+  .container-default { padding-left: 50px;
+    padding-right: 50px; }
+}
+</style>
+<header class="site-header site-header--absolute is--white py-3" id="sticky-menu">
+            <div class="container-default">
+                <div data-animate="stagger" class="flex items-center justify-between gap-x-8">
+                    <!-- Header Logo -->
+                    <a href="index.html">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{NAV_IMAGE_URL}}" alt="{{NAV_IMAGE_ALT}}" width="109" height="24" />
+                    </a>
+                    <!-- Header Logo -->
+
+                    <!-- Header Navigation -->
+                    <div class="menu-block-wrapper">
+                        <div class="menu-overlay"></div>
+                        <nav class="menu-block" id="append-menu-header">
+                            <div class="mobile-menu-head">
+                                <div class="go-back">
+                                    <i class="fa-solid fa-angle-left"></i>
+                                </div>
+                                <div class="current-menu-title"></div>
+                                <div class="mobile-menu-close">&times;</div>
+                            </div>
+                            <ul class="site-menu-main">
+                                <li class="nav-item nav-item-has-children">
+                                    <a href="#" class="nav-link-item drop-trigger">Demo <i class="fa-solid fa-angle-down"></i>
+                                    </a>
+                                    <ul class="sub-menu" id="submenu-1">
+                                        <li class="sub-menu--item">
+                                            <a href="index.html">Digital agency</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-2.html">Chat software</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-3.html">Fitness App</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-4.html">Online Courses</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-5.html">SEO Agency</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-6.html">Cold Email</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-7.html">Web Hosting</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-8.html">Startup</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-9.html">Tracking Software</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-10.html">AI Writing Tool</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-11.html">Website Builder</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-12.html">AI Photo Editor</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-13.html">initial coin offering (ICO)</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-14.html">AI Content Generator</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="index-15.html">IT Service</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="about.html" class="nav-link-item">About</a>
+                                </li>
+                                <li class="nav-item nav-item-has-children">
+                                    <a href="#" class="nav-link-item drop-trigger">Services
+                                        <i class="fa-solid fa-angle-down"></i>
+                                    </a>
+                                    <ul class="sub-menu" id="submenu-2">
+                                        <li class="sub-menu--item">
+                                            <a href="services.html">Services</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="service-details.html">Service Details</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item nav-item-has-children">
+                                    <a href="#" class="nav-link-item drop-trigger">Pages <i class="fa-solid fa-angle-down"></i>
+                                    </a>
+                                    <ul class="sub-menu" id="submenu-3">
+                                        <li class="sub-menu--item nav-item-has-children">
+                                            <a href="#" data-menu-get="h3" class="drop-trigger">blogs <i class="fa-solid fa-angle-right"></i></a>
+                                            <ul class="sub-menu shape-none" id="submenu-4">
+                                                <li class="sub-menu--item">
+                                                    <a href="blog.html">blogs</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="blog-details.html">blog details</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="sub-menu--item nav-item-has-children">
+                                            <a href="#" data-menu-get="h3" class="drop-trigger">Team
+                                                <i class="fa-solid fa-angle-right"></i>
+                                            </a>
+                                            <ul class="sub-menu shape-none" id="submenu-5">
+                                                <li class="sub-menu--item">
+                                                    <a href="teams.html">Teams</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="sub-menu--item nav-item-has-children">
+                                            <a href="#" data-menu-get="h3" class="drop-trigger">FAQ
+                                                <i class="fa-solid fa-angle-right"></i>
+                                            </a>
+                                            <ul class="sub-menu shape-none" id="submenu-6">
+                                                <li class="sub-menu--item">
+                                                    <a href="faq.html">FAQ-1</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="faq-2.html">FAQ-2</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="faq-3.html">FAQ-3</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="faq-4.html">FAQ-4</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="sub-menu--item nav-item-has-children">
+                                            <a href="#" data-menu-get="h3" class="drop-trigger">Portfolio
+                                                <i class="fa-solid fa-angle-right"></i>
+                                            </a>
+                                            <ul class="sub-menu shape-none" id="submenu-7">
+                                                <li class="sub-menu--item">
+                                                    <a href="portfolio.html">Portfolio Classic</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="portfolio-2.html">Portfolio Masonry</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="portfolio-3.html">Portfolio Modern</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="portfolio-4.html">Portfolio Minimal</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="portfolio-details.html">Portfolio Details</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="sub-menu--item nav-item-has-children">
+                                            <a href="#" data-menu-get="h3" class="drop-trigger">Pricing
+                                                <i class="fa-solid fa-angle-right"></i>
+                                            </a>
+                                            <ul class="sub-menu shape-none" id="submenu-8">
+                                                <li class="sub-menu--item">
+                                                    <a href="pricing.html">Pricing-1</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="pricing-2.html">Pricing-2</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="sub-menu--item nav-item-has-children">
+                                            <a href="#" data-menu-get="h3" class="drop-trigger">Careers
+                                                <i class="fa-solid fa-angle-right"></i>
+                                            </a>
+                                            <ul class="sub-menu shape-none" id="submenu-9">
+                                                <li class="sub-menu--item">
+                                                    <a href="careers.html">Career</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="career-details.html">Career Details</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="sub-menu--item nav-item-has-children">
+                                            <a href="#" data-menu-get="h3" class="drop-trigger">Utilities
+                                                <i class="fa-solid fa-angle-right"></i>
+                                            </a>
+                                            <ul class="sub-menu shape-none" id="submenu-10">
+                                                <li class="sub-menu--item">
+                                                    <a href="login.html">Login</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="signup.html">Signup</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="reset-password.html">Reset Password</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="coming-soon.html">Coming Soon</a>
+                                                </li>
+                                                <li class="sub-menu--item">
+                                                    <a href="error-404.html">Error 404</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item nav-item-has-children">
+                                    <a href="#" class="nav-link-item drop-trigger">Contact
+                                        <i class="fa-solid fa-angle-down"></i>
+                                    </a>
+                                    <ul class="sub-menu" id="submenu-11">
+                                        <li class="sub-menu--item">
+                                            <a href="contact.html">Contact-1</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="contact-2.html">Contact-2</a>
+                                        </li>
+                                        <li class="sub-menu--item">
+                                            <a href="contact-3.html">Contact-3</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- Header Navigation -->
+
+                    <!-- Header User Event -->
+                    <div data-animate="stagger" class="flex items-center gap-6">
+                        <a data-animate="magnetic" href="{{NAV_CTA_URL}}" class="btn-text hidden hover:text-ColorBlue sm:inline-block">{{NAV_CTA_TEXT}}</a>
+                        <a data-animate="magnetic" href="signup.html" class="btn is-blue is-rounded btn-animation group hidden sm:inline-block"><span>Sign up free</span></a>
+                        <!-- Responsive Offcanvas Menu Button -->
+                        <div class="block lg:hidden">
+                            <button id="openBtn" class="hamburger-menu mobile-menu-trigger">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Header User Event -->
+                </div>
+            </div>
+        </header>
+  </div>
+</section>

@@ -1,0 +1,308 @@
+<!-- Component: hero-fitx-03 -->
+<!-- Tags: flex -->
+<section id="hero" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+a { background-color: transparent; }
+a { color: var(--color-text-muted);
+  text-decoration: none; }
+a:hover { color: var(--color-primary);
+    text-decoration: none; }
+h1,
+h2,
+.banner-page .title-page,
+h3,
+h4,
+.rs-team-1 .title,
+.rs-team-single .title,
+h5 { font-family: var(--font-heading);
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 20px; }
+h2, .banner-page .title-page { font-size: 2.857em;
+  line-height: normal; }
+ol { margin-left: 24px; }
+ul li { margin: 8px 0; }
+.content-wrap { padding: 100px 0; }
+.section { position: relative; }
+.owl-theme .owl-dots .owl-dot.active span { width: 20px;
+  background-color: var(--color-primary); }
+.owl-light .owl-dots .owl-dot.active span { width: 20px;
+  background-color: var(--color-primary); }
+.text-primary a { color: var(--color-primary); }
+.text-primary a:hover { color: var(--color-text-muted); }
+.text-white a { color: var(--color-bg); }
+.text-black a { color: var(--color-text); }
+.pos-relative { position: relative; }
+.banner-page { display: block;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  position: relative;
+  background-position: center; }
+.banner-page:before { content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-text); }
+.banner-page .content-wrap { padding: 60px 0; }
+.banner-page .title-page { text-align: center;
+    margin-bottom: 0;
+    color: var(--color-primary);
+    font-style: italic; }
+.banner-page .breadcrumb-container { background-color: transparent; }
+.banner-page .breadcrumb { padding: 0;
+    margin: 0;
+    text-align: center;
+    background-color: transparent;
+    font-family: var(--font-body);
+    font-style: italic;
+    color: var(--color-bg); }
+.banner-page .breadcrumb > .active,
+    .banner-page .breadcrumb a { color: white; }
+.banner-page .breadcrumb > .active:hover,
+      .banner-page .breadcrumb a:hover { color: var(--color-primary); }
+.pagination .page-item .page-link:hover, .pagination .page-item .page-link.active { color: var(--color-bg);
+      background: var(--color-primary); }
+.pagination .page-item.active .page-link { color: var(--color-bg);
+    background: var(--color-primary);
+    border-color: var(--color-primary); }
+.sosmed-icon a { color: var(--color-primary);
+  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  margin: 0; }
+.sosmed-icon a:hover { color: var(--color-bg); }
+.sosmed-icon.icon-bg-primary a { -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+  color: var(--color-bg);
+  background-color: var(--color-primary);
+  margin: 0 2px; }
+.sosmed-icon.icon-bg-primary a:hover { color: var(--color-text); }
+.sosmed-icon.icon-bg-secondary a { -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+  color: var(--color-primary);
+  background-color: var(--color-text);
+  margin: 0 2px; }
+.sosmed-icon.icon-bg-secondary a:hover { color: var(--color-text);
+    background-color: var(--color-primary); }
+.rs-shop-box .media a { width: 100%; }
+.rs-shop-box .body-text .title a { color: var(--color-text); }
+.rs-shop-box .body-text .title a:hover { color: var(--color-primary); }
+.title-blok a { color: var(--color-text); }
+.title-blok a:hover { color: var(--color-primary); }
+.shop-item-sidebar .body-text .title a { color: var(--color-text); }
+.shop-item-sidebar .body-text .title a:hover { color: var(--color-primary); }
+.box-icon-1 .body-content h1, .box-icon-1 .body-content h2, .box-icon-1 .body-content .banner-page .title-page, .banner-page .box-icon-1 .body-content .title-page, .box-icon-1 .body-content h3, .box-icon-1 .body-content h4, .box-icon-1 .body-content .rs-team-1 .title, .rs-team-1 .box-icon-1 .body-content .title, .box-icon-1 .body-content .rs-team-single .title, .rs-team-single .box-icon-1 .body-content .title, .box-icon-1 .body-content h5 { font-weight: 700;
+    color: var(--color-text);
+    font-style: italic; }
+.box-icon-2 .body-content h1, .box-icon-2 .body-content h2, .box-icon-2 .body-content .banner-page .title-page, .banner-page .box-icon-2 .body-content .title-page, .box-icon-2 .body-content h3, .box-icon-2 .body-content h4, .box-icon-2 .body-content .rs-team-1 .title, .rs-team-1 .box-icon-2 .body-content .title, .box-icon-2 .body-content .rs-team-single .title, .rs-team-single .box-icon-2 .body-content .title, .box-icon-2 .body-content h5 { font-weight: 700;
+    color: var(--color-text);
+    font-style: italic; }
+.rs-icon-funfact .body-content h1, .rs-icon-funfact .body-content h2, .rs-icon-funfact .body-content .banner-page .title-page, .banner-page .rs-icon-funfact .body-content .title-page, .rs-icon-funfact .body-content h3, .rs-icon-funfact .body-content h4, .rs-icon-funfact .body-content .rs-team-1 .title, .rs-team-1 .rs-icon-funfact .body-content .title, .rs-icon-funfact .body-content .rs-team-single .title, .rs-team-single .rs-icon-funfact .body-content .title, .rs-icon-funfact .body-content h4, .rs-icon-funfact .body-content .rs-team-1 .title, .rs-team-1 .rs-icon-funfact .body-content .title, .rs-icon-funfact .body-content .rs-team-single .title, .rs-team-single .rs-icon-funfact .body-content .title, .rs-icon-funfact .body-content h5, .rs-icon-funfact .body-content h6 { clear: none;
+    margin-bottom: 0;
+    color: var(--color-bg); }
+.rs-funfact .box-fun h2, .rs-funfact .box-fun .banner-page .title-page, .banner-page .rs-funfact .box-fun .title-page { position: absolute;
+      top: 0;
+      width: 100%;
+      text-align: center; }
+.rs-class-box .sosmed-icon a { font-size: 14px; }
+.box-image-1 .body-content h1, .box-image-1 .body-content h2, .box-image-1 .body-content .banner-page .title-page, .banner-page .box-image-1 .body-content .title-page, .box-image-1 .body-content h3, .box-image-1 .body-content h4, .box-image-1 .body-content .rs-team-1 .title, .rs-team-1 .box-image-1 .body-content .title, .box-image-1 .body-content .rs-team-single .title, .rs-team-single .box-image-1 .body-content .title, .box-image-1 .body-content h5 { font-weight: 700;
+    color: var(--color-text); }
+.box-image-5 a { background-color: var(--color-primary);
+    display: block;
+    margin: 8px; }
+.box-image-5 a img { width: 100%;
+      display: block;
+      margin-bottom: 0; }
+.rs-pricing-1 .features ul li { padding: 0 0; }
+.rs-feature-box-1 a { float: right; }
+.rs-news-1 .body-box .title a { font-size: 18px;
+        font-weight: 700;
+        font-style: italic;
+        color: var(--color-primary); }
+.rs-news-1 .body-box .title a:hover { color: var(--color-bg); }
+.rs-team-1 .title a { color: var(--color-text); }
+.rs-team-single .title a { color: var(--color-text); }
+.box-gallery a, .box-gallery a img { display: block;
+    max-width: 100%;
+    -webkit-transform: scale(1, 1);
+    -ms-transform: scale(1, 1);
+    transform: scale(1, 1);
+    -webkit-transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
+    -webkit-transition-duration: 250ms;
+    transition-duration: 250ms;
+    cursor: pointer;
+    -webkit-transition: 0.4s all linear;
+    transition: 0.4s all linear; }
+.box-gallery a:hover img, .box-gallery a img:hover img { -webkit-transform: scale(1.05, 1.07);
+      -ms-transform: scale(1.05, 1.07);
+      transform: scale(1.05, 1.07);
+      -webkit-transition-timing-function: ease-out;
+      transition-timing-function: ease-out;
+      -webkit-transition-duration: 250ms;
+      transition-duration: 250ms; }
+.box-gallery a:hover .project-info, .box-gallery a img:hover .project-info { opacity: 1;
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+      filter: alpha(opacity=100); }
+.box-gallery a:hover .project-icon, .box-gallery a img:hover .project-icon { opacity: 1;
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+      filter: alpha(opacity=100);
+      top: -90px; }
+.box-gallery a:hover .project-icon .fa:hover, .box-gallery a img:hover .project-icon .fa:hover { opacity: 1;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+        filter: alpha(opacity=100); }
+.box-gallery a:hover .details, .box-gallery a img:hover .details { opacity: 1;
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+      filter: alpha(opacity=100);
+      bottom: 0; }
+.rs-tabs .nav-tabs .nav-link.active { background-color: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-primary); }
+.rs-box-widget h1, .rs-box-widget h2, .rs-box-widget .banner-page .title-page, .banner-page .rs-box-widget .title-page, .rs-box-widget h3, .rs-box-widget h4, .rs-box-widget .rs-team-1 .title, .rs-team-1 .rs-box-widget .title, .rs-box-widget .rs-team-single .title, .rs-team-single .rs-box-widget .title, .rs-box-widget h5, .rs-box-widget h6 { color: var(--color-primary);
+    margin-top: 0;
+    margin-bottom: 0; }
+.portfolio_filter li { display: inline-block;
+    list-style: none;
+    padding: 0 2px;
+    text-decoration: none; }
+.portfolio_filter li a { padding: 14px 25px;
+      color: var(--color-primary);
+      font-weight: 700;
+      font-family: var(--font-body);
+      text-transform: none; }
+.portfolio_filter li a.active { color: var(--color-text-muted); }
+.topbar .sosmed-icon a { color: var(--color-primary); }
+.topbar .sosmed-icon a:hover { color: var(--color-text);
+      background-color: var(--color-primary); }
+.topbar a { color: var(--color-primary); }
+.topbar a:hover { color: var(--color-text); }
+.navbar-main ol, .navbar-main li { margin: 0 0;
+    font-size: 14px;
+    font-weight: 700; }
+.contact-info > div { display: inline-block;
+    margin-right: 40px;
+    margin-top: 6px; }
+.contact-info > div:last-child { margin-right: 0; }
+.header-1 .navbar-main .active > .nav-link { color: var(--color-primary);
+      background-color: transparent; }
+.banner .owl-theme div:not(.owl-controls) { height: 100%;
+      overflow: hidden; }
+.bg-breadcrumb .breadcrumb { background-color: var(--color-bg-alt); }
+.category-nav li { list-style: none;
+    margin: 0;
+    font-family: var(--font-body); }
+.category-nav li a { color: var(--color-text);
+      display: block;
+      padding: 15px 20px;
+      margin-bottom: 5px;
+      background-color: var(--color-bg-alt); }
+.category-nav li a:hover { color: var(--color-bg);
+        background-color: var(--color-text); }
+.category-nav li.active a { background-color: var(--color-primary);
+      color: var(--color-bg); }
+.latest-post-item .title a { font-size: 18px;
+      font-weight: 900;
+      color: var(--color-text); }
+.latest-post-item .title a:hover { color: var(--color-primary); }
+.widget.tags a { display: inline-block;
+  vertical-align: top;
+  padding: 5px 8px 6px;
+  font-size: 13px !important;
+  color: rgba(153, 153, 153, 0.8);
+  border: 1px solid var(--color-border);
+  margin: 0 6px 7px 0;
+  text-decoration: none !important;
+  text-transform: lowercase;
+  -webkit-transition: all .3s ease;
+  transition: all .3s ease;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px; }
+.widget.tags a:hover { background-color: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-primary); }
+.comments-box .reply a { color: var(--color-text); }
+.comments-box .reply a:hover { color: var(--color-text); }
+.grid-item a { background-color: var(--color-primary);
+    display: block;
+    margin: 8px; }
+.grid-item a img { width: 100%;
+      display: block;
+      margin-bottom: 0; }
+.grid-item a:hover img { opacity: 0.9;
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+      filter: alpha(opacity=90); }
+.cta-info a { color: var(--color-text); }
+.footer .sosmed-icon a { font-size: 30px;
+    margin-left: 10px;
+    margin-right: 10px; }
+.footer .footer-item .list li { list-style: none;
+      padding-bottom: 5px;
+      padding-top: 5px; }
+.footer .footer-item .list li:first-child { padding-top: 0; }
+.footer .footer-item .list li a { position: relative;
+        color: var(--color-text-muted);
+        padding-left: 25px; }
+.footer .footer-item .list li a:before { content: '\f178';
+          font-family: FontAwesome;
+          left: 0;
+          position: absolute;
+          color: var(--color-primary); }
+.footer .footer-item .list li a:hover { color: var(--color-primary); }
+.footer .footer-item .recent-post li { list-style: none;
+      margin: 0 0 30px; }
+.footer .footer-item .recent-post li a { color: var(--color-text-muted);
+        line-height: 20px;
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 0 14px; }
+.footer .footer-item .recent-post li a:hover { color: var(--color-primary); }
+.footer .footer-item .recent-post li .date { display: block;
+        font-size: 12px;
+        padding: 0;
+        color: rgba(153, 153, 153, 0.4); }
+.footer .footer-item .recent-post li .date i { margin-right: 5px; }
+.list-info li { margin-bottom: 20px;
+    list-style: none;
+    font-size: 16px; }
+.list-info li .info-icon { display: table-cell;
+      color: var(--color-primary); }
+.list-info li .info-text { padding-left: 20px;
+      display: table-cell;
+      vertical-align: top; }
+@media (max-width: 991px) {
+  .sosmed-icon a { width: 30px; }
+}
+</style>
+<div class="section banner-page" data-background="images/dummy-img-1920x300.jpg">
+		<div class="content-wrap pos-relative">
+			<div data-animate="stagger" class="d-flex justify-content-center bd-highlight mb-3">
+				<div class="title-page">TRAINERS</div>
+			</div>
+			<div data-animate="stagger" class="d-flex justify-content-center bd-highlight mb-3">
+			    <nav aria-label="breadcrumb">
+				  <ol class="breadcrumb ">
+				    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+				    <li class="breadcrumb-item active" aria-current="page">Trainers</li>
+				  </ol>
+				</nav>
+		  	</div>
+		</div>
+	</div>
+  </div>
+</section>

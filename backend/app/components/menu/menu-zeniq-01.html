@@ -1,0 +1,57 @@
+<!-- Component: menu-zeniq-01 -->
+<!-- Tags: grid -->
+<section id="menu" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+ol.linenums li { padding-left: 12px;
+  color: var(--color-border);
+  line-height: 18px;
+  text-shadow: 0 1px 0 var(--color-bg); }
+button.swiper-pagination-bullet { border:none;margin:0;padding:0;box-shadow:none;-webkit-appearance:none;appearance:none }
+.swiper-zoom-container>canvas,.swiper-zoom-container>img,.swiper-zoom-container>svg { max-width:100%;max-height:100%;object-fit:contain }
+.unicon-close:before { content:"\e94b" }
+.unicon-logo-instagram:before { content:"\ea06" }
+.unicon-logo-medium:before { content:"\ea09" }
+.unicon-logo-pinterest:before { content:"\ea0a" }
+.unicon-logo-twitter:before { content:"\ea11" }
+</style>
+<div id="uc-menu-panel" data-uc-offcanvas="overlay: true;">
+            <div class="uc-offcanvas-bar bg-white text-dark dark:bg-gray-900 dark:text-white">
+                <header class="uc-offcanvas-header hstack justify-between items-center pb-4 bg-white dark:bg-gray-900">
+                    <div class="uc-logo">
+                        <a href="main/index.html" class="h5 text-none text-primary">
+                            <img data-animate="scale-in" data-delay="0.3" class="w-64px" src="{{MENU_IMAGE_URL}}" alt="{{MENU_IMAGE_ALT}}" data-uc-svg>
+                        </a>
+                    </div>
+                    <button class="uc-offcanvas-close position-relative top-0 end-0 m-0 p-0 icon-3 btn btn-md btn-alt-dark dark:bg-white dark:text-dark rounded-circle" type="button">
+                        <i class="unicon-close"></i>
+                    </button>
+                </header>
+
+                <div class="panel">
+                    <ul data-animate="stagger" class="nav-y gap-narrow fw-bold text-uppercase fs-6" data-uc-nav>
+      <!-- REPEAT:MENU_ITEMS -->
+      <li class="uc-parent stagger-item">
+                            <a href="main/index.html">Home</a>
+                            <ul class="uc-nav-sub">
+                                <li><a href="main/index.html">Home 01</a></li>
+                                <li><a href="main/index-two.html">Home 02</a></li>
+                                <li><a href="main/index-three.html">Home 03</a></li>
+                                <li><a href="main/index-four.html">Home 04</a></li>
+                            </ul>
+                        </li>
+      <!-- /REPEAT:MENU_ITEMS -->
+    </ul>
+                    <ul class="social-icons nav-x mt-4">
+                        <li>
+                            <a href="main/#"><i class="unicon-logo-medium icon-2"></i></a>
+                            <a href="main/#"><i class="unicon-logo-twitter icon-2"></i></a>
+                            <a href="main/#"><i class="unicon-logo-instagram icon-2"></i></a>
+                            <a href="main/#"><i class="unicon-logo-pinterest icon-2"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+  </div>
+</section>

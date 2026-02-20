@@ -1,0 +1,771 @@
+<!-- Component: portfolio-foxden-01 -->
+<!-- Tags: imported -->
+<section id="portfolio" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+.fadeInUp { -webkit-animation-name: fadeInUp;
+  animation-name: fadeInUp; }
+article,aside,dialog,figcaption,figure,footer,header,hgroup,main,nav,section { display:block }
+h1,h2,h3,h4,h5,h6 { margin-top:0;margin-bottom:.5rem }
+dl,ol,ul { margin-top:0;margin-bottom:1rem }
+ol ol,ol ul,ul ol,ul ul { margin-bottom:0 }
+a { color:var(--color-primary);text-decoration:none;background-color:transparent;-webkit-text-decoration-skip:objects }
+a:hover { color:var(--color-accent, var(--color-secondary));text-decoration:underline }
+a:not([href]):not([tabindex]) { color:inherit;text-decoration:none }
+a:not([href]):not([tabindex]):focus,a:not([href]):not([tabindex]):hover { color:inherit;text-decoration:none }
+a:not([href]):not([tabindex]):focus { outline:0 }
+img { vertical-align:middle;border-style:none }
+.h1,.h2,.h3,.h4,.h5,.h6,h1,h2,h3,h4,h5,h6 { margin-bottom:.5rem;font-family:inherit;font-weight:500;line-height:1.2;color:inherit }
+.h3,h3 { font-size:1.75rem }
+a>code { color:inherit }
+.container-fluid { width:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto }
+.row { display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-15px;margin-left:-15px }
+.col,.col-1,.col-10,.col-11,.col-12,.col-2,.col-3,.col-4,.col-5,.col-6,.col-7,.col-8,.col-9,.col-auto,.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-auto,.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-auto,.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-auto,.col-xl,.col-xl-1,.col-xl-10,.col-xl-11,.col-xl-12,.col-xl-2,.col-xl-3,.col-xl-4,.col-xl-5,.col-xl-6,.col-xl-7,.col-xl-8,.col-xl-9,.col-xl-auto { position:relative;width:100%;min-height:1px;padding-right:15px;padding-left:15px }
+.btn:not(:disabled):not(.disabled).active,.btn:not(:disabled):not(.disabled):active { background-image:none }
+a.btn.disabled,fieldset:disabled a.btn { pointer-events:none }
+.btn-primary:not(:disabled):not(.disabled).active,.btn-primary:not(:disabled):not(.disabled):active,.show>.btn-primary.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-primary:not(:disabled):not(.disabled).active:focus,.btn-primary:not(:disabled):not(.disabled):active:focus,.show>.btn-primary.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(var(--color-primary-rgb), .5) }
+.btn-secondary:not(:disabled):not(.disabled).active,.btn-secondary:not(:disabled):not(.disabled):active,.show>.btn-secondary.dropdown-toggle { color:var(--color-bg);background-color:var(--color-text-muted);border-color:var(--color-text-muted) }
+.btn-secondary:not(:disabled):not(.disabled).active:focus,.btn-secondary:not(:disabled):not(.disabled):active:focus,.show>.btn-secondary.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(108,117,125,.5) }
+.btn-success:not(:disabled):not(.disabled).active,.btn-success:not(:disabled):not(.disabled):active,.show>.btn-success.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-success:not(:disabled):not(.disabled).active:focus,.btn-success:not(:disabled):not(.disabled):active:focus,.show>.btn-success.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(40,167,69,.5) }
+.btn-info:not(:disabled):not(.disabled).active,.btn-info:not(:disabled):not(.disabled):active,.show>.btn-info.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-info:not(:disabled):not(.disabled).active:focus,.btn-info:not(:disabled):not(.disabled):active:focus,.show>.btn-info.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(23,162,184,.5) }
+.btn-warning:not(:disabled):not(.disabled).active,.btn-warning:not(:disabled):not(.disabled):active,.show>.btn-warning.dropdown-toggle { color:var(--color-accent, var(--color-secondary));background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-warning:not(:disabled):not(.disabled).active:focus,.btn-warning:not(:disabled):not(.disabled):active:focus,.show>.btn-warning.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(255,193,7,.5) }
+.btn-danger:not(:disabled):not(.disabled).active,.btn-danger:not(:disabled):not(.disabled):active,.show>.btn-danger.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-danger:not(:disabled):not(.disabled).active:focus,.btn-danger:not(:disabled):not(.disabled):active:focus,.show>.btn-danger.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(220,53,69,.5) }
+.btn-light:not(:disabled):not(.disabled).active,.btn-light:not(:disabled):not(.disabled):active,.show>.btn-light.dropdown-toggle { color:var(--color-accent, var(--color-secondary));background-color:var(--color-border);border-color:var(--color-border) }
+.btn-light:not(:disabled):not(.disabled).active:focus,.btn-light:not(:disabled):not(.disabled):active:focus,.show>.btn-light.dropdown-toggle:focus { box-shadow:0 0 0 .2rem var(--color-bg) }
+.btn-dark:not(:disabled):not(.disabled).active,.btn-dark:not(:disabled):not(.disabled):active,.show>.btn-dark.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-text) }
+.btn-dark:not(:disabled):not(.disabled).active:focus,.btn-dark:not(:disabled):not(.disabled):active:focus,.show>.btn-dark.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(52,58,64,.5) }
+.btn-outline-primary:not(:disabled):not(.disabled).active,.btn-outline-primary:not(:disabled):not(.disabled):active,.show>.btn-outline-primary.dropdown-toggle { color:var(--color-bg);background-color:var(--color-primary);border-color:var(--color-primary) }
+.btn-outline-primary:not(:disabled):not(.disabled).active:focus,.btn-outline-primary:not(:disabled):not(.disabled):active:focus,.show>.btn-outline-primary.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(var(--color-primary-rgb), .5) }
+.btn-outline-secondary:not(:disabled):not(.disabled).active,.btn-outline-secondary:not(:disabled):not(.disabled):active,.show>.btn-outline-secondary.dropdown-toggle { color:var(--color-bg);background-color:var(--color-text-muted);border-color:var(--color-text-muted) }
+.btn-outline-secondary:not(:disabled):not(.disabled).active:focus,.btn-outline-secondary:not(:disabled):not(.disabled):active:focus,.show>.btn-outline-secondary.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(108,117,125,.5) }
+.btn-outline-success:not(:disabled):not(.disabled).active,.btn-outline-success:not(:disabled):not(.disabled):active,.show>.btn-outline-success.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-outline-success:not(:disabled):not(.disabled).active:focus,.btn-outline-success:not(:disabled):not(.disabled):active:focus,.show>.btn-outline-success.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(40,167,69,.5) }
+.btn-outline-info:not(:disabled):not(.disabled).active,.btn-outline-info:not(:disabled):not(.disabled):active,.show>.btn-outline-info.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-outline-info:not(:disabled):not(.disabled).active:focus,.btn-outline-info:not(:disabled):not(.disabled):active:focus,.show>.btn-outline-info.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(23,162,184,.5) }
+.btn-outline-warning:not(:disabled):not(.disabled).active,.btn-outline-warning:not(:disabled):not(.disabled):active,.show>.btn-outline-warning.dropdown-toggle { color:var(--color-accent, var(--color-secondary));background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-outline-warning:not(:disabled):not(.disabled).active:focus,.btn-outline-warning:not(:disabled):not(.disabled):active:focus,.show>.btn-outline-warning.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(255,193,7,.5) }
+.btn-outline-danger:not(:disabled):not(.disabled).active,.btn-outline-danger:not(:disabled):not(.disabled):active,.show>.btn-outline-danger.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-outline-danger:not(:disabled):not(.disabled).active:focus,.btn-outline-danger:not(:disabled):not(.disabled):active:focus,.show>.btn-outline-danger.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(220,53,69,.5) }
+.btn-outline-light:not(:disabled):not(.disabled).active,.btn-outline-light:not(:disabled):not(.disabled):active,.show>.btn-outline-light.dropdown-toggle { color:var(--color-accent, var(--color-secondary));background-color:var(--color-bg);border-color:var(--color-bg) }
+.btn-outline-light:not(:disabled):not(.disabled).active:focus,.btn-outline-light:not(:disabled):not(.disabled):active:focus,.show>.btn-outline-light.dropdown-toggle:focus { box-shadow:0 0 0 .2rem var(--color-bg) }
+.btn-outline-dark:not(:disabled):not(.disabled).active,.btn-outline-dark:not(:disabled):not(.disabled):active,.show>.btn-outline-dark.dropdown-toggle { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.btn-outline-dark:not(:disabled):not(.disabled).active:focus,.btn-outline-dark:not(:disabled):not(.disabled):active:focus,.show>.btn-outline-dark.dropdown-toggle:focus { box-shadow:0 0 0 .2rem rgba(52,58,64,.5) }
+.dropdown-item.active,.dropdown-item:active { color:var(--color-bg);text-decoration:none;background-color:var(--color-primary) }
+.btn-group-vertical>.btn.active,.btn-group-vertical>.btn:active,.btn-group-vertical>.btn:focus,.btn-group>.btn.active,.btn-group>.btn:active,.btn-group>.btn:focus { z-index:1 }
+.nav-tabs .nav-item.show .nav-link,.nav-tabs .nav-link.active { color:var(--color-accent, var(--color-secondary));background-color:var(--color-bg);border-color:var(--color-border) var(--color-border) var(--color-bg) }
+.nav-pills .nav-link.active,.nav-pills .show>.nav-link { color:var(--color-bg);background-color:var(--color-primary) }
+.tab-content>.active { display:block }
+.navbar>.container,.navbar>.container-fluid { display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between }
+.navbar-expand>.container,.navbar-expand>.container-fluid { padding-right:0;padding-left:0 }
+.navbar-expand>.container,.navbar-expand>.container-fluid { -ms-flex-wrap:nowrap;flex-wrap:nowrap }
+.navbar-light .navbar-nav .active>.nav-link,.navbar-light .navbar-nav .nav-link.active,.navbar-light .navbar-nav .nav-link.show,.navbar-light .navbar-nav .show>.nav-link { color:var(--color-text) }
+.navbar-light .navbar-text a { color:var(--color-text) }
+.navbar-light .navbar-text a:focus,.navbar-light .navbar-text a:hover { color:var(--color-text) }
+.navbar-dark .navbar-nav .active>.nav-link,.navbar-dark .navbar-nav .nav-link.active,.navbar-dark .navbar-nav .nav-link.show,.navbar-dark .navbar-nav .show>.nav-link { color:var(--color-bg) }
+.navbar-dark .navbar-text a { color:var(--color-bg) }
+.navbar-dark .navbar-text a:focus,.navbar-dark .navbar-text a:hover { color:var(--color-bg) }
+.breadcrumb-item.active { color:var(--color-text-muted) }
+.page-item.active .page-link { z-index:1;color:var(--color-bg);background-color:var(--color-primary);border-color:var(--color-primary) }
+.list-group-item.active { z-index:2;color:var(--color-bg);background-color:var(--color-primary);border-color:var(--color-primary) }
+.list-group-item-primary.list-group-item-action.active { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.list-group-item-secondary.list-group-item-action.active { color:var(--color-bg);background-color:var(--color-text);border-color:var(--color-text) }
+.list-group-item-success.list-group-item-action.active { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.list-group-item-info.list-group-item-action.active { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.list-group-item-warning.list-group-item-action.active { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.list-group-item-danger.list-group-item-action.active { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.list-group-item-light.list-group-item-action.active { color:var(--color-bg);background-color:var(--color-text-muted);border-color:var(--color-text-muted) }
+.list-group-item-dark.list-group-item-action.active { color:var(--color-bg);background-color:var(--color-accent, var(--color-secondary));border-color:var(--color-accent, var(--color-secondary)) }
+.carousel-item-next,.carousel-item-prev,.carousel-item.active { display:block }
+.active.carousel-item-right,.carousel-item-next { -webkit-transform:translateX(100%);transform:translateX(100%) }
+.active.carousel-item-right,.carousel-item-next { -webkit-transform:translate3d(100%,0,0);transform:translate3d(100%,0,0) }
+.active.carousel-item-left,.carousel-item-prev { -webkit-transform:translateX(-100%);transform:translateX(-100%) }
+.active.carousel-item-left,.carousel-item-prev { -webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0) }
+.carousel-indicators li { position:relative;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:0 1 auto;width:30px;height:3px;margin-right:3px;margin-left:3px;text-indent:-999px;background-color:var(--color-bg) }
+.carousel-indicators li::before { position:absolute;top:-10px;left:0;display:inline-block;width:100%;height:10px;content:"" }
+.carousel-indicators li::after { position:absolute;bottom:-10px;left:0;display:inline-block;width:100%;height:10px;content:"" }
+.carousel-indicators .active { background-color:var(--color-bg) }
+a.bg-primary:focus,a.bg-primary:hover,button.bg-primary:focus,button.bg-primary:hover { background-color:var(--color-accent, var(--color-secondary))!important }
+a.bg-secondary:focus,a.bg-secondary:hover,button.bg-secondary:focus,button.bg-secondary:hover { background-color:var(--color-text-muted)!important }
+a.bg-success:focus,a.bg-success:hover,button.bg-success:focus,button.bg-success:hover { background-color:var(--color-accent, var(--color-secondary))!important }
+a.bg-info:focus,a.bg-info:hover,button.bg-info:focus,button.bg-info:hover { background-color:var(--color-accent, var(--color-secondary))!important }
+a.bg-warning:focus,a.bg-warning:hover,button.bg-warning:focus,button.bg-warning:hover { background-color:var(--color-accent, var(--color-secondary))!important }
+a.bg-danger:focus,a.bg-danger:hover,button.bg-danger:focus,button.bg-danger:hover { background-color:var(--color-accent, var(--color-secondary))!important }
+a.bg-light:focus,a.bg-light:hover,button.bg-light:focus,button.bg-light:hover { background-color:var(--color-border)!important }
+a.bg-dark:focus,a.bg-dark:hover,button.bg-dark:focus,button.bg-dark:hover { background-color:var(--color-accent, var(--color-secondary))!important }
+.text-center { text-align:center!important }
+a.text-primary:focus,a.text-primary:hover { color:var(--color-accent, var(--color-secondary))!important }
+a.text-secondary:focus,a.text-secondary:hover { color:var(--color-text-muted)!important }
+a.text-success:focus,a.text-success:hover { color:var(--color-accent, var(--color-secondary))!important }
+a.text-info:focus,a.text-info:hover { color:var(--color-accent, var(--color-secondary))!important }
+a.text-warning:focus,a.text-warning:hover { color:var(--color-accent, var(--color-secondary))!important }
+a.text-danger:focus,a.text-danger:hover { color:var(--color-accent, var(--color-secondary))!important }
+a.text-light:focus,a.text-light:hover { color:var(--color-border)!important }
+a.text-dark:focus,a.text-dark:hover { color:var(--color-accent, var(--color-secondary))!important }
+.glyph div { padding-bottom: 10px; }
+.fa-ul>li { position:relative }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 { font-family: 'Unna', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: var(--color-text); }
+h3,
+h4 { margin: 0 0 10px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--color-text);
+    letter-spacing: -0.01em; }
+h3 { font-size: 22px; }
+img { border: none;
+    outline: none;
+    max-width: 100%; }
+ul { display: block;
+    list-style: none;
+    padding: 0;
+    margin: 0; }
+a,
+a:hover { text-decoration: none; }
+a:focus { outline: 0;
+    text-decoration: none; }
+.padding { padding: 80px 0; }
+.padding-5 { padding: 5px; }
+.mb-40 { margin-bottom: 40px; }
+.mt-40 { margin-top: 40px; }
+.overlay { width: 100%;
+    position: relative;
+    z-index: 1; }
+.overlay:before { content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1; }
+.btn_group a { margin: 5px; }
+.btn_group_left a { margin-right: 15px;
+    margin-bottom: 15px; }
+a,
+a:hover,
+.overlay,
+img,
+.form-control,
+.form-control:hover,
+button { -webkit-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s; }
+ul.nav > li > a { color: var(--color-border);
+    font-family: var(--font-heading);
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0 20px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 70px;
+    z-index: 1;
+    text-transform: uppercase;
+    letter-spacing: 2px; }
+ul.nav > li > a:hover,
+ul.nav > li > a:focus,
+ul.nav > li > a.active { background: none;
+    color: var(--color-bg);
+    opacity: 1; }
+.navbar-fixed-top ul.nav > li > a { color: var(--color-text-muted); }
+.navbar-fixed-top ul.nav > li > a:hover,
+.navbar-fixed-top ul.nav > li > a:focus,
+.navbar-fixed-top ul.nav > li.active > a { color: var(--color-text); }
+.slicknav_nav .slicknav_row:hover,
+.slicknav_nav .slicknav_row,
+.slicknav_nav a,
+.slicknav_nav a:hover { -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0; }
+.slicknav_nav .slicknav_row,
+.slicknav_nav a { padding: 10px 15px;
+    margin: 0;
+    color: var(--color-text-muted); }
+.slicknav_nav a .caret { display: none; }
+.slicknav_nav ul { margin: 0; }
+.slicknav_nav ul li a { padding-left: 30px;
+    font-size: 12px; }
+.slicknav_nav .slicknav_row:hover,
+.slicknav_nav a:hover { background-color: transparent;
+    color: var(--color-text); }
+.slider-text span { font-family: var(--font-body);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 5px;
+    font-weight: 500;
+    color: var(--color-bg);
+    display: block; }
+.nivo-caption a { display: inline-block !important; }
+.nivo-directionNav a { font-size: 25px;
+    color: var(--color-bg) !important;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -ms-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    top: 50%;
+    transform: translateY(-50%); }
+.nivo-directionNav a:hover { opacity: 1 !important; }
+.nivo-controlNav a { background-color: transparent;
+    display: inline-block;
+    font-size: 0;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: all 0.3s linear;
+    line-height: 12px; }
+.portfolio-section { padding-top: 0; }
+.filter-menu { width: 100%; }
+.filter-menu li { display: inline-block;
+    padding: 5px 15px;
+    cursor: pointer;
+    color: var(--color-text);
+    opacity: 0.7;
+    font-weight: 600;
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all 0.3s ease-in-out;
+    position: relative; }
+.filter-menu li.active { color: var(--color-text);
+    opacity: 1; }
+.filter-menu li:before,
+.filter-menu li:after { width: 15px;
+    height: 40%;
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    transition: all 0.5s ease-in-out;
+    opacity: 0;
+    visibility: hidden; }
+.filter-menu li:before { border-top: 3px solid var(--color-text);
+    border-left: 3px solid var(--color-text); }
+.filter-menu li:after { border-bottom: 3px solid var(--color-text);
+    border-right: 3px solid var(--color-text);
+    left: auto;
+    top: auto;
+    right: 5px;
+    bottom: 5px; }
+.filter-menu li.active:before,
+.filter-menu li.active:after { opacity: 1;
+    visibility: visible; }
+.filter-menu li.active:before { left: 0;
+    top: 0; }
+.filter-menu li.active:after { right: 0;
+    bottom: 0; }
+.portfolio-item { position: relative;
+    overflow: hidden; }
+.portfolio-item img { width: 100%; }
+.portfolio-item .overlay { background-color: var(--color-text);
+    color: var(--color-bg);
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0; }
+.portfolio-item .overlay h3 span { display: block; }
+.portfolio-item .overlay:before,
+.portfolio-item .overlay:after { width: 30px;
+    height: 30px;
+    top: auto;
+    content: '';
+    position: absolute;
+    z-index: 1;
+    transition: all 0.3s ease-in-out; }
+.portfolio-item .overlay:before { border-bottom: 3px solid var(--color-bg);
+    border-left: 3px solid var(--color-bg);
+    bottom: 50px;
+    left: 50px; }
+.portfolio-item .overlay:after { border-top: 3px solid var(--color-bg);
+    border-right: 3px solid var(--color-bg);
+    top: 50px;
+    right: 50px; }
+.portfolio-item:hover .overlay,
+.portfolio-item:hover .overlay:before,
+.portfolio-item:hover .overlay:after { visibility: visible;
+    opacity: 1; }
+.portfolio-item:hover img { transform: scale(1.05); }
+.portfolio-item:hover .overlay:before { bottom: 10px;
+    left: 10px;
+    animation-delay: 0.2s; }
+.portfolio-item:hover .overlay:after { top: 10px;
+    right: 10px;
+    animation-delay: 0.2s; }
+.portfolio-item h3 { font-size: 22px;
+    font-weight: 700;
+    font-family: "Unna", sans-serif;
+    color: var(--color-bg);
+    -webkit-transform: translateY(-5px);
+    transform: translateY(-5px);
+    transition: all 0.5s ease-in-out;
+    margin: 0 0 -3px; }
+.portfolio-item span { display: block;
+    -moz-transform: translateY(5px);
+    transform: translateY(5px);
+    transition: all 0.5s ease-in-out;
+    font-size: 12px;
+    font-family: var(--font-body); }
+.portfolio-item:hover h3,
+.portfolio-item:hover span { -webkit-transform: translateY(0);
+    transform: translateY(0); }
+.portfolio-item .media-control { position: absolute;
+    width: auto;
+    height: auto;
+    right: 20px;
+    bottom: 20px; }
+.portfolio-item .media-control li { display: inline-block; }
+.portfolio-item .media-control li a { display: inline-block;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    border: 1px solid var(--color-bg);
+    color: var(--color-bg);
+    font-size: 12px;
+    margin: 5px; }
+.portfolio-item .media-control li a:hover { background-color: var(--color-bg); }
+.portfolio-item:hover .media-control li a { transform: scale(1.05);
+    transition-delay: all 1s ease-in-out; }
+.load-more a { font-family: var(--font-body);
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-text);
+    border: 2px solid var(--color-text);
+    padding: 10px 20px;
+    letter-spacing: 2px; }
+.load-more a:hover { background-color: var(--color-text);
+    color: var(--color-bg); }
+.testi-item .testi-thumb img { width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 20px; }
+.testi-item .testi-thumb h3 { display: inline-block;
+    margin-bottom: 0;
+    line-height: 1.5; }
+.testi-item .testi-thumb h3 span { display: block;
+    font-size: 13px;
+    letter-spacing: 1px; }
+.owl-nav div { display: inline-block;
+    margin-right: 20px; }
+.pricing-box .pricing-head img { width: 100%; }
+.pricing-list li { line-height: 30px;
+    font-size: 13px;
+    font-weight: 600; }
+.cta-section .row { border: 1px solid var(--color-bg-alt);
+    padding: 50px 30px; }
+.instafeed a { overflow: hidden;
+    border-radius: 5px; }
+.instafeed a img { width: 100%;
+    height: 100px;
+    max-width: 100%;
+    object-fit: cover;
+    object-position: center center; }
+.instafeed a:hover img { transform: scale(1.05);
+    transition: all 0.2s ease-in-out; }
+.widget-content img { margin-bottom: 30px; }
+.widget-link li { line-height: 35px; }
+.widget-link li a { color: var(--color-text); }
+.widget-link li a:hover { color: var(--color-text);
+    text-decoration: underline; }
+.widget-link li i { margin-right: 10px;
+    color: var(--color-text); }
+.widget-social li { display: inline-block; }
+.widget-social li a { display: inline-block;
+    background-color: var(--color-bg-alt);
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    color: var(--color-text);
+    font-size: 18px;
+    margin-right: 5px; }
+.widget-social li a:hover { background-color: var(--color-text);
+    color: var(--color-bg); }
+.nivoSlider img { position:absolute;
+	top:0px;
+	left:0px;
+	max-width: none; }
+.nivoSlider a.nivo-imageLink { position:absolute;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	border:0;
+	padding:0;
+	margin:0;
+	z-index:6;
+	display:none;
+	background:white;
+	filter:alpha(opacity=0);
+	opacity:0; }
+.nivo-box img { display:block; }
+.nivo-caption a { display:inline !important; }
+.nivo-directionNav a { position:absolute;
+	top:45%;
+	z-index:9;
+	cursor:pointer; }
+.nivo-controlNav a { cursor:pointer; }
+.nivo-controlNav a.active { font-weight:bold; }
+.owl-carousel .owl-item img { display: block;
+  width: 100%;
+  -webkit-transform-style: preserve-3d; }
+.owl-carousel .owl-item img { transform-style: preserve-3d; }
+.slicknav_nav li,.slicknav_nav ul { display:block }
+.slicknav_nav .slicknav_item a { display:inline }
+.slicknav_nav .slicknav_row,.slicknav_nav a { display:block }
+.slicknav_nav .slicknav_parent-link a { display:inline }
+.slicknav_nav,.slicknav_nav ul { list-style:none;overflow:hidden;padding:0 }
+.slicknav_nav ul { margin:0 0 0 20px }
+.slicknav_nav .slicknav_row,.slicknav_nav a { padding:5px 10px;margin:2px 5px }
+.slicknav_nav a { text-decoration:none;color:var(--color-bg) }
+.slicknav_nav a:hover { -webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px;background:var(--color-border);color:var(--color-text) }
+.slicknav_nav .slicknav_item a,.slicknav_nav .slicknav_parent-link a { padding:0;margin:0 }
+#swipebox-overlay img { border:none!important }
+#swipebox-slider .slide .swipebox-inline-container,#swipebox-slider .slide .swipebox-video-container,#swipebox-slider .slide img { display:inline-block;max-height:100%;max-width:100%;margin:0;padding:0;width:auto;height:auto;vertical-align:middle }
+.ti-zoom-in:before { content:"\e611" }
+.ti-heart:before { content:"\e634" }
+.ti-download:before { content:"\e6a7" }
+@media (min-width:576px) {
+  .col-sm-6 { -webkit-box-flex:0;-ms-flex:0 0 50%;flex:0 0 50%;max-width:50% }
+  .navbar-expand-sm>.container,.navbar-expand-sm>.container-fluid { -ms-flex-wrap:nowrap;flex-wrap:nowrap }
+}
+@media (min-width:992px) {
+  .col-lg-3 { -webkit-box-flex:0;-ms-flex:0 0 25%;flex:0 0 25%;max-width:25% }
+  .navbar-expand-lg>.container,.navbar-expand-lg>.container-fluid { -ms-flex-wrap:nowrap;flex-wrap:nowrap }
+}
+@media (max-width:575.98px) {
+  .navbar-expand-sm>.container,.navbar-expand-sm>.container-fluid { padding-right:0;padding-left:0 }
+}
+@media (max-width:767.98px) {
+  .navbar-expand-md>.container,.navbar-expand-md>.container-fluid { padding-right:0;padding-left:0 }
+}
+@media (min-width:768px) {
+  .navbar-expand-md>.container,.navbar-expand-md>.container-fluid { -ms-flex-wrap:nowrap;flex-wrap:nowrap }
+}
+@media (max-width:991.98px) {
+  .navbar-expand-lg>.container,.navbar-expand-lg>.container-fluid { padding-right:0;padding-left:0 }
+}
+@media (max-width:1199.98px) {
+  .navbar-expand-xl>.container,.navbar-expand-xl>.container-fluid { padding-right:0;padding-left:0 }
+}
+@media (min-width:1200px) {
+  .navbar-expand-xl>.container,.navbar-expand-xl>.container-fluid { -ms-flex-wrap:nowrap;flex-wrap:nowrap }
+}
+@media print {
+  a:not(.btn) { text-decoration:underline }
+  img,tr { page-break-inside:avoid }
+  h2,h3,p { orphans:3;widows:3 }
+  h2,h3 { page-break-after:avoid }
+}
+@media all and (max-width: 767px) {
+  h3 { font-size: 18px; }
+  .padding { padding: 70px 0; }
+  .pd-top-sm-none { padding-top: 0; }
+  .menu-btn,
+    .menu-wrap ul.nav { display: none; }
+}
+@media all and (max-width: 576px) {
+  .slider-text span { display: none; }
+  .social-link li { margin: 0; }
+  .cta-section .row { padding: 30px; }
+}
+</style>
+<section id="portfolio" class="portfolio-section padding pd-top-sm-none">
+        <div class="container-fluid">
+            <div data-animate="stagger" class="row">
+                <ul class="filter-menu text-center mb-40">
+                    <li class="active" data-filter="*">All Photos</li>
+                    <li data-filter=".wedding">Wedding</li>
+                    <li data-filter=".cupples">Cupples</li>
+                    <li data-filter=".portraits">Portraits</li>
+                    <li data-filter=".fashion">Fashion</li>
+                    <li data-filter=".magazine">Magazine</li>
+                </ul><!-- /.filter-menu -->
+            </div>
+            <div data-animate="stagger" class="portfolio-masonry row my-gallery">
+                <div class="col-lg-3 col-sm-6 single-item padding-5 wedding portraits magazine wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL}}" alt="{{PORTFOLIO_IMAGE_ALT}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-1.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 1 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 cupples fashion wedding wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_2}}" alt="{{PORTFOLIO_IMAGE_ALT_2}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_2}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-2.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 2 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 magazine cupples portraits wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_3}}" alt="{{PORTFOLIO_IMAGE_ALT_3}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_3}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-3.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 3 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 portraits cupples wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_4}}" alt="{{PORTFOLIO_IMAGE_ALT_4}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_4}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-4.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 4 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 magazine portraits wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_5}}" alt="{{PORTFOLIO_IMAGE_ALT_5}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_5}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-5.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 5 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 fashion portraits cupples wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_6}}" alt="{{PORTFOLIO_IMAGE_ALT_6}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_6}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-6.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 6 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 portraits magazine cupples wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_7}}" alt="{{PORTFOLIO_IMAGE_ALT_7}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_7}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-7.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 7 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 magazine cupples wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_8}}" alt="{{PORTFOLIO_IMAGE_ALT_8}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_8}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-8.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 8 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 portraits magazine wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_9}}" alt="{{PORTFOLIO_IMAGE_ALT_9}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_9}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-9.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 9 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 fashion cupples magazine wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_10}}" alt="{{PORTFOLIO_IMAGE_ALT_10}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_10}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-10.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 10 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 cupples portraits fashion wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_11}}" alt="{{PORTFOLIO_IMAGE_ALT_11}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_11}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-11.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 11 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 portraits magazine cupples wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_12}}" alt="{{PORTFOLIO_IMAGE_ALT_12}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_12}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-12.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 12 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 cupples portraits magazine wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_13}}" alt="{{PORTFOLIO_IMAGE_ALT_13}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_13}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-13.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 13 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 portraits wedding portraits wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_14}}" alt="{{PORTFOLIO_IMAGE_ALT_14}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_14}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-14.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 14 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 wedding cupples portraits wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_15}}" alt="{{PORTFOLIO_IMAGE_ALT_15}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_15}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-15.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 15 -->
+                <div class="col-lg-3 col-sm-6 single-item padding-5 portraits portraits wedding wow fadeInUp">
+                    <div class="portfolio-item">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_16}}" alt="{{PORTFOLIO_IMAGE_ALT_16}}">
+                        <div class="overlay">
+                            <div class="photo-content">
+                                <h3 data-animate="fade-up">{{PORTFOLIO_SUBTITLE_16}}</h3>
+                                <span>Cupples Portraits</span>
+                            </div>
+                            <ul class="media-control">
+                                <li><a href="img/pic-16.jpg" class="lightbox" rel="photo-gallery" title="Love In The Summer"><i class="ti-zoom-in"></i></a></li>
+                                <li><a href="#"><i class="ti-heart"></i></a></li>
+                                <li><a href="#"><i class="ti-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!-- Item 16 -->
+            </div><!-- /.portfolio-masonry -->
+
+            <div class="load-more mt-40 text-center wow fadeInUp">
+                <a href="#">- Load More Photographs -</a>
+            </div><!-- /.load-more -->
+
+        </div><!-- /.container -->
+    </section>
+  </div>
+</section>

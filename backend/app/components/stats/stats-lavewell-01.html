@@ -1,0 +1,605 @@
+<!-- Component: stats-lavewell-01 -->
+<!-- Tags: imported -->
+<section id="stats" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+.h1,.h2,.h3,.h4,.h5,.h6,h1,h2,h3,h4,h5,h6 { margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2;color:var(--bs-heading-color) }
+.h1,h1 { font-size:calc(1.375rem + 1.5vw) }
+.h2,h2 { font-size:calc(1.325rem + .9vw) }
+.h6,h6 { font-size:1rem }
+p { margin-top:0;margin-bottom:1rem }
+.row { --bs-gutter-x:1.5rem;--bs-gutter-y:0;display:flex;flex-wrap:wrap;margin-top:calc(-1 * var(--bs-gutter-y));margin-right:calc(-.5 * var(--bs-gutter-x));margin-left:calc(-.5 * var(--bs-gutter-x)) }
+.row>* { flex-shrink:0;width:100%;max-width:100%;padding-right:calc(var(--bs-gutter-x) * .5);padding-left:calc(var(--bs-gutter-x) * .5);margin-top:var(--bs-gutter-y) }
+.align-items-center { align-items:center!important }
+.odometer.odometer-auto-theme,
+.odometer.odometer-theme-default { display: inline-block;
+  vertical-align: middle;
+  position: relative; }
+.odometer.odometer-auto-theme .odometer-digit,
+.odometer.odometer-theme-default .odometer-digit { display: inline-block;
+  vertical-align: middle;
+  position: relative; }
+.odometer.odometer-auto-theme .odometer-digit .odometer-digit-spacer,
+.odometer.odometer-theme-default .odometer-digit .odometer-digit-spacer { display: inline-block;
+  vertical-align: middle;
+  visibility: hidden; }
+.odometer.odometer-auto-theme .odometer-digit .odometer-digit-inner, .odometer.odometer-theme-default .odometer-digit .odometer-digit-inner { text-align: left;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -5px;
+  right: 0;
+  bottom: 0;
+  overflow: hidden; }
+.odometer.odometer-auto-theme .odometer-digit .odometer-ribbon,
+.odometer.odometer-theme-default .odometer-digit .odometer-ribbon { display: block; }
+.odometer.odometer-auto-theme .odometer-digit .odometer-ribbon-inner,
+.odometer.odometer-theme-default .odometer-digit .odometer-ribbon-inner { display: block;
+  -webkit-backface-visibility: hidden; }
+.odometer.odometer-auto-theme .odometer-digit .odometer-value,
+.odometer.odometer-theme-default .odometer-digit .odometer-value { display: block;
+  -webkit-transform: translateZ(0); }
+.odometer.odometer-auto-theme
+  .odometer-digit
+  .odometer-value.odometer-last-value,
+.odometer.odometer-theme-default
+  .odometer-digit
+  .odometer-value.odometer-last-value { position: absolute; }
+.odometer.odometer-auto-theme.odometer-animating-up .odometer-ribbon-inner,
+.odometer.odometer-theme-default.odometer-animating-up .odometer-ribbon-inner { -webkit-transition: -webkit-transform 2s;
+  -moz-transition: -moz-transform 2s;
+  -ms-transition: -ms-transform 2s;
+  -o-transition: -o-transform 2s;
+  transition: transform 2s; }
+.odometer.odometer-auto-theme.odometer-animating-up.odometer-animating
+  .odometer-ribbon-inner,
+.odometer.odometer-theme-default.odometer-animating-up.odometer-animating
+  .odometer-ribbon-inner { -webkit-transform: translateY(-100%);
+  -moz-transform: translateY(-100%);
+  -ms-transform: translateY(-100%);
+  -o-transform: translateY(-100%);
+  transform: translateY(-100%); }
+.odometer.odometer-auto-theme.odometer-animating-down .odometer-ribbon-inner,
+.odometer.odometer-theme-default.odometer-animating-down
+  .odometer-ribbon-inner { -webkit-transform: translateY(-100%);
+  -moz-transform: translateY(-100%);
+  -ms-transform: translateY(-100%);
+  -o-transform: translateY(-100%);
+  transform: translateY(-100%); }
+.odometer.odometer-auto-theme.odometer-animating-down.odometer-animating
+  .odometer-ribbon-inner,
+.odometer.odometer-theme-default.odometer-animating-down.odometer-animating
+  .odometer-ribbon-inner { -webkit-transition: -webkit-transform 2s;
+  -moz-transition: -moz-transform 2s;
+  -ms-transition: -ms-transform 2s;
+  -o-transition: -o-transform 2s;
+  transition: transform 2s;
+  -webkit-transform: translateY(0);
+  -moz-transform: translateY(0);
+  -ms-transform: translateY(0);
+  -o-transform: translateY(0);
+  transform: translateY(0); }
+.odometer.odometer-auto-theme,
+.odometer.odometer-theme-default { font-family: "Italianno";
+  line-height: 1.1em; }
+h1.lavewell-slider-title { font-size: 140px;
+  color: var(--color-bg);
+  font-weight: 400;
+  margin-top: 15px; }
+h1.service-title { font-size: 60px;
+  line-height: 110px;
+  color: var(--color-text);
+  font-weight: 400;
+  margin: 0; }
+h1.service-title a { display: inline-block;
+  transition: 0.5s; }
+h1.service-title a:hover { color: var(--color-accent, var(--color-secondary)); }
+p.service-desc { font-size: 17px;
+  line-height: 27px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  margin-top: 8px; }
+.service-area.style-2 h1.service-title { font-size: 45px;
+  line-height: 80px;
+  color: var(--color-text);
+  font-weight: 400;
+  margin: 0; }
+.service-area.style-2 p.service-desc { font-size: 17px;
+  line-height: 27px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  margin-top: 8px; }
+h6.counter-sub-title { font-size: 14px;
+  line-height: 27px;
+  color: var(--color-bg);
+  font-weight: 500;
+  font-family: var(--font-heading);
+  margin: 0; }
+h2.counter-title { font-size: 45px;
+  color: var(--color-bg);
+  font-weight: 400; }
+.counter-single-box { padding-top: 6px;
+  margin-bottom: 20px;
+  position: relative; }
+.counter-single-box::before { position: absolute;
+  content: "";
+  width: 1px;
+  height: 70px;
+  background: rgb(255 255 255 / 30%);
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto 0; }
+.odometer-wrapper.counter-box-title h1 { display: inline-block;
+  font-size: 80px;
+  line-height: 55px;
+  color: var(--color-bg);
+  font-weight: 400;
+  font-family: "Italianno";
+  margin: 0; }
+.counter-desc p { font-size: 14px;
+  line-height: 27px;
+  color: var(--color-bg);
+  font-weight: 500;
+  font-family: var(--font-body); }
+.row.counter .col-lg-2:last-child .counter-single-box::before { display: none; }
+.coutner-area.style-2 .odometer-wrapper.counter-box-title h1 { color: var(--color-text); }
+.coutner-area.style-2 h1.count-text { position: relative;
+  top: 10px !important; }
+.coutner-area.style-2 .counter-desc p { color: var(--color-text);
+  text-transform: uppercase; }
+.coutner-area.style-2 .counter-single-box { text-align: center;
+  margin-bottom: 20px;
+  position: relative; }
+.coutner-area.style-2 .counter-single-box::before { position: absolute;
+  content: "";
+  width: 1px;
+  height: 70px;
+  background: rgb(0 0 0 / 10%);
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto 0; }
+.row.counter-2 .col-lg-3:last-child .counter-single-box::before { display: none; }
+.section-title.text-left { margin-bottom: 95px; }
+.section-main-title h1 { font-size: 100px;
+  line-height: 55px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-top: 28px; }
+.section-main-title h2 { font-size: 60px;
+  line-height: 42px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-top: 18px; }
+.section-title-desc p { font-size: 17px;
+  font-weight: 400;
+  line-height: 27px;
+  color: var(--color-text-muted);
+  margin-top: 35px;
+  margin-bottom: 38px;
+  padding: 0 63px 0 0; }
+.about-us-area .section-title-desc p { font-size: 17px;
+  font-weight: 400;
+  line-height: 27px;
+  color: var(--color-text-muted);
+  margin-top: 35px;
+  margin-bottom: 20px;
+  padding: 0; }
+.gallery-area.bottom .section-title-desc p { font-size: 17px;
+  font-weight: 400;
+  line-height: 27px;
+  color: var(--color-text-muted);
+  margin-top: 0;
+  margin-bottom: 34px;
+  padding: 0 0px 0 45px; }
+.wishes-area .section-title-desc p { margin-top: 47px; }
+.about-area .section-title.text-left { margin-bottom: 30px; }
+.about-section .section-title.text-left { margin-bottom: 46px; }
+.about-area.style-2 .section-title-desc p { padding: 0 0px 0 100px; }
+.wishes-area .section-title.text-left { margin-bottom: 45px; }
+.about-us-area .section-title.text-left { margin-bottom: 0; }
+.contact-section .section-title.text-left { margin-bottom: 65px; }
+.single-wedding-box.last-child .wedding-desc p::before { display: none; }
+.wedding-title h1 { font-size: 45px;
+  line-height: 42px;
+  color: var(--color-text);
+  font-weight: 400;
+  margin: 36px 0 24px; }
+.wedding-desc p { font-size: 17px;
+  line-height: 27px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  font-family: var(--font-body);
+  position: relative; }
+.wedding-desc p::before { position: absolute;
+  content: "";
+  opacity: 0.102;
+  width: 510px;
+  height: 1px;
+  background-color: rgb(0 0 0);
+  left: 0;
+  bottom: -44px; }
+.friends-desc p { font-size: 17px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  margin-top: 20px; }
+.contact-addres p { font-size: 35px;
+  line-height: 45px;
+  color: var(--color-text);
+  font-weight: 400;
+  font-family: "Italianno"; }
+.row.form-bg { background: var(--color-bg-alt);
+  padding: 53px 60px 70px 60px;
+  position: relative;
+  margin-top: -268px; }
+.contact-form-title h2 { margin-bottom: 35px;
+  font-size: 45px;
+  color: var(--color-accent, var(--color-secondary));
+  font-weight: 400;
+  font-family: "Italianno";
+  text-align: center; }
+p.testi-desc { font-size: 17px;
+  font-weight: 400;
+  color: var(--color-bg);
+  margin: 30px 0 40px; }
+.testimonial-area.style-2 p.testi-desc { font-size: 17px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin: 30px 0 35px;
+  text-align: center; }
+p.blog-desc { font-size: 17px;
+  line-height: 27px;
+  color: var(--color-bg);
+  margin-bottom: 32px; }
+.blog-meta-title h2 a { display: inline-block;
+  color: var(--color-bg);
+  font-size: 45px;
+  font-weight: 400;
+  transition: 0.5s; }
+.blog-singele-box:hover .blog-meta-title h2 a { opacity: 0; }
+.footer-title h1 { font-size: 60px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: 15px;
+  padding-left: 85px; }
+.footer-single-item2 .footer-title h1 { padding-left: 60px; }
+.footer-info p,
+.footer-info span { display: inline-block;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--color-text-muted); }
+.footer-info p { margin-right: 33px; }
+.footer-info p i,
+.footer-info span i { display: inline-block;
+  background: var(--color-accent, var(--color-secondary));
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 50%;
+  color: var(--color-bg);
+  margin-right: 10px;
+  font-size: 14px; }
+.banner-title h1 { font-size: 150px;
+  line-height: 140px;
+  color: var(--color-text);
+  font-weight: 400;
+  text-align: center;
+  padding: 0 36px; }
+.service-section h1.service-title { margin: 0;
+  font-size: 45px;
+  line-height: 52px;
+  color: var(--color-text);
+  font-weight: 400; }
+h1.team-title { font-size: 45px;
+  color: var(--color-text);
+  font-weight: 400; }
+h1.team-title a { display: inline-block;
+  transition: 0.5s; }
+h1.team-title a:hover { color: var(--color-text-muted); }
+.row.call-bg { background: url(../images/home-2/call-action-bg.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 65px 0px 58px 65px; }
+.call-to-action-area.inner-2 .row.call-bg { background: url(../images/inner/call-action-bg2.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 65px 0px 58px 65px; }
+h1.call-sub-title { font-size: 60px;
+  font-weight: 400;
+  margin-top: 15px; }
+.about-us-area .about-desc p { color: var(--color-text-muted);
+  font-size: 17px;
+  padding: 10px 0 16px 34px; }
+p.about-me-des { font-size: 20px;
+  color: var(--color-text);
+  padding-top: 20px; }
+p.about-me-desc { font-size: 20px;
+  color: var(--color-text); }
+h1.priching-doller { font-size: 40px;
+  margin-bottom: 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--color-accent, var(--color-secondary)); }
+h1.priching-doller span { display: inline-block;
+  font-size: 18px; }
+.team-details-area .team-details-content p { color: var(--color-text); }
+.team-details-area p.desc { margin-top: 34px;
+  margin-bottom: 45px; }
+.team-details-area .contact-info-content p { font-size: 20px;
+  color: var(--color-accent, var(--color-secondary));
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  transition: 0.5s; }
+.team-details-area .team-details-location-box .contact-info-content p { font-size: 17px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  transition: 0.5s; }
+.row.portfolio-box-info { position: relative;
+  border-radius: 10px;
+  background-color: var(--color-bg);
+  padding: 43px 50px 50px;
+  z-index: 1;
+  justify-content: center;
+  margin: 0;
+  margin-top: 40px; }
+.portfolio-details-box p { font-size: 16px;
+  line-height: 28px; }
+.portfolio-details-box h6 { font-size: 16px;
+  font-family: var(--font-body);
+  line-height: 24px; }
+p.portfolio-details-desc { color: var(--color-text); }
+p.portfolio-det-desc { color: var(--color-text); }
+.accordion li p { display: none;
+  padding: 24px 15px 10px 25px;
+  margin: 0;
+  background: var(--color-bg-alt);
+  overflow: hidden;
+  font-family: var(--font-heading); }
+.accordion2 li p { display: none;
+  padding: 24px 15px 30px 25px;
+  margin: 0;
+  background: var(--color-bg-alt);
+  overflow: hidden;
+  font-size: 16px;
+  font-family: var(--font-body);
+  border-top: 0;
+  border-right: 2px solid var(--color-bg);
+  border-left: 2px solid var(--color-bg);
+  border-bottom: 2px solid var(--color-bg); }
+.recent-widget-content p { font-size: 14px;
+  margin: 0;
+  color: var(--color-accent, var(--color-secondary));
+  text-transform: uppercase; }
+.sidebar__comments-text-box p { font-size: 18px;
+  margin: 0;
+  line-height: 26px;
+  font-weight: 500;
+  color: var(--color-text); }
+p.blog-details-desc { font-size: 17px;
+  margin-bottom: 25px;
+  color: var(--color-text); }
+.blog-details-author-title p { font-size: 20px;
+  font-style: italic;
+  line-height: 30px;
+  color: var(--color-text); }
+p.blog-details-desc.two { width: 95%; }
+.blog-details-comment-content h2 { font-size: 20px;
+  margin-top: 0;
+  display: inline-block;
+  margin-right: 30px;
+  font-family: var(--font-body);
+  font-weight: 400; }
+.blog-details-comment-content p { font-size: 15px;
+  margin: 13px 0 0;
+  color: var(--color-text); }
+p.blog-details-desc.three { width: 100%; }
+p.services-details-desc { color: var(--color-text); }
+.service-details-content p { color: var(--color-text); }
+p.details-desc,
+.service-details-des { color: var(--color-text);
+  margin: 20px 0; }
+p { font-weight: 400;
+  font-style: normal; }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 { color: var(--color-text);
+  font-family: "Italianno";
+  font-style: normal;
+  margin-bottom: 0;
+  margin-top: 10px;
+  line-height: 1.2;
+  font-weight: 700;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  font-size: 36px; }
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a { color: var(--color-text);
+  -webkit-transition: 0.5s;
+  transition: 0.5s; }
+h1 { font-size: 50px; }
+h2 { font-size: 35px; }
+h6 { font-size: 18px; }
+.align-items-center { -ms-flex-align: center !important;
+  align-items: center !important; }
+.white h1,
+.white h2,
+.white h3,
+.white h4,
+.white h5,
+.white h6 { color: var(--color-bg); }
+.white p { color: var(--color-bg); }
+@media (min-width:1200px) {
+  .h1,h1 { font-size:2.5rem }
+  .h2,h2 { font-size:2rem }
+}
+@media (min-width:576px) {
+  .col-sm-6 { flex:0 0 auto;width:50% }
+}
+@media (min-width:768px) {
+  .col-md-4 { flex:0 0 auto;width:33.33333333% }
+}
+@media (min-width:992px) {
+  .col-lg-2 { flex:0 0 auto;width:16.66666667% }
+  .col-lg-4 { flex:0 0 auto;width:33.33333333% }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .footer-single-item2 .footer-title h1 { padding-left: 0; }
+  .footer-info p { margin-right: 0; }
+  .banner-title h1 { font-size: 130px;
+    line-height: 120px;
+    padding: 0; }
+  .service-section h1.service-title { font-size: 30px; }
+  .section-title-desc p { padding: 0; }
+  .gallery-area.bottom .section-title-desc p { padding: 0; }
+  .team-details-area .contact-info-content p { font-size: 17px; }
+  .team-details-area .team-details-location-box .contact-info-content p { font-size: 16px; }
+  .sidebar__comments-text-box p br { display: none; }
+  .contact-addres p { font-size: 30px; }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .wedding-desc p::before { display: none; }
+  h1.lavewell-slider-title { font-size: 110px; }
+  .about-area.style-2 .section-title-desc p { padding: 0; }
+  .text-md-left { text-align: center; }
+  .text-sm-left { text-align: left; }
+  .section-main-title h1 { font-size: 90px; }
+  p.testi-desc br { display: none; }
+  .footer-title h1 { font-size: 55px;
+    padding-left: 0; }
+  .footer-single-item2 .footer-title h1 { padding-left: 0; }
+  .footer-title h1 { font-size: 50px;
+    padding-left: 0; }
+  .footer-info p { margin-right: 0; }
+  .banner-title h1 { font-size: 130px;
+    line-height: 120px; }
+  .gallery-area.bottom .section-title.text-left { margin-bottom: 50px; }
+  .gallery-area.bottom .section-title-desc p { padding: 0; }
+  .row.call-bg { padding: 65px 0px 58px 15px; }
+  .row.form-bg { margin-top: 0; }
+  .call-to-action-area.inner-2 .row.call-bg { padding: 65px 0px 58px 15px; }
+}
+@media only screen and (min-width: 600px) and (max-width: 767px) {
+  h1.lavewell-slider-title { font-size: 80px; }
+  .counter-single-box::before { display: none; }
+  .text-md-left { text-align: left !important; }
+  .section-main-title h1 { font-size: 80px; }
+  .about-area.style-2 .section-title-desc p { padding: 0; }
+  .gallery-area .section-main-title h1 { font-size: 65px; }
+  .contact-area .section-main-title h1 { font-size: 70px; }
+  p.testi-desc br { display: none; }
+  .banner-title h1 { font-size: 98px;
+    line-height: 100px; }
+  .section-title-desc p { padding: 0; }
+  .gallery-area.bottom .section-title-desc p { padding: 0; }
+  .gallery-area.bottom .section-title.text-left { margin-bottom: 50px; }
+  .footer-single-item2 .footer-title h1 { text-align: center; }
+  .row.form-bg { margin-top: 0; }
+  .row.call-bg { padding: 65px 0px 58px 30px; }
+}
+@media only screen and (min-width: 480px) and (max-width: 599px) {
+  h1.lavewell-slider-title { font-size: 90px;
+    line-height: 80px; }
+  .single-counter-misson { text-align: center;
+    margin-bottom: 30px; }
+  .text-md-left { text-align: center; }
+  .counter-single-box::before { display: none; }
+  .wedding-event-area .section-main-title h1 { font-size: 70px; }
+  .about-area.style-2 .section-title-desc p { padding: 0; }
+  .best-friends-area .section-main-title h1 { font-size: 80px; }
+  .gallery-area .section-main-title h1 { font-size: 50px; }
+  .contact-area .section-main-title h1 { font-size: 100px;
+    line-height: 100px; }
+  p.testi-desc br { display: none; }
+  .blog-area .section-main-title h1 { font-size: 70px; }
+  .footer-title h1 { padding-left: 0; }
+  .banner-title h1 { font-size: 80px;
+    line-height: 80px;
+    padding: 0; }
+  .section-title-desc p { padding: 0; }
+  .gallery-area.bottom .section-title.text-left { margin-bottom: 50px; }
+  .gallery-area.bottom .section-title-desc p { padding: 0; }
+  .row.call-bg { padding: 65px 0px 58px 0px; }
+  .team-details-area .team-details-location-box .contact-info-content p { font-size: 16px; }
+  .row.form-bg { padding: 50px 30px 70px 30px;
+    margin-top: 0; }
+  .call-to-action-area.inner-2 .row.call-bg { padding: 65px 0px 58px 0px; }
+}
+@media only screen and (min-width: 320px) and (max-width: 479px) {
+  h1.lavewell-slider-title { font-size: 60px; }
+  h1.service-title { font-size: 45px; }
+  .text-md-left { text-align: center; }
+  .counter-single-box::before { display: none; }
+  .single-counter-misson { text-align: center;
+    margin-bottom: 30px; }
+  .wedding-event-area .section-main-title h1 { font-size: 80px;
+    line-height: 100px;
+    margin-top: 0; }
+  .wedding-desc p::before { display: none; }
+  .about-area .section-main-title h2 { font-size: 50px; }
+  .about-area .section-title-desc p { padding: 0; }
+  .about-area.style-2 .section-title-desc p { padding: 0; }
+  .best-friends-area .section-main-title h1 { font-size: 80px;
+    line-height: 90px;
+    margin-top: 0; }
+  .gallery-area .section-main-title h1 { font-size: 50px;
+    line-height: 55px; }
+  .contact-area .section-main-title h1 { font-size: 50px;
+    line-height: 55px;
+    margin-top: 0px; }
+  p.testi-desc br { display: none; }
+  .footer-title h1 { font-size: 50px;
+    margin-bottom: 15px;
+    padding-left: 0; }
+  .footer-info p { margin-right: 0; }
+  .footer-single-item2 .footer-title h1 { padding-left: 0; }
+  .banner-title h1 { font-size: 50px;
+    line-height: 60px;
+    padding: 0; }
+  .section-title-desc p { padding: 0; }
+  .gallery-area.bottom .section-title-desc p { padding: 0; }
+  .gallery-area.bottom .section-title.text-left { margin-bottom: 30px; }
+  .testimonial-area.style-2 p.testi-desc br { display: none; }
+  .blog-area .section-main-title h1 { font-size: 80px;
+    line-height: 1; }
+  .row.call-bg { padding: 65px 0px 58px 0px; }
+  .team-details-area .team-details-location-box .contact-info-content p { font-size: 16px; }
+  .row.form-bg { padding: 53px 0px 70px 0px;
+    margin-top: 0; }
+  .contact-form-title h2 { margin-bottom: 20px; }
+  .call-to-action-area.inner-2 .row.call-bg { padding: 65px 0px 58px 0px; }
+  .blog-area.style-grid .meta-blog p { margin-left: 0;
+    margin-bottom: 0; }
+  p.blog-details-desc { font-size: 16px; }
+  .blog-details-author-title p { font-size: 16px;
+    line-height: 26px; }
+  p.blog-details-desc { font-size: 16px; }
+  .blog-details-comment-content h2 { margin-right: 7px; }
+  .blog-details-comment-content h2 { margin-right: 7px; }
+}
+</style>
+<div data-animate="stagger" class="row counter align-items-center">
+      <!-- REPEAT:STATS -->
+      <div class="col-lg-4 col-md-4 col-sm-6 stagger-item">
+            <div class="single-counter-misson cursor-scale">
+              <div class="counter-content">
+                <h6 class="counter-sub-title">MISSING DAYS TO</h6>
+                <h2 data-animate="text-split" data-split-type="words" class="counter-title">{{STAT_TITLE}}</h2>
+              </div>
+            </div>
+          </div>
+      <!-- /REPEAT:STATS -->
+    </div>
+  </div>
+</section>

@@ -1,0 +1,625 @@
+{
+  "template_name": "Pixy Creative Portfolio",
+  "template_source": "ThemeForest - Nazar Miller (millerDigitalDesign)",
+  "style_variants": ["friendly", "stylish"],
+  "style_variant_notes": {
+    "friendly": "Warm rounded aesthetic, light backgrounds, colorful accents (style-friendly.css). Pages: home-1, home-2, home-3, *-frl.html",
+    "stylish": "Dark/bold aesthetic, angular shapes, high contrast (style-stylish.css). Pages: home-4, home-5, home-6, *-stl.html"
+  },
+  "css_files": {
+    "friendly": "css/style-friendly.css",
+    "stylish": "css/style-stylish.css"
+  },
+  "js_dependencies": ["gsap", "ScrollSmoother", "ScrollTrigger", "ScrollTo", "swiper", "parallax", "swup"],
+  "pages": {
+    "home-1": {
+      "label": "Corporate (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-hero-1",
+          "type": "hero",
+          "style": "Full-width with large display typography, floating decorative shapes, parallax hero image at bottom, rotating SVG circle-text scroll indicator",
+          "css_class": "mil-hero-1",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "204-253",
+          "unique_features": ["Rubber-text bounce effect on hover", "Parallax decorative shapes", "SVG rotating circle scroll text", "Parallax zoom image"]
+        },
+        {
+          "id": "pixy-about-split",
+          "type": "about",
+          "style": "Split layout: left small heading + deco text, right two paragraphs with accent color spans",
+          "css_class": "mil-p-160-100",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "256-273",
+          "unique_features": ["Stylized label above heading", "Accent color highlighted words"]
+        },
+        {
+          "id": "pixy-iconboxes-3col",
+          "type": "services",
+          "style": "3-column icon boxes with SVG icons, centered text, staggered animations",
+          "css_class": "mil-iconbox",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "276-303",
+          "unique_features": ["SVG custom icons", "mil-up stagger entrance"]
+        },
+        {
+          "id": "pixy-services-list-counters",
+          "type": "services",
+          "style": "Left column: vertical service list with expandable items + CTA arrows. Right column: 3 large counter numbers stacked vertically",
+          "css_class": "mil-services-list",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "306-384",
+          "unique_features": ["Service items with border separators", "Offset large counter numbers", "Combined services + stats layout"]
+        },
+        {
+          "id": "pixy-cta-half-image",
+          "type": "cta",
+          "style": "Half container: left colored box with large display text, right full-bleed image with parallax zoom + overlay. Below: text + border button row",
+          "css_class": "mil-half-container",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "387-412",
+          "unique_features": ["Split half-and-half layout", "Colored gradient background on text side", "Parallax image zoom on image side"]
+        },
+        {
+          "id": "pixy-team-4col-hover",
+          "type": "team",
+          "style": "4-column full-width team cards with hover overlay showing name, social icons, role. Image zoom on hover",
+          "css_class": "mil-team-card",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "415-508",
+          "unique_features": ["Full hover overlay with team info", "Image scale on hover (1.2x)", "Container-fluid full-width grid"]
+        },
+        {
+          "id": "pixy-cta-marquee-tapes",
+          "type": "cta",
+          "style": "Large centered text with accent-highlighted keywords + decorative shapes. Below: two horizontal scrolling marquee tapes (one with buttons, one with headings) moving in opposite directions",
+          "css_class": "mil-tapes-frame",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "511-548",
+          "unique_features": ["Dual-direction marquee/tape scroll", "Rubber text hover effect on main heading", "Parallax-x horizontal scroll tapes", "Decorative shape overlays"]
+        },
+        {
+          "id": "pixy-blog-slider",
+          "type": "blog",
+          "style": "Swiper slider with blog cards: image + category badge + date badge + title + excerpt + arrow CTA",
+          "css_class": "mil-blog-slider",
+          "complexity": "medium",
+          "feasibility": "moderate",
+          "line_range": "551-668",
+          "unique_features": ["Image parallax zoom (1.15x)", "Category and date badge overlay on image", "Swiper carousel navigation"]
+        },
+        {
+          "id": "pixy-subscribe-half-video",
+          "type": "cta",
+          "style": "Reversed half container: left colored box with subscribe form (email input + arrow button), right side with embedded video background (mp4)",
+          "css_class": "mil-half-container mil-reverse",
+          "complexity": "medium",
+          "feasibility": "moderate",
+          "line_range": "671-701",
+          "unique_features": ["Video background instead of image", "Email subscribe form with inline button", "Rubber text heading animation"]
+        },
+        {
+          "id": "pixy-footer-friendly",
+          "type": "footer",
+          "style": "Large 'Let's TALK' link with rubber hover, horizontal menu bar, social icons, copyright bar",
+          "css_class": "mil-footer",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "704-744",
+          "unique_features": ["Giant rubber-hover contact link", "Clean horizontal nav + social row", "Minimal copyright footer"]
+        }
+      ]
+    },
+    "home-2": {
+      "label": "Agency (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-hero-2",
+          "type": "hero",
+          "style": "Split layout: left side with stacked display headlines + social icons + SVG circle scroll indicator, right side with full-height parallax image (1.45x zoom)",
+          "css_class": "mil-hero-2",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "204-257",
+          "unique_features": ["50/50 split hero", "Left side vertical social bar", "Right side full-column parallax image", "Rubber text effect on headings"]
+        },
+        {
+          "id": "pixy-about-image-button",
+          "type": "about",
+          "style": "Left text column with heading + paragraphs + counter stat (257+), right column with tall image + floating button box overlay",
+          "css_class": "mil-about-img-frame",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "260-288",
+          "unique_features": ["Counter stat integrated in about section", "Floating CTA button overlapping image frame"]
+        },
+        {
+          "id": "pixy-portfolio-masonry",
+          "type": "gallery",
+          "style": "2-column masonry grid: alternating portrait/square/landscape aspect ratios. Each card has hover overlay with project name + arrow CTA. Below: text + view-all CTA row",
+          "css_class": "mil-work-card",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "321-466",
+          "unique_features": ["True masonry layout with mixed aspect ratios (port/square/land)", "Hover overlay reveal with title", "Parallax image zoom per card"]
+        },
+        {
+          "id": "pixy-team-split-quote",
+          "type": "team",
+          "style": "Left side: heading + description + CEO quote with portrait + CTA button. Right side: 2x2 offset grid of team cards with hover overlays",
+          "css_class": "mil-team-quote",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "470-567",
+          "unique_features": ["CEO portrait quote block", "Asymmetric offset grid (2nd column shifted down)", "Combined description + quote + team cards layout"]
+        },
+        {
+          "id": "pixy-reviews-slider",
+          "type": "testimonials",
+          "style": "Centered Swiper slider: portrait circle image + name + company + testimonial text. Pagination dots + prev/next arrows. Scale parallax animation on slide transition",
+          "css_class": "mil-reviews-slider",
+          "complexity": "medium",
+          "feasibility": "moderate",
+          "line_range": "571-633",
+          "unique_features": ["Swiper parallax-scale effect on transitions", "Circle portrait image", "Custom pagination + arrow nav"]
+        },
+        {
+          "id": "pixy-partners-logo-row",
+          "type": "stats",
+          "style": "4-column partner/brand logo row with hover animation",
+          "css_class": "mil-partner",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "636-662",
+          "unique_features": ["Clean logo grid with consistent sizing"]
+        },
+        {
+          "id": "pixy-cta-fullwidth-shapes",
+          "type": "cta",
+          "style": "Full-width colored background with floating decorative shapes (parallax), centered large display text + description. Below: get-in-touch button row with line separators",
+          "css_class": "mil-cta mil-m3-bg",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "665-703",
+          "unique_features": ["Colored full-width background", "Floating parallax shape decorations", "Scale-on-scroll text effect", "Dual-row button/text bar below"]
+        }
+      ]
+    },
+    "home-3": {
+      "label": "Personal (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-hero-3",
+          "type": "hero",
+          "style": "Split layout: left display text with personal name, right side with multi-layer parallax scene (3 PNG layers with mouse-tracking depth effect via Parallax.js). Social icons overlaid on scene",
+          "css_class": "mil-hero-3",
+          "complexity": "complex",
+          "feasibility": "hard",
+          "line_range": "204-261",
+          "unique_features": ["Mouse-tracking parallax scene with 3 depth layers", "Personal portfolio hero style", "Parallax.js data-depth mouse tracking", "Overlay with social icons on scene"]
+        },
+        {
+          "id": "pixy-about-personal",
+          "type": "about",
+          "style": "Centered narrow column: circle portrait + greeting heading + large descriptive text + handwritten signature image",
+          "css_class": "mil-about-short",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "264-280",
+          "unique_features": ["Circle portrait photo", "Signature image", "Personal/portfolio tone"]
+        },
+        {
+          "id": "pixy-services-iconbox-hover",
+          "type": "services",
+          "style": "3-column hoverable icon boxes with decorative shape icons, each clickable as full card link",
+          "css_class": "mil-iconbox mil-hover",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "283-310",
+          "unique_features": ["Full-card hover/clickable", "Shape images as icons", "Personal service descriptions"]
+        },
+        {
+          "id": "pixy-cta-parallax-scene",
+          "type": "cta",
+          "style": "Reversed half container with left text box (heading + description) and right side with multi-layer parallax scene (3 PNG depth layers). Below: text + get-in-touch CTA",
+          "css_class": "mil-half-container mil-reverse + mil-scene",
+          "complexity": "complex",
+          "feasibility": "hard",
+          "line_range": "556-587",
+          "unique_features": ["Mouse-tracking parallax scene in CTA", "3-layer depth effect", "Combined CTA + interactive visual"]
+        },
+        {
+          "id": "pixy-partners-type2",
+          "type": "stats",
+          "style": "4-column bordered partner logos (type-2 variant)",
+          "css_class": "mil-partner mil-type-2",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "527-553",
+          "unique_features": ["Bordered variant of logo row"]
+        }
+      ]
+    },
+    "home-4": {
+      "label": "Corporate (Stylish)",
+      "style_variant": "stylish",
+      "sections": [
+        {
+          "id": "pixy-hero-4",
+          "type": "hero",
+          "style": "Full-screen dark hero with animated shape background (Parallax.js depth layers), overlay, centered display text with award icon + SVG circle scroll indicator",
+          "css_class": "mil-hero-4",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "236-274",
+          "unique_features": ["Dark animated background with parallax shape", "Shape animation via data-depth", "Full-screen immersive hero", "SVG rotating circle text"]
+        },
+        {
+          "id": "pixy-services-fullwidth-list",
+          "type": "services",
+          "style": "Full-width service list with horizontal separator lines, each item has title + description + arrow CTA button",
+          "css_class": "mil-services-list (full-width variant)",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "307-355",
+          "unique_features": ["Full-width layout without sidebar counters", "Clean horizontal divider lines"]
+        },
+        {
+          "id": "pixy-counters-stl-3col",
+          "type": "stats",
+          "style": "3-column stylish counters with large numbers and accent-colored plus signs",
+          "css_class": "mil-counter-item mil-stl",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "358-388",
+          "unique_features": ["Stylish variant counters with different styling"]
+        },
+        {
+          "id": "pixy-cta-half-stl",
+          "type": "cta",
+          "style": "Stylish half container: dark-toned text box with display text, right side image with parallax + overlay. Below: CTA button row",
+          "css_class": "mil-half-container mil-stl",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "391-416",
+          "unique_features": ["Stylish/dark variant of half-container CTA"]
+        },
+        {
+          "id": "pixy-team-stl-4col",
+          "type": "team",
+          "style": "4-column stylish team cards with dark hover overlay, accent-colored role text",
+          "css_class": "mil-team-card mil-stl",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "438-535",
+          "unique_features": ["Dark overlay variant", "Accent color role labels"]
+        }
+      ]
+    },
+    "home-5": {
+      "label": "Agency (Stylish)",
+      "style_variant": "stylish",
+      "sections": [
+        {
+          "id": "pixy-hero-5",
+          "type": "hero",
+          "style": "Full-screen background image hero with dark overlay, centered display text with award badge, SVG circle scroll indicator at bottom",
+          "css_class": "mil-hero-5",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "236-269",
+          "unique_features": ["Full-screen background image with overlay", "Centered text overlay", "Scale-on-scroll text effect"]
+        },
+        {
+          "id": "pixy-about-image-quote",
+          "type": "about",
+          "style": "Left text with heading + paragraphs + CEO portrait quote block. Right: tall image with floating button box",
+          "css_class": "mil-team-quote + mil-about-img-frame",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "352-381",
+          "unique_features": ["CEO quote block with portrait", "Floating button on image"]
+        }
+      ]
+    },
+    "home-6": {
+      "label": "Personal (Stylish)",
+      "style_variant": "stylish",
+      "sections": [
+        {
+          "id": "pixy-hero-6",
+          "type": "hero",
+          "style": "Split hero: left with greeting icon + name + role + download CV button, right with large portrait image + SVG circle scroll text. Below: horizontal scrolling marquee tape with services",
+          "css_class": "mil-hero-6",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "236-292",
+          "unique_features": ["Personal portfolio hero with CV download", "Portrait image with circle text overlay", "Horizontal marquee tape at bottom", "Wave hand icon greeting"]
+        },
+        {
+          "id": "pixy-about-personal-stl",
+          "type": "about",
+          "style": "Split: left heading 'Story About Me' + deco text, right two paragraphs. Clean minimal layout",
+          "css_class": "mil-p-160-100",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "294-309",
+          "unique_features": ["Personal tone 'Story About Me'", "Clean two-column text layout"]
+        }
+      ]
+    },
+    "services-frl": {
+      "label": "Services Page (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-services-hero-breadcrumb",
+          "type": "hero",
+          "style": "Small hero with breadcrumb navigation + large display heading + decorative shapes",
+          "css_class": "mil-hero-1 mil-sm-hero",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "203-227",
+          "unique_features": ["Breadcrumb navigation", "Compact page hero variant"]
+        },
+        {
+          "id": "pixy-services-cards-lg",
+          "type": "services",
+          "style": "3-column large service cards with heading + description + bullet list of sub-services + arrow CTA. 5 services in 3-col grid",
+          "css_class": "mil-service-card-lg",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "229-326",
+          "unique_features": ["Detailed service cards with bullet sub-lists", "Large card format with generous spacing", "5 services in balanced grid"]
+        }
+      ]
+    },
+    "services-stl": {
+      "label": "Services Page (Stylish)",
+      "style_variant": "stylish",
+      "sections": [
+        {
+          "id": "pixy-services-hero-stl",
+          "type": "hero",
+          "style": "Stylish small hero with dark theme, breadcrumb + display heading",
+          "css_class": "mil-hero-4 mil-sm-hero",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "229-247",
+          "unique_features": ["Dark variant page hero"]
+        }
+      ]
+    },
+    "contact-frl": {
+      "label": "Contact Page (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-contact-info-3col",
+          "type": "contact",
+          "style": "3-column contact info boxes: phone icon + call info, message icon + email addresses, map icon + physical address",
+          "css_class": "mil-iconbox (contact variant)",
+          "complexity": "simple",
+          "feasibility": "easy",
+          "line_range": "229-260",
+          "unique_features": ["FontAwesome icons (mobile, comment-edit, map-marker)", "Dual info lines per box"]
+        },
+        {
+          "id": "pixy-contact-form-map",
+          "type": "contact",
+          "style": "Half container: left side with heading + 2-column form (name, email, textarea, submit button), right side with embedded Google Maps iframe + overlay",
+          "css_class": "mil-half-container (contact form variant)",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "262-305",
+          "unique_features": ["Split form + map layout", "Privacy note below form", "Rubber text heading", "Google Maps embed"]
+        }
+      ]
+    },
+    "team-frl": {
+      "label": "Team Page (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-team-grid-6",
+          "type": "team",
+          "style": "3-column grid of 6+ team cards, each with hover overlay showing name + social icons + role",
+          "css_class": "mil-team-card (full page grid)",
+          "complexity": "medium",
+          "feasibility": "easy",
+          "line_range": "229-350",
+          "unique_features": ["Full page team grid", "6+ team members", "Consistent hover overlay pattern"]
+        }
+      ]
+    },
+    "blog-frl": {
+      "label": "Blog Page (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-blog-popular-slider",
+          "type": "blog",
+          "style": "Swiper slider of blog cards with custom prev/next navigation. Each card: cover image + category/date badges + title + excerpt + arrow CTA",
+          "css_class": "mil-blog-slider",
+          "complexity": "medium",
+          "feasibility": "moderate",
+          "line_range": "229-349",
+          "unique_features": ["Dedicated nav arrows above slider", "Category and date badge system"]
+        }
+      ]
+    },
+    "portfolio-1-frl": {
+      "label": "Portfolio Grid Type 1 (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-portfolio-3col-masonry",
+          "type": "gallery",
+          "style": "3-column full-width masonry grid with mixed aspect ratios (portrait/square/landscape). Hover overlay with title + CTA",
+          "css_class": "mil-work-card (3-col fluid)",
+          "complexity": "complex",
+          "feasibility": "moderate",
+          "line_range": "229-482",
+          "unique_features": ["Container-fluid full-width", "3-column masonry", "Mixed aspect ratios"]
+        }
+      ]
+    },
+    "portfolio-2-frl": {
+      "label": "Portfolio Grid Type 2 (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-portfolio-2col-grid",
+          "type": "gallery",
+          "style": "2-column portfolio grid with consistent card sizing and hover overlays",
+          "css_class": "mil-work-card (2-col)",
+          "complexity": "medium",
+          "feasibility": "moderate",
+          "line_range": "229-440",
+          "unique_features": ["2-column balanced grid", "Consistent card aspect ratios"]
+        }
+      ]
+    },
+    "portfolio-3-frl": {
+      "label": "Portfolio Grid Type 3 (Friendly)",
+      "style_variant": "friendly",
+      "sections": [
+        {
+          "id": "pixy-portfolio-list",
+          "type": "gallery",
+          "style": "Full-width list/stacked portfolio layout with large images",
+          "css_class": "mil-work-card (list)",
+          "complexity": "medium",
+          "feasibility": "moderate",
+          "line_range": "229-484",
+          "unique_features": ["List-style portfolio", "Large full-width cards"]
+        }
+      ]
+    }
+  },
+  "unique_section_types_found": {
+    "hero": 6,
+    "about": 5,
+    "services": 5,
+    "team": 4,
+    "testimonials": 1,
+    "gallery": 4,
+    "cta": 5,
+    "stats_counters": 3,
+    "blog": 2,
+    "contact": 2,
+    "footer": 1,
+    "partners_logos": 2,
+    "subscribe_newsletter": 1
+  },
+  "total_extractable_sections": 41,
+  "recommended_for_conversion": [
+    {
+      "id": "pixy-hero-2",
+      "reason": "Split hero with full-height parallax image is a unique layout not commonly found. Converts well to a portfolio/agency hero component.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-hero-5",
+      "reason": "Full-screen background image hero with overlay - clean, versatile, works for many business categories.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-hero-6",
+      "reason": "Personal portfolio hero with portrait + CV download + marquee tape. Unique personal branding hero style.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-services-list-counters",
+      "reason": "Combined services list + counter stats in split layout. Novel section combining two data types.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-services-cards-lg",
+      "reason": "Detailed service cards with bullet sub-lists. Great for SaaS/business templates needing detailed service breakdowns.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-cta-half-image",
+      "reason": "Split half-container CTA with colored background text + parallax image. Highly reusable layout pattern.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-cta-marquee-tapes",
+      "reason": "Dual-direction horizontal marquee tapes with rubber text. Very trendy modern web effect. UNIQUE - not in existing components.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-team-split-quote",
+      "reason": "Team section with CEO quote + asymmetric offset grid. Unique layout combining testimonial + team in one section.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-reviews-slider",
+      "reason": "Clean testimonials slider with parallax-scale transitions. Well-designed testimonial component.",
+      "priority": "medium"
+    },
+    {
+      "id": "pixy-about-personal",
+      "reason": "Personal about with circle portrait + signature image. Unique for portfolio/personal brand templates.",
+      "priority": "medium"
+    },
+    {
+      "id": "pixy-portfolio-masonry",
+      "reason": "Masonry grid with mixed aspect ratios and hover overlays. Professional portfolio/gallery component.",
+      "priority": "high"
+    },
+    {
+      "id": "pixy-contact-form-map",
+      "reason": "Split contact form + Google Maps layout. Clean practical contact section.",
+      "priority": "medium"
+    },
+    {
+      "id": "pixy-subscribe-half-video",
+      "reason": "Newsletter CTA with video background. Modern pattern combining subscription form with visual media.",
+      "priority": "medium"
+    },
+    {
+      "id": "pixy-cta-fullwidth-shapes",
+      "reason": "Full-width colored CTA with floating parallax shapes. Eye-catching call-to-action block.",
+      "priority": "medium"
+    },
+    {
+      "id": "pixy-counters-stl-3col",
+      "reason": "Clean stylish counter stats. Simple but effective stats component for dark themes.",
+      "priority": "low"
+    },
+    {
+      "id": "pixy-footer-friendly",
+      "reason": "Clean footer with giant rubber-hover contact link. Minimalist but impactful.",
+      "priority": "low"
+    }
+  ],
+  "conversion_notes": {
+    "gsap_compatibility": "Template uses GSAP ScrollTrigger and ScrollSmoother extensively. Site Builder already has gsap-universal.js (v3.0) which covers most effects. Key mappings: mil-up -> fade-up, mil-scale-img -> scale-in, mil-rubber -> text-split, mil-rotate -> uses custom SVG rotation",
+    "css_migration": "Two CSS files (~3000+ lines each) contain all component styles. Need to extract relevant CSS per component and inline it or create scoped styles. Key CSS classes: mil-display1-4 (typography scale), mil-a1/mil-a2 (accent colors), mil-m1-m4 (color modifiers), mil-head1-6 (heading sizes)",
+    "swiper_dependency": "Blog slider and reviews slider use Swiper.js. Could be replaced with CSS-only solutions or converted to simpler scroll patterns for Site Builder compatibility.",
+    "parallax_js_dependency": "home-3 and home-6 use Parallax.js (mouse-tracking depth layers). This is complex and may need to be simplified to CSS transforms or GSAP-based parallax for Site Builder.",
+    "font_awesome": "Template uses FontAwesome for icons (fal = light, far = regular). Need to either include FA subset or convert to inline SVG icons.",
+    "bootstrap_grid": "Uses Bootstrap grid (container, row, col-*). Site Builder components should use the same grid system or convert to CSS Grid/Flexbox."
+  },
+  "sections_adding_most_variety": [
+    "pixy-cta-marquee-tapes - Horizontal scrolling tape/marquee effect NOT in current 166 components",
+    "pixy-hero-6 - Personal portfolio hero with CV download NOT in current hero variants",
+    "pixy-team-split-quote - Combined team+quote layout NOT in current team variants",
+    "pixy-services-list-counters - Combined services+stats layout NOT in current service variants",
+    "pixy-portfolio-masonry - True masonry grid with mixed aspect ratios NOT in current gallery variants",
+    "pixy-about-personal - Personal about with signature NOT in current about variants",
+    "pixy-subscribe-half-video - Video background newsletter NOT in current CTA variants"
+  ]
+}

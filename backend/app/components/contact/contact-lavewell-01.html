@@ -1,0 +1,761 @@
+<!-- Component: contact-lavewell-01 -->
+<!-- Tags: imported -->
+<section id="contact" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+.h1,.h2,.h3,.h4,.h5,.h6,h1,h2,h3,h4,h5,h6 { margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2;color:var(--bs-heading-color) }
+.h1,h1 { font-size:calc(1.375rem + 1.5vw) }
+.h5,h5 { font-size:1.25rem }
+label { display:inline-block }
+button { border-radius:0 }
+button:focus:not(:focus-visible) { outline:0 }
+button,input,optgroup,select,textarea { margin:0;font-family:inherit;font-size:inherit;line-height:inherit }
+button,select { text-transform:none }
+[type=button],[type=reset],[type=submit],button { -webkit-appearance:button }
+[type=button]:not(:disabled),[type=reset]:not(:disabled),[type=submit]:not(:disabled),button:not(:disabled) { cursor:pointer }
+textarea { resize:vertical }
+.container,.container-fluid,.container-lg,.container-md,.container-sm,.container-xl,.container-xxl { --bs-gutter-x:1.5rem;--bs-gutter-y:0;width:100%;padding-right:calc(var(--bs-gutter-x) * .5);padding-left:calc(var(--bs-gutter-x) * .5);margin-right:auto;margin-left:auto }
+.row { --bs-gutter-x:1.5rem;--bs-gutter-y:0;display:flex;flex-wrap:wrap;margin-top:calc(-1 * var(--bs-gutter-y));margin-right:calc(-.5 * var(--bs-gutter-x));margin-left:calc(-.5 * var(--bs-gutter-x)) }
+.row>* { flex-shrink:0;width:100%;max-width:100%;padding-right:calc(var(--bs-gutter-x) * .5);padding-left:calc(var(--bs-gutter-x) * .5);margin-top:var(--bs-gutter-y) }
+textarea.form-control { min-height:calc(1.5em + .75rem + calc(var(--bs-border-width) * 2)) }
+textarea.form-control-sm { min-height:calc(1.5em + .5rem + calc(var(--bs-border-width) * 2)) }
+textarea.form-control-lg { min-height:calc(1.5em + 1rem + calc(var(--bs-border-width) * 2)) }
+.form-floating>label { position:absolute;top:0;left:0;z-index:2;height:100%;padding:1rem .75rem;overflow:hidden;text-align:start;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;border:var(--bs-border-width) solid transparent;transform-origin:0 0;transition:opacity .1s ease-in-out,transform .1s ease-in-out }
+.form-floating>.form-control:not(:-moz-placeholder-shown)~label { color:rgba(var(--bs-body-color-rgb),.65);transform:scale(.85) translateY(-.5rem) translateX(.15rem) }
+.form-floating>.form-control-plaintext~label,.form-floating>.form-control:focus~label,.form-floating>.form-control:not(:placeholder-shown)~label,.form-floating>.form-select~label { color:rgba(var(--bs-body-color-rgb),.65);transform:scale(.85) translateY(-.5rem) translateX(.15rem) }
+.form-floating>.form-control:not(:-moz-placeholder-shown)~label::after { position:absolute;inset:1rem 0.375rem;z-index:-1;height:1.5em;content:"";background-color:var(--bs-body-bg);border-radius:var(--bs-border-radius) }
+.form-floating>.form-control-plaintext~label::after,.form-floating>.form-control:focus~label::after,.form-floating>.form-control:not(:placeholder-shown)~label::after,.form-floating>.form-select~label::after { position:absolute;inset:1rem 0.375rem;z-index:-1;height:1.5em;content:"";background-color:var(--bs-body-bg);border-radius:var(--bs-border-radius) }
+.form-floating>.form-control:-webkit-autofill~label { color:rgba(var(--bs-body-color-rgb),.65);transform:scale(.85) translateY(-.5rem) translateX(.15rem) }
+.form-floating>.form-control-plaintext~label { border-width:var(--bs-border-width) 0 }
+.form-floating>.form-control:disabled~label,.form-floating>:disabled~label { color:var(--color-text-muted) }
+.form-floating>.form-control:disabled~label::after,.form-floating>:disabled~label::after { background-color:var(--bs-secondary-bg) }
+.was-validated textarea.form-control:valid,textarea.form-control.is-valid { padding-right:calc(1.5em + .75rem);background-position:top calc(.375em + .1875rem) right calc(.375em + .1875rem) }
+.was-validated textarea.form-control:invalid,textarea.form-control.is-invalid { padding-right:calc(1.5em + .75rem);background-position:top calc(.375em + .1875rem) right calc(.375em + .1875rem) }
+.navbar>.container,.navbar>.container-fluid,.navbar>.container-lg,.navbar>.container-md,.navbar>.container-sm,.navbar>.container-xl,.navbar>.container-xxl { display:flex;flex-wrap:inherit;align-items:center;justify-content:space-between }
+.text-center { text-align:center!important }
+button.mfp-close,
+button.mfp-arrow { overflow: visible;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+  display: block;
+  outline: none;
+  padding: 0;
+  z-index: 1046;
+  box-shadow: none;
+  touch-action: manipulation; }
+button::-moz-focus-inner { padding: 0;
+  border: 0; }
+h1.lavewell-slider-title { font-size: 140px;
+  color: var(--color-bg);
+  font-weight: 400;
+  margin-top: 15px; }
+.lavewell-slider-arrow-box button { font-size: 24px;
+  height: 60px;
+  line-height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  transition: all 0.3s ease 0s;
+  color: var(--color-bg);
+  position: absolute;
+  left: 30px;
+  top: 472px;
+  z-index: 5;
+  border: 0;
+  background: url(../images/slider/slider-1-bg.jpg);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat; }
+.lavewell-slider-arrow-box button.slider-next { margin-bottom: 10px;
+  left: auto;
+  right: 60px; }
+button.slider-next { background: url(../images/slider/slider-2-bg.jpg);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat; }
+.lavewell-slider-arrow-box button { transition: 0.4s; }
+.lavewell-slider-arrow-box-2 button { left: 0; }
+.lavewell-slider-arrow-box-2 button.slider-next { right: 0; }
+h5.service-sub-title { font-size: 14px;
+  color: var(--color-accent, var(--color-secondary));
+  font-weight: 500;
+  font-family: var(--font-heading); }
+h1.service-title { font-size: 60px;
+  line-height: 110px;
+  color: var(--color-text);
+  font-weight: 400;
+  margin: 0; }
+h1.service-title a { display: inline-block;
+  transition: 0.5s; }
+h1.service-title a:hover { color: var(--color-accent, var(--color-secondary)); }
+.service-area.style-2 h1.service-title { font-size: 45px;
+  line-height: 80px;
+  color: var(--color-text);
+  font-weight: 400;
+  margin: 0; }
+.odometer-wrapper.counter-box-title h1 { display: inline-block;
+  font-size: 80px;
+  line-height: 55px;
+  color: var(--color-bg);
+  font-weight: 400;
+  font-family: "Italianno";
+  margin: 0; }
+.row.counter .col-lg-2:last-child .counter-single-box::before { display: none; }
+.coutner-area.style-2 .odometer-wrapper.counter-box-title h1 { color: var(--color-text); }
+.coutner-area.style-2 h1.count-text { position: relative;
+  top: 10px !important; }
+.row.counter-2 .col-lg-3:last-child .counter-single-box::before { display: none; }
+.section-title.text-center { margin-bottom: 95px; }
+.section-title.text-left { margin-bottom: 95px; }
+.section-sub-title h5 { font-size: 14px;
+  font-weight: 400;
+  line-height: 42px;
+  color: var(--color-accent, var(--color-secondary));
+  font-family: var(--font-body);
+  text-transform: uppercase; }
+.section-main-title h1 { font-size: 100px;
+  line-height: 55px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-top: 28px; }
+.section-main-title h2 { font-size: 60px;
+  line-height: 42px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-top: 18px; }
+.section-main-title h3 { font-size: 80px;
+  line-height: 35px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-top: 28px; }
+.about-section .section-main-title h3 { font-size: 80px;
+  line-height: 62px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-top: 15px; }
+.about-area .section-title.text-left { margin-bottom: 30px; }
+.about-section .section-title.text-left { margin-bottom: 46px; }
+.service-section .section-title.text-center { margin-bottom: 102px; }
+.best-friends-area .section-title.text-center { margin-bottom: 65px; }
+.gallery-area .section-title.text-center { margin-bottom: 80px; }
+.wishes-area .section-title.text-left { margin-bottom: 45px; }
+.testimonial-area.style-2 .section-title.text-center { margin-bottom: 85px; }
+.contact-area .section-title.text-center { margin-bottom: 80px; }
+.blog-area .section-title.text-center { margin-bottom: 65px; }
+.about-us-area .section-title.text-left { margin-bottom: 0; }
+.contact-section .section-title.text-left { margin-bottom: 65px; }
+.wedding-title h1 { font-size: 45px;
+  line-height: 42px;
+  color: var(--color-text);
+  font-weight: 400;
+  margin: 36px 0 24px; }
+.lavewell-wedding-arrow-box button { display: inline-block;
+  font-size: 30px;
+  transition: all 0.3s ease 0s;
+  color: var(--color-bg);
+  border: 0;
+  background: transparent; }
+.lavewell-wedding-arrow-box button.wedding-prev { position: absolute;
+  margin-bottom: 10px;
+  left: 35%;
+  top: 58%;
+  z-index: 1; }
+.lavewell-wedding-arrow-box button.wedding-next { position: absolute;
+  margin-bottom: 10px;
+  left: auto;
+  right: 39%;
+  top: 58%;
+  z-index: 1; }
+.contact-area { background: url(../images/home-1/contact-bg.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 125px 0 150px; }
+.form-box { margin-bottom: 17px; }
+.form-box input { width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgb(85 85 85 / 20%);
+  padding: 11px 10px;
+  transition: 0.3s;
+  box-shadow: none; }
+.form-box textarea { width: 100%;
+  height: 205px;
+  background: transparent;
+  border: 1px solid rgb(85 85 85 / 20%);
+  margin: 10px 0 0px;
+  padding: 15px; }
+.form-box label { font-size: 17px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  text-transform: capitalize;
+  padding-top: 35px; }
+.contact-area input::placeholder,
+textarea::placeholder { font-size: 17px;
+  font-weight: 400;
+  color: var(--color-text-muted); }
+.submit-button button { width: 100%;
+  color: var(--color-bg);
+  border: 0;
+  outline: 0;
+  background: var(--color-accent, var(--color-secondary));
+  text-transform: uppercase;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500; }
+.submit-button button { width: 100%;
+  color: var(--color-bg);
+  border: 0;
+  outline: 0;
+  background: var(--color-accent, var(--color-secondary));
+  text-transform: uppercase;
+  padding: 12px 20px; }
+.contact-title h5 { font-size: 17px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  font-family: var(--font-body); }
+.row.form-bg { background: var(--color-bg-alt);
+  padding: 53px 60px 70px 60px;
+  position: relative;
+  margin-top: -268px; }
+.contact-section .form-box { margin-bottom: 30px; }
+.contact-section input::placeholder,
+textarea::placeholder { font-size: 17px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  opacity: 0.702;
+  font-family: "Urbanist"; }
+.contact-section .form-box input { width: 100%;
+  height: 60px;
+  background: var(--color-bg);
+  border: 0;
+  border-bottom: 1px solid rgb(85 85 85 / 20%);
+  padding: 0px 30px;
+  transition: 0.3s;
+  box-shadow: none; }
+.contact-section .form-box textarea { width: 100%;
+  height: 140px;
+  background: var(--color-bg);
+  border: 1px solid rgb(85 85 85 / 20%);
+  margin: 0;
+  padding: 14px 30px; }
+.contact-section .submit-button button { width: 100%;
+  color: var(--color-bg);
+  border: 0;
+  outline: 0;
+  background: var(--color-accent, var(--color-secondary));
+  text-transform: uppercase;
+  padding: 17px 20px; }
+.testimonial-area .lavewell-testi-arrow-box button { display: inline-block;
+  font-size: 24px;
+  transition: all 0.3s ease 0s;
+  color: var(--color-bg);
+  border: 0;
+  background: transparent; }
+.testimonial-area .lavewell-testi-arrow-box button.testi-prev { position: absolute;
+  margin-bottom: 10px;
+  left: 6px;
+  top: 44%;
+  z-index: 1; }
+.testimonial-area .lavewell-testi-arrow-box button.testi-next { position: absolute;
+  margin-bottom: 10px;
+  left: auto;
+  right: 12px;
+  top: 44%;
+  z-index: 1; }
+.lavewell-testimonial-arrow-box button { display: inline-block;
+  font-size: 30px;
+  transition: all 0.3s ease 0s;
+  color: var(--color-text);
+  border: 0;
+  background: transparent;
+  opacity: 0.8; }
+.lavewell-testimonial-arrow-box button.testimonial-prev { position: absolute;
+  margin-bottom: 10px;
+  left: 6px;
+  top: 44%;
+  z-index: 1; }
+.lavewell-testimonial-arrow-box button.testimonial-next { position: absolute;
+  margin-bottom: 10px;
+  left: auto;
+  right: 6px;
+  top: 44%;
+  z-index: 1; }
+.footer-title h1 { font-size: 60px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: 15px;
+  padding-left: 85px; }
+.footer-single-item2 .footer-title h1 { padding-left: 60px; }
+.banner-title h1 { font-size: 150px;
+  line-height: 140px;
+  color: var(--color-text);
+  font-weight: 400;
+  text-align: center;
+  padding: 0 36px; }
+.service-section h1.service-title { margin: 0;
+  font-size: 45px;
+  line-height: 52px;
+  color: var(--color-text);
+  font-weight: 400; }
+.service-section h5.service-sub-title { font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 28px;
+  color: var(--color-text-muted);
+  font-weight: 400; }
+h1.team-title { font-size: 45px;
+  color: var(--color-text);
+  font-weight: 400; }
+h1.team-title a { display: inline-block;
+  transition: 0.5s; }
+h1.team-title a:hover { color: var(--color-text-muted); }
+h5.team-sub-title { color: var(--color-text-muted);
+  font-size: 17px;
+  font-weight: 400;
+  font-family: var(--font-body);
+  margin: 0; }
+.row.call-bg { background: url(../images/home-2/call-action-bg.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 65px 0px 58px 65px; }
+.call-to-action-area.inner-2 .row.call-bg { background: url(../images/inner/call-action-bg2.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 65px 0px 58px 65px; }
+h5.call-action-title { color: var(--color-accent, var(--color-secondary));
+  font-size: 14px;
+  font-weight: 400;
+  font-family: var(--font-body); }
+h1.call-sub-title { font-size: 60px;
+  font-weight: 400;
+  margin-top: 15px; }
+.social-title h5 { font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 20px;
+  padding-top: 20px; }
+h1.priching-doller { font-size: 40px;
+  margin-bottom: 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--color-accent, var(--color-secondary)); }
+h1.priching-doller span { display: inline-block;
+  font-size: 18px; }
+.team-details-area .form_box input { background: transparent; }
+.team-details-area .form_box input { border: 1px solid rgba(122, 122, 122, 0.5);
+  height: 60px;
+  border-radius: 15px;
+  padding: 0 23px 0;
+  margin-bottom: 21px;
+  width: 100%;
+  transition: 0.5s;
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--color-text);
+  font-weight: 400;
+  font-family: "Fira Sans"; }
+.team-details-area .form_box textarea { background: transparent; }
+.team-details-area .form_box textarea { border: 1px solid rgba(122, 122, 122, 0.5);
+  outline: 0;
+  width: 100%;
+  padding: 17px 23px 0;
+  height: 150px;
+  margin-bottom: 22px;
+  transition: 0.5s;
+  border-radius: 25px;
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--color-text);
+  font-weight: 400;
+  font-family: "Fira Sans"; }
+.quote_button button { background: var(--color-accent, var(--color-secondary));
+  padding: 14px 48px 14px;
+  border-radius: 30px;
+  transition: 0.5s;
+  font-size: 16px;
+  color: var(--color-bg);
+  font-weight: 500;
+  font-family: "Fira Sans";
+  transition: 0.5s; }
+.quote_button button:hover { color: var(--color-bg);
+  background: var(--color-text); }
+.team-details-area input::placeholder { color: var(--color-text); }
+.team-details-area textarea::placeholder { color: var(--color-text); }
+.row.portfolio-box-info { position: relative;
+  border-radius: 10px;
+  background-color: var(--color-bg);
+  padding: 43px 50px 50px;
+  z-index: 1;
+  justify-content: center;
+  margin: 0;
+  margin-top: 40px; }
+.widget_search input { border-radius: 4px;
+  padding-left: 20px !important;
+  height: 60px;
+  width: 100% !important;
+  position: relative;
+  color: var(--color-accent, var(--color-secondary));
+  outline: 0 !important;
+  border: transparent !important; }
+button.icons { border: 0;
+  font-size: 16px;
+  position: absolute;
+  right: 14px;
+  top: 20px;
+  color: var(--color-text);
+  background: transparent; }
+.sidebar__comments-text-box h5 { font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 18px; }
+.blog-details-area .contact-input-box input { background: var(--color-bg);
+  border: transparent;
+  width: 100%;
+  height: 60px;
+  padding: 22px;
+  outline: 0;
+  margin-bottom: 11px; }
+.blog-details-area .contact-input-box textarea { background: var(--color-bg);
+  border: transparent;
+  width: 100%;
+  height: 170px;
+  padding: 12px 22px 0;
+  outline: 0;
+  margin-top: 11px;
+  margin-bottom: 20px; }
+.blog-details-area input::placeholder { color: var(--color-text); }
+.blog-details-submi-button button { background: var(--color-accent, var(--color-secondary));
+  color: var(--color-bg);
+  text-transform: uppercase;
+  border: transparent;
+  padding: 12px 26px;
+  font-size: 15px;
+  margin-top: 34px;
+  position: relative;
+  z-index: 1;
+  transition: 0.5s;
+  border: 2px solid var(--color-accent, var(--color-secondary));
+  border-radius: 5px;
+  font-weight: 500; }
+.blog-details-submi-button button:hover { color: var(--color-accent, var(--color-secondary)); }
+.blog-details-submi-button button:before { position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  background: var(--color-bg);
+  transition: 0.5s;
+  z-index: -1;
+  border-radius: 5px; }
+.blog-details-submi-button button:hover:before { width: 100%;
+  left: 0; }
+.service-details-content h5 { font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-family: var(--font-body); }
+button.swiper-pagination-bullet { border: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none; }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 { color: var(--color-text);
+  font-family: "Italianno";
+  font-style: normal;
+  margin-bottom: 0;
+  margin-top: 10px;
+  line-height: 1.2;
+  font-weight: 700;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  font-size: 36px; }
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a { color: var(--color-text);
+  -webkit-transition: 0.5s;
+  transition: 0.5s; }
+h1 { font-size: 50px; }
+h5 { font-size: 20px; }
+.white h1,
+.white h2,
+.white h3,
+.white h4,
+.white h5,
+.white h6 { color: var(--color-bg); }
+input:focus,
+button:focus { outline: 0;
+  box-shadow: 0 0 6px rgb(151 170 133/ 60%); }
+textarea:focus { outline: 0;
+  box-shadow: 0 0 6px rgb(151 170 133/ 60%); }
+label { color: var(--color-bg);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400; }
+@media (min-width:1200px) {
+  .h1,h1 { font-size:2.5rem }
+  .container,.container-lg,.container-md,.container-sm,.container-xl { max-width:1140px }
+}
+@media (min-width:576px) {
+  .container,.container-sm { max-width:540px }
+}
+@media (min-width:768px) {
+  .container,.container-md,.container-sm { max-width:720px }
+}
+@media (min-width:992px) {
+  .container,.container-lg,.container-md,.container-sm { max-width:960px }
+  .col-lg-6 { flex:0 0 auto;width:50% }
+  .col-lg-12 { flex:0 0 auto;width:100% }
+}
+@media (min-width:1400px) {
+  .container,.container-lg,.container-md,.container-sm,.container-xl,.container-xxl { max-width:1320px }
+}
+@media (prefers-reduced-motion:reduce) {
+  .form-floating>label { transition:none }
+}
+@media (min-width: 1200px) and (max-width: 1370px) {
+  .lavewell-wedding-arrow-box button.wedding-next { right: 35%; }
+  .about-section .section-main-title h3 { font-size: 65px; }
+  .wishes-area .section-main-title h3 { font-size: 70px; }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .lavewell-wedding-arrow-box button.wedding-next { right: 35%;
+    top: 58%; }
+  .footer-single-item2 .footer-title h1 { padding-left: 0; }
+  .banner-title h1 { font-size: 130px;
+    line-height: 120px;
+    padding: 0; }
+  .service-section h1.service-title { font-size: 30px; }
+  .about-section .section-main-title h3 { font-size: 55px;
+    line-height: 42px; }
+  .wishes-area .section-main-title h3 { font-size: 65px; }
+  .gallery-area.bottom .section-main-title h3 { font-size: 70px; }
+  .about-us-area .section-main-title h3 { font-size: 70px; }
+  .lavewell-testi-arrow-box button.testi-next { right: 0;
+    top: 44%;
+    z-index: 1; }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  h1.lavewell-slider-title { font-size: 110px; }
+  .lavewell-slider-arrow-box button { top: 559px; }
+  .lavewell-wedding-arrow-box button.wedding-next { right: 20px; }
+  .lavewell-wedding-arrow-box button.wedding-prev { left: 3%;
+    top: 58%; }
+  .section-main-title h1 { font-size: 90px; }
+  .footer-title h1 { font-size: 55px;
+    padding-left: 0; }
+  .footer-single-item2 .footer-title h1 { padding-left: 0; }
+  .footer-title h1 { font-size: 50px;
+    padding-left: 0; }
+  .banner-title h1 { font-size: 130px;
+    line-height: 120px; }
+  .gallery-area.bottom .section-title.text-left { margin-bottom: 50px; }
+  .row.call-bg { padding: 65px 0px 58px 15px; }
+  .row.form-bg { margin-top: 0; }
+  .call-to-action-area.inner-2 .row.call-bg { padding: 65px 0px 58px 15px; }
+}
+@media only screen and (min-width: 600px) and (max-width: 767px) {
+  h1.lavewell-slider-title { font-size: 80px; }
+  .lavewell-slider-arrow-box button { display: none; }
+  .section-main-title h1 { font-size: 80px; }
+  .lavewell-wedding-arrow-box button.wedding-next { right: 40px;
+    top: 50%; }
+  .lavewell-wedding-arrow-box button.wedding-prev { left: 3%;
+    top: 50%; }
+  .gallery-area .section-main-title h1 { font-size: 65px; }
+  .contact-area .section-main-title h1 { font-size: 70px; }
+  .banner-title h1 { font-size: 98px;
+    line-height: 100px; }
+  .service-section .section-main-title h3 { font-size: 58px; }
+  .about-section .section-main-title h3 { font-size: 60px;
+    line-height: 50px; }
+  .section-main-title h3 { font-size: 60px; }
+  .gallery-area.bottom .section-title.text-left { margin-bottom: 50px; }
+  .footer-single-item2 .footer-title h1 { text-align: center; }
+  .row.form-bg { margin-top: 0; }
+  .row.call-bg { padding: 65px 0px 58px 30px; }
+  .blog-details-submi-button button { margin-bottom: 30px; }
+}
+@media only screen and (min-width: 480px) and (max-width: 599px) {
+  h1.lavewell-slider-title { font-size: 90px;
+    line-height: 80px; }
+  .lavewell-slider-arrow-box button.slider-next { right: 10px; }
+  .lavewell-slider-arrow-box button { left: 10px; }
+  .wedding-event-area .section-main-title h1 { font-size: 70px; }
+  .lavewell-wedding-arrow-box button.wedding-next { right: 20px; }
+  .lavewell-wedding-arrow-box button.wedding-prev { left: 5%;
+    top: 58%; }
+  .best-friends-area .section-main-title h1 { font-size: 80px; }
+  .gallery-area .section-main-title h1 { font-size: 50px; }
+  .contact-area .section-main-title h1 { font-size: 100px;
+    line-height: 100px; }
+  .lavewell-testi-arrow-box button.testi-next { right: 10px; }
+  .blog-area .section-main-title h1 { font-size: 70px; }
+  .footer-title h1 { padding-left: 0; }
+  .banner-title h1 { font-size: 80px;
+    line-height: 80px;
+    padding: 0; }
+  .service-section .section-main-title h3 { font-size: 80px;
+    line-height: 80px; }
+  .about-section .section-main-title h3 { font-size: 65px;
+    line-height: 1; }
+  .wishes-area .section-main-title h3 { font-size: 50px;
+    line-height: 1; }
+  .gallery-area.bottom .section-title.text-left { margin-bottom: 50px; }
+  .gallery-area.bottom .section-main-title h3 { font-size: 60px;
+    line-height: 1; }
+  .team-area .section-main-title h3 { font-size: 50px; }
+  .row.call-bg { padding: 65px 0px 58px 0px; }
+  .about-us-area .section-main-title h3 { font-size: 60px; }
+  .about-section .section-main-title h3 { font-size: 55px;
+    line-height: 1; }
+  .testimonial-area.style-2 .section-main-title h3 { font-size: 55px; }
+  .contact-section .section-main-title h3 { font-size: 70px; }
+  .row.form-bg { padding: 50px 30px 70px 30px;
+    margin-top: 0; }
+  .call-to-action-area.inner-2 .row.call-bg { padding: 65px 0px 58px 0px; }
+}
+@media only screen and (min-width: 320px) and (max-width: 479px) {
+  h1.lavewell-slider-title { font-size: 60px; }
+  .lavewell-slider-arrow-box button { display: none; }
+  h1.service-title { font-size: 45px; }
+  .wedding-event-area .section-main-title h1 { font-size: 80px;
+    line-height: 100px;
+    margin-top: 0; }
+  .lavewell-wedding-arrow-box button { display: none; }
+  .about-area .section-main-title h2 { font-size: 50px; }
+  .best-friends-area .section-main-title h1 { font-size: 80px;
+    line-height: 90px;
+    margin-top: 0; }
+  .gallery-area .section-main-title h1 { font-size: 50px;
+    line-height: 55px; }
+  .contact-area .section-main-title h1 { font-size: 50px;
+    line-height: 55px;
+    margin-top: 0px; }
+  .lavewell-testi-arrow-box button.testi-next { display: none; }
+  .lavewell-testi-arrow-box button.testi-prev { display: none; }
+  .footer-title h1 { font-size: 50px;
+    margin-bottom: 15px;
+    padding-left: 0; }
+  .footer-single-item2 .footer-title h1 { padding-left: 0; }
+  .banner-title h1 { font-size: 50px;
+    line-height: 60px;
+    padding: 0; }
+  .service-section .section-main-title h3 { font-size: 58px;
+    line-height: 65px;
+    margin-top: 0px; }
+  .about-section .section-main-title h3 { font-size: 34px;
+    line-height: 30px; }
+  .wishes-area .section-main-title h3 { font-size: 56px;
+    line-height: 55px;
+    margin-top: 0px; }
+  .gallery-area.bottom .section-main-title h3 { font-size: 80px;
+    line-height: 80px; }
+  .gallery-area.bottom .section-title.text-left { margin-bottom: 30px; }
+  .team-area .section-main-title h3 { font-size: 70px;
+    line-height: 1; }
+  .testimonial-area.style-2 .section-main-title h3 { font-size: 70px;
+    line-height: 1; }
+  .lavewell-testimonial-arrow-box button { display: none; }
+  .blog-area .section-main-title h1 { font-size: 80px;
+    line-height: 1; }
+  .row.call-bg { padding: 65px 0px 58px 0px; }
+  .about-us-area .section-main-title h3 { font-size: 70px;
+    line-height: 1; }
+  .contact-section .section-main-title h3 { font-size: 80px;
+    line-height: 1; }
+  .row.form-bg { padding: 53px 0px 70px 0px;
+    margin-top: 0; }
+  .section-main-title h3 { font-size: 80px;
+    line-height: 1; }
+  .call-to-action-area.inner-2 .row.call-bg { padding: 65px 0px 58px 0px; }
+}
+</style>
+<div class="contact-area">
+      <div class="container">
+        <div data-animate="stagger" class="row">
+          <div class="col-lg-12">
+            <div class="section-title text-center cursor-scale">
+              <div class="section-sub-title">
+                <h5>GET IN TOUCH</h5>
+              </div>
+              <div class="section-main-title cursor-scale">
+                <h1 data-animate="text-split" data-split-type="words">{{CONTACT_TITLE}}</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div data-animate="stagger" class="row">
+          <form action="https://formspree.io/f/myyleorq" method="POST">
+            <div data-animate="stagger" class="row form">
+              <div class="col-lg-6">
+                <div class="form-box">
+                  <input
+                    type="text"
+                    name="Name"
+                    placeholder="Name"
+                    required=""
+                  />
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-box">
+                  <input
+                    type="Email"
+                    name="Email"
+                    placeholder="Email"
+                    required=""
+                  />
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-box">
+                  <input
+                    type="text"
+                    name="Address"
+                    placeholder="Address"
+                    required=""
+                  />
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-box">
+                  <input
+                    type="text"
+                    name="Phone"
+                    placeholder="Phone"
+                    required=""
+                  />
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <div class="form-box">
+                  <label>message</label>
+                  <textarea
+                    name="massage"
+                    id="massage"
+                    cols="10"
+                    rows="10"
+                  ></textarea>
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <div class="submit-button">
+                  <button type="submit">sumit now</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

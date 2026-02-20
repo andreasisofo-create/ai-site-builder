@@ -1,0 +1,406 @@
+<!-- Component: portfolio-masco-01 -->
+<!-- Tags: grid, flex, split-layout, animated -->
+<section id="portfolio" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 { font-size: inherit;
+  font-weight: inherit; }
+a { color: inherit;
+  text-decoration: inherit; }
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre { margin: 0; }
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object { display: block;
+
+  vertical-align: middle; }
+img,
+video { max-width: 100%;
+  height: auto; }
+h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 { font-family: var(--font-heading);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  --tw-text-opacity: 1;
+  color: rgb(10 16 47 / var(--tw-text-opacity)); }
+h2 { font-size: 1.875rem;
+  line-height: 2.25rem;
+  line-height: 1.26;
+  letter-spacing: 0em; }
+a,
+  button { transition-property: all;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+.btn { position: relative;
+  border-width: 2px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  line-height: 1.5;
+  transition-property: all;
+  transition-duration: 400ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+.btn-animation { overflow: hidden; }
+.btn-animation::before { position: absolute;
+  left: -10%;
+  top: -110%;
+  height: 0px;
+  width: 120%;
+  border-radius: 50%;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  padding-bottom: 120%;
+  content: var(--tw-content);
+  transform: translate3d(0, 68%, 0) scale3d(0, 0, 0); }
+.btn-animation::after { position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 100%;
+  width: 100%;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  transform: translate3d(0, -100%, 0);
+  content: var(--tw-content);
+  transition: transform 0.4s cubic-bezier(0.1, 0, 0.3, 1); }
+.btn-animation:hover { --tw-bg-opacity: 1;
+  background-color: rgb(10 16 47 / var(--tw-bg-opacity)); }
+.btn-animation:hover::before { transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  content: var(--tw-content);
+  transition: transform 0.4s cubic-bezier(0.1, 0, 0.3, 1); }
+.btn-animation:hover::after { transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: 400ms;
+  transition-duration: 500ms;
+  transition-timing-function: linear;
+  content: var(--tw-content);
+  transform: translate3d(0, 0, 0); }
+.btn-animation span { position: relative;
+  z-index: 10;
+  display: block; }
+.btn-animation:hover span { animation: fill-up-initial 0.3s forwards, fill-up-end 0.3s forwards 0.3s; }
+.is-blue { --tw-border-opacity: 1;
+  border-color: rgb(49 71 255 / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: rgb(49 71 255 / var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity)); }
+.is-blue:hover { background-color: transparent;
+  --tw-text-opacity: 1;
+  color: rgb(49 71 255 / var(--tw-text-opacity)); }
+.is-rounded { border-radius: 50px; }
+.absolute { position: absolute; }
+.relative { position: relative; }
+.right-0 { right: 0px; }
+.top-0 { top: 0px; }
+.z-10 { z-index: 10; }
+.mb-5 { margin-bottom: 1.25rem; }
+.mt-6 { margin-top: 1.5rem; }
+.inline-block { display: inline-block; }
+.flex { display: flex; }
+.grid { display: grid; }
+.h-full { height: 100%; }
+.w-full { width: 100%; }
+.flex-wrap { flex-wrap: wrap; }
+.items-end { align-items: flex-end; }
+.justify-between { justify-content: space-between; }
+.gap-5 { gap: 1.25rem; }
+.gap-8 { gap: 2rem; }
+.overflow-hidden { overflow: hidden; }
+.object-cover { -o-object-fit: cover;
+     object-fit: cover; }
+.text-base { font-size: 1rem;
+  line-height: 1.5rem; }
+.text-xl { font-size: 1.25rem;
+  line-height: 1.75rem; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.capitalize { text-transform: capitalize; }
+.text-ColorBlack { --tw-text-opacity: 1;
+  color: rgb(10 16 47 / var(--tw-text-opacity)); }
+.text-ColorBlack\/10 { color: rgb(10 16 47 / 0.1); }
+.text-ColorBlack\/60 { color: rgb(10 16 47 / 0.6); }
+.text-ColorBlack\/70 { color: rgb(10 16 47 / 0.7); }
+.text-ColorBlack\/80 { color: rgb(10 16 47 / 0.8); }
+.transition-all { transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms; }
+.duration-150 { transition-duration: 150ms; }
+.duration-300 { transition-duration: 300ms; }
+.ease-in-out { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+.container-default { margin-left: auto;
+  margin-right: auto;
+  max-width: 1400px;
+  padding-left: 1rem;
+  padding-right: 1rem; }
+.section-space { padding-top: 5rem;
+  padding-bottom: 5rem; }
+.breadcrumb-nav a { font-weight: 600;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms; }
+.breadcrumb-nav a:hover { --tw-text-opacity: 1;
+  color: rgb(49 71 255 / var(--tw-text-opacity)); }
+.accordion-item.active .accordion-icon-1 span:last-child { --tw-rotate: -90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  opacity: 0;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms; }
+.accordion-item .accordion-icon-6 span:first-child { --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity)); }
+.accordion-item.active .accordion-icon-6 span:first-child { --tw-bg-opacity: 1;
+  background-color: rgb(0 0 255 / var(--tw-bg-opacity)); }
+.accordion-item.active .accordion-icon-6 span:last-child { --tw-rotate: -90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  opacity: 0;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms; }
+.process-tab img:first-child { opacity: 1; }
+.process-tab img:last-child { opacity: 0; }
+.process-tab.active img:first-child { opacity: 0; }
+.process-tab.active img:last-child { opacity: 1; }
+.group:hover .group-hover\:-translate-y-5 { --tw-translate-y: -1.25rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:-translate-y-full { --tw-translate-y: -100%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:translate-x-0 { --tw-translate-x: 0px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:translate-x-2 { --tw-translate-x: 0.5rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:translate-x-full { --tw-translate-x: 100%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:translate-y-0 { --tw-translate-y: 0px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:scale-105 { --tw-scale-x: 1.05;
+  --tw-scale-y: 1.05;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:scale-110 { --tw-scale-x: 1.1;
+  --tw-scale-y: 1.1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:scale-x-100 { --tw-scale-x: 1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.group:hover .group-hover\:border-ColorAtomicTangerine { --tw-border-opacity: 1;
+  border-color: rgb(255 153 102 / var(--tw-border-opacity)); }
+.group:hover .group-hover\:border-\[\var(--color-accent, var(--color-secondary))\] { --tw-border-opacity: 1;
+  border-color: rgb(246 85 16 / var(--tw-border-opacity)); }
+.group:hover .group-hover\:bg-ColorAtomicTangerine { --tw-bg-opacity: 1;
+  background-color: rgb(255 153 102 / var(--tw-bg-opacity)); }
+.group:hover .group-hover\:bg-\[\var(--color-accent, var(--color-secondary))\] { --tw-bg-opacity: 1;
+  background-color: rgb(246 85 16 / var(--tw-bg-opacity)); }
+.group:hover .group-hover\:bg-\[\var(--color-bg)\] { --tw-bg-opacity: 1;
+  background-color: rgb(246 249 240 / var(--tw-bg-opacity)); }
+.group:hover .group-hover\:text-ColorAtomicTangerine { --tw-text-opacity: 1;
+  color: rgb(255 153 102 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-ColorBlue { --tw-text-opacity: 1;
+  color: rgb(49 71 255 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-ColorPurple { --tw-text-opacity: 1;
+  color: rgb(162 89 255 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-ColorViolet { --tw-text-opacity: 1;
+  color: rgb(75 42 173 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-\[\var(--color-bg)\] { --tw-text-opacity: 1;
+  color: rgb(246 249 240 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:text-black { --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity)); }
+.group:hover .group-hover\:opacity-0 { opacity: 0; }
+.group:hover .group-hover\:opacity-100 { opacity: 1; }
+.group:hover .group-hover\:after\:scale-x-100::after { content: var(--tw-content);
+  --tw-scale-x: 1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+h1,h2,h3,h4,h5,h6 { font-size:inherit;font-weight:inherit }
+a { color:inherit;text-decoration:inherit }
+blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre { margin:0 }
+audio,canvas,embed,iframe,img,object,svg,video { display:block;vertical-align:middle }
+img,video { max-width:100%;height:auto }
+.absolute { position:absolute }
+.relative { position:relative }
+.right-0 { right:0 }
+.top-0 { top:0 }
+.z-10 { z-index:10 }
+.mb-5 { margin-bottom:1.25rem }
+.mt-6 { margin-top:1.5rem }
+.inline-block { display:inline-block }
+.flex { display:flex }
+.grid { display:grid }
+.h-full { height:100% }
+.w-full { width:100% }
+.flex-wrap { flex-wrap:wrap }
+.items-end { align-items:flex-end }
+.justify-between { justify-content:space-between }
+.gap-5 { gap:1.25rem }
+.gap-8 { gap:2rem }
+.overflow-hidden { overflow:hidden }
+.object-cover { -o-object-fit:cover;object-fit:cover }
+.text-base { font-size:1rem;line-height:1.5rem }
+.text-xl { font-size:1.25rem;line-height:1.75rem }
+.font-bold { font-weight:700 }
+.font-semibold { font-weight:600 }
+.capitalize { text-transform:capitalize }
+.text-ColorBlack { --tw-text-opacity:1;color:rgb(10 16 47/var(--tw-text-opacity)) }
+.text-ColorBlack\/10 { color:#0a102f1a }
+.text-ColorBlack\/60 { color:#0a102f99 }
+.text-ColorBlack\/70 { color:#0a102fb3 }
+.text-ColorBlack\/80 { color:#0a102fcc }
+.transition-all { transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s }
+.duration-150 { transition-duration:.15s }
+.duration-300 { transition-duration:.3s }
+.ease-in-out { transition-timing-function:cubic-bezier(.4,0,.2,1) }
+.group:hover .group-hover\:-translate-y-5 { --tw-translate-y:-1.25rem }
+.group:hover .group-hover\:-translate-y-5,.group:hover .group-hover\:-translate-y-full { transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:-translate-y-full { --tw-translate-y:-100% }
+.group:hover .group-hover\:translate-x-0 { --tw-translate-x:0px }
+.group:hover .group-hover\:translate-x-0,.group:hover .group-hover\:translate-x-2 { transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:translate-x-2 { --tw-translate-x:0.5rem }
+.group:hover .group-hover\:translate-x-full { --tw-translate-x:100% }
+.group:hover .group-hover\:translate-x-full,.group:hover .group-hover\:translate-y-0 { transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:translate-y-0 { --tw-translate-y:0px }
+.group:hover .group-hover\:scale-105 { --tw-scale-x:1.05;--tw-scale-y:1.05 }
+.group:hover .group-hover\:scale-105,.group:hover .group-hover\:scale-110 { transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:scale-110 { --tw-scale-x:1.1;--tw-scale-y:1.1 }
+.group:hover .group-hover\:scale-x-100 { --tw-scale-x:1;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+.group:hover .group-hover\:border-ColorAtomicTangerine { --tw-border-opacity:1;border-color:rgb(255 153 102/var(--tw-border-opacity)) }
+.group:hover .group-hover\:border-\[\var(--color-accent, var(--color-secondary))\] { --tw-border-opacity:1;border-color:rgb(246 85 16/var(--tw-border-opacity)) }
+.group:hover .group-hover\:bg-ColorAtomicTangerine { --tw-bg-opacity:1;background-color:rgb(255 153 102/var(--tw-bg-opacity)) }
+.group:hover .group-hover\:bg-\[\var(--color-accent, var(--color-secondary))\] { --tw-bg-opacity:1;background-color:rgb(246 85 16/var(--tw-bg-opacity)) }
+.group:hover .group-hover\:bg-\[\var(--color-bg)\] { --tw-bg-opacity:1;background-color:rgb(246 249 240/var(--tw-bg-opacity)) }
+.group:hover .group-hover\:text-ColorAtomicTangerine { --tw-text-opacity:1;color:rgb(255 153 102/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-ColorBlue { --tw-text-opacity:1;color:rgb(49 71 255/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-ColorPurple { --tw-text-opacity:1;color:rgb(162 89 255/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-ColorViolet { --tw-text-opacity:1;color:rgb(75 42 173/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-\[\var(--color-bg)\] { --tw-text-opacity:1;color:rgb(246 249 240/var(--tw-text-opacity)) }
+.group:hover .group-hover\:text-black { --tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity)) }
+.group:hover .group-hover\:opacity-0 { opacity:0 }
+.group:hover .group-hover\:opacity-100 { opacity:1 }
+.group:hover .group-hover\:after\:scale-x-100:after { content:var(--tw-content);--tw-scale-x:1;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) }
+@media (min-width: 768px) {
+  h2 { font-size: 2.25rem;
+    line-height: 2.5rem; }
+  .container-default { padding-left: 2.5rem;
+    padding-right: 2.5rem; }
+}
+@media (min-width: 992px) {
+  h2 { line-height: 1.26; }
+  .container-default { padding-left: 2rem;
+    padding-right: 2rem; }
+  .section-space { padding-top: 100px;
+    padding-bottom: 100px; }
+}
+@media (min-width: 1200px) {
+  h2 { font-size: 46px; }
+  .is-large { padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem; }
+  .container-default { padding-left: 2.5rem;
+    padding-right: 2.5rem; }
+  .section-space { padding-top: 120px;
+    padding-bottom: 120px; }
+}
+@media (min-width: 576px) {
+  .container-default { padding-left: 2rem;
+    padding-right: 2rem; }
+}
+@media (min-width: 1400px) {
+  .container-default { padding-left: 50px;
+    padding-right: 50px; }
+}
+</style>
+<section class="section-portfolio">
+                <div class="relative z-10 overflow-hidden">
+                    <!-- Section Space -->
+                    <div class="section-space">
+                        <!-- Section Container -->
+                        <div class="container-default">
+                            <!-- Section Wrapper -->
+                            <div data-animate="stagger" class="jos mb-[60px] flex flex-wrap items-end justify-between gap-8 xl:mb-20">
+                                <!-- Section Block -->
+                                <div class="max-w-[550px]">
+                                    <h2 data-animate="text-split" data-split-type="words">{{PORTFOLIO_TITLE}}</h2>
+                                </div>
+                                <!-- Section Block -->
+                                <a data-animate="magnetic" href="portfolio.html" class="btn is-blue is-rounded btn-animation is-large group"><span>See more works</span></a>
+                            </div>
+                            <!-- Section Wrapper -->
+
+                            <!-- Portfolio List -->
+                            <div data-animate="stagger" class="grid gap-8 md:grid-cols-2 lg:gap-10 xl:gap-[60px]">
+                                <!-- Portfolio Item -->
+                                <div class="jos" data-jos_delay="0">
+                                    <div class="group">
+                                        <div class="overflow-hidden rounded-[10px]">
+                                            <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL}}" alt="{{PORTFOLIO_IMAGE_ALT}}" width="617" height="450" class="h-full w-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105" />
+                                        </div>
+                                        <div class="mt-6">
+                                            <div data-animate="stagger" class="mb-5 flex flex-wrap justify-between gap-5 text-ColorBlack lg:flex-nowrap xl:mb-7">
+                                                <a href="portfolio-details.html" class="text-xl font-semibold leading-[1.33] -tracking-[0.5px] group-hover:text-ColorBlue xl:text-2xl">App — The power of communication</a>
+                                                <a href="#" class="hover:text-ColorBlue">UI/UX Design</a>
+                                            </div>
+                                            <a href="portfolio-details.html" class="text-base font-bold capitalize leading-[1.5] group-hover:text-ColorBlue">View work
+                                                <span class="inline-block transition-all duration-150 group-hover:translate-x-2"><i class="fa-solid fa-arrow-right"></i></span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Portfolio Item -->
+                                <!-- Portfolio Item -->
+                                <div class="jos" data-jos_delay="0.3">
+                                    <div class="group">
+                                        <div class="overflow-hidden rounded-[10px]">
+                                            <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_2}}" alt="{{PORTFOLIO_IMAGE_ALT_2}}" width="617" height="450" class="h-full w-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105" />
+                                        </div>
+                                        <div class="mt-6">
+                                            <div data-animate="stagger" class="mb-5 flex flex-wrap justify-between gap-5 text-ColorBlack lg:flex-nowrap xl:mb-7">
+                                                <a href="portfolio-details.html" class="text-xl font-semibold leading-[1.33] -tracking-[0.5px] group-hover:text-ColorBlue xl:text-2xl">Website — The future lifestyle platform.</a>
+                                                <a href="#" class="hover:text-ColorBlue">Branding</a>
+                                            </div>
+                                            <a href="portfolio-details.html" class="text-base font-bold capitalize leading-[1.5] group-hover:text-ColorBlue">View work
+                                                <span class="inline-block transition-all duration-150 group-hover:translate-x-2"><i class="fa-solid fa-arrow-right"></i></span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Portfolio Item -->
+                            </div>
+                            <!-- Portfolio List -->
+                        </div>
+                        <!-- Section Container -->
+                    </div>
+                    <!-- Section Space -->
+
+                    <!-- Portfolio Shape - 2 -->
+                    <div class="absolute right-0 top-0 -z-10">
+                        <img data-animate="scale-in" data-delay="0.3" src="{{PORTFOLIO_IMAGE_URL_3}}" alt="{{PORTFOLIO_IMAGE_ALT_3}}" width="467" height="609" />
+                    </div>
+                </div>
+            </section>
+  </div>
+</section>

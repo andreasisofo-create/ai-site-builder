@@ -1,0 +1,41 @@
+<!-- Component: contact-zeniq-01 -->
+<!-- Tags: imported -->
+<section id="contact" class="py-24 px-6" style="background: var(--color-bg)" data-animate="fade-up">
+  <div class="max-w-7xl mx-auto">
+<style>
+button.swiper-pagination-bullet { border:none;margin:0;padding:0;box-shadow:none;-webkit-appearance:none;appearance:none }
+.unicon-close:before { content:"\e94b" }
+</style>
+<div id="uc-contact-form" data-uc-modal="overlay: true">
+            <div class="uc-modal-dialog lg:max-w-650px bg-gray-25 text-dark dark:bg-gray-800 dark:text-white rounded">
+                <button class="uc-modal-close-default p-0 icon-2 btn btn-md dark:text-white" type="button" data-uc-cursor="sm opaque" data-uc-cursor-stick=">*">
+                    <i class="icon-2 unicon-close"></i>
+                </button>
+
+                <div class="panel vstack gap-2 md:gap-4 text-center">
+                    <div class="panel cstack px-3 md:px-4 py-4 md:py-8 m-0 lg:mx-auto">
+                        <div class="panel vstack justify-center items-center gap-2 sm:gap-4 text-center">
+                            <h4 data-animate="fade-up" class="h2 sm:h1 ft-tertiary ls-0 lh-sm text-uppercase m-0">Let's get in touch</h4>
+                            <div class="panel w-100 sm:w-350px md:w-500px mx-auto">
+                                <form class="vstack gap-2">
+                                    <div class="vstack lg:hstack gap-2">
+                                        <input class="form-control h-48px w-100 md:w-1/2" type="text" placeholder="Full name*" required>
+                                        <input class="form-control h-48px w-100 md:w-1/2" type="text" placeholder="Last name*" required>
+                                    </div>
+                                    <div class="vstack lg:hstack gap-2">
+                                        <input class="form-control h-48px w-100 md:w-1/2" type="email" placeholder="Your email*" required>
+                                        <input class="form-control h-48px w-100 md:w-1/2" type="tel" placeholder="Phone number*" required>
+                                    </div>
+                                    <input class="form-control h-48px w-full" type="text" placeholder="Company name*" required>
+                                    <textarea class="form-control min-h-150px w-full" placeholder="Your message.."></textarea>
+                                    <button class="btn btn-primary btn-md text-white mt-2" type="submit">Send message</button>
+                                    <p data-animate="blur-slide" data-delay="0.2" class="fs-7 opacity-70 mt-2 text-center">{{CONTACT_TEXT}}</p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+  </div>
+</section>
