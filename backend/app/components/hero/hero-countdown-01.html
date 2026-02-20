@@ -1,0 +1,157 @@
+<!-- Hero Countdown: split layout with event info left and glassmorphism countdown timer right, ideal for events/launches -->
+<section id="hero" class="min-h-screen relative overflow-hidden" style="background: var(--color-bg)">
+
+  <!-- Decorative radial gradients -->
+  <div class="absolute inset-0 z-0 pointer-events-none">
+    <div class="absolute top-0 left-0 w-[600px] h-[600px] rounded-full blur-3xl" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.08) 0%, transparent 70%);"></div>
+    <div class="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl" style="background: radial-gradient(circle, rgba(var(--color-secondary-rgb, var(--color-primary-rgb)), 0.06) 0%, transparent 70%);"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full blur-3xl" style="background: radial-gradient(ellipse, rgba(var(--color-primary-rgb), 0.04) 0%, transparent 60%);"></div>
+  </div>
+
+  <!-- Dot grid pattern -->
+  <div class="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+  <!-- Subtle decorative lines -->
+  <div class="absolute inset-0 z-[1] pointer-events-none hidden lg:block">
+    <div class="absolute top-0 left-[60%] w-px h-full" style="background: linear-gradient(180deg, transparent, rgba(var(--color-primary-rgb), 0.06), transparent);"></div>
+  </div>
+
+  <!-- === MAIN CONTENT === -->
+  <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full">
+    <div class="grid lg:grid-cols-5 gap-12 lg:gap-16 items-center min-h-screen py-24 lg:py-0">
+
+      <!-- LEFT SIDE: Event info (60%) -->
+      <div class="lg:col-span-3 space-y-8" data-animate="fade-right" data-duration="1">
+
+        <!-- Badge pill -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border backdrop-blur-sm" style="border-color: rgba(var(--color-primary-rgb), 0.2); background: rgba(var(--color-primary-rgb), 0.06);">
+          <span class="w-2 h-2 rounded-full animate-pulse" style="background: var(--color-primary); box-shadow: 0 0 8px rgba(var(--color-primary-rgb), 0.5);"></span>
+          <span class="font-body text-xs tracking-[0.2em] uppercase font-semibold" style="color: var(--color-primary);">Prossimo Evento</span>
+        </div>
+
+        <!-- Main headline -->
+        <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">
+          {{HERO_TITLE}}
+        </h1>
+
+        <!-- Accent bar -->
+        <div class="w-20 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary, var(--color-primary)));"></div>
+
+        <!-- Subtitle -->
+        <p class="font-body text-lg md:text-xl leading-relaxed max-w-xl" style="color: var(--color-text-muted)" data-animate="blur-slide" data-delay="0.15" data-duration="1">
+          {{HERO_SUBTITLE}}
+        </p>
+
+        <!-- Event details: location + date -->
+        <div class="flex flex-wrap items-center gap-6 pt-2" data-animate="fade-up" data-delay="0.3">
+          <!-- Location -->
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(var(--color-primary-rgb), 0.1);">
+              <svg class="w-5 h-5" style="color: var(--color-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <div>
+              <p class="font-body text-xs tracking-wider uppercase" style="color: var(--color-text-muted)">Location</p>
+              <p class="font-heading text-sm font-semibold" style="color: var(--color-text)">{{EVENT_LOCATION}}</p>
+            </div>
+          </div>
+
+          <!-- Separator -->
+          <div class="w-px h-10 hidden sm:block" style="background: rgba(var(--color-primary-rgb), 0.15);"></div>
+
+          <!-- Date -->
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(var(--color-primary-rgb), 0.1);">
+              <svg class="w-5 h-5" style="color: var(--color-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+            <div>
+              <p class="font-body text-xs tracking-wider uppercase" style="color: var(--color-text-muted)">Data</p>
+              <p class="font-heading text-sm font-semibold" style="color: var(--color-text)">{{EVENT_DATE}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA buttons -->
+        <div class="flex flex-wrap items-center gap-4 pt-4" data-animate="bounce-in" data-delay="0.4">
+          <a href="{{HERO_CTA_URL}}" data-animate="magnetic" class="group relative inline-flex items-center gap-2 px-8 py-4 rounded-xl font-body font-semibold text-white text-base shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));">
+            <span class="relative z-10">{{HERO_CTA_TEXT}}</span>
+            <svg class="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+            <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+          </a>
+          <a href="#about" class="inline-flex items-center gap-2 px-6 py-4 rounded-xl font-body text-sm font-semibold border-2 transition-all duration-300 hover:scale-105" style="color: var(--color-text); border-color: rgba(var(--color-primary-rgb), 0.2);" onmouseover="this.style.borderColor='var(--color-primary)';this.style.color='var(--color-primary)'" onmouseout="this.style.borderColor='rgba(var(--color-primary-rgb), 0.2)';this.style.color='var(--color-text)'">
+            Scopri di pi&ugrave;
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE: Countdown timer (40%) -->
+      <div class="lg:col-span-2 relative">
+        <!-- Glow behind countdown -->
+        <div class="absolute -inset-8 rounded-3xl blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.1) 0%, transparent 70%);"></div>
+
+        <div class="relative grid grid-cols-2 gap-4">
+          <!-- Giorni -->
+          <div class="relative group" data-animate="scale-in" data-delay="0.2">
+            <div class="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));"></div>
+            <div class="relative backdrop-blur-xl border rounded-2xl p-6 text-center transition-all duration-300" style="background: rgba(var(--color-primary-rgb), 0.04); border-color: rgba(var(--color-primary-rgb), 0.12);">
+              <div class="font-heading text-5xl md:text-6xl font-black leading-none mb-2" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary))); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="30" data-duration="2">0</div>
+              <div class="font-body text-xs tracking-[0.25em] uppercase font-medium" style="color: var(--color-text-muted)">Giorni</div>
+              <!-- Corner accents -->
+              <div class="absolute top-2 left-2 w-3 h-3 border-t border-l rounded-tl-sm opacity-20" style="border-color: var(--color-primary)"></div>
+              <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r rounded-br-sm opacity-20" style="border-color: var(--color-primary)"></div>
+            </div>
+          </div>
+
+          <!-- Ore -->
+          <div class="relative group" data-animate="scale-in" data-delay="0.3">
+            <div class="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));"></div>
+            <div class="relative backdrop-blur-xl border rounded-2xl p-6 text-center transition-all duration-300" style="background: rgba(var(--color-primary-rgb), 0.04); border-color: rgba(var(--color-primary-rgb), 0.12);">
+              <div class="font-heading text-5xl md:text-6xl font-black leading-none mb-2" style="background: linear-gradient(135deg, var(--color-secondary, var(--color-primary)), var(--color-accent, var(--color-primary))); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="12" data-duration="1.8">0</div>
+              <div class="font-body text-xs tracking-[0.25em] uppercase font-medium" style="color: var(--color-text-muted)">Ore</div>
+              <div class="absolute top-2 left-2 w-3 h-3 border-t border-l rounded-tl-sm opacity-20" style="border-color: var(--color-primary)"></div>
+              <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r rounded-br-sm opacity-20" style="border-color: var(--color-primary)"></div>
+            </div>
+          </div>
+
+          <!-- Minuti -->
+          <div class="relative group" data-animate="scale-in" data-delay="0.4">
+            <div class="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));"></div>
+            <div class="relative backdrop-blur-xl border rounded-2xl p-6 text-center transition-all duration-300" style="background: rgba(var(--color-primary-rgb), 0.04); border-color: rgba(var(--color-primary-rgb), 0.12);">
+              <div class="font-heading text-5xl md:text-6xl font-black leading-none mb-2" style="background: linear-gradient(135deg, var(--color-accent, var(--color-primary)), var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="45" data-duration="1.5">0</div>
+              <div class="font-body text-xs tracking-[0.25em] uppercase font-medium" style="color: var(--color-text-muted)">Minuti</div>
+              <div class="absolute top-2 left-2 w-3 h-3 border-t border-l rounded-tl-sm opacity-20" style="border-color: var(--color-primary)"></div>
+              <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r rounded-br-sm opacity-20" style="border-color: var(--color-primary)"></div>
+            </div>
+          </div>
+
+          <!-- Secondi -->
+          <div class="relative group" data-animate="scale-in" data-delay="0.5">
+            <div class="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));"></div>
+            <div class="relative backdrop-blur-xl border rounded-2xl p-6 text-center transition-all duration-300" style="background: rgba(var(--color-primary-rgb), 0.04); border-color: rgba(var(--color-primary-rgb), 0.12);">
+              <div class="font-heading text-5xl md:text-6xl font-black leading-none mb-2" style="color: var(--color-primary);">00</div>
+              <div class="font-body text-xs tracking-[0.25em] uppercase font-medium" style="color: var(--color-text-muted)">Secondi</div>
+              <div class="absolute top-2 left-2 w-3 h-3 border-t border-l rounded-tl-sm opacity-20" style="border-color: var(--color-primary)"></div>
+              <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r rounded-br-sm opacity-20" style="border-color: var(--color-primary)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Label under countdown -->
+        <div class="text-center mt-6" data-animate="fade-up" data-delay="0.6">
+          <p class="font-body text-sm" style="color: var(--color-text-muted)">
+            <span class="inline-flex items-center gap-2">
+              <svg class="w-4 h-4" style="color: var(--color-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Il conto alla rovescia &egrave; iniziato
+            </span>
+          </p>
+        </div>
+
+        <!-- Floating decorative dots -->
+        <div class="absolute -top-4 -right-4 w-3 h-3 rounded-full" style="background: var(--color-primary); opacity: 0.2;" data-animate="float" data-speed="0.5"></div>
+        <div class="absolute -bottom-6 -left-6 w-4 h-4 rounded-full" style="background: var(--color-secondary, var(--color-primary)); opacity: 0.15;" data-animate="float" data-speed="0.7"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom fade line -->
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/10 to-transparent z-[5]"></div>
+</section>

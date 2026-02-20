@@ -1,0 +1,90 @@
+<!-- Stats Circular: SVG circular progress rings with animated counters, scroll-triggered fill -->
+<section id="stats" class="py-24 md:py-32 bg-[var(--color-bg-alt)] relative overflow-hidden">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-[0.04]" style="background: radial-gradient(circle, var(--color-primary), transparent 70%);" data-animate="float"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-[0.04]" style="background: radial-gradient(circle, var(--color-secondary), transparent 70%);" data-animate="float"></div>
+    <!-- Dot grid -->
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 48px 48px;"></div>
+    <!-- Floating decorative circles -->
+    <div class="absolute top-[10%] right-[15%] w-20 h-20 rounded-full border border-[var(--color-primary)]/5"></div>
+    <div class="absolute bottom-[15%] left-[10%] w-14 h-14 rounded-full border border-[var(--color-secondary)]/5"></div>
+  </div>
+
+  <style>
+    .stats-ring-track {
+      stroke: var(--color-text);
+      opacity: 0.06;
+    }
+    .stats-ring-progress {
+      transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+    .stats-circular-card:hover .stats-ring-progress {
+      filter: drop-shadow(0 0 8px var(--color-primary));
+    }
+    .stats-circular-card:hover .stats-ring-glow {
+      opacity: 0.15;
+    }
+    .stats-ring-glow {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+  </style>
+
+  <div class="relative max-w-7xl mx-auto px-6 z-10">
+    <!-- Section Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <span class="w-8 h-px bg-[var(--color-primary)]/40"></span>
+        <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">I Numeri</p>
+        <span class="w-8 h-px bg-[var(--color-primary)]/40"></span>
+      </div>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{STATS_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] mt-4 max-w-2xl mx-auto font-body leading-relaxed">{{STATS_SUBTITLE}}</p>
+    </div>
+
+    <!-- Circular Stats Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12" data-animate="stagger">
+      <!-- REPEAT:STATS_ITEMS -->
+      <div class="stagger-item stats-circular-card text-center group" data-animate="scale-in">
+        <div class="relative inline-block mb-6">
+          <!-- SVG Circle -->
+          <svg class="w-36 h-36 md:w-44 md:h-44" viewBox="0 0 160 160">
+            <!-- Background glow on hover -->
+            <circle cx="80" cy="80" r="70" fill="none" stroke="var(--color-primary)" stroke-width="2" class="stats-ring-glow"/>
+            <!-- Track circle -->
+            <circle cx="80" cy="80" r="64" fill="none" class="stats-ring-track" stroke-width="8"/>
+            <!-- Progress circle -->
+            <circle cx="80" cy="80" r="64" fill="none" stroke="url(#statsGradient)" stroke-width="8" class="stats-ring-progress"
+              stroke-dasharray="402"
+              stroke-dashoffset="402"
+              data-progress="{{STAT_NUMBER}}"/>
+            <!-- Gradient definition -->
+            <defs>
+              <linearGradient id="statsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color: var(--color-primary);"/>
+                <stop offset="100%" style="stop-color: var(--color-secondary);"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <!-- Counter in center -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-center">
+              <span class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300" data-counter="{{STAT_NUMBER}}" data-counter-suffix="{{STAT_SUFFIX}}">0</span>
+            </div>
+          </div>
+          <!-- Decorative outer ring on hover -->
+          <div class="absolute -inset-3 rounded-full border border-[var(--color-primary)]/0 group-hover:border-[var(--color-primary)]/10 transition-all duration-500"></div>
+        </div>
+        <!-- Label -->
+        <p class="text-sm md:text-base font-semibold text-[var(--color-text-muted)] font-body group-hover:text-[var(--color-text)] transition-colors duration-300">{{STAT_LABEL}}</p>
+        <!-- Decorative underline -->
+        <div class="w-8 h-[2px] mx-auto mt-3 rounded-full bg-[var(--color-primary)]/20 group-hover:w-16 group-hover:bg-[var(--color-primary)] transition-all duration-500"></div>
+      </div>
+      <!-- /REPEAT:STATS_ITEMS -->
+    </div>
+  </div>
+</section>

@@ -1,0 +1,123 @@
+<!-- Services Hover Preview: large stacked service names with cursor-area preview image on hover. Xpovio agency-inspired. CSS-only image reveal -->
+<section id="services" class="py-24 md:py-32 bg-[var(--color-bg-alt)] overflow-hidden relative">
+
+  <!-- Ambient glows -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/3 left-0 w-[500px] h-[500px] bg-[var(--color-primary)]/4 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[var(--color-accent)]/3 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Noise texture -->
+  <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="mb-16 md:mb-24 flex flex-col md:flex-row md:items-end md:justify-between gap-6" data-animate="fade-up">
+      <div>
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>
+          <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Servizi</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{SERVICES_TITLE}}</h2>
+      </div>
+      <p class="text-[var(--color-text-muted)] max-w-md text-lg font-body md:text-right" data-animate="blur-slide" data-delay="0.2">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Services with Hover Preview -->
+    <div class="svc-preview-container relative" data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <div class="stagger-item svc-preview-item group relative" data-animate="fade-up">
+        <div class="flex items-center gap-5 md:gap-8 py-6 md:py-8 px-4 md:px-8 -mx-4 md:-mx-8 rounded-2xl transition-all duration-400 cursor-pointer hover:bg-[var(--color-bg)]/60 relative z-10">
+          <!-- Service icon -->
+          <div class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[var(--color-bg)] flex items-center justify-center text-3xl md:text-4xl border border-[var(--color-text)]/5 group-hover:border-[var(--color-primary)]/20 group-hover:bg-[var(--color-primary)]/5 transition-all duration-300">
+            {{SERVICE_ICON}}
+          </div>
+
+          <!-- Service name (large) -->
+          <div class="flex-1 min-w-0">
+            <h3 class="text-2xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300 truncate">
+              {{SERVICE_TITLE}}
+            </h3>
+          </div>
+
+          <!-- Arrow indicator -->
+          <div class="flex-shrink-0 hidden md:flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+            <span class="text-sm font-semibold text-[var(--color-primary)] font-body whitespace-nowrap">Scopri</span>
+            <div class="w-10 h-10 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Preview image (appears on hover, CSS-only) -->
+          <div class="svc-preview-image absolute right-12 md:right-20 top-1/2 -translate-y-1/2 w-48 h-36 md:w-72 md:h-52 rounded-2xl overflow-hidden shadow-2xl shadow-black/20 pointer-events-none z-20 border-2 border-[var(--color-bg)]">
+            <div class="w-full h-full bg-gradient-to-br from-[var(--color-primary)]/20 via-[var(--color-secondary)]/15 to-[var(--color-accent)]/20 flex items-center justify-center">
+              <div class="text-center">
+                <div class="text-5xl mb-2">{{SERVICE_ICON}}</div>
+                <p class="text-sm font-semibold text-[var(--color-text)] font-body">{{SERVICE_TITLE}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description (shows on hover below the title row) -->
+        <div class="svc-preview-desc overflow-hidden">
+          <div class="px-4 md:px-8 pb-4">
+            <div class="ml-[calc(3.5rem+1.25rem)] md:ml-[calc(4rem+2rem)]">
+              <p class="text-[var(--color-text-muted)] leading-relaxed font-body max-w-xl">{{SERVICE_DESCRIPTION}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Separator -->
+        <div class="h-px bg-[var(--color-text)]/6 mx-4 md:mx-0"></div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+
+  <style>
+    /* Preview image: hidden by default, shown on hover (desktop only) */
+    .svc-preview-image {
+      opacity: 0;
+      transform: translate(0, -50%) scale(0.9) rotate(-2deg);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (hover: hover) and (min-width: 768px) {
+      .svc-preview-item:hover .svc-preview-image {
+        opacity: 1;
+        transform: translate(0, -50%) scale(1) rotate(0deg);
+      }
+    }
+
+    /* Description reveal on hover */
+    .svc-preview-desc {
+      max-height: 0;
+      opacity: 0;
+      transition: all 0.4s ease-out;
+    }
+
+    .svc-preview-item:hover .svc-preview-desc {
+      max-height: 120px;
+      opacity: 1;
+    }
+
+    /* On mobile, always show description */
+    @media (max-width: 767px) {
+      .svc-preview-desc {
+        max-height: 200px;
+        opacity: 1;
+      }
+      .svc-preview-image {
+        display: none;
+      }
+    }
+
+    /* Stagger effect: slight delay for each item's description */
+    .svc-preview-item:nth-child(2) .svc-preview-desc { transition-delay: 0.05s; }
+    .svc-preview-item:nth-child(3) .svc-preview-desc { transition-delay: 0.1s; }
+    .svc-preview-item:nth-child(4) .svc-preview-desc { transition-delay: 0.15s; }
+  </style>
+</section>

@@ -1,0 +1,58 @@
+<!-- Stats Wave: full-width counters with background image, dark overlay, and SVG wave dividers -->
+<section id="stats" class="relative overflow-hidden">
+  <!-- SVG Wave Divider - Top -->
+  <div class="absolute top-0 left-0 right-0 z-10 -translate-y-[1px]">
+    <svg class="w-full h-16 md:h-24" viewBox="0 0 1440 96" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 96L48 85.3C96 75 192 53 288 48C384 43 480 53 576 58.7C672 64 768 64 864 56C960 48 1056 32 1152 32C1248 32 1344 48 1392 56L1440 64V0H1392C1344 0 1248 0 1152 0C1056 0 960 0 864 0C768 0 672 0 576 0C480 0 384 0 288 0C192 0 96 0 48 0H0V96Z" fill="var(--color-bg)"/>
+    </svg>
+  </div>
+
+  <!-- Background Image with Overlay -->
+  <div class="absolute inset-0">
+    <img src="{{STATS_BG_IMAGE}}" alt="" class="w-full h-full object-cover" loading="lazy">
+    <div class="absolute inset-0 bg-black/70"></div>
+    <!-- Extra gradient overlay for depth -->
+    <div class="absolute inset-0 opacity-30" style="background: linear-gradient(135deg, var(--color-primary), transparent 60%);"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-[5] py-32 md:py-40">
+    <div class="max-w-7xl mx-auto px-6">
+      <!-- Section Header -->
+      <div class="text-center mb-16" data-animate="fade-up">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-white mb-4" data-animate="text-split" data-split-type="words">{{STATS_TITLE}}</h2>
+        <p class="text-white/60 max-w-2xl mx-auto font-body text-lg">{{STATS_SUBTITLE}}</p>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12" data-animate="stagger">
+        <!-- REPEAT:STATS_ITEMS -->
+        <div class="stagger-item text-center group">
+          <!-- Icon -->
+          <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center
+                      group-hover:bg-[var(--color-primary)]/30 group-hover:scale-110 transition-all duration-400 border border-white/10">
+            <span class="text-2xl">{{STAT_ICON}}</span>
+          </div>
+          <!-- Counter Number -->
+          <div class="mb-3">
+            <span class="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-white
+                         group-hover:text-[var(--color-primary)] transition-colors duration-300"
+                  data-counter="{{STAT_NUMBER}}" data-counter-suffix="{{STAT_SUFFIX}}">0</span>
+          </div>
+          <!-- Label -->
+          <p class="text-sm md:text-base text-white/60 font-medium font-body">{{STAT_LABEL}}</p>
+          <!-- Decorative dot -->
+          <div class="w-1.5 h-1.5 rounded-full mx-auto mt-4 bg-[var(--color-primary)]/50 group-hover:bg-[var(--color-primary)] group-hover:shadow-lg group-hover:shadow-[var(--color-primary)]/30 transition-all duration-300"></div>
+        </div>
+        <!-- /REPEAT:STATS_ITEMS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG Wave Divider - Bottom -->
+  <div class="absolute bottom-0 left-0 right-0 z-10 translate-y-[1px]">
+    <svg class="w-full h-16 md:h-24" viewBox="0 0 1440 96" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0L48 10.7C96 21 192 43 288 48C384 53 480 43 576 37.3C672 32 768 32 864 40C960 48 1056 64 1152 64C1248 64 1344 48 1392 40L1440 32V96H1392C1344 96 1248 96 1152 96C1056 96 960 96 864 96C768 96 672 96 576 96C480 96 384 96 288 96C192 96 96 96 48 96H0V0Z" fill="var(--color-bg)"/>
+    </svg>
+  </div>
+</section>

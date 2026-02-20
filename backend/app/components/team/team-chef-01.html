@@ -1,0 +1,112 @@
+<!-- Team Chef Spotlight: large image + name/title/bio + quote + specialties, warm personal feel -->
+<section id="team" class="py-24 md:py-32 relative overflow-hidden" style="background: var(--color-bg-alt)">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-[5%] left-[5%] w-80 h-80 rounded-full blur-3xl" style="background: var(--color-primary); opacity: 0.05;"></div>
+    <div class="absolute bottom-[8%] right-[8%] w-72 h-72 rounded-full blur-3xl" style="background: var(--color-secondary); opacity: 0.05;"></div>
+    <div class="absolute top-[50%] right-[30%] w-48 h-48 rounded-full blur-3xl" style="background: var(--color-accent, var(--color-secondary)); opacity: 0.03;"></div>
+    <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 48px 48px;"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+    <!-- Section Header -->
+    <div class="text-center mb-16" data-animate="reveal-up">
+      <p class="text-sm font-semibold tracking-widest uppercase mb-4 font-body" style="color: var(--color-primary)" data-animate="blur-in">Il Nostro Chef</p>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading mb-4" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">{{TEAM_TITLE}}</h2>
+      <div class="w-16 h-1 rounded-full mx-auto mb-6" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));" data-animate="scale-in"></div>
+      <p class="max-w-2xl mx-auto font-body leading-relaxed" style="color: var(--color-text-muted)" data-animate="blur-slide" data-delay="0.15" data-duration="1">{{TEAM_SUBTITLE}}</p>
+    </div>
+
+    <!-- Chef Spotlight Cards -->
+    <div data-animate="stagger">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <div class="stagger-item mb-16 last:mb-0">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+          <!-- Chef Image -->
+          <div class="relative" data-animate="reveal-right">
+            <!-- Decorative frame behind image -->
+            <div class="absolute -inset-3 rounded-3xl opacity-20" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary))); transform: rotate(-2deg);"></div>
+            <div class="absolute -inset-3 rounded-3xl opacity-10" style="background: linear-gradient(135deg, var(--color-accent, var(--color-secondary)), var(--color-primary)); transform: rotate(1deg);"></div>
+
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl" data-animate="tilt">
+              <img
+                src="{{MEMBER_IMAGE_URL}}"
+                alt="{{MEMBER_NAME}}"
+                class="w-full aspect-[4/5] object-cover"
+                loading="lazy"
+              >
+              <!-- Gradient overlay at bottom -->
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+
+              <!-- Experience badge -->
+              <div class="absolute bottom-6 left-6 backdrop-blur-md rounded-xl px-4 py-2 border border-white/20" style="background: rgba(0,0,0,0.4);">
+                <p class="text-white text-sm font-bold font-heading">{{MEMBER_ROLE}}</p>
+              </div>
+            </div>
+
+            <!-- Decorative floating elements -->
+            <div class="absolute -top-4 -right-4 w-20 h-20 rounded-full border-2 opacity-15 pointer-events-none" style="border-color: var(--color-primary);"></div>
+            <div class="absolute -bottom-6 -left-6 w-14 h-14 rounded-full opacity-10 pointer-events-none" style="background: var(--color-accent, var(--color-secondary));"></div>
+          </div>
+
+          <!-- Chef Info -->
+          <div data-animate="reveal-left" data-delay="0.2">
+            <!-- Name and role -->
+            <div class="mb-6">
+              <h3 class="text-3xl md:text-4xl font-bold font-heading mb-2" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">{{MEMBER_NAME}}</h3>
+              <p class="text-lg font-semibold uppercase tracking-wider font-body" style="color: var(--color-primary)">{{MEMBER_ROLE}}</p>
+            </div>
+
+            <!-- Decorative separator -->
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-0.5 rounded-full" style="background: var(--color-primary);"></div>
+              <svg class="w-5 h-5 opacity-50" style="color: var(--color-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+              </svg>
+              <div class="w-10 h-0.5 rounded-full" style="background: var(--color-primary);"></div>
+            </div>
+
+            <!-- Bio -->
+            <p class="text-lg font-body leading-relaxed mb-8" style="color: var(--color-text-muted)">{{MEMBER_BIO}}</p>
+
+            <!-- Chef Quote -->
+            <blockquote class="relative rounded-2xl p-6 mb-8 border border-[var(--color-text)]/5" style="background: var(--color-bg);">
+              <!-- Quote mark -->
+              <svg class="absolute -top-3 left-6 w-8 h-8 opacity-30" style="color: var(--color-primary)" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151C7.546 6.068 5.983 8.789 5.983 11H10v10H0z"/>
+              </svg>
+              <p class="text-lg font-heading italic leading-relaxed pl-4" style="color: var(--color-text); border-left: 3px solid var(--color-primary);">
+                La cucina e arte, passione e dedizione. Ogni piatto racconta la nostra storia.
+              </p>
+            </blockquote>
+
+            <!-- Specialties / Achievements -->
+            <div>
+              <h4 class="text-sm font-semibold uppercase tracking-widest mb-4 font-body" style="color: var(--color-primary)">Specialita & Riconoscimenti</h4>
+              <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold font-body border transition-all duration-200 hover:scale-105" style="border-color: var(--color-primary); color: var(--color-primary); background: linear-gradient(135deg, rgba(var(--color-primary-rgb, 99,102,241), 0.05), transparent);">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                  Cucina Tradizionale
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold font-body border transition-all duration-200 hover:scale-105" style="border-color: var(--color-secondary, var(--color-primary)); color: var(--color-secondary, var(--color-primary)); background: linear-gradient(135deg, rgba(var(--color-secondary-rgb, 99,102,241), 0.05), transparent);">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                  Ingredienti Locali
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold font-body border transition-all duration-200 hover:scale-105" style="border-color: var(--color-accent, var(--color-primary)); color: var(--color-accent, var(--color-primary)); background: linear-gradient(135deg, rgba(var(--color-accent-rgb, 99,102,241), 0.05), transparent);">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                  Innovazione Creativa
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold font-body border transition-all duration-200 hover:scale-105" style="border-color: var(--color-primary); color: var(--color-primary); background: linear-gradient(135deg, rgba(var(--color-primary-rgb, 99,102,241), 0.05), transparent);">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                  Pasta Fresca Artigianale
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+</section>

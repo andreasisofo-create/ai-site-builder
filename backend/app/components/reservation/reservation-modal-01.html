@@ -1,0 +1,94 @@
+<!-- Reservation Modal: full-width CTA section with background image overlay, dark gradient, elegant inline form -->
+<section id="reservation" class="relative py-24 md:py-32 overflow-hidden" style="background: var(--color-bg)">
+  <!-- Background image with overlay -->
+  <div class="absolute inset-0">
+    <img src="{{HERO_IMAGE_URL}}" alt="" class="w-full h-full object-cover" loading="lazy">
+    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.85) 50%, rgba(0,0,0,0.92) 100%);"></div>
+  </div>
+
+  <!-- Decorative elements over the image -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-[10%] left-[15%] w-64 h-64 rounded-full blur-3xl" style="background: var(--color-primary); opacity: 0.1;"></div>
+    <div class="absolute bottom-[10%] right-[10%] w-72 h-72 rounded-full blur-3xl" style="background: var(--color-accent, var(--color-secondary)); opacity: 0.08;"></div>
+    <!-- Subtle dot grid overlay -->
+    <div class="absolute inset-0 opacity-[0.04]" style="background-image: radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px); background-size: 40px 40px;"></div>
+    <!-- Decorative corner ornaments -->
+    <div class="absolute top-8 left-8 w-16 h-16 border-t-2 border-l-2 rounded-tl-lg opacity-20" style="border-color: var(--color-primary);"></div>
+    <div class="absolute top-8 right-8 w-16 h-16 border-t-2 border-r-2 rounded-tr-lg opacity-20" style="border-color: var(--color-primary);"></div>
+    <div class="absolute bottom-8 left-8 w-16 h-16 border-b-2 border-l-2 rounded-bl-lg opacity-20" style="border-color: var(--color-primary);"></div>
+    <div class="absolute bottom-8 right-8 w-16 h-16 border-b-2 border-r-2 rounded-br-lg opacity-20" style="border-color: var(--color-primary);"></div>
+  </div>
+
+  <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
+    <!-- Decorative line above -->
+    <div class="flex items-center justify-center gap-4 mb-8" data-animate="scale-in">
+      <div class="w-12 h-px opacity-40" style="background: var(--color-primary);"></div>
+      <svg class="w-6 h-6 opacity-60" style="color: var(--color-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
+      </svg>
+      <div class="w-12 h-px opacity-40" style="background: var(--color-primary);"></div>
+    </div>
+
+    <!-- Eyebrow badge -->
+    <p class="text-sm font-semibold tracking-[0.25em] uppercase mb-6 font-body text-white/60" data-animate="blur-in">Prenota un Tavolo</p>
+
+    <!-- Main heading -->
+    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-white mb-6 leading-tight" data-animate="text-split" data-split-type="words">{{RESERVATION_TITLE}}</h2>
+
+    <!-- Subtitle -->
+    <p class="text-lg md:text-xl font-body leading-relaxed text-white/70 max-w-3xl mx-auto mb-12" data-animate="blur-slide" data-delay="0.2" data-duration="1">{{RESERVATION_SUBTITLE}}</p>
+
+    <!-- Inline reservation form card -->
+    <div class="rounded-2xl p-8 md:p-10 mx-auto max-w-3xl shadow-2xl backdrop-blur-md border border-white/10" style="background: rgba(0,0,0,0.4);" data-animate="scale-in" data-delay="0.3">
+      <form class="space-y-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Name -->
+          <input type="text" placeholder="Il tuo nome" required class="w-full px-5 py-4 rounded-xl text-base outline-none transition-all duration-300 font-body text-white placeholder-white/40" style="background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+          <!-- Phone -->
+          <input type="tel" placeholder="Telefono" required class="w-full px-5 py-4 rounded-xl text-base outline-none transition-all duration-300 font-body text-white placeholder-white/40" style="background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- Date -->
+          <input type="date" class="w-full px-5 py-4 rounded-xl text-base outline-none transition-all duration-300 font-body text-white" style="background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.1); color-scheme: dark;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+          <!-- Time -->
+          <select class="w-full px-5 py-4 rounded-xl text-base outline-none transition-all duration-300 font-body text-white appearance-none cursor-pointer" style="background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.1); background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%222%22%3E%3Cpath d=%22m6 9 6 6 6-6%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 14px center;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+            <option value="" style="background: #222; color: #fff;">Orario</option>
+            <option style="background: #222;">12:00</option><option style="background: #222;">12:30</option><option style="background: #222;">13:00</option><option style="background: #222;">13:30</option>
+            <option style="background: #222;">19:00</option><option style="background: #222;">19:30</option><option style="background: #222;">20:00</option><option style="background: #222;">20:30</option><option style="background: #222;">21:00</option><option style="background: #222;">21:30</option>
+          </select>
+          <!-- Guests -->
+          <select class="w-full px-5 py-4 rounded-xl text-base outline-none transition-all duration-300 font-body text-white appearance-none cursor-pointer" style="background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.1); background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%222%22%3E%3Cpath d=%22m6 9 6 6 6-6%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 14px center;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+            <option value="" style="background: #222; color: #fff;">Ospiti</option>
+            <option style="background: #222;">1 persona</option><option style="background: #222;">2 persone</option><option style="background: #222;">3 persone</option><option style="background: #222;">4 persone</option>
+            <option style="background: #222;">5 persone</option><option style="background: #222;">6 persone</option><option style="background: #222;">8+ persone</option>
+          </select>
+        </div>
+        <!-- Submit -->
+        <button type="submit" data-animate="magnetic" class="w-full py-4 rounded-xl font-bold text-white text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 font-heading flex items-center justify-center gap-3" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));">
+          Prenota Ora
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- Contact info below -->
+    <div class="flex flex-wrap items-center justify-center gap-8 mt-10" data-animate="fade-up" data-delay="0.5">
+      <a href="tel:{{RESERVATION_PHONE}}" class="flex items-center gap-2 text-sm font-body text-white/50 hover:text-white/80 transition-colors duration-300">
+        <svg class="w-4 h-4" style="color: var(--color-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+        Oppure chiama: <strong class="text-white/80">{{RESERVATION_PHONE}}</strong>
+      </a>
+      <span class="hidden sm:block w-1 h-1 rounded-full bg-white/20"></span>
+      <a href="mailto:{{RESERVATION_EMAIL}}" class="flex items-center gap-2 text-sm font-body text-white/50 hover:text-white/80 transition-colors duration-300">
+        <svg class="w-4 h-4" style="color: var(--color-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+        Email: <strong class="text-white/80">{{RESERVATION_EMAIL}}</strong>
+      </a>
+    </div>
+
+    <!-- Decorative line below -->
+    <div class="flex items-center justify-center gap-3 mt-10" data-animate="scale-in" data-delay="0.6">
+      <div class="w-8 h-px opacity-30" style="background: var(--color-primary);"></div>
+      <div class="w-2 h-2 rounded-full opacity-40" style="background: var(--color-primary);"></div>
+      <div class="w-8 h-px opacity-30" style="background: var(--color-primary);"></div>
+    </div>
+  </div>
+</section>

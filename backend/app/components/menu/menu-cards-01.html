@@ -1,0 +1,109 @@
+<!-- Menu Cards: Horizontal card layout with thumbnail image left, info right, shadow hover lift -->
+<section id="menu" class="py-24 md:py-32 bg-[var(--color-bg)] overflow-hidden relative">
+
+  <!-- Ambient glow -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/4 left-0 w-72 h-72 bg-[var(--color-primary)]/4 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-1/4 right-0 w-64 h-64 bg-[var(--color-secondary)]/4 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Subtle grid pattern -->
+  <div class="absolute inset-0 opacity-[0.012]" style="background-image: linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px); background-size: 60px 60px;"></div>
+
+  <div class="max-w-5xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16 md:mb-20" data-animate="fade-up">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 mb-6">
+        <span class="text-sm">&#127869;</span>
+        <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Menu</span>
+      </div>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{MENU_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2">{{MENU_SUBTITLE}}</p>
+    </div>
+
+    <style>
+      .menu-hcard {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .menu-hcard:hover {
+        transform: translateY(-4px) translateX(4px);
+        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.1), 0 0 0 1px color-mix(in srgb, var(--color-primary) 12%, transparent);
+      }
+      .menu-hcard:hover .menu-hcard-img {
+        transform: scale(1.06);
+      }
+      .menu-hcard:hover .menu-hcard-name {
+        color: var(--color-primary);
+      }
+      .menu-hcard:hover .menu-hcard-accent {
+        transform: scaleX(1);
+      }
+      .menu-hcard-img {
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .menu-hcard-name {
+        transition: color 0.3s ease;
+      }
+      .menu-hcard-accent {
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .menu-hcard-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.15rem 0.55rem;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        color: white;
+      }
+      .menu-hcard-cat {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.6rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-radius: 9999px;
+        background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+        color: var(--color-primary);
+      }
+    </style>
+
+    <!-- Stacked horizontal cards -->
+    <div class="space-y-5" data-animate="stagger">
+      <!-- REPEAT:MENU_ITEMS -->
+      <div class="stagger-item menu-hcard flex flex-col sm:flex-row bg-[var(--color-bg-alt)] rounded-2xl overflow-hidden border border-[var(--color-text)]/5 shadow-sm" data-animate="fade-left">
+        <!-- Thumbnail image -->
+        <div class="sm:w-40 md:w-48 flex-shrink-0 h-44 sm:h-auto overflow-hidden relative">
+          <img src="{{MENU_ITEM_IMAGE}}" alt="{{MENU_ITEM_NAME}}" class="menu-hcard-img w-full h-full object-cover" loading="lazy">
+          <!-- Badge overlay -->
+          <div class="absolute top-2.5 left-2.5 z-10">
+            {{MENU_ITEM_BADGE}}
+          </div>
+        </div>
+        <!-- Content -->
+        <div class="flex-1 p-5 sm:p-6 flex flex-col justify-center min-w-0">
+          <div class="flex items-start justify-between gap-3 mb-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="menu-hcard-cat font-body">{{MENU_ITEM_CATEGORY}}</span>
+              </div>
+              <h3 class="menu-hcard-name text-lg md:text-xl font-bold font-heading text-[var(--color-text)] leading-tight">{{MENU_ITEM_NAME}}</h3>
+            </div>
+            <span class="flex-shrink-0 text-xl md:text-2xl font-bold font-heading text-[var(--color-primary)]">{{MENU_ITEM_PRICE}}</span>
+          </div>
+          <p class="text-sm text-[var(--color-text-muted)] font-body leading-relaxed line-clamp-2 mb-3">{{MENU_ITEM_DESCRIPTION}}</p>
+          <!-- Accent underline -->
+          <div class="menu-hcard-accent h-0.5 w-10 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:MENU_ITEMS -->
+    </div>
+  </div>
+</section>

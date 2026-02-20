@@ -1,0 +1,150 @@
+<!-- Hero Search: full-viewport hero with background image, dark gradient overlay, inline glassmorphism search form, and floating stat badges -->
+<section id="hero" class="min-h-screen relative overflow-hidden" style="background: var(--color-bg)">
+
+  <!-- Background image with dark overlay -->
+  <div class="absolute inset-0 z-0">
+    <img src="{{HERO_IMAGE_URL}}" alt="" class="absolute inset-0 w-full h-full object-cover" loading="eager" />
+    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.85) 100%);"></div>
+    <!-- Primary color tint overlay -->
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.15), transparent 60%);"></div>
+  </div>
+
+  <!-- Subtle grain texture -->
+  <div class="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E'); background-size: 128px 128px;"></div>
+
+  <!-- Ambient glow at top -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-3xl z-[1] pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.12) 0%, transparent 70%);"></div>
+
+  <!-- === FLOATING STAT BADGES === -->
+  <!-- Top-left badge -->
+  <div class="absolute top-24 left-8 md:left-16 z-20 hidden lg:block" data-animate="float" data-speed="0.6">
+    <div class="backdrop-blur-xl bg-white/10 border border-white/15 rounded-2xl px-5 py-4 shadow-2xl">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <div>
+          <span class="text-white font-heading font-bold text-lg" data-counter="1000" data-duration="2.5">0</span><span class="text-white font-heading font-bold">+</span>
+          <p class="text-white/60 font-body text-xs tracking-wide">Clienti Soddisfatti</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom-right badge -->
+  <div class="absolute bottom-36 right-8 md:right-16 z-20 hidden lg:block" data-animate="float" data-speed="0.4">
+    <div class="backdrop-blur-xl bg-white/10 border border-white/15 rounded-2xl px-5 py-4 shadow-2xl">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-secondary), var(--color-accent, var(--color-primary)));">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-1">
+            <span class="text-white font-heading font-bold text-lg">4.9</span>
+            <div class="flex gap-0.5">
+              <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            </div>
+          </div>
+          <p class="text-white/60 font-body text-xs tracking-wide">Valutazione Media</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top-right badge -->
+  <div class="absolute top-32 right-12 md:right-24 z-20 hidden xl:block" data-animate="float" data-speed="0.5">
+    <div class="backdrop-blur-xl bg-white/10 border border-white/15 rounded-full px-4 py-2 shadow-xl">
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full animate-pulse" style="background: #22c55e; box-shadow: 0 0 8px #22c55e;"></div>
+        <span class="text-white/80 font-body text-xs font-medium tracking-wide">Online Ora</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- === MAIN CONTENT === -->
+  <div class="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6 py-32">
+    <div class="max-w-4xl mx-auto w-full">
+
+      <!-- Badge pill -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md bg-white/10 border border-white/15 mb-8" data-animate="blur-in" data-delay="0.1">
+        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--color-primary); box-shadow: 0 0 8px rgba(var(--color-primary-rgb), 0.6);"></span>
+        <span class="font-body text-xs tracking-[0.2em] uppercase text-white/80">{{BUSINESS_NAME}}</span>
+      </div>
+
+      <!-- Main headline -->
+      <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight text-white mb-6" data-animate="text-split" data-split-type="words">
+        {{HERO_TITLE}}
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="font-body text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-12" data-animate="blur-slide" data-delay="0.2" data-duration="1.2">
+        {{HERO_SUBTITLE}}
+      </p>
+
+      <!-- === INLINE SEARCH FORM === -->
+      <div class="w-full max-w-3xl mx-auto" data-animate="blur-slide" data-delay="0.35" data-duration="1">
+        <form class="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-3 shadow-2xl">
+          <!-- Glow behind form -->
+          <div class="absolute -inset-1 rounded-2xl blur-xl pointer-events-none" style="background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.15), rgba(var(--color-secondary-rgb, var(--color-primary-rgb)), 0.1)); opacity: 0.6;"></div>
+
+          <div class="relative flex flex-col md:flex-row items-stretch gap-3">
+            <!-- Input 1: Text input -->
+            <div class="flex-1 min-w-0">
+              <label class="block text-white/50 font-body text-[10px] tracking-widest uppercase px-4 pt-2 pb-0.5">{{SEARCH_LABEL_1}}</label>
+              <input type="text" placeholder="Cerca..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-body text-sm placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all" />
+            </div>
+
+            <!-- Input 2: Dropdown select -->
+            <div class="flex-1 min-w-0">
+              <label class="block text-white/50 font-body text-[10px] tracking-widest uppercase px-4 pt-2 pb-0.5">{{SEARCH_LABEL_2}}</label>
+              <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white/70 font-body text-sm focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 fill=%22rgba(255,255,255,0.5)%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M4.646 6.646a.5.5 0 0 1 .708 0L8 9.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center;">
+                <option>Tutti</option>
+              </select>
+            </div>
+
+            <!-- Input 3: Dropdown select -->
+            <div class="flex-1 min-w-0">
+              <label class="block text-white/50 font-body text-[10px] tracking-widest uppercase px-4 pt-2 pb-0.5">{{SEARCH_LABEL_3}}</label>
+              <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white/70 font-body text-sm focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 fill=%22rgba(255,255,255,0.5)%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M4.646 6.646a.5.5 0 0 1 .708 0L8 9.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center;">
+                <option>Tutti</option>
+              </select>
+            </div>
+
+            <!-- Search button -->
+            <div class="flex items-end">
+              <button type="submit" data-animate="magnetic" class="group w-full md:w-auto px-8 py-3 rounded-xl font-body text-sm font-bold tracking-wide text-white transition-all duration-300 hover:shadow-[0_0_30px_rgba(var(--color-primary-rgb),0.4)] hover:scale-105 flex items-center justify-center gap-2" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary))); margin-bottom: 2px;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <span>{{HERO_CTA_TEXT}}</span>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Quick tags below form -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mt-5" data-animate="fade-up" data-delay="0.5">
+          <span class="text-white/40 font-body text-xs">Popolari:</span>
+          <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 font-body text-xs hover:bg-white/10 hover:text-white/70 transition-all cursor-pointer">Servizi</span>
+          <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 font-body text-xs hover:bg-white/10 hover:text-white/70 transition-all cursor-pointer">Consulenza</span>
+          <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 font-body text-xs hover:bg-white/10 hover:text-white/70 transition-all cursor-pointer">Contatti</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" data-animate="fade-up" data-delay="0.6">
+      <div class="w-5 h-9 rounded-full border border-white/15 flex justify-center pt-2">
+        <div class="w-0.5 h-2.5 rounded-full bg-white/40" style="animation: heroSearchBounce 2s infinite;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom gradient fade -->
+  <div class="absolute bottom-0 left-0 right-0 h-32 z-[5] pointer-events-none" style="background: linear-gradient(to top, var(--color-bg), transparent);"></div>
+
+  <style>
+    @keyframes heroSearchBounce {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(6px); opacity: 0.3; }
+    }
+  </style>
+</section>

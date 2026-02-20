@@ -1,0 +1,108 @@
+<!-- Blog Editorial Grid: asymmetric layout with 1 large featured post (2/3) + 2 small stacked posts (1/3), gradient overlays, premium hover effects -->
+<section id="blog" class="relative py-24 md:py-32 overflow-hidden" style="background: var(--color-bg)">
+
+  <!-- Ambient background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 right-1/4 w-[500px] h-[500px] rounded-full blur-3xl opacity-[0.04]" style="background: var(--color-primary)"></div>
+    <div class="absolute bottom-20 left-1/4 w-[400px] h-[400px] rounded-full blur-3xl opacity-[0.03]" style="background: var(--color-secondary)"></div>
+    <!-- Noise texture -->
+    <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 32px 32px;"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-6 md:px-12 z-10">
+    <!-- Section header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 md:mb-20">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border mb-6" style="border-color: color-mix(in srgb, var(--color-primary) 15%, transparent); background: color-mix(in srgb, var(--color-primary) 5%, transparent);" data-animate="blur-in">
+        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--color-primary)"></span>
+        <span class="text-xs font-semibold tracking-widest uppercase font-body" style="color: var(--color-primary)">Blog</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-5" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">
+        {{BLOG_TITLE}}
+      </h2>
+      <p class="text-lg md:text-xl leading-relaxed font-body" style="color: var(--color-text-muted)" data-animate="fade-up" data-delay="0.2">
+        {{BLOG_SUBTITLE}}
+      </p>
+    </div>
+
+    <!-- Asymmetric grid -->
+    <div class="grid lg:grid-cols-3 gap-6 md:gap-8" data-animate="stagger">
+      <!-- REPEAT:BLOG_POSTS -->
+
+      <!-- Large featured post (first item takes 2 cols) -->
+      <div class="stagger-item lg:col-span-2 lg:row-span-2 group relative rounded-2xl overflow-hidden min-h-[420px] md:min-h-[540px] cursor-pointer" style="box-shadow: 0 4px 30px rgba(0,0,0,0.08);" data-animate="fade-up">
+        <!-- Full-bleed image -->
+        <img
+          src="{{BLOG_POST_IMAGE}}"
+          alt="{{BLOG_POST_TITLE}}"
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          loading="lazy"
+        >
+        <!-- Gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+        <!-- Decorative corner accents -->
+        <div class="absolute top-4 right-4 w-10 h-10 border-t-2 border-r-2 rounded-tr-lg opacity-0 group-hover:opacity-40 transition-opacity duration-500" style="border-color: var(--color-primary)"></div>
+        <!-- Content -->
+        <div class="absolute bottom-0 left-0 right-0 p-8 md:p-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+          <!-- Category badge -->
+          <span class="inline-block px-3 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full mb-4 backdrop-blur-sm border border-white/10" style="background: color-mix(in srgb, var(--color-primary) 70%, transparent); color: #fff;">
+            {{BLOG_POST_CATEGORY}}
+          </span>
+          <!-- Title -->
+          <h3 class="text-2xl md:text-3xl font-heading font-bold text-white mb-3 leading-tight transition-colors duration-300" style="text-shadow: 0 2px 12px rgba(0,0,0,0.3);">
+            {{BLOG_POST_TITLE}}
+          </h3>
+          <!-- Excerpt -->
+          <p class="text-white/75 font-body mb-4 line-clamp-2 max-w-xl text-base leading-relaxed">
+            {{BLOG_POST_EXCERPT}}
+          </p>
+          <!-- Meta row -->
+          <div class="flex items-center gap-4 text-sm text-white/60 font-body">
+            <span class="font-medium text-white/80">{{BLOG_POST_AUTHOR}}</span>
+            <span class="w-1 h-1 rounded-full bg-white/40"></span>
+            <span>{{BLOG_POST_DATE}}</span>
+          </div>
+          <!-- Accent line -->
+          <div class="mt-5 h-0.5 w-12 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));"></div>
+        </div>
+      </div>
+
+      <!-- Small post (horizontal card) -->
+      <div class="stagger-item group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-xl cursor-pointer" style="background: var(--color-bg-alt); box-shadow: 0 2px 16px rgba(0,0,0,0.05);" data-animate="fade-up">
+        <div class="flex flex-col h-full">
+          <!-- Thumbnail -->
+          <div class="relative h-48 overflow-hidden">
+            <img
+              src="{{BLOG_POST_IMAGE}}"
+              alt="{{BLOG_POST_TITLE}}"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+            >
+            <!-- Category badge overlay -->
+            <span class="absolute top-3 left-3 px-3 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full backdrop-blur-sm border border-white/10" style="background: color-mix(in srgb, var(--color-primary) 70%, transparent); color: #fff;">
+              {{BLOG_POST_CATEGORY}}
+            </span>
+          </div>
+          <!-- Text -->
+          <div class="p-5 md:p-6 flex flex-col flex-1">
+            <h3 class="text-lg font-heading font-bold mb-2 leading-snug transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--color-text)">
+              {{BLOG_POST_TITLE}}
+            </h3>
+            <p class="text-sm leading-relaxed font-body line-clamp-2 mb-4 flex-1" style="color: var(--color-text-muted)">
+              {{BLOG_POST_EXCERPT}}
+            </p>
+            <!-- Meta -->
+            <div class="flex items-center gap-3 text-xs font-body" style="color: var(--color-text-muted)">
+              <span class="font-medium" style="color: var(--color-text)">{{BLOG_POST_AUTHOR}}</span>
+              <span class="w-1 h-1 rounded-full" style="background: var(--color-text-muted)"></span>
+              <span>{{BLOG_POST_DATE}}</span>
+            </div>
+          </div>
+        </div>
+        <!-- Top accent line on hover -->
+        <div class="absolute top-0 left-0 w-full h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)))"></div>
+      </div>
+
+      <!-- /REPEAT:BLOG_POSTS -->
+    </div>
+  </div>
+</section>

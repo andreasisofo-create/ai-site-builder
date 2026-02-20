@@ -1,0 +1,139 @@
+<!-- Gallery Portfolio Accordion: horizontal full-width expandable project strips. Exolax-inspired. Each item is a thin strip that expands on hover/focus to reveal full image and details -->
+<section id="gallery" class="py-24 md:py-32 bg-[var(--color-bg-alt)] overflow-hidden relative">
+
+  <!-- Ambient glow -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[var(--color-primary)]/4 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-[var(--color-secondary)]/4 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Grid texture -->
+  <div class="absolute inset-0 opacity-[0.015]" style="background-image: linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px); background-size: 60px 60px;"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="mb-16 md:mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6" data-animate="fade-up">
+      <div>
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>
+          <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Progetti</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{GALLERY_TITLE}}</h2>
+      </div>
+      <p class="text-[var(--color-text-muted)] max-w-md text-lg font-body md:text-right" data-animate="blur-slide" data-delay="0.2">{{GALLERY_SUBTITLE}}</p>
+    </div>
+
+    <!-- Accordion Portfolio Items -->
+    <div class="space-y-3" data-animate="stagger">
+      <!-- REPEAT:GALLERY_ITEMS -->
+      <div class="stagger-item gallery-accordion-item group" data-animate="fade-up">
+        <div class="relative rounded-2xl overflow-hidden bg-[var(--color-bg)] border border-[var(--color-text)]/5 hover:border-[var(--color-primary)]/20 transition-all duration-500 cursor-pointer">
+          <!-- Collapsed state: thin strip with project info -->
+          <div class="flex items-center gap-6 px-6 md:px-10 py-5 md:py-6 relative z-10">
+            <!-- Number -->
+            <span class="text-sm font-bold font-heading text-[var(--color-text)]/15 group-hover:text-[var(--color-primary)] transition-colors duration-300 tabular-nums hidden md:block">
+              {{INDEX_PADDED}}
+            </span>
+
+            <!-- Thin image preview strip -->
+            <div class="flex-shrink-0 w-16 h-12 md:w-24 md:h-14 rounded-lg overflow-hidden">
+              <img
+                src="{{GALLERY_IMAGE_URL}}"
+                alt="{{GALLERY_IMAGE_ALT}}"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                loading="lazy"
+              >
+            </div>
+
+            <!-- Project name & category -->
+            <div class="flex-1 min-w-0">
+              <h3 class="text-lg md:text-2xl font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300 truncate">
+                {{GALLERY_CAPTION}}
+              </h3>
+              <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-text-muted)] font-body">{{GALLERY_CATEGORY}}</span>
+            </div>
+
+            <!-- Expand icon -->
+            <div class="flex-shrink-0 w-10 h-10 rounded-full border border-[var(--color-text)]/10 group-hover:border-[var(--color-primary)]/30 group-hover:bg-[var(--color-primary)]/5 flex items-center justify-center transition-all duration-300">
+              <svg class="w-5 h-5 text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-all duration-300 gallery-accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Expanded content: full image + details (hidden by default) -->
+          <div class="gallery-accordion-panel overflow-hidden transition-all duration-600 ease-out">
+            <div class="px-6 md:px-10 pb-8">
+              <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <!-- Full image -->
+                <div class="md:col-span-3 rounded-xl overflow-hidden" data-animate="image-zoom">
+                  <img
+                    src="{{GALLERY_IMAGE_URL}}"
+                    alt="{{GALLERY_IMAGE_ALT}}"
+                    class="w-full h-64 md:h-80 object-cover rounded-xl"
+                    loading="lazy"
+                  >
+                </div>
+                <!-- Project details -->
+                <div class="md:col-span-2 flex flex-col justify-center">
+                  <div class="mb-4">
+                    <span class="inline-block px-3 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] mb-4">{{GALLERY_CATEGORY}}</span>
+                  </div>
+                  <h4 class="text-2xl font-bold font-heading text-[var(--color-text)] mb-3">{{GALLERY_CAPTION}}</h4>
+                  <div class="h-0.5 w-12 rounded-full mb-4" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+                  <div class="flex items-center gap-2 text-[var(--color-primary)]">
+                    <span class="text-sm font-semibold font-body">Esplora il progetto</span>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hover accent line at bottom -->
+          <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:GALLERY_ITEMS -->
+    </div>
+  </div>
+
+  <!-- Accordion expand/collapse logic (CSS-only via :focus-within) -->
+  <style>
+    .gallery-accordion-panel {
+      max-height: 0;
+      opacity: 0;
+    }
+    .gallery-accordion-item:focus-within .gallery-accordion-panel,
+    .gallery-accordion-item:hover .gallery-accordion-panel {
+      max-height: 500px;
+      opacity: 1;
+    }
+    .gallery-accordion-item:focus-within .gallery-accordion-chevron,
+    .gallery-accordion-item:hover .gallery-accordion-chevron {
+      transform: rotate(180deg);
+    }
+    .gallery-accordion-item {
+      outline: none;
+    }
+    /* Only expand on hover for desktop */
+    @media (max-width: 768px) {
+      .gallery-accordion-item:hover .gallery-accordion-panel {
+        max-height: 0;
+        opacity: 0;
+      }
+      .gallery-accordion-item:hover .gallery-accordion-chevron {
+        transform: rotate(0deg);
+      }
+      .gallery-accordion-item:focus-within .gallery-accordion-panel {
+        max-height: 500px;
+        opacity: 1;
+      }
+      .gallery-accordion-item:focus-within .gallery-accordion-chevron {
+        transform: rotate(180deg);
+      }
+    }
+  </style>
+</section>

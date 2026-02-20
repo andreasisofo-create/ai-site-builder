@@ -1,0 +1,48 @@
+<!-- Social Proof Bar: full-width social/partner strip with counters, marquee border, and hover effects -->
+<section id="social-proof" class="relative py-16 md:py-20 overflow-hidden" style="background: var(--color-bg-alt)">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] rounded-full blur-3xl opacity-[0.04]" style="background: var(--color-primary)"></div>
+    <div class="absolute inset-0 opacity-[0.012]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 56px 56px;"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-6 md:px-12">
+    <!-- Section header (compact) -->
+    <div class="text-center mb-12 md:mb-14">
+      <p class="text-sm font-semibold tracking-widest uppercase mb-3" style="color: var(--color-primary)" data-animate="blur-in">Social Proof</p>
+      <h2 class="text-2xl sm:text-3xl md:text-4xl font-heading font-bold" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">
+        {{SOCIAL_TITLE}}
+      </h2>
+      <div class="w-12 h-1 rounded-full mx-auto mt-5" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));" data-animate="scale-in"></div>
+    </div>
+
+    <!-- Social Items Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6" data-animate="stagger">
+      <!-- REPEAT:SOCIAL_ITEMS -->
+      <div class="stagger-item group relative rounded-2xl p-6 md:p-8 text-center overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-xl cursor-default" style="background: var(--color-bg); box-shadow: 0 2px 16px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05);">
+        <!-- Hover glow -->
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" style="background: radial-gradient(circle at 50% 0%, var(--color-primary), transparent 70%); opacity: 0; mix-blend-mode: soft-light;"></div>
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500" style="background: var(--color-primary);"></div>
+        <!-- Top accent line on hover -->
+        <div class="absolute top-0 left-0 w-full h-0.5 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));"></div>
+
+        <div class="relative">
+          <!-- Icon -->
+          <div class="text-4xl md:text-5xl mb-4 group-hover:scale-110 transition-transform duration-500">{{SOCIAL_ICON}}</div>
+          <!-- Count -->
+          <div class="text-2xl md:text-3xl font-heading font-bold mb-2 transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--color-text)" data-counter="true">
+            {{SOCIAL_COUNT}}
+          </div>
+          <!-- Label -->
+          <p class="text-sm font-medium" style="color: var(--color-text-muted)">{{SOCIAL_LABEL}}</p>
+        </div>
+      </div>
+      <!-- /REPEAT:SOCIAL_ITEMS -->
+    </div>
+
+    <!-- Bottom decorative separator -->
+    <div class="mt-14">
+      <div class="h-px bg-gradient-to-r from-transparent via-[var(--color-text)]/8 to-transparent"></div>
+    </div>
+  </div>
+</section>

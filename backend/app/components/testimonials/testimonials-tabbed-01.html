@@ -1,0 +1,124 @@
+<!-- Testimonials Tabbed: CSS-only tabbed interface with radio buttons, client names as tabs, corporate feel -->
+<section id="testimonials" class="py-24 md:py-32 bg-[var(--color-bg-alt)] relative overflow-hidden">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-[0.04]" style="background: radial-gradient(circle, var(--color-primary), transparent 70%);"></div>
+    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-[0.04]" style="background: radial-gradient(circle, var(--color-secondary), transparent 70%);"></div>
+    <!-- Subtle grid -->
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px); background-size: 60px 60px;"></div>
+  </div>
+
+  <style>
+    .testimonial-tab-radio { display: none; }
+    .testimonial-tab-label {
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .testimonial-tab-content {
+      display: none;
+      animation: testimonialFadeSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes testimonialFadeSlide {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .testimonial-tab-radio:nth-of-type(1):checked ~ .testimonial-tabs-nav .testimonial-tab-label:nth-child(1),
+    .testimonial-tab-radio:nth-of-type(2):checked ~ .testimonial-tabs-nav .testimonial-tab-label:nth-child(2),
+    .testimonial-tab-radio:nth-of-type(3):checked ~ .testimonial-tabs-nav .testimonial-tab-label:nth-child(3),
+    .testimonial-tab-radio:nth-of-type(4):checked ~ .testimonial-tabs-nav .testimonial-tab-label:nth-child(4) {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: white;
+      box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
+    }
+    .testimonial-tab-radio:nth-of-type(1):checked ~ .testimonial-panels .testimonial-tab-content:nth-child(1),
+    .testimonial-tab-radio:nth-of-type(2):checked ~ .testimonial-panels .testimonial-tab-content:nth-child(2),
+    .testimonial-tab-radio:nth-of-type(3):checked ~ .testimonial-panels .testimonial-tab-content:nth-child(3),
+    .testimonial-tab-radio:nth-of-type(4):checked ~ .testimonial-panels .testimonial-tab-content:nth-child(4) {
+      display: block;
+    }
+  </style>
+
+  <div class="relative max-w-7xl mx-auto px-6">
+    <!-- Section Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <span class="w-8 h-px bg-[var(--color-primary)]/40"></span>
+        <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Testimonianze</p>
+        <span class="w-8 h-px bg-[var(--color-primary)]/40"></span>
+      </div>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{TESTIMONIALS_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] mt-4 max-w-xl mx-auto font-body leading-relaxed">{{TESTIMONIALS_SUBTITLE}}</p>
+    </div>
+
+    <!-- Tabbed Testimonials Container -->
+    <div class="relative max-w-4xl mx-auto" data-animate="fade-up" data-delay="0.2">
+      <!-- Radio inputs (outside REPEAT, but template assembler handles indexing) -->
+      <!-- REPEAT:TESTIMONIALS -->
+      <input type="radio" name="testimonial-tab" class="testimonial-tab-radio" id="testimonial-tab-{{TESTIMONIAL_INDEX}}" checked>
+      <!-- /REPEAT:TESTIMONIALS -->
+
+      <!-- Tab Navigation -->
+      <div class="testimonial-tabs-nav flex flex-wrap justify-center gap-3 mb-12" data-animate="stagger">
+        <!-- REPEAT:TESTIMONIALS -->
+        <label for="testimonial-tab-{{TESTIMONIAL_INDEX}}" class="testimonial-tab-label stagger-item px-6 py-3 rounded-full border-2 border-[var(--color-text)]/10 text-[var(--color-text-muted)] font-body font-semibold text-sm hover:border-[var(--color-primary)]/40 hover:text-[var(--color-text)]">
+          {{TESTIMONIAL_AUTHOR}}
+        </label>
+        <!-- /REPEAT:TESTIMONIALS -->
+      </div>
+
+      <!-- Tab Content Panels -->
+      <div class="testimonial-panels">
+        <!-- REPEAT:TESTIMONIALS -->
+        <div class="testimonial-tab-content">
+          <div class="bg-[var(--color-bg)] rounded-3xl p-8 md:p-12 shadow-lg border border-[var(--color-text)]/[0.04] relative overflow-hidden">
+            <!-- Decorative gradient top border -->
+            <div class="absolute top-0 left-0 right-0 h-1" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent));"></div>
+
+            <!-- Content layout -->
+            <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+              <!-- Avatar side -->
+              <div class="flex-shrink-0 text-center">
+                <div class="relative inline-block">
+                  <div class="absolute -inset-2 rounded-full opacity-20" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));"></div>
+                  <img src="{{TESTIMONIAL_AVATAR}}" alt="{{TESTIMONIAL_AUTHOR}}" class="relative w-24 h-24 md:w-28 md:h-28 rounded-full object-cover border-4 border-[var(--color-bg)] shadow-xl" loading="lazy">
+                </div>
+                <!-- Rating stars -->
+                <div class="flex items-center justify-center gap-1 mt-4">
+                  <span class="text-[var(--color-accent)] text-lg">&#9733;</span>
+                  <span class="text-[var(--color-accent)] text-lg">&#9733;</span>
+                  <span class="text-[var(--color-accent)] text-lg">&#9733;</span>
+                  <span class="text-[var(--color-accent)] text-lg">&#9733;</span>
+                  <span class="text-[var(--color-accent)] text-lg">&#9733;</span>
+                </div>
+              </div>
+
+              <!-- Quote side -->
+              <div class="flex-1">
+                <!-- Small quote icon -->
+                <svg class="w-8 h-8 text-[var(--color-primary)] opacity-20 mb-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311C9.591 11.7 11 13.166 11 15c0 1.933-1.567 3.5-3.5 3.5-1.171 0-2.194-.576-2.917-1.179zM14.583 17.321C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311C19.591 11.7 21 13.166 21 15c0 1.933-1.567 3.5-3.5 3.5-1.171 0-2.194-.576-2.917-1.179z"/>
+                </svg>
+                <p class="text-lg md:text-xl leading-relaxed text-[var(--color-text)] font-body italic">
+                  &ldquo;{{TESTIMONIAL_TEXT}}&rdquo;
+                </p>
+                <!-- Divider -->
+                <div class="w-12 h-px my-6" style="background: linear-gradient(90deg, var(--color-primary), transparent);"></div>
+                <!-- Author info -->
+                <div>
+                  <p class="text-lg font-bold font-heading text-[var(--color-text)]">{{TESTIMONIAL_AUTHOR}}</p>
+                  <p class="text-sm text-[var(--color-primary)] font-body font-medium mt-1">{{TESTIMONIAL_ROLE}}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Background decorative number -->
+            <div class="absolute -bottom-6 -right-4 text-[10rem] font-bold font-heading leading-none text-[var(--color-text)]/[0.02] select-none pointer-events-none">&ldquo;</div>
+          </div>
+        </div>
+        <!-- /REPEAT:TESTIMONIALS -->
+      </div>
+    </div>
+  </div>
+</section>

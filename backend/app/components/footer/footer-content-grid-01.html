@@ -1,0 +1,193 @@
+<!-- Footer Content Grid: 4 unique content columns (top articles, recent posts, categories, social gallery) -->
+<footer id="footer" class="relative pt-20 pb-8" style="background: var(--color-text); color: var(--color-bg);">
+  <!-- Gradient top accent -->
+  <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-secondary), transparent);"></div>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- 4-Column Content Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 mb-16" data-animate="stagger">
+
+      <!-- Column 1: Most Commented Articles (numbered list) -->
+      <div class="stagger-item" data-animate="fade-up">
+        <h4 class="font-bold font-heading text-[var(--color-bg)]/90 mb-6 text-sm uppercase tracking-widest flex items-center gap-2">
+          <span class="w-5 h-0.5 rounded-full" style="background: var(--color-primary);"></span>
+          Pi&ugrave; Commentati
+        </h4>
+        <div class="space-y-5">
+          <a href="#" class="group flex items-start gap-3.5">
+            <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-primary)]/10 flex items-center justify-center text-sm font-bold" style="color: var(--color-primary);">1</span>
+            <div>
+              <p class="text-sm text-[var(--color-bg)]/70 group-hover:text-[var(--color-primary)] transition-colors duration-300 leading-snug font-medium">{{FOOTER_ARTICLE_1_TITLE}}</p>
+              <p class="text-xs text-[var(--color-bg)]/30 mt-1">{{FOOTER_ARTICLE_1_COMMENTS}} commenti</p>
+            </div>
+          </a>
+          <a href="#" class="group flex items-start gap-3.5">
+            <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-primary)]/10 flex items-center justify-center text-sm font-bold" style="color: var(--color-primary);">2</span>
+            <div>
+              <p class="text-sm text-[var(--color-bg)]/70 group-hover:text-[var(--color-primary)] transition-colors duration-300 leading-snug font-medium">{{FOOTER_ARTICLE_2_TITLE}}</p>
+              <p class="text-xs text-[var(--color-bg)]/30 mt-1">{{FOOTER_ARTICLE_2_COMMENTS}} commenti</p>
+            </div>
+          </a>
+          <a href="#" class="group flex items-start gap-3.5">
+            <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-primary)]/10 flex items-center justify-center text-sm font-bold" style="color: var(--color-primary);">3</span>
+            <div>
+              <p class="text-sm text-[var(--color-bg)]/70 group-hover:text-[var(--color-primary)] transition-colors duration-300 leading-snug font-medium">{{FOOTER_ARTICLE_3_TITLE}}</p>
+              <p class="text-xs text-[var(--color-bg)]/30 mt-1">{{FOOTER_ARTICLE_3_COMMENTS}} commenti</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Column 2: Recent Posts (thumbnail + title) -->
+      <div class="stagger-item" data-animate="fade-up">
+        <h4 class="font-bold font-heading text-[var(--color-bg)]/90 mb-6 text-sm uppercase tracking-widest flex items-center gap-2">
+          <span class="w-5 h-0.5 rounded-full" style="background: var(--color-secondary);"></span>
+          Ultimi Post
+        </h4>
+        <div class="space-y-4">
+          <a href="#" class="group flex items-center gap-3">
+            <img src="{{FOOTER_POST_1_THUMB}}" alt="" class="w-16 h-12 rounded-lg object-cover flex-shrink-0 group-hover:opacity-80 transition-opacity duration-300" loading="lazy">
+            <div>
+              <p class="text-sm text-[var(--color-bg)]/70 group-hover:text-[var(--color-primary)] transition-colors duration-300 leading-snug font-medium line-clamp-2">{{FOOTER_POST_1_TITLE}}</p>
+              <p class="text-xs text-[var(--color-bg)]/30 mt-1">{{FOOTER_POST_1_DATE}}</p>
+            </div>
+          </a>
+          <a href="#" class="group flex items-center gap-3">
+            <img src="{{FOOTER_POST_2_THUMB}}" alt="" class="w-16 h-12 rounded-lg object-cover flex-shrink-0 group-hover:opacity-80 transition-opacity duration-300" loading="lazy">
+            <div>
+              <p class="text-sm text-[var(--color-bg)]/70 group-hover:text-[var(--color-primary)] transition-colors duration-300 leading-snug font-medium line-clamp-2">{{FOOTER_POST_2_TITLE}}</p>
+              <p class="text-xs text-[var(--color-bg)]/30 mt-1">{{FOOTER_POST_2_DATE}}</p>
+            </div>
+          </a>
+          <a href="#" class="group flex items-center gap-3">
+            <img src="{{FOOTER_POST_3_THUMB}}" alt="" class="w-16 h-12 rounded-lg object-cover flex-shrink-0 group-hover:opacity-80 transition-opacity duration-300" loading="lazy">
+            <div>
+              <p class="text-sm text-[var(--color-bg)]/70 group-hover:text-[var(--color-primary)] transition-colors duration-300 leading-snug font-medium line-clamp-2">{{FOOTER_POST_3_TITLE}}</p>
+              <p class="text-xs text-[var(--color-bg)]/30 mt-1">{{FOOTER_POST_3_DATE}}</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Column 3: Categories (list with arrow icons and counts) -->
+      <div class="stagger-item" data-animate="fade-up">
+        <h4 class="font-bold font-heading text-[var(--color-bg)]/90 mb-6 text-sm uppercase tracking-widest flex items-center gap-2">
+          <span class="w-5 h-0.5 rounded-full" style="background: var(--color-primary);"></span>
+          Categorie
+        </h4>
+        <nav class="space-y-3">
+          <a href="#" class="group flex items-center justify-between py-2 border-b border-[var(--color-bg)]/5 hover:border-[var(--color-primary)]/30 transition-colors duration-300">
+            <span class="flex items-center gap-2 text-sm text-[var(--color-bg)]/60 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              {{FOOTER_CAT_1_NAME}}
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-bg)]/5 text-[var(--color-bg)]/40">{{FOOTER_CAT_1_COUNT}}</span>
+          </a>
+          <a href="#" class="group flex items-center justify-between py-2 border-b border-[var(--color-bg)]/5 hover:border-[var(--color-primary)]/30 transition-colors duration-300">
+            <span class="flex items-center gap-2 text-sm text-[var(--color-bg)]/60 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              {{FOOTER_CAT_2_NAME}}
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-bg)]/5 text-[var(--color-bg)]/40">{{FOOTER_CAT_2_COUNT}}</span>
+          </a>
+          <a href="#" class="group flex items-center justify-between py-2 border-b border-[var(--color-bg)]/5 hover:border-[var(--color-primary)]/30 transition-colors duration-300">
+            <span class="flex items-center gap-2 text-sm text-[var(--color-bg)]/60 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              {{FOOTER_CAT_3_NAME}}
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-bg)]/5 text-[var(--color-bg)]/40">{{FOOTER_CAT_3_COUNT}}</span>
+          </a>
+          <a href="#" class="group flex items-center justify-between py-2 border-b border-[var(--color-bg)]/5 hover:border-[var(--color-primary)]/30 transition-colors duration-300">
+            <span class="flex items-center gap-2 text-sm text-[var(--color-bg)]/60 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              {{FOOTER_CAT_4_NAME}}
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-bg)]/5 text-[var(--color-bg)]/40">{{FOOTER_CAT_4_COUNT}}</span>
+          </a>
+          <a href="#" class="group flex items-center justify-between py-2">
+            <span class="flex items-center gap-2 text-sm text-[var(--color-bg)]/60 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+              <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              {{FOOTER_CAT_5_NAME}}
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-bg)]/5 text-[var(--color-bg)]/40">{{FOOTER_CAT_5_COUNT}}</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Column 4: Social Gallery (3x3 image grid) -->
+      <div class="stagger-item" data-animate="fade-up">
+        <h4 class="font-bold font-heading text-[var(--color-bg)]/90 mb-6 text-sm uppercase tracking-widest flex items-center gap-2">
+          <span class="w-5 h-0.5 rounded-full" style="background: var(--color-secondary);"></span>
+          Gallery Social
+        </h4>
+        <div class="grid grid-cols-3 gap-2">
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_1}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_2}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_3}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_4}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_5}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_6}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_7}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_8}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+          <a href="#" class="group relative aspect-square rounded-lg overflow-hidden">
+            <img src="{{FOOTER_GALLERY_9}}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/40 transition-colors duration-300 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="border-t border-[var(--color-bg)]/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-[var(--color-bg)]/40 text-sm">&copy; {{CURRENT_YEAR}} {{BUSINESS_NAME}}. Tutti i diritti riservati.</p>
+      <nav class="flex items-center gap-6">
+        <a href="#" class="text-[var(--color-bg)]/40 hover:text-[var(--color-primary)] transition-colors duration-300 text-sm">Privacy Policy</a>
+        <a href="#" class="text-[var(--color-bg)]/40 hover:text-[var(--color-primary)] transition-colors duration-300 text-sm">Termini</a>
+        <a href="#" class="text-[var(--color-bg)]/40 hover:text-[var(--color-primary)] transition-colors duration-300 text-sm">Cookie</a>
+        <a href="#" class="text-[var(--color-bg)]/40 hover:text-[var(--color-primary)] transition-colors duration-300 text-sm">Sitemap</a>
+      </nav>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,45 @@
+<!-- Features Elevated: cards with negative top margin overlapping hero, gradient accent on hover -->
+<section id="features" class="relative z-10 -mt-16 pb-24 md:pb-32">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Optional Header (can be empty if borrowing from hero) -->
+    <div class="text-center mb-12 pt-24" data-animate="fade-up">
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)] mb-4 sr-only" data-animate="text-split" data-split-type="words">{{FEATURES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body sr-only">{{FEATURES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Elevated Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" data-animate="stagger">
+      <!-- REPEAT:FEATURES -->
+      <div class="stagger-item" data-animate="bounce-in">
+        <div class="group relative bg-[var(--color-bg)] rounded-2xl p-8 shadow-lg hover:shadow-2xl
+                    border border-[var(--color-text)]/5 hover:border-[var(--color-primary)]/20
+                    transition-all duration-500 hover:-translate-y-2 overflow-hidden">
+          <!-- Icon -->
+          <div class="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/10 flex items-center justify-center text-3xl mb-6
+                      group-hover:bg-[var(--color-primary)]/15 group-hover:scale-110 transition-all duration-400">
+            {{FEATURE_ICON}}
+          </div>
+
+          <!-- Title -->
+          <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-3 group-hover:text-[var(--color-primary)] transition-colors duration-300">
+            {{FEATURE_TITLE}}
+          </h3>
+
+          <!-- Description -->
+          <p class="text-sm text-[var(--color-text-muted)] leading-relaxed font-body">
+            {{FEATURE_DESCRIPTION}}
+          </p>
+
+          <!-- Gradient accent line at bottom (visible on hover) -->
+          <div class="absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+               style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+
+          <!-- Subtle corner decoration -->
+          <div class="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-0 group-hover:opacity-[0.05] transition-opacity duration-500 pointer-events-none"
+               style="background: var(--color-primary);"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:FEATURES -->
+    </div>
+  </div>
+</section>

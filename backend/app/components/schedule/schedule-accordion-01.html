@@ -1,0 +1,158 @@
+<!-- Schedule Accordion: event agenda with expandable time slots, two-column on desktop, Kagont event inspired -->
+<section id="schedule" class="py-24 md:py-32 relative overflow-hidden" style="background: var(--color-bg-alt);">
+
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <!-- Subtle top glow -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-full blur-3xl opacity-[0.04]" style="background: var(--color-primary);"></div>
+    <!-- Dot grid texture -->
+    <div class="absolute inset-0 opacity-[0.025]" style="background-image: radial-gradient(circle, var(--color-text) 1px, transparent 1px); background-size: 32px 32px;"></div>
+    <!-- Vertical decorative lines -->
+    <div class="absolute top-0 left-[8%] w-px h-full opacity-[0.04]" style="background: var(--color-primary);"></div>
+    <div class="absolute top-0 right-[8%] w-px h-full opacity-[0.04]" style="background: var(--color-primary);"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+
+    <!-- Section header -->
+    <div class="text-center mb-16 md:mb-20">
+      <!-- Eyebrow -->
+      <div class="inline-flex items-center gap-3 mb-6" data-animate="fade-up">
+        <div class="w-10 h-px" style="background: var(--color-primary);"></div>
+        <span class="text-[11px] font-body font-semibold tracking-[0.4em] uppercase" style="color: var(--color-primary);">Programma</span>
+        <div class="w-10 h-px" style="background: var(--color-primary);"></div>
+      </div>
+
+      <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-black leading-tight tracking-tight mb-6" style="color: var(--color-text);" data-animate="text-split" data-split-type="words">
+        {{SCHEDULE_TITLE}}
+      </h2>
+
+      <p class="text-lg md:text-xl max-w-2xl mx-auto font-body leading-relaxed" style="color: var(--color-text-muted);" data-animate="blur-in" data-delay="0.2">
+        {{SCHEDULE_SUBTITLE}}
+      </p>
+    </div>
+
+    <!-- Schedule items: two-column on desktop, stacked on mobile -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+
+      <!-- Column 1: Morning / Left sessions -->
+      <div class="space-y-4" data-animate="stagger" data-delay="0.3">
+
+        <!-- Column label -->
+        <div class="flex items-center gap-3 mb-2 px-2">
+          <div class="w-3 h-3 rounded-full" style="background: var(--color-primary); box-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.3);"></div>
+          <span class="text-xs font-body font-bold tracking-[0.3em] uppercase" style="color: var(--color-primary);">Mattina</span>
+          <div class="flex-1 h-px" style="background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.2), transparent);"></div>
+        </div>
+
+        <!-- REPEAT:SCHEDULE_ITEMS -->
+        <details class="group rounded-2xl overflow-hidden transition-all duration-300" style="background: var(--color-bg); border: 1px solid rgba(var(--color-primary-rgb), 0.08);">
+          <summary class="flex items-center gap-4 p-5 md:p-6 cursor-pointer list-none select-none transition-colors duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.03)]">
+            <!-- Time badge -->
+            <div class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-body font-bold tracking-wide" style="background: rgba(var(--color-primary-rgb), 0.08); color: var(--color-primary);">
+              {{SCHEDULE_TIME}}
+            </div>
+
+            <!-- Event title and speaker -->
+            <div class="flex-1 min-w-0">
+              <h4 class="font-heading text-base md:text-lg font-bold leading-tight truncate" style="color: var(--color-text);">
+                {{SCHEDULE_EVENT_TITLE}}
+              </h4>
+              <div class="flex items-center gap-2 mt-1">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span class="text-sm font-body truncate" style="color: var(--color-text-muted);">{{SCHEDULE_SPEAKER}}</span>
+              </div>
+            </div>
+
+            <!-- Chevron indicator -->
+            <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 group-open:rotate-180" style="background: rgba(var(--color-primary-rgb), 0.06);">
+              <svg class="w-4 h-4" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </summary>
+
+          <!-- Expanded content -->
+          <div class="px-5 md:px-6 pb-5 md:pb-6 pt-0">
+            <div class="border-t pt-4" style="border-color: rgba(var(--color-primary-rgb), 0.06);">
+              <!-- Location -->
+              <div class="flex items-center gap-2 mb-3">
+                <svg class="w-4 h-4 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="text-sm font-body font-semibold" style="color: var(--color-text);">{{SCHEDULE_LOCATION}}</span>
+              </div>
+              <!-- Description -->
+              <p class="text-sm font-body leading-relaxed" style="color: var(--color-text-muted);">
+                {{SCHEDULE_DESCRIPTION}}
+              </p>
+            </div>
+          </div>
+        </details>
+        <!-- /REPEAT:SCHEDULE_ITEMS -->
+
+      </div>
+
+      <!-- Column 2: Afternoon / Right sessions -->
+      <div class="space-y-4" data-animate="stagger" data-delay="0.45">
+
+        <!-- Column label -->
+        <div class="flex items-center gap-3 mb-2 px-2">
+          <div class="w-3 h-3 rounded-full" style="background: var(--color-accent); box-shadow: 0 0 12px rgba(var(--color-accent-rgb, var(--color-primary-rgb)), 0.3);"></div>
+          <span class="text-xs font-body font-bold tracking-[0.3em] uppercase" style="color: var(--color-accent);">Pomeriggio</span>
+          <div class="flex-1 h-px" style="background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.2), transparent);"></div>
+        </div>
+
+        <!-- REPEAT:SCHEDULE_ITEMS -->
+        <details class="group rounded-2xl overflow-hidden transition-all duration-300" style="background: var(--color-bg); border: 1px solid rgba(var(--color-primary-rgb), 0.08);">
+          <summary class="flex items-center gap-4 p-5 md:p-6 cursor-pointer list-none select-none transition-colors duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.03)]">
+            <!-- Time badge -->
+            <div class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-body font-bold tracking-wide" style="background: rgba(var(--color-primary-rgb), 0.08); color: var(--color-primary);">
+              {{SCHEDULE_TIME}}
+            </div>
+
+            <!-- Event title and speaker -->
+            <div class="flex-1 min-w-0">
+              <h4 class="font-heading text-base md:text-lg font-bold leading-tight truncate" style="color: var(--color-text);">
+                {{SCHEDULE_EVENT_TITLE}}
+              </h4>
+              <div class="flex items-center gap-2 mt-1">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span class="text-sm font-body truncate" style="color: var(--color-text-muted);">{{SCHEDULE_SPEAKER}}</span>
+              </div>
+            </div>
+
+            <!-- Chevron indicator -->
+            <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 group-open:rotate-180" style="background: rgba(var(--color-primary-rgb), 0.06);">
+              <svg class="w-4 h-4" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </summary>
+
+          <!-- Expanded content -->
+          <div class="px-5 md:px-6 pb-5 md:pb-6 pt-0">
+            <div class="border-t pt-4" style="border-color: rgba(var(--color-primary-rgb), 0.06);">
+              <!-- Location -->
+              <div class="flex items-center gap-2 mb-3">
+                <svg class="w-4 h-4 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="text-sm font-body font-semibold" style="color: var(--color-text);">{{SCHEDULE_LOCATION}}</span>
+              </div>
+              <!-- Description -->
+              <p class="text-sm font-body leading-relaxed" style="color: var(--color-text-muted);">
+                {{SCHEDULE_DESCRIPTION}}
+              </p>
+            </div>
+          </div>
+        </details>
+        <!-- /REPEAT:SCHEDULE_ITEMS -->
+
+      </div>
+    </div>
+
+    <!-- Bottom decorative element -->
+    <div class="flex items-center justify-center gap-3 mt-16" data-animate="fade-up" data-delay="0.6">
+      <div class="w-12 h-px" style="background: rgba(var(--color-primary-rgb), 0.15);"></div>
+      <div class="w-2 h-2 rounded-full" style="background: var(--color-primary); opacity: 0.3;"></div>
+      <div class="w-12 h-px" style="background: rgba(var(--color-primary-rgb), 0.15);"></div>
+    </div>
+
+  </div>
+
+  <!-- Bottom section fade -->
+  <div class="absolute bottom-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(var(--color-primary-rgb), 0.1), transparent);"></div>
+</section>

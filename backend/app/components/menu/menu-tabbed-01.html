@@ -1,0 +1,126 @@
+<!-- Menu Tabbed: CSS-only tabbed menu with category tabs, badges, and list items -->
+<section id="menu" class="py-24 md:py-32 bg-[var(--color-bg)] overflow-hidden relative">
+
+  <!-- Ambient background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 right-1/4 w-80 h-80 bg-[var(--color-primary)]/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-[var(--color-secondary)]/5 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Dot grid texture -->
+  <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 24px 24px;"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16" data-animate="fade-up">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 mb-6">
+        <span class="text-sm">&#127860;</span>
+        <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Menu</span>
+      </div>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{MENU_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2">{{MENU_SUBTITLE}}</p>
+    </div>
+
+    <!-- CSS-only Tabs -->
+    <style>
+      .menu-tab-radio { display: none; }
+      .menu-tab-label {
+        position: relative;
+        cursor: pointer;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        border-radius: 9999px;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        border: 1.5px solid transparent;
+        font-size: 0.95rem;
+      }
+      .menu-tab-label:hover {
+        color: var(--color-text);
+        background: var(--color-primary);
+        background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+      }
+      .menu-tab-radio:checked + .menu-tab-label {
+        color: white;
+        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        border-color: transparent;
+        box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 35%, transparent);
+      }
+      .menu-tab-panel {
+        display: none;
+        animation: menuTabSlide 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      @keyframes menuTabSlide {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      #menu-cat-1:checked ~ .menu-panels .menu-panel-1,
+      #menu-cat-2:checked ~ .menu-panels .menu-panel-2,
+      #menu-cat-3:checked ~ .menu-panels .menu-panel-3,
+      #menu-cat-4:checked ~ .menu-panels .menu-panel-4,
+      #menu-cat-5:checked ~ .menu-panels .menu-panel-5,
+      #menu-cat-6:checked ~ .menu-panels .menu-panel-6 {
+        display: block;
+      }
+      .menu-item-row {
+        transition: all 0.3s ease;
+      }
+      .menu-item-row:hover {
+        background: color-mix(in srgb, var(--color-primary) 4%, transparent);
+        transform: translateX(4px);
+      }
+      .menu-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.2rem 0.65rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        color: white;
+        line-height: 1;
+      }
+    </style>
+
+    <div class="relative" data-animate="fade-up" data-delay="0.3">
+      <!-- Tab buttons -->
+      <div class="flex flex-wrap justify-center gap-3 mb-14">
+        <!-- REPEAT:MENU_CATEGORIES -->
+        <input type="radio" name="menu-cat" class="menu-tab-radio" id="menu-cat-{{INDEX}}" checked>
+        <label for="menu-cat-{{INDEX}}" class="menu-tab-label font-heading">{{MENU_CATEGORY_NAME}}</label>
+        <!-- /REPEAT:MENU_CATEGORIES -->
+      </div>
+
+      <!-- Tab Panels -->
+      <div class="menu-panels">
+        <!-- REPEAT:MENU_CATEGORIES -->
+        <div class="menu-tab-panel menu-panel-{{INDEX}}">
+          <div class="max-w-3xl mx-auto space-y-2" data-animate="stagger">
+            <!-- REPEAT:MENU_ITEMS -->
+            <div class="stagger-item menu-item-row flex items-center gap-4 px-5 py-4 rounded-xl" data-animate="fade-up">
+              <!-- Item info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3 mb-1">
+                  <h3 class="text-lg font-bold font-heading text-[var(--color-text)] truncate">{{MENU_ITEM_NAME}}</h3>
+                  {{MENU_ITEM_BADGE}}
+                </div>
+                <p class="text-sm text-[var(--color-text-muted)] font-body line-clamp-2">{{MENU_ITEM_DESCRIPTION}}</p>
+              </div>
+              <!-- Dotted spacer -->
+              <div class="hidden sm:block flex-shrink-0 w-16 border-b-2 border-dotted border-[var(--color-text)]/15"></div>
+              <!-- Price -->
+              <div class="flex-shrink-0">
+                <span class="text-xl font-bold font-heading text-[var(--color-primary)]">{{MENU_ITEM_PRICE}}</span>
+              </div>
+            </div>
+            <!-- /REPEAT:MENU_ITEMS -->
+          </div>
+        </div>
+        <!-- /REPEAT:MENU_CATEGORIES -->
+      </div>
+    </div>
+  </div>
+</section>

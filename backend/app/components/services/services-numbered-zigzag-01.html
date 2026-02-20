@@ -1,0 +1,109 @@
+<!-- Services Numbered Zigzag: asymmetric alternating rows with oversized transparent numbers (01-04), Nino-inspired 8/4 column zigzag layout -->
+<section id="services" class="py-24 md:py-32 relative overflow-hidden" style="background: var(--color-bg);">
+
+  <!-- Background decoration -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl opacity-[0.03]" style="background: var(--color-primary);"></div>
+    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full blur-3xl opacity-[0.03]" style="background: var(--color-secondary);"></div>
+    <!-- Vertical guide lines -->
+    <div class="hidden lg:block absolute top-0 left-[33.33%] w-px h-full opacity-[0.04]" style="background: var(--color-text);"></div>
+    <div class="hidden lg:block absolute top-0 left-[66.66%] w-px h-full opacity-[0.04]" style="background: var(--color-text);"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+
+    <!-- Section header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 md:mb-24">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border mb-6" style="border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.15); background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.05);" data-animate="blur-in">
+        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--color-primary);"></span>
+        <span class="text-xs font-semibold tracking-widest uppercase font-body" style="color: var(--color-primary);">Servizi</span>
+      </div>
+
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-heading font-bold leading-tight mb-6" style="color: var(--color-text);" data-animate="text-split" data-split-type="words">
+        {{SERVICES_TITLE}}
+      </h2>
+
+      <p class="text-lg md:text-xl leading-relaxed font-body" style="color: var(--color-text-muted);" data-animate="blur-slide" data-delay="0.2" data-duration="1">
+        {{SERVICES_SUBTITLE}}
+      </p>
+    </div>
+
+    <!-- Zigzag rows -->
+    <div class="space-y-0" data-animate="stagger">
+
+      <!-- REPEAT:SERVICES -->
+      <div class="stagger-item group relative" data-animate="fade-up">
+        <!-- Separator line -->
+        <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, var(--color-text), transparent); opacity: 0.06;"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-0 py-12 md:py-16 items-center">
+
+          <!-- Content column (8/12) — shown on odd rows left, even rows right via CSS -->
+          <div class="lg:col-span-8 order-2 lg:order-none lg:pr-12 relative z-10">
+            <!-- Service icon -->
+            <div class="text-3xl mb-4">{{SERVICE_ICON}}</div>
+
+            <!-- Service title -->
+            <h3 class="text-2xl md:text-3xl font-heading font-bold mb-4 transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--color-text);">
+              {{SERVICE_TITLE}}
+            </h3>
+
+            <!-- Service description -->
+            <p class="text-base md:text-lg leading-relaxed font-body max-w-xl mb-6" style="color: var(--color-text-muted);">
+              {{SERVICE_DESCRIPTION}}
+            </p>
+
+            <!-- Arrow link -->
+            <div class="inline-flex items-center gap-2 text-sm font-semibold font-body cursor-pointer transition-all duration-300 group-hover:gap-4" style="color: var(--color-primary);">
+              <span>Scopri di piu</span>
+              <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Number column (4/12) — oversized semi-transparent -->
+          <div class="lg:col-span-4 order-1 lg:order-none flex lg:justify-center items-center relative">
+            <span class="text-[8rem] md:text-[10rem] lg:text-[12rem] font-heading font-black leading-none select-none transition-all duration-500 group-hover:opacity-[0.15]" style="color: var(--color-primary); opacity: 0.07;">
+              {{SERVICE_ICON}}
+            </span>
+            <!-- Glow behind number on hover -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div class="w-48 h-48 rounded-full blur-3xl opacity-0 group-hover:opacity-[0.06] transition-opacity duration-700" style="background: var(--color-primary);"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom separator -->
+        <div class="absolute bottom-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, var(--color-text), transparent); opacity: 0.06;"></div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+
+    </div>
+  </div>
+
+  <!-- CSS for zigzag alternation -->
+  <style>
+    /* Alternate row direction: even items flip number to left, content to right */
+    #services .stagger-item:nth-child(even) .grid {
+      direction: rtl;
+    }
+    #services .stagger-item:nth-child(even) .grid > * {
+      direction: ltr;
+    }
+    #services .stagger-item:nth-child(even) .lg\:pr-12 {
+      padding-right: 0;
+      padding-left: 3rem;
+    }
+    @media (max-width: 1023px) {
+      #services .stagger-item:nth-child(even) .grid {
+        direction: ltr;
+      }
+      #services .stagger-item:nth-child(even) .lg\:pr-12 {
+        padding-left: 0;
+      }
+    }
+  </style>
+</section>

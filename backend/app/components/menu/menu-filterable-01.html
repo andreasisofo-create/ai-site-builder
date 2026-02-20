@@ -1,0 +1,161 @@
+<!-- Menu Filterable: Grid cards with CSS-only filter buttons, food images, category tags, and prices -->
+<section id="menu" class="py-24 md:py-32 bg-[var(--color-bg-alt)] overflow-hidden relative">
+
+  <!-- Ambient glow -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-[var(--color-primary)]/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/3 w-80 h-80 bg-[var(--color-secondary)]/5 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Noise texture -->
+  <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 22px 22px;"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-14" data-animate="fade-up">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>
+        <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Menu</span>
+      </div>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{MENU_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2">{{MENU_SUBTITLE}}</p>
+    </div>
+
+    <style>
+      .menu-filter-radio { display: none; }
+      .menu-filter-label {
+        cursor: pointer;
+        padding: 0.6rem 1.4rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+        border-radius: 9999px;
+        border: 1.5px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
+      .menu-filter-label:hover {
+        color: var(--color-text);
+        border-color: var(--color-primary);
+      }
+      .menu-filter-radio:checked + .menu-filter-label {
+        color: white;
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        box-shadow: 0 4px 15px color-mix(in srgb, var(--color-primary) 30%, transparent);
+      }
+      /* Show all items by default (first radio = Tutti) */
+      .menu-filter-panels .menu-filter-all { display: grid; }
+      .menu-filter-panels .menu-filter-cat { display: none; }
+      #menu-filter-1:checked ~ .menu-filter-panels .menu-filter-all,
+      #menu-filter-2:checked ~ .menu-filter-panels .menu-filter-all,
+      #menu-filter-3:checked ~ .menu-filter-panels .menu-filter-all,
+      #menu-filter-4:checked ~ .menu-filter-panels .menu-filter-all,
+      #menu-filter-5:checked ~ .menu-filter-panels .menu-filter-all,
+      #menu-filter-6:checked ~ .menu-filter-panels .menu-filter-all {
+        display: none;
+      }
+      #menu-filter-0:checked ~ .menu-filter-panels .menu-filter-all { display: grid; }
+      #menu-filter-1:checked ~ .menu-filter-panels .menu-filter-cat-1,
+      #menu-filter-2:checked ~ .menu-filter-panels .menu-filter-cat-2,
+      #menu-filter-3:checked ~ .menu-filter-panels .menu-filter-cat-3,
+      #menu-filter-4:checked ~ .menu-filter-panels .menu-filter-cat-4,
+      #menu-filter-5:checked ~ .menu-filter-panels .menu-filter-cat-5,
+      #menu-filter-6:checked ~ .menu-filter-panels .menu-filter-cat-6 {
+        display: grid;
+      }
+      .menu-card-img {
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .menu-card:hover .menu-card-img {
+        transform: scale(1.08);
+      }
+      .menu-card {
+        transition: all 0.35s ease;
+      }
+      .menu-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.12);
+      }
+      .menu-cat-tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+        color: var(--color-primary);
+      }
+    </style>
+
+    <div class="relative">
+      <!-- Filter buttons -->
+      <div class="flex flex-wrap justify-center gap-3 mb-12" data-animate="fade-up" data-delay="0.3">
+        <input type="radio" name="menu-filter" class="menu-filter-radio" id="menu-filter-0" checked>
+        <label for="menu-filter-0" class="menu-filter-label font-heading">Tutti</label>
+        <!-- REPEAT:MENU_CATEGORIES -->
+        <input type="radio" name="menu-filter" class="menu-filter-radio" id="menu-filter-{{INDEX}}">
+        <label for="menu-filter-{{INDEX}}" class="menu-filter-label font-heading">{{MENU_CATEGORY_NAME}}</label>
+        <!-- /REPEAT:MENU_CATEGORIES -->
+      </div>
+
+      <!-- Cards Grid Panels -->
+      <div class="menu-filter-panels">
+        <!-- All items view -->
+        <div class="menu-filter-all grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-animate="stagger">
+          <!-- REPEAT:MENU_ITEMS -->
+          <div class="stagger-item menu-card rounded-2xl overflow-hidden bg-[var(--color-bg)] border border-[var(--color-text)]/5 cursor-pointer" data-animate="scale-in">
+            <!-- Image -->
+            <div class="relative h-48 overflow-hidden">
+              <img src="{{MENU_ITEM_IMAGE}}" alt="{{MENU_ITEM_NAME}}" class="menu-card-img w-full h-full object-cover" loading="lazy">
+              <!-- Price badge overlay -->
+              <div class="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-[var(--color-bg)]/90 backdrop-blur-md shadow-lg">
+                <span class="text-sm font-bold font-heading text-[var(--color-primary)]">{{MENU_ITEM_PRICE}}</span>
+              </div>
+              <!-- Badge if present -->
+              <div class="absolute top-3 left-3">
+                {{MENU_ITEM_BADGE}}
+              </div>
+            </div>
+            <!-- Content -->
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="menu-cat-tag font-body">{{MENU_ITEM_CATEGORY}}</span>
+              </div>
+              <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-1.5">{{MENU_ITEM_NAME}}</h3>
+              <p class="text-sm text-[var(--color-text-muted)] font-body line-clamp-2 leading-relaxed">{{MENU_ITEM_DESCRIPTION}}</p>
+            </div>
+          </div>
+          <!-- /REPEAT:MENU_ITEMS -->
+        </div>
+
+        <!-- Per-category filtered views -->
+        <!-- REPEAT:MENU_CATEGORIES -->
+        <div class="menu-filter-cat menu-filter-cat-{{INDEX}} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- REPEAT:MENU_ITEMS -->
+          <div class="menu-card rounded-2xl overflow-hidden bg-[var(--color-bg)] border border-[var(--color-text)]/5 cursor-pointer">
+            <div class="relative h-48 overflow-hidden">
+              <img src="{{MENU_ITEM_IMAGE}}" alt="{{MENU_ITEM_NAME}}" class="menu-card-img w-full h-full object-cover" loading="lazy">
+              <div class="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-[var(--color-bg)]/90 backdrop-blur-md shadow-lg">
+                <span class="text-sm font-bold font-heading text-[var(--color-primary)]">{{MENU_ITEM_PRICE}}</span>
+              </div>
+              <div class="absolute top-3 left-3">
+                {{MENU_ITEM_BADGE}}
+              </div>
+            </div>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="menu-cat-tag font-body">{{MENU_ITEM_CATEGORY}}</span>
+              </div>
+              <h3 class="text-lg font-bold font-heading text-[var(--color-text)] mb-1.5">{{MENU_ITEM_NAME}}</h3>
+              <p class="text-sm text-[var(--color-text-muted)] font-body line-clamp-2 leading-relaxed">{{MENU_ITEM_DESCRIPTION}}</p>
+            </div>
+          </div>
+          <!-- /REPEAT:MENU_ITEMS -->
+        </div>
+        <!-- /REPEAT:MENU_CATEGORIES -->
+      </div>
+    </div>
+  </div>
+</section>

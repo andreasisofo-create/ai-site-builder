@@ -1,0 +1,66 @@
+<!-- CTA Bold Text: oversized typography with decorative SVG, ambient glow, and magnetic button -->
+<section id="cta" class="py-24 md:py-32 relative overflow-hidden" style="background: var(--color-text);">
+  <!-- Ambient glow from primary color -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px] opacity-15" style="background: var(--color-primary);"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-[120px] opacity-10" style="background: var(--color-secondary);"></div>
+  </div>
+
+  <!-- Decorative SVG circle behind heading -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" data-animate="scale-in" data-duration="1.5" data-ease="power3.out">
+    <svg class="w-[400px] h-[400px] md:w-[550px] md:h-[550px] lg:w-[700px] lg:h-[700px] opacity-[0.04]" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="250" cy="250" r="240" stroke="white" stroke-width="1"/>
+      <circle cx="250" cy="250" r="200" stroke="white" stroke-width="0.5" stroke-dasharray="8 6"/>
+      <circle cx="250" cy="250" r="160" stroke="white" stroke-width="0.5"/>
+    </svg>
+  </div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6 text-center">
+    <!-- Main Heading -->
+    <h2 class="text-5xl md:text-7xl lg:text-8xl font-bold font-heading leading-[0.95] tracking-tight mb-8" data-animate="text-split" data-split-type="words">
+      <span class="text-white">{{CTA_TITLE}}</span>
+    </h2>
+
+    <!-- Subtitle -->
+    <p class="text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-body" data-animate="blur-slide" data-delay="0.3" data-duration="1" style="color: rgba(255,255,255,0.5);">
+      {{CTA_SUBTITLE}}
+    </p>
+
+    <!-- CTA Button with gradient and glow -->
+    <div data-animate="bounce-in" data-delay="0.5">
+      <a href="{{CTA_BUTTON_URL}}" data-animate="magnetic"
+         class="group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-lg text-white
+                shadow-xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.03]"
+         style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+        <!-- Hover glow effect -->
+        <span class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"
+              style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));"></span>
+        <span>{{CTA_BUTTON_TEXT}}</span>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Decorative small dots pattern -->
+    <div class="absolute bottom-8 left-8 opacity-[0.06] pointer-events-none hidden lg:block">
+      <div class="grid grid-cols-5 gap-3">
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+      </div>
+    </div>
+  </div>
+</section>

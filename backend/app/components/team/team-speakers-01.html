@@ -1,0 +1,109 @@
+<!-- Team Speakers: circular photo grid with hover reveal bio and social links, event/conference style -->
+<section id="team" class="py-24 md:py-32 bg-[var(--color-bg-alt)] relative overflow-hidden">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-0 left-0 w-[500px] h-[500px] rounded-full opacity-[0.04]" style="background: radial-gradient(circle, var(--color-primary), transparent 70%);"></div>
+    <div class="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full opacity-[0.04]" style="background: radial-gradient(circle, var(--color-secondary), transparent 70%);"></div>
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px); background-size: 80px 80px;"></div>
+    <!-- Floating orbs -->
+    <div class="absolute top-[20%] right-[12%] w-6 h-6 rounded-full bg-[var(--color-primary)]/10 pointer-events-none" data-animate="float"></div>
+    <div class="absolute bottom-[25%] left-[8%] w-4 h-4 rounded-full bg-[var(--color-accent)]/10 pointer-events-none" data-animate="float"></div>
+    <div class="absolute top-[55%] left-[30%] w-3 h-3 rounded-full bg-[var(--color-secondary)]/10 pointer-events-none" data-animate="float"></div>
+  </div>
+
+  <style>
+    .speaker-card .speaker-overlay {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .speaker-card:hover .speaker-overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .speaker-card:hover .speaker-photo {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 4px var(--color-primary), 0 20px 40px -12px rgba(0,0,0,0.25);
+    }
+    .speaker-card:hover .speaker-ring {
+      transform: scale(1.1) rotate(90deg);
+      opacity: 0.3;
+    }
+    .speaker-social-link {
+      transform: translateY(8px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .speaker-card:hover .speaker-social-link:nth-child(1) { transition-delay: 0.1s; transform: translateY(0); opacity: 1; }
+    .speaker-card:hover .speaker-social-link:nth-child(2) { transition-delay: 0.15s; transform: translateY(0); opacity: 1; }
+    .speaker-card:hover .speaker-social-link:nth-child(3) { transition-delay: 0.2s; transform: translateY(0); opacity: 1; }
+  </style>
+
+  <div class="relative max-w-7xl mx-auto px-6 z-10">
+    <!-- Section Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <span class="w-8 h-px bg-[var(--color-primary)]/40"></span>
+        <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">Il Team</p>
+        <span class="w-8 h-px bg-[var(--color-primary)]/40"></span>
+      </div>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{TEAM_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] mt-4 max-w-xl mx-auto font-body leading-relaxed">{{TEAM_SUBTITLE}}</p>
+    </div>
+
+    <!-- Speakers Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-14" data-animate="stagger">
+      <!-- REPEAT:TEAM_MEMBERS -->
+      <div class="stagger-item speaker-card text-center group" data-animate="scale-in">
+        <!-- Photo container -->
+        <div class="relative inline-block mb-6">
+          <!-- Decorative ring -->
+          <div class="speaker-ring absolute -inset-3 rounded-full border-2 border-dashed border-[var(--color-primary)]/10 transition-all duration-700" style="transform-origin: center;"></div>
+
+          <!-- Photo circle -->
+          <div class="relative">
+            <img src="{{MEMBER_IMAGE}}" alt="{{MEMBER_NAME}}" class="speaker-photo w-32 h-32 md:w-40 md:h-40 rounded-full object-cover mx-auto border-4 border-[var(--color-bg)] shadow-lg transition-all duration-500" loading="lazy">
+
+            <!-- Hover overlay with social links -->
+            <div class="speaker-overlay absolute inset-0 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-primary)/80, var(--color-secondary)/80);">
+              <div class="flex items-center gap-3">
+                <!-- Social placeholder icons -->
+                <a href="#" class="speaker-social-link w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/40 transition-colors" aria-label="LinkedIn">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                </a>
+                <a href="#" class="speaker-social-link w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/40 transition-colors" aria-label="Twitter">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 01-1.93.07 4.28 4.28 0 004 2.98 8.521 8.521 0 01-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>
+                </a>
+                <a href="#" class="speaker-social-link w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/40 transition-colors" aria-label="Email">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status dot -->
+          <div class="absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-[var(--color-bg-alt)] z-10" style="background: var(--color-accent);"></div>
+        </div>
+
+        <!-- Name & Role -->
+        <div>
+          <h3 class="text-lg font-bold font-heading text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300">{{MEMBER_NAME}}</h3>
+          <p class="text-sm font-semibold text-[var(--color-primary)] font-body mt-1 uppercase tracking-wide">{{MEMBER_ROLE}}</p>
+        </div>
+
+        <!-- Bio (hidden, shown on hover below photo) -->
+        <div class="overflow-hidden max-h-0 group-hover:max-h-24 transition-all duration-500 ease-in-out mt-2">
+          <p class="text-xs text-[var(--color-text-muted)] leading-relaxed font-body px-2 line-clamp-3">{{MEMBER_BIO}}</p>
+        </div>
+
+        <!-- Decorative underline on hover -->
+        <div class="w-6 h-[2px] mx-auto mt-3 rounded-full bg-[var(--color-primary)]/20 group-hover:w-12 group-hover:bg-[var(--color-primary)] transition-all duration-500"></div>
+      </div>
+      <!-- /REPEAT:TEAM_MEMBERS -->
+    </div>
+  </div>
+
+  <!-- Decorative bottom accent -->
+  <div class="absolute bottom-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent 10%, var(--color-primary)/10 30%, var(--color-secondary)/10 70%, transparent 90%);"></div>
+</section>

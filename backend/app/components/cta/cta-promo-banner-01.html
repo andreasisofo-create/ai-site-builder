@@ -1,0 +1,99 @@
+<!-- CTA Promo Banner: promotional section with gradient bg, bold offer, ribbon badge, Babette restaurant inspired -->
+<section id="cta" class="py-24 md:py-32 relative overflow-hidden" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+
+  <!-- Decorative background elements -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <!-- Large soft blob -->
+    <div data-animate="morph-bg" class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full blur-3xl bg-white/5"></div>
+    <div data-animate="morph-bg" class="absolute bottom-[-15%] left-[-10%] w-[400px] h-[400px] rounded-full blur-3xl" style="background: var(--color-accent); opacity: 0.08;"></div>
+    <!-- Subtle pattern -->
+    <div class="absolute inset-0 opacity-[0.04]" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 36px 36px;"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+      <!-- Left: Text content -->
+      <div class="text-center lg:text-left">
+
+        <!-- Ribbon badge -->
+        <div class="inline-flex items-center gap-2 mb-8" data-animate="bounce-in" data-delay="0.1">
+          <div class="relative px-5 py-2 rounded-full font-body text-xs font-bold tracking-[0.2em] uppercase text-white" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(8px);">
+            <span class="relative z-10">&#9733; Offerta Speciale &#9733;</span>
+            <!-- Pulsing glow -->
+            <div class="absolute inset-0 rounded-full animate-pulse" style="background: rgba(255,255,255,0.05);"></div>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-white leading-[0.95] tracking-tight mb-6" data-animate="text-split" data-split-type="words">
+          {{CTA_TITLE}}
+        </h2>
+
+        <!-- Offer subtitle / bold text -->
+        <div class="mb-6" data-animate="scale-in" data-delay="0.25">
+          <span class="inline-block font-heading text-5xl md:text-7xl font-black text-white" style="text-shadow: 0 0 40px rgba(255,255,255,0.2);">
+            {{CTA_SUBTITLE}}
+          </span>
+        </div>
+
+        <!-- Accent divider -->
+        <div class="flex items-center gap-3 mb-8 justify-center lg:justify-start" data-animate="fade-up" data-delay="0.3">
+          <div class="w-16 h-0.5 rounded-full bg-white/30"></div>
+          <div class="w-2 h-2 rounded-full bg-white/50"></div>
+          <div class="w-16 h-0.5 rounded-full bg-white/30"></div>
+        </div>
+
+        <!-- CTA Button -->
+        <div data-animate="fade-up" data-delay="0.4">
+          <a href="{{CTA_BUTTON_URL}}" data-animate="magnetic" class="group relative inline-flex items-center gap-3 px-10 py-5 font-body text-lg font-bold rounded-2xl overflow-hidden shadow-2xl shadow-black/20 transition-all duration-300 hover:scale-105 hover:shadow-3xl" style="background: white; color: var(--color-primary);">
+            <span class="relative z-10">{{CTA_BUTTON_TEXT}}</span>
+            <svg class="relative z-10 w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-[var(--color-primary)]/10 to-transparent"></div>
+          </a>
+        </div>
+
+        <!-- Trust badge -->
+        <p class="mt-5 text-xs font-body text-white/40">
+          Offerta valida fino ad esaurimento &middot; Prenota ora
+        </p>
+      </div>
+
+      <!-- Right: Decorative image / visual element -->
+      <div class="relative flex items-center justify-center" data-animate="blur-in" data-delay="0.3">
+        <!-- Outer glow ring -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="w-80 h-80 md:w-96 md:h-96 rounded-full border border-white/10" data-animate="float"></div>
+        </div>
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="w-64 h-64 md:w-80 md:h-80 rounded-full border border-white/5" data-animate="float"></div>
+        </div>
+
+        <!-- Central decorative circle with large offer text -->
+        <div class="relative w-64 h-64 md:w-80 md:h-80 rounded-full flex items-center justify-center backdrop-blur-xl" style="background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15);" data-animate="tilt">
+          <!-- Inner gradient glow -->
+          <div class="absolute inset-4 rounded-full" style="background: radial-gradient(circle, rgba(255,255,255,0.06), transparent 70%);"></div>
+
+          <div class="relative text-center">
+            <div class="font-heading text-6xl md:text-7xl font-black text-white leading-none mb-2" style="text-shadow: 0 0 30px rgba(255,255,255,0.15);">
+              {{CTA_SUBTITLE}}
+            </div>
+            <div class="font-body text-sm tracking-[0.3em] uppercase text-white/50">
+              Solo per te
+            </div>
+          </div>
+
+          <!-- Small floating accents around circle -->
+          <div data-animate="float" class="absolute -top-4 right-8 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm"></div>
+          <div data-animate="float" class="absolute -bottom-3 left-12 w-6 h-6 rounded-full bg-white/8 backdrop-blur-sm"></div>
+          <div data-animate="float" class="absolute top-1/2 -right-5 w-4 h-4 rounded-full bg-white/12"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom gradient edge -->
+  <div class="absolute bottom-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);"></div>
+</section>

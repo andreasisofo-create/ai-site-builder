@@ -1,0 +1,93 @@
+<!-- Footer Talk: "Parliamo del Tuo Progetto" conversational footer, Pixy agency inspired, dark and warm -->
+<footer id="footer" class="relative overflow-hidden" style="background: var(--color-text);">
+
+  <!-- Top accent gradient line -->
+  <div class="h-px w-full" style="background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), var(--color-primary), transparent);"></div>
+
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <!-- Subtle radial glow -->
+    <div class="absolute top-[10%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-3xl opacity-[0.04]" style="background: var(--color-primary);"></div>
+    <!-- Dot grid -->
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle, var(--color-bg) 1px, transparent 1px); background-size: 40px 40px;"></div>
+  </div>
+
+  <!-- Main CTA area -->
+  <div class="relative z-10 py-20 md:py-28 px-6">
+    <div class="max-w-5xl mx-auto text-center">
+
+      <!-- Eyebrow -->
+      <div class="inline-flex items-center gap-3 mb-8" data-animate="fade-up" data-delay="0.1">
+        <div class="w-10 h-px" style="background: rgba(var(--color-bg-rgb), 0.2);"></div>
+        <span class="text-[11px] font-body font-semibold tracking-[0.4em] uppercase" style="color: var(--color-primary);">Contattaci</span>
+        <div class="w-10 h-px" style="background: rgba(var(--color-bg-rgb), 0.2);"></div>
+      </div>
+
+      <!-- Large heading -->
+      <h3 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-heading font-black leading-[0.95] tracking-tight mb-6" style="color: var(--color-bg);" data-animate="text-split" data-split-type="words" data-duration="1.2">
+        Parliamo del Tuo Progetto
+      </h3>
+
+      <!-- Accent underline -->
+      <div class="flex items-center justify-center gap-3 mb-14" data-animate="scale-in" data-delay="0.3">
+        <div class="w-24 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent));"></div>
+      </div>
+
+      <!-- Contact info in large display text -->
+      <div class="space-y-6 mb-16" data-animate="fade-up" data-delay="0.35">
+        <!-- Email -->
+        <div>
+          <a href="mailto:{{BUSINESS_EMAIL}}" class="inline-block font-heading text-2xl md:text-4xl lg:text-5xl font-bold transition-colors duration-300 hover:opacity-80" style="color: var(--color-primary);">
+            {{BUSINESS_EMAIL}}
+          </a>
+        </div>
+        <!-- Phone -->
+        <div>
+          <a href="tel:{{BUSINESS_PHONE}}" class="inline-block font-heading text-xl md:text-3xl lg:text-4xl font-semibold transition-colors duration-300 hover:opacity-80" style="color: rgba(var(--color-bg-rgb), 0.6);">
+            {{BUSINESS_PHONE}}
+          </a>
+        </div>
+      </div>
+
+      <!-- Social icons row -->
+      <div class="flex items-center justify-center gap-4 mb-16" data-animate="stagger" data-delay="0.4">
+        <a href="#" class="group flex items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 hover:scale-110" style="background: rgba(var(--color-bg-rgb), 0.06); border: 1px solid rgba(var(--color-bg-rgb), 0.1);" aria-label="Facebook">
+          <svg class="w-5 h-5 transition-colors" style="color: rgba(var(--color-bg-rgb), 0.4);" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+        </a>
+        <a href="#" class="group flex items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 hover:scale-110" style="background: rgba(var(--color-bg-rgb), 0.06); border: 1px solid rgba(var(--color-bg-rgb), 0.1);" aria-label="Instagram">
+          <svg class="w-5 h-5 transition-colors" style="color: rgba(var(--color-bg-rgb), 0.4);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke-width="2"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" stroke-width="2"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke-width="2"/></svg>
+        </a>
+        <a href="#" class="group flex items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 hover:scale-110" style="background: rgba(var(--color-bg-rgb), 0.06); border: 1px solid rgba(var(--color-bg-rgb), 0.1);" aria-label="LinkedIn">
+          <svg class="w-5 h-5 transition-colors" style="color: rgba(var(--color-bg-rgb), 0.4);" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
+        </a>
+        <a href="#" class="group flex items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 hover:scale-110" style="background: rgba(var(--color-bg-rgb), 0.06); border: 1px solid rgba(var(--color-bg-rgb), 0.1);" aria-label="Twitter / X">
+          <svg class="w-5 h-5 transition-colors" style="color: rgba(var(--color-bg-rgb), 0.4);" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+
+      <!-- Tagline / description -->
+      <p class="text-sm font-body max-w-md mx-auto leading-relaxed mb-4" style="color: rgba(var(--color-bg-rgb), 0.35);">
+        {{FOOTER_DESCRIPTION}}
+      </p>
+    </div>
+  </div>
+
+  <!-- Bottom minimal copyright bar -->
+  <div class="relative z-10 border-t" style="border-color: rgba(var(--color-bg-rgb), 0.06);">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img src="{{LOGO_URL}}" alt="" class="h-5 w-auto object-contain brightness-0 invert opacity-40" loading="lazy">
+        <span class="text-xs font-body" style="color: rgba(var(--color-bg-rgb), 0.35);">&copy; {{CURRENT_YEAR}} {{BUSINESS_NAME}}</span>
+      </div>
+      <div class="flex items-center gap-4 text-xs font-body" style="color: rgba(var(--color-bg-rgb), 0.25);">
+        <a href="#hero" class="hover:opacity-100 transition-opacity">Home</a>
+        <span>&middot;</span>
+        <a href="#about" class="hover:opacity-100 transition-opacity">Chi Siamo</a>
+        <span>&middot;</span>
+        <a href="#services" class="hover:opacity-100 transition-opacity">Servizi</a>
+        <span>&middot;</span>
+        <span>Powered by Site Builder</span>
+      </div>
+    </div>
+  </div>
+</footer>

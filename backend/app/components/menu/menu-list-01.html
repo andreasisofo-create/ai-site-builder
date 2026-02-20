@@ -1,0 +1,102 @@
+<!-- Menu List: Clean minimal menu list with emoji icons, accent underline hover, and dividers -->
+<section id="menu" class="py-24 md:py-32 bg-[var(--color-bg)] overflow-hidden relative">
+
+  <!-- Ambient glow -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/3 right-0 w-64 h-64 bg-[var(--color-primary)]/4 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-1/4 left-0 w-56 h-56 bg-[var(--color-secondary)]/4 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16 md:mb-20" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-4 font-body" data-animate="blur-in">Menu</p>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{MENU_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2">{{MENU_SUBTITLE}}</p>
+      <!-- Minimal divider -->
+      <div class="w-12 h-0.5 mx-auto mt-8 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+    </div>
+
+    <style>
+      .menu-list-item {
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+      }
+      .menu-list-item:hover {
+        background: color-mix(in srgb, var(--color-primary) 3%, transparent);
+      }
+      .menu-list-item::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 4.5rem;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .menu-list-item:hover::after {
+        transform: scaleX(1);
+      }
+      .menu-list-item:hover .menu-list-icon {
+        transform: scale(1.15) rotate(5deg);
+      }
+      .menu-list-item:hover .menu-list-price {
+        color: var(--color-primary);
+      }
+      .menu-list-icon {
+        transition: transform 0.35s ease;
+      }
+      .menu-list-price {
+        transition: color 0.3s ease;
+      }
+      .menu-list-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        color: white;
+      }
+    </style>
+
+    <!-- Menu items list -->
+    <div class="space-y-0" data-animate="stagger">
+      <!-- REPEAT:MENU_ITEMS -->
+      <div class="stagger-item menu-list-item flex items-center gap-5 px-4 py-5 rounded-xl border-b border-[var(--color-text)]/5" data-animate="fade-up">
+        <!-- Icon -->
+        <div class="menu-list-icon flex-shrink-0 w-14 h-14 rounded-2xl bg-[var(--color-primary)]/8 flex items-center justify-center">
+          <span class="text-2xl">{{MENU_ITEM_ICON}}</span>
+        </div>
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2.5 mb-1">
+            <h3 class="text-lg font-bold font-heading text-[var(--color-text)]">{{MENU_ITEM_NAME}}</h3>
+            {{MENU_ITEM_BADGE}}
+          </div>
+          <p class="text-sm text-[var(--color-text-muted)] font-body leading-relaxed line-clamp-1">{{MENU_ITEM_DESCRIPTION}}</p>
+        </div>
+        <!-- Price -->
+        <div class="flex-shrink-0 text-right">
+          <span class="menu-list-price text-xl font-bold font-heading text-[var(--color-text)]">{{MENU_ITEM_PRICE}}</span>
+        </div>
+      </div>
+      <!-- /REPEAT:MENU_ITEMS -->
+    </div>
+
+    <!-- Bottom accent -->
+    <div class="text-center mt-14" data-animate="fade-up" data-delay="0.3">
+      <div class="inline-flex items-center gap-3 text-sm text-[var(--color-text-muted)] font-body">
+        <div class="w-8 h-px bg-[var(--color-text)]/15"></div>
+        <span class="italic">I prezzi possono variare</span>
+        <div class="w-8 h-px bg-[var(--color-text)]/15"></div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -10,184 +10,545 @@
           "file": "hero/hero-split-01.html",
           "name": "Split Hero",
           "description": "Layout diviso: testo a sinistra, immagine a destra",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "hero-centered-02",
           "file": "hero/hero-centered-02.html",
           "name": "Centered Hero",
           "description": "Testo centrato con sfondo gradiente",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["classic", "elegant", "cozy"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "classic",
+            "elegant",
+            "cozy"
+          ]
         },
         {
           "id": "hero-gradient-03",
           "file": "hero/hero-gradient-03.html",
           "name": "Gradient Hero",
           "description": "Gradiente bold con testo animato e pattern",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["bold", "modern", "tech"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech"
+          ]
         },
         {
           "id": "hero-parallax-01",
           "file": "hero/hero-parallax-01.html",
           "name": "Parallax Hero",
-          "description": "Multi-layer parallax ispirato Aceternity con card UI fluttuanti a velocit\u00e0 diverse su scroll, analytics, stats e avatar",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT", "BUSINESS_NAME"],
-          "tags": ["modern", "bold", "tech", "parallax"]
+          "description": "Multi-layer parallax ispirato Aceternity con card UI fluttuanti a velocità diverse su scroll, analytics, stats e avatar",
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT",
+            "BUSINESS_NAME"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech",
+            "parallax"
+          ]
         },
         {
           "id": "hero-spotlight-01",
           "file": "hero/hero-spotlight-01.html",
           "name": "Spotlight Hero",
           "description": "Hero cinematico scuro stile Aceternity con spotlight radiale che segue il mouse, orbs luminosi e cornici angolari",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "BUSINESS_NAME"],
-          "tags": ["bold", "tech", "modern", "dark"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "BUSINESS_NAME"
+          ],
+          "tags": [
+            "bold",
+            "tech",
+            "modern",
+            "dark"
+          ]
         },
         {
           "id": "hero-aurora-01",
           "file": "hero/hero-aurora-01.html",
           "name": "Aurora Hero",
           "description": "Effetto Aurora Boreale con blob gradiente CSS animati, stelline decorative e testo con gradiente aurora",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT", "BUSINESS_NAME"],
-          "tags": ["modern", "tech", "bold", "creative"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT",
+            "BUSINESS_NAME"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold",
+            "creative"
+          ]
         },
         {
           "id": "hero-typewriter-01",
           "file": "hero/hero-typewriter-01.html",
           "name": "Typewriter Hero",
           "description": "Hero minimale con effetto macchina da scrivere e bottone magnetico",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "hero-glassmorphism-01",
           "file": "hero/hero-glassmorphism-01.html",
           "name": "Glassmorphism Hero",
           "description": "Design glassmorphism con card frosted glass, blob morphing e blur-in",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["modern", "tech", "elegant"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "elegant"
+          ]
         },
         {
           "id": "hero-dark-bold-01",
           "file": "hero/hero-dark-bold-01.html",
           "name": "Dark Bold Hero",
           "description": "Hero scuro drammatico con tipografia grande, text-split e accenti vivaci",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["bold", "tech", "modern"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "bold",
+            "tech",
+            "modern"
+          ]
         },
         {
           "id": "hero-video-bg-01",
           "file": "hero/hero-video-bg-01.html",
           "name": "Video Background Hero",
           "description": "Hero fullscreen con sfondo video/immagine, overlay scuro e flip-up title",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_VIDEO_EMBED"],
-          "tags": ["bold", "modern", "corporate", "video"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_VIDEO_EMBED"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "corporate",
+            "video"
+          ]
         },
         {
           "id": "hero-animated-shapes-01",
           "file": "hero/hero-animated-shapes-01.html",
           "name": "Animated Shapes Hero",
           "description": "Hero creativo con forme geometriche fluttuanti stile Antigravity, morph-bg e reveal",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "hero-brutalist-01",
           "file": "hero/hero-brutalist-01.html",
           "name": "Brutalist Hero",
           "description": "Design brutalista con tipografia gigante, contrasto estremo, griglia visibile e layout asimmetrico",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["bold", "modern", "tech"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech"
+          ]
         },
         {
           "id": "hero-editorial-01",
           "file": "hero/hero-editorial-01.html",
           "name": "Editorial Hero",
           "description": "Layout magazine editoriale con colonne asimmetriche, serif elegante e immagine sovrapposta",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["elegant", "classic", "corporate"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "corporate"
+          ]
         },
         {
           "id": "hero-zen-01",
           "file": "hero/hero-zen-01.html",
           "name": "Zen Hero",
           "description": "Design ultra-minimale ispirato al Giappone con spazi estremi, tipografia delicata e monocromatico",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "hero-neon-01",
           "file": "hero/hero-neon-01.html",
           "name": "Neon Cyberpunk Hero",
           "description": "Estetica cyberpunk neon con sfondo scuro, testo luminoso, bordi gradiente e griglia scanline",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["bold", "tech", "modern"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "bold",
+            "tech",
+            "modern"
+          ]
         },
         {
           "id": "hero-classic-01",
           "file": "hero/hero-classic-01.html",
           "name": "Classic Elegant Hero",
           "description": "Design di lusso senza tempo con simmetria perfetta, serif elegante, decorazioni ornamentali e cornice immagine",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["elegant", "classic", "corporate"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "corporate"
+          ]
         },
         {
           "id": "hero-organic-01",
           "file": "hero/hero-organic-01.html",
           "name": "Organic Flow Hero",
           "description": "Design naturale con forme fluide, blob SVG, contenitori arrotondati e divisore ondulato",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["cozy", "elegant", "classic"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "cozy",
+            "elegant",
+            "classic"
+          ]
         },
         {
           "id": "hero-linear-01",
           "file": "hero/hero-linear-01.html",
           "name": "Linear Gradient Hero",
           "description": "Design premium ispirato a Linear.app: testo gradiente, griglia ambientale, badge eyebrow, glow radiale, CTA luminoso",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["tech", "modern", "bold"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "tech",
+            "modern",
+            "bold"
+          ]
         },
         {
           "id": "hero-physics-01",
           "file": "hero/hero-physics-01.html",
           "name": "Physics Interactive Hero",
           "description": "Hero interattivo con Matter.js: elementi fisici che cadono e l'utente può trascinare, effetto playground creativo",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["bold", "modern", "tech"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech"
+          ]
         },
         {
           "id": "hero-rotating-01",
           "file": "hero/hero-rotating-01.html",
           "name": "Rotating Text Hero",
           "description": "Hero minimale stile Shopify con titolo a rotazione automatica, tipografia grande centrata e CTA magnetico",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_ROTATING_TEXTS"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_ROTATING_TEXTS"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "hero-floating-cards-01",
           "file": "hero/hero-floating-cards-01.html",
           "name": "Floating Cards Hero",
           "description": "Stile Linear/Notion con mini card UI fluttuanti attorno al titolo centrale, analytics, team e status",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["tech", "modern", "bold"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "tech",
+            "modern",
+            "bold"
+          ]
         },
         {
           "id": "hero-counter-01",
           "file": "hero/hero-counter-01.html",
           "name": "Counter Hero",
           "description": "Titolo centrato con riga di statistiche animate (data-counter) sotto, linee decorative verticali",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL"],
-          "tags": ["corporate", "modern", "bold"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "corporate",
+            "modern",
+            "bold"
+          ]
         },
         {
           "id": "hero-marquee-01",
           "file": "hero/hero-marquee-01.html",
           "name": "Marquee Hero",
           "description": "Hero editoriale con testo marquee gigante di sfondo, titolo sovrapposto e strip immagine",
-          "placeholders": ["HERO_TITLE", "HERO_SUBTITLE", "HERO_CTA_TEXT", "HERO_CTA_URL", "HERO_IMAGE_URL", "HERO_IMAGE_ALT"],
-          "tags": ["bold", "editorial", "creative"]
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT"
+          ],
+          "tags": [
+            "bold",
+            "editorial",
+            "creative"
+          ]
+        },
+        {
+          "id": "hero-restaurant-01",
+          "file": "hero/hero-restaurant-01.html",
+          "name": "Restaurant Hero",
+          "description": "Hero fullscreen ristorante con immagine di sfondo, overlay scuro, card glassmorphism info (orari, indirizzo, telefono) e CTA prenota",
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT",
+            "BUSINESS_HOURS",
+            "BUSINESS_ADDRESS",
+            "BUSINESS_PHONE"
+          ],
+          "tags": [
+            "restaurant",
+            "elegant",
+            "cozy"
+          ]
+        },
+        {
+          "id": "hero-marquee-rotated-01",
+          "file": "hero/hero-marquee-rotated-01.html",
+          "name": "Marquee Rotated Hero",
+          "description": "Hero con marquee diagonale gigante di sfondo ruotato a -12deg, contenuto in primo piano, tema scuro stile Zeniq agency",
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL"
+          ],
+          "tags": [
+            "bold",
+            "creative",
+            "modern"
+          ]
+        },
+        {
+          "id": "hero-search-01",
+          "file": "hero/hero-search-01.html",
+          "name": "Search Hero",
+          "description": "Hero fullscreen con form di ricerca inline glassmorphism, badge statistiche fluttuanti e overlay gradiente",
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_IMAGE_URL",
+            "HERO_CTA_TEXT",
+            "BUSINESS_NAME",
+            "SEARCH_LABEL_1",
+            "SEARCH_LABEL_2",
+            "SEARCH_LABEL_3"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "corporate"
+          ]
+        },
+        {
+          "id": "hero-countdown-01",
+          "file": "hero/hero-countdown-01.html",
+          "name": "Countdown Hero",
+          "description": "Hero split con countdown timer evento (giorni/ore/minuti/secondi) in card glassmorphism, info location e data",
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "EVENT_DATE",
+            "EVENT_LOCATION"
+          ],
+          "tags": [
+            "event",
+            "modern",
+            "bold"
+          ]
+        },
+        {
+          "id": "hero-calculator-01",
+          "file": "hero/hero-calculator-01.html",
+          "name": "Calculator Hero",
+          "description": "Hero split con form calcolatore/lead-gen a destra, trust checkmarks e loghi partner a sinistra",
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "BUSINESS_NAME",
+            "FORM_TITLE",
+            "FORM_LABEL_1",
+            "FORM_LABEL_2",
+            "FORM_LABEL_3",
+            "FORM_LABEL_4",
+            "FORM_BUTTON_TEXT"
+          ],
+          "tags": [
+            "corporate",
+            "modern",
+            "tech"
+          ]
+        },
+        {
+          "id": "hero-avatar-stack-01",
+          "file": "hero/hero-avatar-stack-01.html",
+          "name": "Avatar Stack Hero",
+          "description": "Hero 3 colonne editoriale: avatar stack con recensioni a sinistra, ritratto grande al centro, intro e CTA a destra",
+          "placeholders": [
+            "HERO_TITLE",
+            "HERO_SUBTITLE",
+            "HERO_CTA_TEXT",
+            "HERO_CTA_URL",
+            "HERO_IMAGE_URL",
+            "HERO_IMAGE_ALT",
+            "BUSINESS_NAME"
+          ],
+          "tags": [
+            "creative",
+            "portfolio",
+            "modern"
+          ]
         }
       ]
     },
@@ -200,64 +561,199 @@
           "file": "about/about-alternating-01.html",
           "name": "About Alternating",
           "description": "Testo con 3 highlights numerici",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_HIGHLIGHT_1", "ABOUT_HIGHLIGHT_2", "ABOUT_HIGHLIGHT_3", "ABOUT_HIGHLIGHT_NUM_1", "ABOUT_HIGHLIGHT_NUM_2", "ABOUT_HIGHLIGHT_NUM_3"],
-          "tags": ["modern", "corporate", "classic", "elegant"]
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_TEXT",
+            "ABOUT_HIGHLIGHT_1",
+            "ABOUT_HIGHLIGHT_2",
+            "ABOUT_HIGHLIGHT_3",
+            "ABOUT_HIGHLIGHT_NUM_1",
+            "ABOUT_HIGHLIGHT_NUM_2",
+            "ABOUT_HIGHLIGHT_NUM_3"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "classic",
+            "elegant"
+          ]
         },
         {
           "id": "about-timeline-01",
           "file": "about/about-timeline-01.html",
           "name": "About Timeline",
           "description": "Timeline verticale con milestone alternate sx/dx, badge anno, counter animati e dot pulsanti sulla linea",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_DESCRIPTION", "ABOUT_HIGHLIGHT_1", "ABOUT_HIGHLIGHT_2", "ABOUT_HIGHLIGHT_3", "ABOUT_HIGHLIGHT_NUM_1", "ABOUT_HIGHLIGHT_NUM_2", "ABOUT_HIGHLIGHT_NUM_3", "MILESTONE_YEAR_1", "MILESTONE_YEAR_2", "MILESTONE_YEAR_3", "MILESTONE_DESC_1", "MILESTONE_DESC_2", "MILESTONE_DESC_3"],
-          "tags": ["modern", "bold", "tech", "corporate"]
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_DESCRIPTION",
+            "ABOUT_HIGHLIGHT_1",
+            "ABOUT_HIGHLIGHT_2",
+            "ABOUT_HIGHLIGHT_3",
+            "ABOUT_HIGHLIGHT_NUM_1",
+            "ABOUT_HIGHLIGHT_NUM_2",
+            "ABOUT_HIGHLIGHT_NUM_3",
+            "MILESTONE_YEAR_1",
+            "MILESTONE_YEAR_2",
+            "MILESTONE_YEAR_3",
+            "MILESTONE_DESC_1",
+            "MILESTONE_DESC_2",
+            "MILESTONE_DESC_3"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech",
+            "corporate"
+          ]
         },
         {
           "id": "about-image-showcase-01",
           "file": "about/about-image-showcase-01.html",
           "name": "About Image Showcase",
           "description": "Split layout con immagini sovrapposte e card statistiche con tilt",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_HIGHLIGHT_1", "ABOUT_HIGHLIGHT_2", "ABOUT_HIGHLIGHT_3", "ABOUT_HIGHLIGHT_NUM_1", "ABOUT_HIGHLIGHT_NUM_2", "ABOUT_HIGHLIGHT_NUM_3", "HERO_IMAGE_URL"],
-          "tags": ["elegant", "corporate", "cozy"]
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_TEXT",
+            "ABOUT_HIGHLIGHT_1",
+            "ABOUT_HIGHLIGHT_2",
+            "ABOUT_HIGHLIGHT_3",
+            "ABOUT_HIGHLIGHT_NUM_1",
+            "ABOUT_HIGHLIGHT_NUM_2",
+            "ABOUT_HIGHLIGHT_NUM_3",
+            "HERO_IMAGE_URL"
+          ],
+          "tags": [
+            "elegant",
+            "corporate",
+            "cozy"
+          ]
         },
         {
           "id": "about-split-cards-01",
           "file": "about/about-split-cards-01.html",
           "name": "About Split Cards",
           "description": "Card statistiche in griglia offset creativa con text-split e counter",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_HIGHLIGHT_1", "ABOUT_HIGHLIGHT_2", "ABOUT_HIGHLIGHT_3", "ABOUT_HIGHLIGHT_NUM_1", "ABOUT_HIGHLIGHT_NUM_2", "ABOUT_HIGHLIGHT_NUM_3"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_TEXT",
+            "ABOUT_HIGHLIGHT_1",
+            "ABOUT_HIGHLIGHT_2",
+            "ABOUT_HIGHLIGHT_3",
+            "ABOUT_HIGHLIGHT_NUM_1",
+            "ABOUT_HIGHLIGHT_NUM_2",
+            "ABOUT_HIGHLIGHT_NUM_3"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
         },
         {
           "id": "about-magazine-01",
           "file": "about/about-magazine-01.html",
           "name": "About Magazine",
           "description": "Layout editoriale asimmetrico stile magazine con pull-quote, immagine sovrapposta e stats orizzontali",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_IMAGE_URL", "ABOUT_IMAGE_ALT", "ABOUT_STATS", "BUSINESS_NAME"],
-          "tags": ["elegant", "corporate", "classic"]
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_TEXT",
+            "ABOUT_IMAGE_URL",
+            "ABOUT_IMAGE_ALT",
+            "ABOUT_STATS",
+            "BUSINESS_NAME"
+          ],
+          "tags": [
+            "elegant",
+            "corporate",
+            "classic"
+          ]
         },
         {
           "id": "about-timeline-02",
           "file": "about/about-timeline-02.html",
           "name": "About Timeline Story",
           "description": "Timeline verticale narrativa con milestone alternate, immagine hero e counter animati",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_TEXT", "ABOUT_IMAGE_URL", "ABOUT_IMAGE_ALT", "ABOUT_STATS"],
-          "tags": ["modern", "bold", "corporate"]
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_TEXT",
+            "ABOUT_IMAGE_URL",
+            "ABOUT_IMAGE_ALT",
+            "ABOUT_STATS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "corporate"
+          ]
         },
         {
           "id": "about-bento-01",
           "file": "about/about-bento-01.html",
           "name": "About Bento Grid",
           "description": "Griglia bento stile Apple/Linear con tilt cards, immagine 2x2, card testo, stats con counter e card gradiente accent",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_DESCRIPTION", "ABOUT_IMAGE_URL", "ABOUT_IMAGE_ALT", "ABOUT_STATS", "BUSINESS_NAME"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_DESCRIPTION",
+            "ABOUT_IMAGE_URL",
+            "ABOUT_IMAGE_ALT",
+            "ABOUT_STATS",
+            "BUSINESS_NAME"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "about-split-scroll-01",
           "file": "about/about-split-scroll-01.html",
           "name": "About Split Scroll",
           "description": "Split screen con immagine sticky clip-reveal a sinistra, badge business e contenuto scrollabile con stats a destra",
-          "placeholders": ["ABOUT_TITLE", "ABOUT_SUBTITLE", "ABOUT_DESCRIPTION", "ABOUT_IMAGE_URL", "ABOUT_IMAGE_ALT", "ABOUT_STATS", "BUSINESS_NAME"],
-          "tags": ["elegant", "modern", "cozy"]
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_DESCRIPTION",
+            "ABOUT_IMAGE_URL",
+            "ABOUT_IMAGE_ALT",
+            "ABOUT_STATS",
+            "BUSINESS_NAME"
+          ],
+          "tags": [
+            "elegant",
+            "modern",
+            "cozy"
+          ]
+        },
+        {
+          "id": "about-progress-bars-01",
+          "file": "about/about-progress-bars-01.html",
+          "name": "About Progress Bars",
+          "description": "Split layout: immagine con badge overlay a sinistra, testo con barre competenza animate a gradiente a destra",
+          "placeholders": [
+            "ABOUT_TITLE",
+            "ABOUT_SUBTITLE",
+            "ABOUT_TEXT",
+            "ABOUT_IMAGE_URL",
+            "ABOUT_IMAGE_ALT",
+            "ABOUT_BADGE_NUMBER",
+            "ABOUT_BADGE_LABEL",
+            "ABOUT_SKILLS",
+            "ABOUT_CTA_TEXT",
+            "ABOUT_CTA_URL"
+          ],
+          "tags": [
+            "corporate",
+            "modern",
+            "bold"
+          ]
         }
       ]
     },
@@ -270,104 +766,289 @@
           "file": "services/services-cards-grid-01.html",
           "name": "Services Cards Grid",
           "description": "Griglia 3 colonne con card servizi",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "services-bento-02",
           "file": "services/services-bento-02.html",
           "name": "Services Bento",
           "description": "Layout bento asimmetrico",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "services-hover-expand-01",
           "file": "services/services-hover-expand-01.html",
           "name": "Services Hover Expand",
           "description": "Card glassmorphism con espansione e glow al hover",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "services-icon-list-01",
           "file": "services/services-icon-list-01.html",
           "name": "Services Icon List",
           "description": "Layout orizzontale alternato con icone grandi e parallax",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "services-process-steps-01",
           "file": "services/services-process-steps-01.html",
           "name": "Services Process Steps",
           "description": "Layout a passi numerati con linee di connessione e flip animation",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["corporate", "modern", "bold"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "corporate",
+            "modern",
+            "bold"
+          ]
         },
         {
           "id": "services-hover-reveal-01",
           "file": "services/services-hover-reveal-01.html",
           "name": "Services Hover Reveal",
           "description": "Card glassmorphism con descrizione nascosta che appare al hover, bordo animato e rotazione",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["modern", "tech", "elegant"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "elegant"
+          ]
         },
         {
           "id": "services-alternating-rows-01",
           "file": "services/services-alternating-rows-01.html",
           "name": "Services Alternating Rows",
           "description": "Layout zigzag a righe alternate con icone grandi e separatori accent",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["elegant", "corporate", "classic"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "elegant",
+            "corporate",
+            "classic"
+          ]
         },
         {
           "id": "services-tabs-01",
           "file": "services/services-tabs-01.html",
           "name": "Services Tabs",
           "description": "Interfaccia a tab CSS-only con contenuto animato e icona grande per ogni servizio",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["modern", "tech", "corporate"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "corporate"
+          ]
         },
         {
           "id": "services-minimal-list-01",
           "file": "services/services-minimal-list-01.html",
           "name": "Services Minimal List",
           "description": "Lista editoriale numerata ultra-pulita con hover accent e frecce direzionali",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "services-timeline-01",
           "file": "services/services-timeline-01.html",
           "name": "Services Timeline",
           "description": "Timeline verticale con card alternate sinistra/destra, cerchi numerati e linea connettiva gradiente",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["corporate", "elegant", "modern"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "corporate",
+            "elegant",
+            "modern"
+          ]
         },
         {
           "id": "services-pricing-cards-01",
           "file": "services/services-pricing-cards-01.html",
           "name": "Services Pricing Cards",
           "description": "Card stile pricing con barra gradiente top, icona, divider e CTA per ogni servizio",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "services-interactive-tabs-01",
           "file": "services/services-interactive-tabs-01.html",
           "name": "Services Interactive Tabs",
           "description": "Interfaccia tab interattiva con icone, pannelli animati e card contenuto dettagliato per servizio",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "services-hover-cards-01",
           "file": "services/services-hover-cards-01.html",
           "name": "Services Hover Cards",
           "description": "Card servizi con hover espansivo, icona grande animata e descrizione reveal al passaggio del mouse",
-          "placeholders": ["SERVICES_TITLE", "SERVICES_SUBTITLE", "SERVICES"],
-          "tags": ["modern", "bold", "tech", "corporate"]
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech",
+            "corporate"
+          ]
+        },
+        {
+          "id": "services-accordion-01",
+          "file": "services/services-accordion-01.html",
+          "name": "Services Accordion",
+          "description": "Accordion servizi numerato con details/summary HTML, icona plus/minus rotante e linea accent",
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "elegant",
+            "corporate"
+          ]
+        },
+        {
+          "id": "services-hover-preview-01",
+          "file": "services/services-hover-preview-01.html",
+          "name": "Services Hover Preview",
+          "description": "Nomi servizi grandi con immagine preview che appare al hover, stile agenzia creativa",
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "creative"
+          ]
+        },
+        {
+          "id": "services-bento-asymmetric-01",
+          "file": "services/services-bento-asymmetric-01.html",
+          "name": "Services Bento Asymmetric",
+          "description": "Griglia bento asimmetrica con primo servizio 2 colonne, card accent colorate alternate",
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
+        },
+        {
+          "id": "services-numbered-zigzag-01",
+          "file": "services/services-numbered-zigzag-01.html",
+          "name": "Services Numbered Zigzag",
+          "description": "Servizi a righe alternate zigzag con numeri giganti semi-trasparenti (01-04), layout asimmetrico 8/4",
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "modern",
+            "creative",
+            "portfolio"
+          ]
+        },
+        {
+          "id": "services-image-reveal-01",
+          "file": "services/services-image-reveal-01.html",
+          "name": "Services Image Reveal",
+          "description": "Griglia 2 colonne zero-gap con immagine che scivola dal basso al hover, testo bianco su immagine rivelata",
+          "placeholders": [
+            "SERVICES_TITLE",
+            "SERVICES_SUBTITLE",
+            "SERVICES"
+          ],
+          "tags": [
+            "bold",
+            "creative",
+            "modern"
+          ]
         }
       ]
     },
@@ -380,72 +1061,161 @@
           "file": "features/features-icons-grid-01.html",
           "name": "Features Icons Grid",
           "description": "Griglia 2x3 con icone emoji",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["modern", "corporate", "classic", "tech"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "classic",
+            "tech"
+          ]
         },
         {
           "id": "features-tabs-01",
           "file": "features/features-tabs-01.html",
           "name": "Features Tabs",
           "description": "Layout tab-style con titoli come tab e card dettaglio sotto",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "features-comparison-01",
           "file": "features/features-comparison-01.html",
           "name": "Features Comparison",
           "description": "Confronto due colonne: Senza di noi vs Con noi con X rosse e check verdi",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["bold", "corporate", "modern"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "bold",
+            "corporate",
+            "modern"
+          ]
         },
         {
           "id": "features-bento-grid-01",
           "file": "features/features-bento-grid-01.html",
           "name": "Features Bento Grid",
           "description": "Griglia bento con primo elemento evidenziato 2x2, effetto glass e icone decorative di sfondo",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "features-hover-cards-01",
           "file": "features/features-hover-cards-01.html",
           "name": "Features Hover Cards",
           "description": "Card alte con descrizione che scorre dentro al hover, transizione gradiente e angoli decorativi",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["modern", "elegant", "tech"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "modern",
+            "elegant",
+            "tech"
+          ]
         },
         {
           "id": "features-alternating-01",
           "file": "features/features-alternating-01.html",
           "name": "Features Alternating Rows",
           "description": "Righe full-width alternate con icone grandi e linea verticale connettiva",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["corporate", "elegant", "classic"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "corporate",
+            "elegant",
+            "classic"
+          ]
         },
         {
           "id": "features-icon-showcase-01",
           "file": "features/features-icon-showcase-01.html",
           "name": "Features Icon Showcase",
           "description": "Icone extra-large con glow radiale, card generose e animazione bounce-in",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["modern", "bold", "cozy"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "cozy"
+          ]
         },
         {
           "id": "features-bento-01",
           "file": "features/features-bento-01.html",
           "name": "Features Bento Premium",
           "description": "Griglia bento asimmetrica con card spotlight, glassmorphism, glow radiale e animazioni stagger",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "features-showcase-01",
           "file": "features/features-showcase-01.html",
           "name": "Features Showcase",
           "description": "Card large con icona gigante a sinistra e testo a destra, glow al hover e accent underline",
-          "placeholders": ["FEATURES_TITLE", "FEATURES_SUBTITLE", "FEATURES"],
-          "tags": ["elegant", "modern", "corporate"]
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "elegant",
+            "modern",
+            "corporate"
+          ]
+        },
+        {
+          "id": "features-elevated-01",
+          "file": "features/features-elevated-01.html",
+          "name": "Features Elevated",
+          "description": "Card con margine negativo che sovrappongono la sezione sopra, bounce-in e linea accent al hover",
+          "placeholders": [
+            "FEATURES_TITLE",
+            "FEATURES_SUBTITLE",
+            "FEATURES"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "tech"
+          ]
         }
       ]
     },
@@ -458,72 +1228,188 @@
           "file": "testimonials/testimonials-grid-01.html",
           "name": "Testimonials Grid",
           "description": "Griglia 3 testimonianze con avatar",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS"],
-          "tags": ["modern", "corporate", "classic", "elegant"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "classic",
+            "elegant"
+          ]
         },
         {
           "id": "testimonials-carousel-01",
           "file": "testimonials/testimonials-carousel-01.html",
           "name": "Testimonials Carousel",
           "description": "Carousel spotlight con scroll orizzontale e citazione grande",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS"],
-          "tags": ["modern", "elegant", "bold"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "modern",
+            "elegant",
+            "bold"
+          ]
         },
         {
           "id": "testimonials-masonry-01",
           "file": "testimonials/testimonials-masonry-01.html",
           "name": "Testimonials Masonry",
           "description": "Griglia masonry con card glassmorphism e forme decorative",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "testimonials-spotlight-01",
           "file": "testimonials/testimonials-spotlight-01.html",
           "name": "Testimonials Spotlight",
           "description": "Singola testimonianza grande con citazione SVG decorativa e sfondo gradiente",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS_SUBTITLE", "TESTIMONIALS"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS_SUBTITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "testimonials-card-stack-01",
           "file": "testimonials/testimonials-card-stack-01.html",
           "name": "Testimonials Card Stack",
           "description": "Card sovrapposte con rotazione e effetto profondità, hover per raddrizzare",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS_SUBTITLE", "TESTIMONIALS"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS_SUBTITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
         },
         {
           "id": "testimonials-marquee-01",
           "file": "testimonials/testimonials-marquee-01.html",
           "name": "Testimonials Marquee",
           "description": "Scorrimento infinito su due righe in direzioni opposte con card glassmorphism",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS_SUBTITLE", "TESTIMONIALS"],
-          "tags": ["modern", "tech", "corporate"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS_SUBTITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "corporate"
+          ]
         },
         {
           "id": "testimonials-quote-wall-01",
           "file": "testimonials/testimonials-quote-wall-01.html",
           "name": "Testimonials Quote Wall",
           "description": "Layout masonry a colonne CSS con card di altezza variabile, quote icon e stelle",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS"],
-          "tags": ["modern", "creative", "bold"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "modern",
+            "creative",
+            "bold"
+          ]
         },
         {
           "id": "testimonials-rating-01",
           "file": "testimonials/testimonials-rating-01.html",
           "name": "Testimonials Rating",
           "description": "Stelle grandi in evidenza, badge verificato, avatar con check e tilt interattivo",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS_SUBTITLE", "TESTIMONIALS"],
-          "tags": ["corporate", "modern", "trust"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS_SUBTITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "corporate",
+            "modern",
+            "trust"
+          ]
         },
         {
           "id": "testimonials-minimal-01",
           "file": "testimonials/testimonials-minimal-01.html",
           "name": "Testimonials Minimal",
           "description": "Stile Apple ultra-minimale con citazioni grandi in corsivo centrate e separatori sottili",
-          "placeholders": ["TESTIMONIALS_TITLE", "TESTIMONIALS"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
+        },
+        {
+          "id": "testimonials-editorial-01",
+          "file": "testimonials/testimonials-editorial-01.html",
+          "name": "Testimonials Editorial",
+          "description": "Layout editoriale con citazione grande serif, virgolette decorative oversize e autore con anello gradiente",
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS_SUBTITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "elegant",
+            "editorial",
+            "classic"
+          ]
+        },
+        {
+          "id": "testimonials-tabbed-01",
+          "file": "testimonials/testimonials-tabbed-01.html",
+          "name": "Testimonials Tabbed",
+          "description": "Interfaccia a tab CSS-only con nomi clienti come pulsanti, stelle rating e layout orizzontale avatar/citazione",
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS_SUBTITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "corporate",
+            "modern",
+            "tech"
+          ]
+        },
+        {
+          "id": "testimonials-video-01",
+          "file": "testimonials/testimonials-video-01.html",
+          "name": "Testimonials Video",
+          "description": "Split 60/40: citazione con icona SVG quote, stelle e autore a sinistra, thumbnail video con play a destra",
+          "placeholders": [
+            "TESTIMONIALS_TITLE",
+            "TESTIMONIALS_SUBTITLE",
+            "TESTIMONIALS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "corporate"
+          ]
         }
       ]
     },
@@ -536,64 +1422,188 @@
           "file": "cta/cta-banner-01.html",
           "name": "CTA Banner",
           "description": "Banner full-width con CTA",
-          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
-          "tags": ["modern", "bold", "corporate", "tech"]
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "corporate",
+            "tech"
+          ]
         },
         {
           "id": "cta-gradient-animated-01",
           "file": "cta/cta-gradient-animated-01.html",
           "name": "CTA Gradient Animated",
           "description": "Gradiente animato full-width con text-split e bottone magnetico",
-          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
-          "tags": ["bold", "modern", "tech"]
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech"
+          ]
         },
         {
           "id": "cta-floating-card-01",
           "file": "cta/cta-floating-card-01.html",
           "name": "CTA Floating Card",
           "description": "Card glassmorphism fluttuante con effetto tilt e parallax",
-          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
-          "tags": ["elegant", "modern", "classic"]
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "elegant",
+            "modern",
+            "classic"
+          ]
         },
         {
           "id": "cta-gradient-banner-01",
           "file": "cta/cta-gradient-banner-01.html",
           "name": "CTA Gradient Banner",
           "description": "Banner full-width con gradiente drammatico, forme fluttuanti e bottone luminoso",
-          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
-          "tags": ["bold", "modern", "tech"]
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech"
+          ]
         },
         {
           "id": "cta-split-image-01",
           "file": "cta/cta-split-image-01.html",
           "name": "CTA Split Image",
           "description": "Due colonne: testo e bottone a sinistra, arte geometrica CSS a destra",
-          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
-          "tags": ["modern", "corporate", "elegant"]
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "elegant"
+          ]
         },
         {
           "id": "cta-floating-card-02",
           "file": "cta/cta-floating-card-02.html",
           "name": "CTA Floating Card v2",
           "description": "Card con bordo gradiente, dot pattern e badge offerta speciale",
-          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "cta-newsletter-01",
           "file": "cta/cta-newsletter-01.html",
           "name": "CTA Newsletter",
           "description": "Signup email con icona mail, input + bottone magnetico e nota privacy",
-          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
-          "tags": ["modern", "corporate", "elegant"]
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "elegant"
+          ]
         },
         {
           "id": "cta-countdown-01",
           "file": "cta/cta-countdown-01.html",
           "name": "CTA Countdown",
           "description": "Sfondo scuro con countdown decorativo, badge urgenza e CTA luminoso",
-          "placeholders": ["CTA_TITLE", "CTA_SUBTITLE", "CTA_BUTTON_TEXT", "CTA_BUTTON_URL"],
-          "tags": ["bold", "modern", "tech"]
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech"
+          ]
+        },
+        {
+          "id": "cta-marquee-01",
+          "file": "cta/cta-marquee-01.html",
+          "name": "CTA Marquee",
+          "description": "CTA con banda marquee scrollante accent full-width come separatore visivo, titolo sopra e bottone sotto stile Pixy",
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "creative"
+          ]
+        },
+        {
+          "id": "cta-promo-banner-01",
+          "file": "cta/cta-promo-banner-01.html",
+          "name": "CTA Promo Banner",
+          "description": "Banner promozionale con sfondo gradiente, testo offerta grande, badge ribbon e cerchio decorativo stile Babette",
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "restaurant",
+            "bold",
+            "modern"
+          ]
+        },
+        {
+          "id": "cta-bold-text-01",
+          "file": "cta/cta-bold-text-01.html",
+          "name": "CTA Bold Text",
+          "description": "Sfondo scuro con titolo gigante text-8xl text-split, cerchio SVG decorativo e bottone gradiente magnetico",
+          "placeholders": [
+            "CTA_TITLE",
+            "CTA_SUBTITLE",
+            "CTA_BUTTON_TEXT",
+            "CTA_BUTTON_URL"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech"
+          ]
         }
       ]
     },
@@ -606,64 +1616,169 @@
           "file": "contact/contact-form-01.html",
           "name": "Contact Form",
           "description": "Form contatto con info aziendali",
-          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "CONTACT_ADDRESS", "CONTACT_PHONE", "CONTACT_EMAIL"],
-          "tags": ["modern", "corporate", "classic", "elegant"]
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "CONTACT_ADDRESS",
+            "CONTACT_PHONE",
+            "CONTACT_EMAIL"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "classic",
+            "elegant"
+          ]
         },
         {
           "id": "contact-split-map-01",
           "file": "contact/contact-split-map-01.html",
           "name": "Contact Split Map",
           "description": "Due colonne: card info contatto con tilt a sinistra, form con floating labels a destra",
-          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "CONTACT_ADDRESS", "CONTACT_PHONE", "CONTACT_EMAIL"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "CONTACT_ADDRESS",
+            "CONTACT_PHONE",
+            "CONTACT_EMAIL"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "contact-minimal-01",
           "file": "contact/contact-minimal-01.html",
           "name": "Contact Minimal",
           "description": "Layout centrato ultra-minimale con form semplice e bottone magnetico",
-          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "CONTACT_ADDRESS", "CONTACT_PHONE", "CONTACT_EMAIL"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "CONTACT_ADDRESS",
+            "CONTACT_PHONE",
+            "CONTACT_EMAIL"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "contact-modern-form-01",
           "file": "contact/contact-modern-form-01.html",
           "name": "Contact Modern Form",
           "description": "Split 2+3 colonne con info contatto a sinistra e form floating labels a destra",
-          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "BUSINESS_NAME", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "BUSINESS_NAME",
+            "BUSINESS_ADDRESS",
+            "BUSINESS_PHONE",
+            "BUSINESS_EMAIL"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "contact-card-01",
           "file": "contact/contact-card-01.html",
           "name": "Contact Cards",
           "description": "3 card info (telefono, email, indirizzo) con hover lift e form compatto inline",
-          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL"],
-          "tags": ["modern", "tech", "corporate"]
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "BUSINESS_ADDRESS",
+            "BUSINESS_PHONE",
+            "BUSINESS_EMAIL"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "corporate"
+          ]
         },
         {
           "id": "contact-minimal-02",
           "file": "contact/contact-minimal-02.html",
           "name": "Contact Minimal v2",
           "description": "Layout centrato ultra-pulito con info separate da divider e form sottile",
-          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "BUSINESS_ADDRESS",
+            "BUSINESS_PHONE",
+            "BUSINESS_EMAIL"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "contact-cards-grid-01",
           "file": "contact/contact-cards-grid-01.html",
           "name": "Contact Cards Grid",
           "description": "4 card info separate (telefono, email, indirizzo, orari) in griglia con hover lift",
-          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "BUSINESS_HOURS"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "BUSINESS_ADDRESS",
+            "BUSINESS_PHONE",
+            "BUSINESS_EMAIL",
+            "BUSINESS_HOURS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "contact-two-col-01",
           "file": "contact/contact-two-col-01.html",
           "name": "Contact Two Column",
           "description": "Due colonne: info contatto con mappa a sinistra, form con floating labels a destra",
-          "placeholders": ["CONTACT_TITLE", "CONTACT_SUBTITLE", "BUSINESS_NAME", "BUSINESS_ADDRESS", "BUSINESS_PHONE", "BUSINESS_EMAIL", "BUSINESS_HOURS"],
-          "tags": ["modern", "elegant", "corporate"]
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "BUSINESS_NAME",
+            "BUSINESS_ADDRESS",
+            "BUSINESS_PHONE",
+            "BUSINESS_EMAIL",
+            "BUSINESS_HOURS"
+          ],
+          "tags": [
+            "modern",
+            "elegant",
+            "corporate"
+          ]
+        },
+        {
+          "id": "contact-hours-01",
+          "file": "contact/contact-hours-01.html",
+          "name": "Contact Hours",
+          "description": "Tabella orari apertura elegante con giorni della settimana, card contatto e CTA prenotazione",
+          "placeholders": [
+            "CONTACT_TITLE",
+            "CONTACT_SUBTITLE",
+            "BUSINESS_HOURS",
+            "BUSINESS_PHONE",
+            "BUSINESS_EMAIL",
+            "BUSINESS_ADDRESS"
+          ],
+          "tags": [
+            "restaurant",
+            "elegant",
+            "cozy",
+            "classic"
+          ]
         }
       ]
     },
@@ -676,32 +1791,115 @@
           "file": "gallery/gallery-masonry-01.html",
           "name": "Gallery Masonry",
           "description": "Masonry CSS columns con hover overlay, caption animata e angoli decorativi",
-          "placeholders": ["GALLERY_TITLE", "GALLERY_SUBTITLE", "GALLERY_ITEMS"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "GALLERY_TITLE",
+            "GALLERY_SUBTITLE",
+            "GALLERY_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
         },
         {
           "id": "gallery-lightbox-01",
           "file": "gallery/gallery-lightbox-01.html",
           "name": "Gallery Lightbox",
           "description": "Griglia 3 colonne con effetto tilt e overlay caption al hover",
-          "placeholders": ["GALLERY_TITLE", "GALLERY_SUBTITLE", "GALLERY_ITEMS"],
-          "tags": ["elegant", "classic", "corporate"]
+          "placeholders": [
+            "GALLERY_TITLE",
+            "GALLERY_SUBTITLE",
+            "GALLERY_ITEMS"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "corporate"
+          ]
         },
         {
           "id": "gallery-filmstrip-01",
           "file": "gallery/gallery-filmstrip-01.html",
           "name": "Gallery Filmstrip",
           "description": "Filmstrip orizzontale con scroll snap, bordi decorativi e caption sotto ogni immagine",
-          "placeholders": ["GALLERY_TITLE", "GALLERY_SUBTITLE", "GALLERY_ITEMS"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "GALLERY_TITLE",
+            "GALLERY_SUBTITLE",
+            "GALLERY_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
         },
         {
           "id": "gallery-spotlight-01",
           "file": "gallery/gallery-spotlight-01.html",
           "name": "Gallery Spotlight",
           "description": "Immagine hero grande in alto con griglia di immagini piccole sotto, overlay al hover",
-          "placeholders": ["GALLERY_TITLE", "GALLERY_SUBTITLE", "GALLERY_ITEMS"],
-          "tags": ["elegant", "corporate", "classic"]
+          "placeholders": [
+            "GALLERY_TITLE",
+            "GALLERY_SUBTITLE",
+            "GALLERY_ITEMS"
+          ],
+          "tags": [
+            "elegant",
+            "corporate",
+            "classic"
+          ]
+        },
+        {
+          "id": "gallery-portfolio-masonry-01",
+          "file": "gallery/gallery-portfolio-masonry-01.html",
+          "name": "Gallery Portfolio Masonry",
+          "description": "Griglia masonry portfolio con aspect ratio misti, overlay hover con categoria e titolo progetto",
+          "placeholders": [
+            "GALLERY_TITLE",
+            "GALLERY_SUBTITLE",
+            "GALLERY_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "creative",
+            "bold",
+            "portfolio"
+          ]
+        },
+        {
+          "id": "gallery-portfolio-accordion-01",
+          "file": "gallery/gallery-portfolio-accordion-01.html",
+          "name": "Gallery Portfolio Accordion",
+          "description": "Strip orizzontali espandibili al hover con anteprima immagine e dettagli progetto",
+          "placeholders": [
+            "GALLERY_TITLE",
+            "GALLERY_SUBTITLE",
+            "GALLERY_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "creative",
+            "portfolio"
+          ]
+        },
+        {
+          "id": "gallery-portfolio-sticky-01",
+          "file": "gallery/gallery-portfolio-sticky-01.html",
+          "name": "Gallery Portfolio Sticky",
+          "description": "Layout editoriale split con sidebar sticky info progetto e immagine scrollabile",
+          "placeholders": [
+            "GALLERY_TITLE",
+            "GALLERY_SUBTITLE",
+            "GALLERY_ITEMS"
+          ],
+          "tags": [
+            "elegant",
+            "modern",
+            "portfolio",
+            "editorial"
+          ]
         }
       ]
     },
@@ -714,16 +1912,80 @@
           "file": "team/team-grid-01.html",
           "name": "Team Grid",
           "description": "Griglia responsiva con card membri del team, bio espandibile al hover",
-          "placeholders": ["TEAM_TITLE", "TEAM_SUBTITLE", "TEAM_MEMBERS"],
-          "tags": ["modern", "corporate", "classic"]
+          "placeholders": [
+            "TEAM_TITLE",
+            "TEAM_SUBTITLE",
+            "TEAM_MEMBERS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "classic"
+          ]
         },
         {
           "id": "team-carousel-01",
           "file": "team/team-carousel-01.html",
           "name": "Team Carousel",
           "description": "Carousel orizzontale con snap scroll e effetto magnetic",
-          "placeholders": ["TEAM_TITLE", "TEAM_SUBTITLE", "TEAM_MEMBERS"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "TEAM_TITLE",
+            "TEAM_SUBTITLE",
+            "TEAM_MEMBERS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
+        },
+        {
+          "id": "team-ceo-quote-01",
+          "file": "team/team-ceo-quote-01.html",
+          "name": "Team CEO Quote",
+          "description": "Spotlight fondatore con foto grande e citazione elegante, griglia team sotto con card-hover-3d",
+          "placeholders": [
+            "TEAM_TITLE",
+            "TEAM_SUBTITLE",
+            "TEAM_MEMBERS"
+          ],
+          "tags": [
+            "elegant",
+            "corporate",
+            "modern"
+          ]
+        },
+        {
+          "id": "team-speakers-01",
+          "file": "team/team-speakers-01.html",
+          "name": "Team Speakers",
+          "description": "Griglia foto circolari stile speaker/evento con social links al hover e bio espandibile",
+          "placeholders": [
+            "TEAM_TITLE",
+            "TEAM_SUBTITLE",
+            "TEAM_MEMBERS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "event"
+          ]
+        },
+        {
+          "id": "team-chef-01",
+          "file": "team/team-chef-01.html",
+          "name": "Team Chef Spotlight",
+          "description": "Spotlight chef con immagine grande, nome, ruolo, bio, citazione elegante e tag specialita",
+          "placeholders": [
+            "TEAM_TITLE",
+            "TEAM_SUBTITLE",
+            "TEAM_MEMBERS"
+          ],
+          "tags": [
+            "restaurant",
+            "elegant",
+            "cozy"
+          ]
         }
       ]
     },
@@ -736,40 +1998,96 @@
           "file": "pricing/pricing-cards-01.html",
           "name": "Pricing Cards",
           "description": "3 colonne con card in evidenza, badge Consigliato e counter prezzi",
-          "placeholders": ["PRICING_TITLE", "PRICING_SUBTITLE", "PRICING_PLANS"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "PRICING_TITLE",
+            "PRICING_SUBTITLE",
+            "PRICING_PLANS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "pricing-toggle-01",
           "file": "pricing/pricing-toggle-01.html",
           "name": "Pricing Toggle",
           "description": "Toggle mensile/annuale con glassmorphism sulla card in evidenza",
-          "placeholders": ["PRICING_TITLE", "PRICING_SUBTITLE", "PRICING_PLANS"],
-          "tags": ["modern", "tech", "elegant"]
+          "placeholders": [
+            "PRICING_TITLE",
+            "PRICING_SUBTITLE",
+            "PRICING_PLANS"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "elegant"
+          ]
         },
         {
           "id": "pricing-toggle-02",
           "file": "pricing/pricing-toggle-02.html",
           "name": "Pricing Toggle v2",
           "description": "Toggle CSS-only mensile/annuale con card gradiente per piano in evidenza e badge Popolare",
-          "placeholders": ["PRICING_TITLE", "PRICING_SUBTITLE", "PRICING_PLANS"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "PRICING_TITLE",
+            "PRICING_SUBTITLE",
+            "PRICING_PLANS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
         },
         {
           "id": "pricing-comparison-01",
           "file": "pricing/pricing-comparison-01.html",
           "name": "Pricing Comparison",
           "description": "Tabella comparativa desktop con righe alternate e layout card su mobile",
-          "placeholders": ["PRICING_TITLE", "PRICING_SUBTITLE", "PRICING_PLANS"],
-          "tags": ["corporate", "modern", "bold"]
+          "placeholders": [
+            "PRICING_TITLE",
+            "PRICING_SUBTITLE",
+            "PRICING_PLANS"
+          ],
+          "tags": [
+            "corporate",
+            "modern",
+            "bold"
+          ]
         },
         {
           "id": "pricing-minimal-01",
           "file": "pricing/pricing-minimal-01.html",
           "name": "Pricing Minimal",
           "description": "Layout editoriale minimale solo essenziali: nome, prezzo, descrizione e CTA con label Consigliato",
-          "placeholders": ["PRICING_TITLE", "PRICING_SUBTITLE", "PRICING_PLANS"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "PRICING_TITLE",
+            "PRICING_SUBTITLE",
+            "PRICING_PLANS"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
+        },
+        {
+          "id": "pricing-dark-parallax-01",
+          "file": "pricing/pricing-dark-parallax-01.html",
+          "name": "Pricing Dark Parallax",
+          "description": "Sfondo scuro cinematico con card bianche fluttuanti, piano Consigliato con bordo gradiente e scala maggiore",
+          "placeholders": [
+            "PRICING_TITLE",
+            "PRICING_SUBTITLE",
+            "PRICING_PLANS"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech"
+          ]
         }
       ]
     },
@@ -782,32 +2100,65 @@
           "file": "faq/faq-accordion-01.html",
           "name": "FAQ Accordion",
           "description": "Accordion con domande espandibili, icona plus/minus e design minimale",
-          "placeholders": ["FAQ_TITLE", "FAQ_SUBTITLE", "FAQ_ITEMS"],
-          "tags": ["modern", "classic", "elegant", "corporate"]
+          "placeholders": [
+            "FAQ_TITLE",
+            "FAQ_SUBTITLE",
+            "FAQ_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "classic",
+            "elegant",
+            "corporate"
+          ]
         },
         {
           "id": "faq-accordion-02",
           "file": "faq/faq-accordion-02.html",
           "name": "FAQ Accordion Modern",
           "description": "Accordion details/summary con chevron rotante, bordo accent on-open e design premium",
-          "placeholders": ["FAQ_TITLE", "FAQ_SUBTITLE", "FAQ_ITEMS"],
-          "tags": ["modern", "tech", "bold"]
+          "placeholders": [
+            "FAQ_TITLE",
+            "FAQ_SUBTITLE",
+            "FAQ_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
         },
         {
           "id": "faq-two-column-01",
           "file": "faq/faq-two-column-01.html",
           "name": "FAQ Two Column",
           "description": "Due colonne: titolo con forma decorativa a sinistra, accordion numerato a destra",
-          "placeholders": ["FAQ_TITLE", "FAQ_SUBTITLE", "FAQ_ITEMS"],
-          "tags": ["modern", "corporate", "elegant"]
+          "placeholders": [
+            "FAQ_TITLE",
+            "FAQ_SUBTITLE",
+            "FAQ_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "elegant"
+          ]
         },
         {
           "id": "faq-search-01",
           "file": "faq/faq-search-01.html",
           "name": "FAQ Search Style",
           "description": "Input decorativo in alto con card FAQ tutte visibili, icone domanda e hover lift",
-          "placeholders": ["FAQ_TITLE", "FAQ_SUBTITLE", "FAQ_ITEMS"],
-          "tags": ["modern", "tech", "corporate"]
+          "placeholders": [
+            "FAQ_TITLE",
+            "FAQ_SUBTITLE",
+            "FAQ_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "corporate"
+          ]
         }
       ]
     },
@@ -820,8 +2171,50 @@
           "file": "stats/stats-counters-01.html",
           "name": "Stats Counters",
           "description": "Numeri grandi con animazione counter, gradient-flow di sfondo e icone",
-          "placeholders": ["STATS_TITLE", "STATS_SUBTITLE", "STATS_ITEMS"],
-          "tags": ["modern", "bold", "tech", "corporate"]
+          "placeholders": [
+            "STATS_TITLE",
+            "STATS_SUBTITLE",
+            "STATS_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech",
+            "corporate"
+          ]
+        },
+        {
+          "id": "stats-circular-01",
+          "file": "stats/stats-circular-01.html",
+          "name": "Stats Circular",
+          "description": "Anelli SVG circolari con riempimento progressivo, counter animati al centro e glow al hover",
+          "placeholders": [
+            "STATS_TITLE",
+            "STATS_SUBTITLE",
+            "STATS_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
+        },
+        {
+          "id": "stats-wave-01",
+          "file": "stats/stats-wave-01.html",
+          "name": "Stats Wave",
+          "description": "Contatori su immagine di sfondo con overlay scuro e divisori SVG ondulati organici in alto e in basso",
+          "placeholders": [
+            "STATS_TITLE",
+            "STATS_SUBTITLE",
+            "STATS_BG_IMAGE",
+            "STATS_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "corporate"
+          ]
         }
       ]
     },
@@ -834,8 +2227,16 @@
           "file": "logos/logos-marquee-01.html",
           "name": "Logos Marquee",
           "description": "Scorrimento infinito loghi partner con grayscale e colore al hover",
-          "placeholders": ["LOGOS_TITLE", "LOGOS_ITEMS"],
-          "tags": ["modern", "corporate", "classic", "elegant"]
+          "placeholders": [
+            "LOGOS_TITLE",
+            "LOGOS_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "classic",
+            "elegant"
+          ]
         }
       ]
     },
@@ -848,24 +2249,64 @@
           "file": "process/process-steps-01.html",
           "name": "Process Steps",
           "description": "Passaggi orizzontali con linea connettiva, numeri e icone",
-          "placeholders": ["PROCESS_TITLE", "PROCESS_SUBTITLE", "PROCESS_STEPS"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "PROCESS_TITLE",
+            "PROCESS_SUBTITLE",
+            "PROCESS_STEPS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "process-horizontal-01",
           "file": "process/process-horizontal-01.html",
           "name": "Process Horizontal",
           "description": "Passaggi orizzontali con linea tratteggiata connettiva e cerchi numerati, verticale su mobile",
-          "placeholders": ["PROCESS_TITLE", "PROCESS_SUBTITLE", "PROCESS_STEPS"],
-          "tags": ["modern", "elegant", "corporate"]
+          "placeholders": [
+            "PROCESS_TITLE",
+            "PROCESS_SUBTITLE",
+            "PROCESS_STEPS"
+          ],
+          "tags": [
+            "modern",
+            "elegant",
+            "corporate"
+          ]
         },
         {
           "id": "process-cards-01",
           "file": "process/process-cards-01.html",
           "name": "Process Cards",
           "description": "Card con numero grande di sfondo, badge gradiente, frecce connettive e accent line al hover",
-          "placeholders": ["PROCESS_TITLE", "PROCESS_SUBTITLE", "PROCESS_STEPS"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "PROCESS_TITLE",
+            "PROCESS_SUBTITLE",
+            "PROCESS_STEPS"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
+        },
+        {
+          "id": "process-staggered-01",
+          "file": "process/process-staggered-01.html",
+          "name": "Process Staggered",
+          "description": "Step alternati sinistra/destra con linea tratteggiata centrale, numeri grandi e nodi gradiente animati",
+          "placeholders": [
+            "PROCESS_TITLE",
+            "PROCESS_SUBTITLE",
+            "PROCESS_STEPS"
+          ],
+          "tags": [
+            "modern",
+            "creative",
+            "bold"
+          ]
         }
       ]
     },
@@ -878,8 +2319,16 @@
           "file": "timeline/timeline-vertical-01.html",
           "name": "Timeline Vertical",
           "description": "Linea temporale verticale con voci alternate sinistra/destra e dot animati",
-          "placeholders": ["TIMELINE_TITLE", "TIMELINE_SUBTITLE", "TIMELINE_ITEMS"],
-          "tags": ["modern", "corporate", "elegant"]
+          "placeholders": [
+            "TIMELINE_TITLE",
+            "TIMELINE_SUBTITLE",
+            "TIMELINE_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "elegant"
+          ]
         }
       ]
     },
@@ -892,16 +2341,32 @@
           "file": "video/video-embed-01.html",
           "name": "Video Embed Dark",
           "description": "Sezione video cinematica scura con iframe glowing, barra decorativa e sfondo dot-grid",
-          "placeholders": ["VIDEO_TITLE", "VIDEO_SUBTITLE", "VIDEO_EMBED_URL"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "VIDEO_TITLE",
+            "VIDEO_SUBTITLE",
+            "VIDEO_EMBED_URL"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
         },
         {
           "id": "video-embed-02",
           "file": "video/video-embed-02.html",
           "name": "Video Embed Light",
           "description": "Sezione video chiara con linea accent, cornice offset decorativa e ombra morbida",
-          "placeholders": ["VIDEO_TITLE", "VIDEO_SUBTITLE", "VIDEO_EMBED_URL"],
-          "tags": ["elegant", "classic", "corporate"]
+          "placeholders": [
+            "VIDEO_TITLE",
+            "VIDEO_SUBTITLE",
+            "VIDEO_EMBED_URL"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "corporate"
+          ]
         }
       ]
     },
@@ -914,80 +2379,640 @@
           "file": "footer/footer-multi-col-01.html",
           "name": "Footer Multi Column",
           "description": "Footer multi-colonna con link e social",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["modern", "corporate", "bold"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
         },
         {
           "id": "footer-minimal-02",
           "file": "footer/footer-minimal-02.html",
           "name": "Footer Minimal",
           "description": "Footer minimale su una riga",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["classic", "elegant", "cozy"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "classic",
+            "elegant",
+            "cozy"
+          ]
         },
         {
           "id": "footer-mega-01",
           "file": "footer/footer-mega-01.html",
           "name": "Footer Mega",
           "description": "Mega footer 4 colonne con newsletter, social icons e gradient border",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["modern", "bold", "tech", "corporate"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech",
+            "corporate"
+          ]
         },
         {
           "id": "footer-gradient-01",
           "file": "footer/footer-gradient-01.html",
           "name": "Footer Dark Gradient",
           "description": "Footer scuro con gradiente, accent line animata, newsletter e social icons premium",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["modern", "bold", "tech"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "modern",
+            "bold",
+            "tech"
+          ]
         },
         {
           "id": "footer-centered-01",
           "file": "footer/footer-centered-01.html",
           "name": "Footer Centered",
           "description": "Footer centrato ultra-pulito con navigazione orizzontale e contatti su riga singola",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["elegant", "classic", "cozy"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "cozy"
+          ]
         },
         {
           "id": "footer-sitemap-01",
           "file": "footer/footer-sitemap-01.html",
           "name": "Footer Sitemap",
           "description": "Footer sitemap 5 colonne con divisore SVG ondulato e colori invertiti",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["corporate", "modern", "bold"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "corporate",
+            "modern",
+            "bold"
+          ]
         },
         {
           "id": "footer-cta-band-01",
           "file": "footer/footer-cta-band-01.html",
           "name": "Footer CTA Band",
           "description": "Grande sezione CTA con gradiente e barra info minima. Orientato alla conversione",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["bold", "modern", "tech", "corporate"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "bold",
+            "modern",
+            "tech",
+            "corporate"
+          ]
         },
         {
           "id": "footer-social-01",
           "file": "footer/footer-social-01.html",
           "name": "Footer Social",
           "description": "Footer con icone social grandi in primo piano e testo minimale",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["creative", "modern", "portfolio"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "creative",
+            "modern",
+            "portfolio"
+          ]
         },
         {
           "id": "footer-asymmetric-01",
           "file": "footer/footer-asymmetric-01.html",
           "name": "Footer Asymmetric",
           "description": "Layout asimmetrico 60/40: grande brand a sinistra, info compatte a destra",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["editorial", "creative", "bold"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "editorial",
+            "creative",
+            "bold"
+          ]
         },
         {
           "id": "footer-stacked-01",
           "file": "footer/footer-stacked-01.html",
           "name": "Footer Stacked",
           "description": "Stack verticale centrato: logo, tagline, nav, social, contatti, copyright",
-          "placeholders": ["FOOTER_DESCRIPTION"],
-          "tags": ["elegant", "classic", "clean"]
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "elegant",
+            "classic",
+            "clean"
+          ]
+        },
+        {
+          "id": "footer-talk-01",
+          "file": "footer/footer-talk-01.html",
+          "name": "Footer Talk",
+          "description": "Footer conversazionale 'Parliamo del Tuo Progetto' con email e telefono display grandi, social icons e sfondo scuro stile Pixy agency",
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "creative",
+            "modern",
+            "bold"
+          ]
+        },
+        {
+          "id": "footer-content-grid-01",
+          "file": "footer/footer-content-grid-01.html",
+          "name": "Footer Content Grid",
+          "description": "Footer scuro 4 colonne con contenuti diversi: articoli numerati, ultimi post, categorie e galleria 3x3",
+          "placeholders": [
+            "FOOTER_DESCRIPTION"
+          ],
+          "tags": [
+            "modern",
+            "editorial",
+            "bold"
+          ]
+        }
+      ]
+    },
+    "schedule": {
+      "label": "Programma",
+      "required": false,
+      "variants": [
+        {
+          "id": "schedule-accordion-01",
+          "file": "schedule/schedule-accordion-01.html",
+          "name": "Schedule Accordion",
+          "description": "Programma evento accordion con slot orari espandibili, due colonne mattina/pomeriggio, speaker e location",
+          "placeholders": [
+            "SCHEDULE_TITLE",
+            "SCHEDULE_SUBTITLE",
+            "SCHEDULE_ITEMS"
+          ],
+          "tags": [
+            "event",
+            "modern",
+            "corporate"
+          ]
+        },
+        {
+          "id": "schedule-tabbed-multi-01",
+          "file": "schedule/schedule-tabbed-multi-01.html",
+          "name": "Schedule Tabbed Multi-Day",
+          "description": "Programma multi-giorno con tab CSS-only per 3 giorni, card eventi con orario, speaker e foto circolare",
+          "placeholders": [
+            "SCHEDULE_TITLE",
+            "SCHEDULE_SUBTITLE",
+            "TAB_1",
+            "TAB_2",
+            "TAB_3",
+            "SCHEDULE_ITEMS"
+          ],
+          "tags": [
+            "event",
+            "modern",
+            "corporate"
+          ]
+        }
+      ]
+    },
+    "menu": {
+      "label": "Menu",
+      "required": false,
+      "variants": [
+        {
+          "id": "menu-tabbed-01",
+          "file": "menu/menu-tabbed-01.html",
+          "name": "Menu Tabbed",
+          "description": "Menu a tab CSS-only con categorie pill, lista piatti con nome, descrizione, badge e prezzo",
+          "placeholders": [
+            "MENU_TITLE",
+            "MENU_SUBTITLE",
+            "MENU_ITEMS"
+          ],
+          "tags": [
+            "restaurant",
+            "modern",
+            "bold"
+          ]
+        },
+        {
+          "id": "menu-columns-01",
+          "file": "menu/menu-columns-01.html",
+          "name": "Menu Columns",
+          "description": "Menu classico a due colonne con linea tratteggiata tra nome e prezzo, stile fine dining elegante",
+          "placeholders": [
+            "MENU_TITLE",
+            "MENU_SUBTITLE",
+            "MENU_ITEMS"
+          ],
+          "tags": [
+            "restaurant",
+            "elegant",
+            "classic"
+          ]
+        },
+        {
+          "id": "menu-filterable-01",
+          "file": "menu/menu-filterable-01.html",
+          "name": "Menu Filterable",
+          "description": "Griglia card con filtri categoria CSS-only, immagini piatti, tag categoria, prezzo e badge",
+          "placeholders": [
+            "MENU_TITLE",
+            "MENU_SUBTITLE",
+            "MENU_ITEMS"
+          ],
+          "tags": [
+            "restaurant",
+            "modern",
+            "bold"
+          ]
+        },
+        {
+          "id": "menu-list-01",
+          "file": "menu/menu-list-01.html",
+          "name": "Menu List",
+          "description": "Lista menu pulita e minimale con icone emoji, underline accent al hover e divisori sottili",
+          "placeholders": [
+            "MENU_TITLE",
+            "MENU_SUBTITLE",
+            "MENU_ITEMS"
+          ],
+          "tags": [
+            "restaurant",
+            "elegant",
+            "cozy"
+          ]
+        },
+        {
+          "id": "menu-image-grid-01",
+          "file": "menu/menu-image-grid-01.html",
+          "name": "Menu Image Grid",
+          "description": "Griglia card centrata sulle immagini con hover zoom, overlay gradiente, tag categoria e prezzo",
+          "placeholders": [
+            "MENU_TITLE",
+            "MENU_SUBTITLE",
+            "MENU_ITEMS"
+          ],
+          "tags": [
+            "restaurant",
+            "modern",
+            "cozy"
+          ]
+        },
+        {
+          "id": "menu-cards-01",
+          "file": "menu/menu-cards-01.html",
+          "name": "Menu Cards",
+          "description": "Card orizzontali con thumbnail a sinistra e info a destra, hover lift e accent underline reveal",
+          "placeholders": [
+            "MENU_TITLE",
+            "MENU_SUBTITLE",
+            "MENU_ITEMS"
+          ],
+          "tags": [
+            "restaurant",
+            "classic",
+            "elegant"
+          ]
+        }
+      ]
+    },
+    "reservation": {
+      "label": "Prenotazione",
+      "required": false,
+      "variants": [
+        {
+          "id": "reservation-inline-01",
+          "file": "reservation/reservation-inline-01.html",
+          "name": "Reservation Inline",
+          "description": "Barra prenotazione compatta orizzontale con date picker, orario, ospiti e bottone Prenota su sfondo accent",
+          "placeholders": [
+            "RESERVATION_TITLE",
+            "RESERVATION_SUBTITLE",
+            "RESERVATION_PHONE",
+            "RESERVATION_EMAIL"
+          ],
+          "tags": [
+            "restaurant",
+            "modern",
+            "bold"
+          ]
+        },
+        {
+          "id": "reservation-split-01",
+          "file": "reservation/reservation-split-01.html",
+          "name": "Reservation Split",
+          "description": "Due colonne: form prenotazione completo a sinistra, orari apertura e contatti a destra con divider decorativo",
+          "placeholders": [
+            "RESERVATION_TITLE",
+            "RESERVATION_SUBTITLE",
+            "RESERVATION_PHONE",
+            "RESERVATION_EMAIL",
+            "BUSINESS_HOURS",
+            "BUSINESS_ADDRESS"
+          ],
+          "tags": [
+            "restaurant",
+            "elegant",
+            "classic"
+          ]
+        },
+        {
+          "id": "reservation-modal-01",
+          "file": "reservation/reservation-modal-01.html",
+          "name": "Reservation Modal",
+          "description": "Sezione CTA full-width con immagine sfondo, overlay scuro, headline elegante e form inline glassmorphism",
+          "placeholders": [
+            "RESERVATION_TITLE",
+            "RESERVATION_SUBTITLE",
+            "RESERVATION_PHONE",
+            "RESERVATION_EMAIL",
+            "HERO_IMAGE_URL"
+          ],
+          "tags": [
+            "restaurant",
+            "elegant",
+            "bold"
+          ]
+        }
+      ]
+    },
+    "comparison": {
+      "label": "Confronto",
+      "required": false,
+      "variants": [
+        {
+          "id": "comparison-table-01",
+          "file": "comparison/comparison-table-01.html",
+          "name": "Comparison Table",
+          "description": "Tabella confronto Noi vs Altri con check/cross, layout card su mobile e CTA",
+          "placeholders": [
+            "COMPARISON_TITLE",
+            "COMPARISON_SUBTITLE",
+            "COMPARISON_BRAND_NAME",
+            "COMPARISON_ITEMS",
+            "COMPARISON_CTA_TEXT",
+            "COMPARISON_CTA_URL"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold",
+            "trust"
+          ]
+        }
+      ]
+    },
+    "booking": {
+      "label": "Prenotazione Appuntamento",
+      "required": false,
+      "variants": [
+        {
+          "id": "booking-form-01",
+          "file": "booking/booking-form-01.html",
+          "name": "Booking Form",
+          "description": "Form prenotazione split: pannello info (telefono, email, orari) a sinistra, form con accento gradiente a destra",
+          "placeholders": [
+            "BOOKING_TITLE",
+            "BOOKING_SUBTITLE",
+            "BOOKING_DESCRIPTION",
+            "BOOKING_PHONE",
+            "BOOKING_EMAIL",
+            "BOOKING_HOURS",
+            "BOOKING_SERVICE_LABEL",
+            "BOOKING_NOTES_LABEL",
+            "BOOKING_BUTTON_TEXT"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "elegant",
+            "trust"
+          ]
+        }
+      ]
+    },
+    "app-download": {
+      "label": "Download App",
+      "required": false,
+      "variants": [
+        {
+          "id": "app-download-01",
+          "file": "app-download/app-download-01.html",
+          "name": "App Download",
+          "description": "Sezione download app con mockup telefono, checklist feature, bottoni App Store e Google Play",
+          "placeholders": [
+            "APP_TITLE",
+            "APP_SUBTITLE",
+            "APP_FEATURES",
+            "APP_IMAGE_URL",
+            "APP_STORE_URL",
+            "APP_PLAY_URL"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
+        }
+      ]
+    },
+    "social-proof": {
+      "label": "Social Proof",
+      "required": false,
+      "variants": [
+        {
+          "id": "social-bar-01",
+          "file": "social-proof/social-bar-01.html",
+          "name": "Social Bar",
+          "description": "Barra social proof full-width con icone, contatori animati e hover scale per piattaforme social o partner",
+          "placeholders": [
+            "SOCIAL_TITLE",
+            "SOCIAL_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold",
+            "trust"
+          ]
+        }
+      ]
+    },
+    "blog": {
+      "label": "Blog",
+      "required": false,
+      "variants": [
+        {
+          "id": "blog-editorial-grid-01",
+          "file": "blog/blog-editorial-grid-01.html",
+          "name": "Blog Editorial Grid",
+          "description": "Griglia asimmetrica: 1 post grande featured (2/3) con overlay + 2 post piccoli impilati (1/3)",
+          "placeholders": [
+            "BLOG_TITLE",
+            "BLOG_SUBTITLE",
+            "BLOG_POSTS"
+          ],
+          "tags": [
+            "modern",
+            "editorial",
+            "elegant"
+          ]
+        },
+        {
+          "id": "blog-cards-grid-01",
+          "file": "blog/blog-cards-grid-01.html",
+          "name": "Blog Cards Grid",
+          "description": "Griglia 3 colonne di card blog con immagine, badge categoria, titolo, estratto e autore con avatar",
+          "placeholders": [
+            "BLOG_TITLE",
+            "BLOG_SUBTITLE",
+            "BLOG_POSTS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
+        },
+        {
+          "id": "blog-minimal-01",
+          "file": "blog/blog-minimal-01.html",
+          "name": "Blog Minimal",
+          "description": "Articoli editoriali impilati full-width: immagine sinistra (40%), testo destra (60%) con separatori",
+          "placeholders": [
+            "BLOG_TITLE",
+            "BLOG_SUBTITLE",
+            "BLOG_POSTS"
+          ],
+          "tags": [
+            "elegant",
+            "editorial",
+            "classic"
+          ]
+        }
+      ]
+    },
+    "awards": {
+      "label": "Riconoscimenti",
+      "required": false,
+      "variants": [
+        {
+          "id": "awards-timeline-01",
+          "file": "awards/awards-timeline-01.html",
+          "name": "Awards Timeline",
+          "description": "Split layout: 3 immagini offset con forme SVG a sinistra, lista premi con badge anno a destra",
+          "placeholders": [
+            "AWARDS_TITLE",
+            "AWARDS_SUBTITLE",
+            "AWARDS_IMAGE_1",
+            "AWARDS_IMAGE_2",
+            "AWARDS_IMAGE_3",
+            "AWARDS"
+          ],
+          "tags": [
+            "elegant",
+            "corporate",
+            "modern"
+          ]
+        }
+      ]
+    },
+    "listings": {
+      "label": "Catalogo",
+      "required": false,
+      "variants": [
+        {
+          "id": "listings-cards-01",
+          "file": "listings/listings-cards-01.html",
+          "name": "Listings Cards",
+          "description": "Griglia 3 colonne card catalogo: immagine con badge prezzo e cuore, specifiche icone, link scopri",
+          "placeholders": [
+            "LISTINGS_TITLE",
+            "LISTINGS_SUBTITLE",
+            "LISTING_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "corporate",
+            "bold"
+          ]
+        },
+        {
+          "id": "listings-filterable-01",
+          "file": "listings/listings-filterable-01.html",
+          "name": "Listings Filterable",
+          "description": "Griglia filtrabile CSS-only con 4 tab e card prodotto/servizio con specifiche e prezzo",
+          "placeholders": [
+            "LISTINGS_TITLE",
+            "LISTINGS_SUBTITLE",
+            "TAB_1",
+            "TAB_2",
+            "TAB_3",
+            "LISTING_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "tech",
+            "bold"
+          ]
+        }
+      ]
+    },
+    "donations": {
+      "label": "Donazioni",
+      "required": false,
+      "variants": [
+        {
+          "id": "donations-progress-01",
+          "file": "donations/donations-progress-01.html",
+          "name": "Donations Progress",
+          "description": "Card campagne con barra progresso animata, importi raccolto/obiettivo e bottone Dona Ora",
+          "placeholders": [
+            "DONATIONS_TITLE",
+            "DONATIONS_SUBTITLE",
+            "DONATION_ITEMS"
+          ],
+          "tags": [
+            "modern",
+            "trust",
+            "bold"
+          ]
+        },
+        {
+          "id": "donations-form-01",
+          "file": "donations/donations-form-01.html",
+          "name": "Donations Form",
+          "description": "Split: info con categorie a sinistra, form donazione con importi predefiniti selezionabili a destra",
+          "placeholders": [
+            "DONATION_FORM_TITLE",
+            "DONATION_FORM_SUBTITLE",
+            "DONATION_FORM_DESCRIPTION",
+            "DONATION_AMOUNT_1",
+            "DONATION_AMOUNT_2",
+            "DONATION_AMOUNT_3",
+            "DONATION_CATEGORY_1",
+            "DONATION_CATEGORY_2",
+            "DONATION_CATEGORY_3",
+            "DONATION_BUTTON_TEXT"
+          ],
+          "tags": [
+            "modern",
+            "trust",
+            "elegant"
+          ]
         }
       ]
     }

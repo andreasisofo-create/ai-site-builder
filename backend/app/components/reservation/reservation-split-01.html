@@ -1,0 +1,152 @@
+<!-- Reservation Split: two-column layout with form left, hours + contact right, decorative divider -->
+<section id="reservation" class="py-24 md:py-32 relative overflow-hidden" style="background: var(--color-bg-alt)">
+  <!-- Decorative background -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-[5%] left-[8%] w-80 h-80 rounded-full blur-3xl" style="background: var(--color-primary); opacity: 0.05;"></div>
+    <div class="absolute bottom-[8%] right-[5%] w-72 h-72 rounded-full blur-3xl" style="background: var(--color-secondary); opacity: 0.05;"></div>
+    <div class="absolute top-[50%] right-[40%] w-40 h-40 rounded-full blur-3xl" style="background: var(--color-accent, var(--color-secondary)); opacity: 0.03;"></div>
+    <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 44px 44px;"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+    <!-- Section Header -->
+    <div class="text-center mb-16" data-animate="reveal-up">
+      <p class="text-sm font-semibold tracking-widest uppercase mb-4 font-body" style="color: var(--color-primary)" data-animate="blur-in">Prenota un Tavolo</p>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-heading mb-4" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">{{RESERVATION_TITLE}}</h2>
+      <div class="w-16 h-1 rounded-full mx-auto mb-6" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));" data-animate="scale-in"></div>
+      <p class="max-w-2xl mx-auto font-body leading-relaxed" style="color: var(--color-text-muted)" data-animate="blur-slide" data-delay="0.15" data-duration="1">{{RESERVATION_SUBTITLE}}</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 items-stretch">
+
+      <!-- Left: Reservation Form -->
+      <div class="rounded-2xl lg:rounded-r-none p-8 md:p-10 shadow-xl border border-[var(--color-text)]/5" style="background: var(--color-bg);" data-animate="reveal-right">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+          </div>
+          <h3 class="text-xl font-bold font-heading" style="color: var(--color-text)">Compila il Modulo</h3>
+        </div>
+
+        <form class="space-y-5">
+          <!-- Name -->
+          <div class="relative">
+            <input type="text" id="rsv-name" required placeholder=" " class="peer w-full px-4 py-4 pt-6 rounded-xl border font-body text-base outline-none transition-all duration-300" style="background: var(--color-bg-alt); color: var(--color-text); border-color: transparent;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='transparent'">
+            <label for="rsv-name" class="absolute left-4 top-2 text-xs font-medium transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-xs font-body" style="color: var(--color-text-muted)">Nome e Cognome</label>
+          </div>
+
+          <!-- Date + Time -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-widest mb-2 font-body" style="color: var(--color-text-muted)">Data</label>
+              <input type="date" class="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all duration-300 font-body" style="background: var(--color-bg-alt); color: var(--color-text); border: 1.5px solid transparent;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='transparent'" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-widest mb-2 font-body" style="color: var(--color-text-muted)">Orario</label>
+              <select class="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all duration-300 font-body appearance-none cursor-pointer" style="background: var(--color-bg-alt); color: var(--color-text); border: 1.5px solid transparent; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222%22%3E%3Cpath d=%22m6 9 6 6 6-6%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='transparent'">
+                <option value="">Seleziona</option>
+                <option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option>
+                <option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Guests + Phone -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-widest mb-2 font-body" style="color: var(--color-text-muted)">Ospiti</label>
+              <select class="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all duration-300 font-body appearance-none cursor-pointer" style="background: var(--color-bg-alt); color: var(--color-text); border: 1.5px solid transparent; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222%22%3E%3Cpath d=%22m6 9 6 6 6-6%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='transparent'">
+                <option value="">Persone</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8+</option>
+              </select>
+            </div>
+            <div class="relative">
+              <input type="tel" id="rsv-phone" required placeholder=" " class="peer w-full px-4 py-4 pt-6 rounded-xl border font-body text-base outline-none transition-all duration-300" style="background: var(--color-bg-alt); color: var(--color-text); border-color: transparent;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='transparent'">
+              <label for="rsv-phone" class="absolute left-4 top-2 text-xs font-medium transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-xs font-body" style="color: var(--color-text-muted)">Telefono</label>
+            </div>
+          </div>
+
+          <!-- Message -->
+          <div class="relative">
+            <textarea id="rsv-message" rows="3" placeholder=" " class="peer w-full px-4 py-4 pt-6 rounded-xl border font-body text-base outline-none transition-all duration-300 resize-none" style="background: var(--color-bg-alt); color: var(--color-text); border-color: transparent;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='transparent'"></textarea>
+            <label for="rsv-message" class="absolute left-4 top-2 text-xs font-medium transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-xs font-body" style="color: var(--color-text-muted)">Note speciali (allergie, occasioni...)</label>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" data-animate="magnetic" class="w-full py-4 rounded-xl font-bold text-white text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 font-heading flex items-center justify-center gap-2" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));">
+            Prenota il Tuo Tavolo
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right: Hours & Contact Info -->
+      <div class="rounded-2xl lg:rounded-l-none p-8 md:p-10 flex flex-col justify-between border border-[var(--color-text)]/5 lg:border-l-0" style="background: linear-gradient(180deg, var(--color-bg), var(--color-bg-alt));" data-animate="reveal-left" data-delay="0.2">
+
+        <!-- Decorative divider for desktop (left edge accent) -->
+        <div class="hidden lg:block absolute left-1/2 top-[15%] bottom-[15%] w-px" style="background: linear-gradient(180deg, transparent, var(--color-primary), var(--color-accent, var(--color-secondary)), transparent);"></div>
+
+        <!-- Opening Hours -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-8">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md" style="background: linear-gradient(135deg, var(--color-accent, var(--color-secondary)), var(--color-primary));">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold font-heading" style="color: var(--color-text)">Orari di Apertura</h3>
+          </div>
+
+          <div class="rounded-xl p-6 border border-[var(--color-text)]/5" style="background: var(--color-bg);">
+            <p class="font-body leading-loose text-base" style="color: var(--color-text)">{{BUSINESS_HOURS}}</p>
+          </div>
+        </div>
+
+        <!-- Contact Details -->
+        <div class="space-y-5">
+          <h4 class="text-sm font-semibold uppercase tracking-widest font-body" style="color: var(--color-primary)">Contatti Diretti</h4>
+
+          <!-- Phone -->
+          <a href="tel:{{RESERVATION_PHONE}}" class="flex items-center gap-4 group">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 text-white shadow-md" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-widest font-body" style="color: var(--color-text-muted)">Telefono</p>
+              <p class="text-lg font-bold font-heading transition-colors duration-300 group-hover:opacity-80" style="color: var(--color-text)">{{RESERVATION_PHONE}}</p>
+            </div>
+          </a>
+
+          <!-- Email -->
+          <a href="mailto:{{RESERVATION_EMAIL}}" class="flex items-center gap-4 group">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 text-white shadow-md" style="background: linear-gradient(135deg, var(--color-secondary, var(--color-primary)), var(--color-accent, var(--color-primary)));">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-widest font-body" style="color: var(--color-text-muted)">Email</p>
+              <p class="text-lg font-bold font-heading transition-colors duration-300 group-hover:opacity-80" style="color: var(--color-text)">{{RESERVATION_EMAIL}}</p>
+            </div>
+          </a>
+
+          <!-- Address -->
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white shadow-md" style="background: linear-gradient(135deg, var(--color-accent, var(--color-primary)), var(--color-primary));">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-widest font-body" style="color: var(--color-text-muted)">Indirizzo</p>
+              <p class="font-body text-lg" style="color: var(--color-text)">{{BUSINESS_ADDRESS}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust badge -->
+        <div class="mt-8 pt-6" style="border-top: 1px solid var(--color-text); border-top-color: rgba(0,0,0,0.06);">
+          <p class="text-sm font-body flex items-center gap-2" style="color: var(--color-text-muted)">
+            <svg class="w-4 h-4" style="color: var(--color-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+            Conferma via SMS entro 30 minuti
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

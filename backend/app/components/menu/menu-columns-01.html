@@ -1,0 +1,89 @@
+<!-- Menu Columns: Classic two-column fine dining menu with dotted leaders, elegant serif feel -->
+<section id="menu" class="py-24 md:py-32 bg-[var(--color-bg)] overflow-hidden relative">
+
+  <!-- Subtle ornamental background -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-[var(--color-primary)]/5 rounded-full"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-[var(--color-primary)]/5 rounded-full"></div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-20" data-animate="fade-up">
+      <!-- Ornamental line -->
+      <div class="flex items-center justify-center gap-4 mb-8">
+        <div class="w-16 h-px bg-gradient-to-r from-transparent to-[var(--color-primary)]/40"></div>
+        <span class="text-2xl text-[var(--color-primary)]">&#10043;</span>
+        <div class="w-16 h-px bg-gradient-to-l from-transparent to-[var(--color-primary)]/40"></div>
+      </div>
+      <p class="text-sm font-semibold tracking-[0.25em] uppercase text-[var(--color-primary)] mb-4 font-body" data-animate="blur-in">Menu</p>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{MENU_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-xl mx-auto text-lg font-body italic" data-animate="blur-slide" data-delay="0.2">{{MENU_SUBTITLE}}</p>
+      <!-- Bottom ornament -->
+      <div class="flex items-center justify-center gap-3 mt-8">
+        <div class="w-8 h-px bg-[var(--color-primary)]/30"></div>
+        <div class="w-2 h-2 rotate-45 border border-[var(--color-primary)]/40"></div>
+        <div class="w-8 h-px bg-[var(--color-primary)]/30"></div>
+      </div>
+    </div>
+
+    <style>
+      .menu-col-item {
+        transition: all 0.3s ease;
+      }
+      .menu-col-item:hover {
+        transform: translateY(-2px);
+      }
+      .menu-col-item:hover .menu-col-name {
+        color: var(--color-primary);
+      }
+      .dotted-leader {
+        flex: 1;
+        border-bottom: 2px dotted color-mix(in srgb, var(--color-text) 15%, transparent);
+        margin: 0 0.75rem;
+        min-width: 2rem;
+        position: relative;
+        bottom: 4px;
+      }
+      .menu-col-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.15rem 0.55rem;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border-radius: 9999px;
+        border: 1px solid var(--color-primary);
+        color: var(--color-primary);
+        margin-left: 0.5rem;
+        white-space: nowrap;
+      }
+    </style>
+
+    <!-- Two-column layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-2" data-animate="stagger">
+      <!-- REPEAT:MENU_ITEMS -->
+      <div class="stagger-item menu-col-item py-4 border-b border-[var(--color-text)]/5 last:border-0" data-animate="fade-up">
+        <!-- Name + dotted leader + price row -->
+        <div class="flex items-baseline">
+          <h3 class="menu-col-name text-lg font-bold font-heading text-[var(--color-text)] transition-colors duration-300 whitespace-nowrap">{{MENU_ITEM_NAME}}</h3>
+          {{MENU_ITEM_BADGE}}
+          <span class="dotted-leader"></span>
+          <span class="text-lg font-bold font-heading text-[var(--color-primary)] whitespace-nowrap">{{MENU_ITEM_PRICE}}</span>
+        </div>
+        <!-- Description -->
+        <p class="text-sm text-[var(--color-text-muted)] font-body mt-1.5 italic leading-relaxed">{{MENU_ITEM_DESCRIPTION}}</p>
+      </div>
+      <!-- /REPEAT:MENU_ITEMS -->
+    </div>
+
+    <!-- Bottom ornamental divider -->
+    <div class="flex items-center justify-center gap-4 mt-16" data-animate="fade-up" data-delay="0.4">
+      <div class="w-24 h-px bg-gradient-to-r from-transparent to-[var(--color-primary)]/30"></div>
+      <span class="text-xl text-[var(--color-primary)]/50">&#10043;</span>
+      <div class="w-24 h-px bg-gradient-to-l from-transparent to-[var(--color-primary)]/30"></div>
+    </div>
+  </div>
+</section>

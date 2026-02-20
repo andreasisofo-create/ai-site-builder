@@ -99,26 +99,7 @@ The `gsap-universal.js` engine supports these `data-animate` attributes:
 - All section headings must use `data-animate="text-split"`, all CTAs must use `data-animate="magnetic"`
 - AI client class is named `KimiClient` for legacy reasons but actually uses Gemini via OpenRouter. Do NOT reference "Kimi" in new code/comments — use "Gemini" or "AI"
 
-## TODO: Next Session ("riprendiamo")
-When the user says "riprendiamo", implement these 3 features:
-
-### 1. Pre-Rendering Predittivo (Streaming Progressivo)
-Improve the generation UX so users "watch the site being born" instead of waiting:
-- When theme JSON arrives (Step 1): immediately show color palette preview + font names
-- When texts JSON arrives (Step 2): show hero title with typewriter effect, section names
-- Show skeleton placeholders with pulsing animation matching actual section dimensions
-- File: `frontend/src/app/dashboard/new/page.tsx` (wizard), uses `getGenerationStatus()` API
-- The backend already sends `preview_data` with colors, fonts, hero_title, sections
-
-### 2. Organic Entropy (Imperfezione Controllata)
-Add subtle randomness to break the "template" feel:
-- CSS micro-rotation on cards/grid items: `transform: rotate(calc(var(--entropy) * 1deg))` where --entropy is random between -1 and 1
-- Add to `head-template.html` as global CSS rule for `.stagger-item, .bento-card` etc.
-- In `gsap-universal.js`: randomize stagger delays slightly (add Math.random() * 0.1 offset)
-
-### 3. Card Border Glow (Linear-style hover)
-Upgrade the existing cursor-glow to also create a radial-gradient glow on card borders:
-- In `gsap-universal.js`: detect mousemove on elements with `data-animate="tilt"` or `.bento-card`
-- Apply a `radial-gradient` mask on the card border that follows the mouse position
-- CSS: `background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.1), transparent 40%)`
-- Only on desktop (hover: hover media query)
+## Completed Features (Feb 2026)
+- **Pre-Rendering Predittivo**: `GenerationExperience.tsx` — 5-scene progressive reveal (skeleton → palette → typewriter → sections → complete)
+- **Organic Entropy**: `gsap-universal.js` + `head-template.html` — CSS `--entropy` variable, randomized stagger delays, `prefers-reduced-motion` support
+- **Card Border Glow**: `gsap-universal.js` + `head-template.html` — Linear-style radial-gradient border glow on hover, desktop-only

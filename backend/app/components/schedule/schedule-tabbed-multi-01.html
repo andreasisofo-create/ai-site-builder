@@ -1,0 +1,238 @@
+<!-- Schedule Tabbed Multi-Day: CSS-only tabbed multi-day schedule with speaker photos, Eventify + Eventbiz inspired, pill-style tab navigation -->
+<section id="schedule" class="py-24 md:py-32 relative overflow-hidden" style="background: var(--color-bg-alt);">
+
+  <!-- Background decoration -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full blur-3xl opacity-[0.04]" style="background: var(--color-primary);"></div>
+    <div class="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full blur-3xl opacity-[0.03]" style="background: var(--color-secondary);"></div>
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 36px 36px;"></div>
+    <!-- Vertical accent lines -->
+    <div class="absolute top-0 left-[6%] w-px h-full opacity-[0.04]" style="background: var(--color-primary);"></div>
+    <div class="absolute top-0 right-[6%] w-px h-full opacity-[0.04]" style="background: var(--color-primary);"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+
+    <!-- Section header -->
+    <div class="text-center mb-12 md:mb-16">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border mb-6" style="border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.15); background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.05);" data-animate="blur-in">
+        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--color-primary);"></span>
+        <span class="text-xs font-semibold tracking-widest uppercase font-body" style="color: var(--color-primary);">Programma</span>
+      </div>
+
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-heading font-bold leading-tight mb-6" style="color: var(--color-text);" data-animate="text-split" data-split-type="words">
+        {{SCHEDULE_TITLE}}
+      </h2>
+
+      <p class="text-lg md:text-xl leading-relaxed font-body max-w-2xl mx-auto" style="color: var(--color-text-muted);" data-animate="blur-slide" data-delay="0.2" data-duration="1">
+        {{SCHEDULE_SUBTITLE}}
+      </p>
+    </div>
+
+    <!-- CSS-only Tabs -->
+    <div class="schedule-tabs" data-animate="fade-up" data-delay="0.3">
+
+      <!-- Hidden radio inputs for tab state -->
+      <input type="radio" name="schedule-tab" id="schedule-tab-1" class="sr-only" checked>
+      <input type="radio" name="schedule-tab" id="schedule-tab-2" class="sr-only">
+      <input type="radio" name="schedule-tab" id="schedule-tab-3" class="sr-only">
+
+      <!-- Tab navigation pills -->
+      <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-10 md:mb-14">
+        <label for="schedule-tab-1" class="schedule-tab-label group cursor-pointer px-6 md:px-8 py-3 md:py-3.5 rounded-full text-sm md:text-base font-heading font-bold transition-all duration-300 border-2 select-none" style="border-color: transparent; color: var(--color-text-muted);" data-tab-label="1">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full transition-all duration-300" style="background: var(--color-text-muted); opacity: 0.3;"></span>
+            {{TAB_1}}
+          </span>
+        </label>
+        <label for="schedule-tab-2" class="schedule-tab-label group cursor-pointer px-6 md:px-8 py-3 md:py-3.5 rounded-full text-sm md:text-base font-heading font-bold transition-all duration-300 border-2 select-none" style="border-color: transparent; color: var(--color-text-muted);" data-tab-label="2">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full transition-all duration-300" style="background: var(--color-text-muted); opacity: 0.3;"></span>
+            {{TAB_2}}
+          </span>
+        </label>
+        <label for="schedule-tab-3" class="schedule-tab-label group cursor-pointer px-6 md:px-8 py-3 md:py-3.5 rounded-full text-sm md:text-base font-heading font-bold transition-all duration-300 border-2 select-none" style="border-color: transparent; color: var(--color-text-muted);" data-tab-label="3">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full transition-all duration-300" style="background: var(--color-text-muted); opacity: 0.3;"></span>
+            {{TAB_3}}
+          </span>
+        </label>
+      </div>
+
+      <!-- Tab content panels -->
+      <!-- Day 1 -->
+      <div class="schedule-tab-content" data-tab-content="1">
+        <div class="space-y-0 rounded-2xl overflow-hidden" style="background: var(--color-bg); box-shadow: 0 8px 40px rgba(0,0,0,0.06);" data-animate="stagger">
+
+          <!-- REPEAT:SCHEDULE_ITEMS -->
+          <div class="stagger-item group relative flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 p-6 md:p-8 transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb,99,102,241),0.02)]" data-animate="fade-up" data-schedule-item>
+            <!-- Separator line (not on first item) -->
+            <div class="absolute top-0 left-6 right-6 h-px" style="background: linear-gradient(90deg, transparent, var(--color-text), transparent); opacity: 0.06;" data-item-separator></div>
+
+            <!-- Time badge -->
+            <div class="flex-shrink-0 min-w-[100px]">
+              <div class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-body font-bold tracking-wide" style="background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.08); color: var(--color-primary);">
+                <svg class="w-3.5 h-3.5 mr-2 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                {{SCHEDULE_TIME}}
+              </div>
+            </div>
+
+            <!-- Content: title, speaker, description -->
+            <div class="flex-1 min-w-0">
+              <h4 class="text-lg md:text-xl font-heading font-bold leading-tight mb-1.5 transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--color-text);">
+                {{SCHEDULE_EVENT_TITLE}}
+              </h4>
+              <div class="flex items-center gap-2 mb-2">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span class="text-sm font-body font-semibold" style="color: var(--color-primary);">{{SCHEDULE_SPEAKER}}</span>
+              </div>
+              <p class="text-sm font-body leading-relaxed" style="color: var(--color-text-muted);">{{SCHEDULE_DESCRIPTION}}</p>
+            </div>
+
+            <!-- Speaker image circle -->
+            <div class="flex-shrink-0 order-first md:order-last">
+              <div class="relative w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden border-2 transition-all duration-300 group-hover:border-[var(--color-primary)] group-hover:shadow-lg" style="border-color: var(--color-bg-alt); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                <img
+                  src="{{SCHEDULE_SPEAKER_IMAGE}}"
+                  alt="{{SCHEDULE_SPEAKER}}"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                >
+              </div>
+              <!-- Online indicator dot -->
+              <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 hidden" style="background: #22c55e; border-color: var(--color-bg);"></div>
+            </div>
+
+            <!-- Hover accent line -->
+            <div class="absolute left-0 top-0 bottom-0 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: linear-gradient(180deg, var(--color-primary), var(--color-secondary));"></div>
+          </div>
+          <!-- /REPEAT:SCHEDULE_ITEMS -->
+
+        </div>
+      </div>
+
+      <!-- Day 2 (same structure, populated by template engine) -->
+      <div class="schedule-tab-content" data-tab-content="2">
+        <div class="space-y-0 rounded-2xl overflow-hidden" style="background: var(--color-bg); box-shadow: 0 8px 40px rgba(0,0,0,0.06);" data-animate="stagger">
+          <!-- REPEAT:SCHEDULE_ITEMS -->
+          <div class="stagger-item group relative flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 p-6 md:p-8 transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb,99,102,241),0.02)]" data-animate="fade-up" data-schedule-item>
+            <div class="absolute top-0 left-6 right-6 h-px" style="background: linear-gradient(90deg, transparent, var(--color-text), transparent); opacity: 0.06;" data-item-separator></div>
+            <div class="flex-shrink-0 min-w-[100px]">
+              <div class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-body font-bold tracking-wide" style="background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.08); color: var(--color-primary);">
+                <svg class="w-3.5 h-3.5 mr-2 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                {{SCHEDULE_TIME}}
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-lg md:text-xl font-heading font-bold leading-tight mb-1.5 transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--color-text);">{{SCHEDULE_EVENT_TITLE}}</h4>
+              <div class="flex items-center gap-2 mb-2">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span class="text-sm font-body font-semibold" style="color: var(--color-primary);">{{SCHEDULE_SPEAKER}}</span>
+              </div>
+              <p class="text-sm font-body leading-relaxed" style="color: var(--color-text-muted);">{{SCHEDULE_DESCRIPTION}}</p>
+            </div>
+            <div class="flex-shrink-0 order-first md:order-last">
+              <div class="relative w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden border-2 transition-all duration-300 group-hover:border-[var(--color-primary)] group-hover:shadow-lg" style="border-color: var(--color-bg-alt); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                <img src="{{SCHEDULE_SPEAKER_IMAGE}}" alt="{{SCHEDULE_SPEAKER}}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+              </div>
+            </div>
+            <div class="absolute left-0 top-0 bottom-0 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: linear-gradient(180deg, var(--color-primary), var(--color-secondary));"></div>
+          </div>
+          <!-- /REPEAT:SCHEDULE_ITEMS -->
+        </div>
+      </div>
+
+      <!-- Day 3 (same structure) -->
+      <div class="schedule-tab-content" data-tab-content="3">
+        <div class="space-y-0 rounded-2xl overflow-hidden" style="background: var(--color-bg); box-shadow: 0 8px 40px rgba(0,0,0,0.06);" data-animate="stagger">
+          <!-- REPEAT:SCHEDULE_ITEMS -->
+          <div class="stagger-item group relative flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 p-6 md:p-8 transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb,99,102,241),0.02)]" data-animate="fade-up" data-schedule-item>
+            <div class="absolute top-0 left-6 right-6 h-px" style="background: linear-gradient(90deg, transparent, var(--color-text), transparent); opacity: 0.06;" data-item-separator></div>
+            <div class="flex-shrink-0 min-w-[100px]">
+              <div class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-body font-bold tracking-wide" style="background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.08); color: var(--color-primary);">
+                <svg class="w-3.5 h-3.5 mr-2 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                {{SCHEDULE_TIME}}
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-lg md:text-xl font-heading font-bold leading-tight mb-1.5 transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--color-text);">{{SCHEDULE_EVENT_TITLE}}</h4>
+              <div class="flex items-center gap-2 mb-2">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span class="text-sm font-body font-semibold" style="color: var(--color-primary);">{{SCHEDULE_SPEAKER}}</span>
+              </div>
+              <p class="text-sm font-body leading-relaxed" style="color: var(--color-text-muted);">{{SCHEDULE_DESCRIPTION}}</p>
+            </div>
+            <div class="flex-shrink-0 order-first md:order-last">
+              <div class="relative w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden border-2 transition-all duration-300 group-hover:border-[var(--color-primary)] group-hover:shadow-lg" style="border-color: var(--color-bg-alt); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                <img src="{{SCHEDULE_SPEAKER_IMAGE}}" alt="{{SCHEDULE_SPEAKER}}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+              </div>
+            </div>
+            <div class="absolute left-0 top-0 bottom-0 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: linear-gradient(180deg, var(--color-primary), var(--color-secondary));"></div>
+          </div>
+          <!-- /REPEAT:SCHEDULE_ITEMS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom decorative element -->
+    <div class="flex items-center justify-center gap-3 mt-16" data-animate="fade-up" data-delay="0.6">
+      <div class="w-12 h-px" style="background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.15);"></div>
+      <div class="w-2 h-2 rounded-full" style="background: var(--color-primary); opacity: 0.3;"></div>
+      <div class="w-12 h-px" style="background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.15);"></div>
+    </div>
+  </div>
+
+  <!-- CSS-only tab switching -->
+  <style>
+    /* Hide all tab content by default */
+    .schedule-tab-content {
+      display: none;
+    }
+    /* Show active tab content based on radio state */
+    #schedule-tab-1:checked ~ .schedule-tabs .schedule-tab-content[data-tab-content="1"],
+    #schedule-tab-1:checked ~ .schedule-tab-content[data-tab-content="1"] {
+      display: block;
+    }
+    #schedule-tab-2:checked ~ .schedule-tabs .schedule-tab-content[data-tab-content="2"],
+    #schedule-tab-2:checked ~ .schedule-tab-content[data-tab-content="2"] {
+      display: block;
+    }
+    #schedule-tab-3:checked ~ .schedule-tabs .schedule-tab-content[data-tab-content="3"],
+    #schedule-tab-3:checked ~ .schedule-tab-content[data-tab-content="3"] {
+      display: block;
+    }
+    /* Since radios are inside .schedule-tabs, use within-scope selectors */
+    .schedule-tabs:has(#schedule-tab-1:checked) .schedule-tab-content[data-tab-content="1"] { display: block; }
+    .schedule-tabs:has(#schedule-tab-2:checked) .schedule-tab-content[data-tab-content="2"] { display: block; }
+    .schedule-tabs:has(#schedule-tab-3:checked) .schedule-tab-content[data-tab-content="3"] { display: block; }
+
+    /* Active tab label styling */
+    .schedule-tabs:has(#schedule-tab-1:checked) label[data-tab-label="1"],
+    .schedule-tabs:has(#schedule-tab-2:checked) label[data-tab-label="2"],
+    .schedule-tabs:has(#schedule-tab-3:checked) label[data-tab-label="3"] {
+      background: var(--color-primary) !important;
+      color: white !important;
+      border-color: var(--color-primary) !important;
+      box-shadow: 0 4px 20px rgba(var(--color-primary-rgb, 99, 102, 241), 0.3);
+    }
+    .schedule-tabs:has(#schedule-tab-1:checked) label[data-tab-label="1"] span span:first-child,
+    .schedule-tabs:has(#schedule-tab-2:checked) label[data-tab-label="2"] span span:first-child,
+    .schedule-tabs:has(#schedule-tab-3:checked) label[data-tab-label="3"] span span:first-child {
+      background: white !important;
+      opacity: 1 !important;
+    }
+
+    /* Inactive tab hover */
+    .schedule-tab-label:hover {
+      border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.3) !important;
+      color: var(--color-primary) !important;
+    }
+
+    /* Hide separator on first item */
+    [data-schedule-item]:first-child [data-item-separator] {
+      display: none;
+    }
+  </style>
+</section>

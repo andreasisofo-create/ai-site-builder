@@ -1,0 +1,183 @@
+<!-- Services Bento Asymmetric: asymmetric bento grid with first service spanning 2 cols, varied heights and accent cards. Azota-inspired -->
+<section id="services" class="py-24 md:py-32 bg-[var(--color-bg)] overflow-hidden relative">
+
+  <!-- Ambient glows -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 left-1/4 w-96 h-96 bg-[var(--color-primary)]/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-20 right-1/3 w-80 h-80 bg-[var(--color-secondary)]/5 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 right-0 w-[500px] h-[500px] bg-[var(--color-accent)]/3 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Dot grid -->
+  <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 24px 24px;"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16 md:mb-20" data-animate="fade-up">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>
+        <span class="text-xs font-semibold tracking-widest uppercase text-[var(--color-primary)] font-body">I Nostri Servizi</span>
+      </div>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold font-heading text-[var(--color-text)] mb-5" data-animate="text-split" data-split-type="words">{{SERVICES_TITLE}}</h2>
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg font-body" data-animate="blur-slide" data-delay="0.2">{{SERVICES_SUBTITLE}}</p>
+    </div>
+
+    <!-- Asymmetric Bento Grid -->
+    <div class="svc-bento-asym-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" data-animate="stagger">
+      <!-- REPEAT:SERVICES -->
+      <div class="stagger-item svc-bento-asym-card group relative" data-animate="card-hover-3d">
+        <!-- Card -->
+        <div class="svc-bento-asym-inner relative h-full rounded-2xl overflow-hidden transition-all duration-500 border">
+          <!-- Background pattern (decorative, varies by card style) -->
+          <div class="absolute inset-0 pointer-events-none svc-bento-asym-bg-pattern"></div>
+
+          <!-- Card content -->
+          <div class="relative z-10 p-8 md:p-10 h-full flex flex-col">
+            <!-- Icon -->
+            <div class="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-2xl text-3xl md:text-4xl mb-6 svc-bento-asym-icon-bg transition-all duration-300 group-hover:scale-110">
+              {{SERVICE_ICON}}
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-xl md:text-2xl font-bold font-heading mb-3 svc-bento-asym-title transition-colors duration-300">
+              {{SERVICE_TITLE}}
+            </h3>
+
+            <!-- Description -->
+            <p class="leading-relaxed font-body svc-bento-asym-desc flex-1">
+              {{SERVICE_DESCRIPTION}}
+            </p>
+
+            <!-- Bottom accent + arrow -->
+            <div class="mt-6 flex items-center justify-between">
+              <div class="h-0.5 w-12 rounded-full svc-bento-asym-accent-line transition-all duration-500 group-hover:w-20"></div>
+              <div class="w-8 h-8 rounded-full flex items-center justify-center svc-bento-asym-arrow opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hover glow -->
+          <div class="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none svc-bento-asym-glow"></div>
+        </div>
+      </div>
+      <!-- /REPEAT:SERVICES -->
+    </div>
+  </div>
+
+  <style>
+    /* First card: spans 2 columns on lg, has accent background */
+    .svc-bento-asym-card:first-child {
+      grid-column: span 1;
+    }
+    @media (min-width: 1024px) {
+      .svc-bento-asym-card:first-child {
+        grid-column: span 2;
+      }
+    }
+
+    /* Default card style: light/subtle */
+    .svc-bento-asym-inner {
+      background: var(--color-bg-alt);
+      border-color: color-mix(in srgb, var(--color-text) 5%, transparent);
+    }
+    .svc-bento-asym-inner:hover {
+      border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+    }
+    .svc-bento-asym-icon-bg {
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+    .svc-bento-asym-title {
+      color: var(--color-text);
+    }
+    .svc-bento-asym-card:hover .svc-bento-asym-title {
+      color: var(--color-primary);
+    }
+    .svc-bento-asym-desc {
+      color: var(--color-text-muted);
+    }
+    .svc-bento-asym-accent-line {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    }
+    .svc-bento-asym-arrow {
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+      color: var(--color-primary);
+    }
+    .svc-bento-asym-glow {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 5%, transparent), transparent, color-mix(in srgb, var(--color-secondary) 5%, transparent));
+    }
+
+    /* First card: accent background, inverted colors */
+    .svc-bento-asym-card:first-child .svc-bento-asym-inner {
+      background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 80%, var(--color-secondary)));
+      border-color: transparent;
+    }
+    .svc-bento-asym-card:first-child .svc-bento-asym-icon-bg {
+      background: rgba(255,255,255,0.15);
+    }
+    .svc-bento-asym-card:first-child .svc-bento-asym-title {
+      color: white;
+    }
+    .svc-bento-asym-card:first-child:hover .svc-bento-asym-title {
+      color: white;
+    }
+    .svc-bento-asym-card:first-child .svc-bento-asym-desc {
+      color: rgba(255,255,255,0.8);
+    }
+    .svc-bento-asym-card:first-child .svc-bento-asym-accent-line {
+      background: rgba(255,255,255,0.3);
+    }
+    .svc-bento-asym-card:first-child .svc-bento-asym-arrow {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
+    .svc-bento-asym-card:first-child .svc-bento-asym-bg-pattern {
+      background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    /* Every 4th card: secondary accent background */
+    .svc-bento-asym-card:nth-child(4n) .svc-bento-asym-inner {
+      background: linear-gradient(135deg, var(--color-secondary), color-mix(in srgb, var(--color-secondary) 80%, var(--color-accent)));
+      border-color: transparent;
+    }
+    .svc-bento-asym-card:nth-child(4n) .svc-bento-asym-icon-bg {
+      background: rgba(255,255,255,0.15);
+    }
+    .svc-bento-asym-card:nth-child(4n) .svc-bento-asym-title {
+      color: white;
+    }
+    .svc-bento-asym-card:nth-child(4n):hover .svc-bento-asym-title {
+      color: white;
+    }
+    .svc-bento-asym-card:nth-child(4n) .svc-bento-asym-desc {
+      color: rgba(255,255,255,0.8);
+    }
+    .svc-bento-asym-card:nth-child(4n) .svc-bento-asym-accent-line {
+      background: rgba(255,255,255,0.3);
+    }
+    .svc-bento-asym-card:nth-child(4n) .svc-bento-asym-arrow {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
+    .svc-bento-asym-card:nth-child(4n) .svc-bento-asym-bg-pattern {
+      background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    /* 3rd card: bordered only, taller */
+    .svc-bento-asym-card:nth-child(3) .svc-bento-asym-inner {
+      background: var(--color-bg);
+      border-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border-width: 2px;
+    }
+
+    /* Varied heights for visual interest */
+    @media (min-width: 1024px) {
+      .svc-bento-asym-card:first-child .svc-bento-asym-inner { min-height: 280px; }
+      .svc-bento-asym-card:nth-child(3) .svc-bento-asym-inner { min-height: 320px; }
+    }
+  </style>
+</section>
