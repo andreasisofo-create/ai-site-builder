@@ -1,6 +1,10 @@
 """Routes per gestione siti"""
 
+import logging
+import re
 from datetime import datetime
+from urllib.parse import urlparse
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
@@ -13,7 +17,27 @@ from app.models.site import Site, SiteStatus
 from app.models.site_version import SiteVersion
 from app.models.user import User
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
+
+
+def _validate_image_url(url: str) -> bool:
+    """Validate image URL to prevent SSRF. Allow data:image/ URIs and public HTTPS URLs."""
+    if url.startswith("data:image/"):
+        return True
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        return False
+    host = parsed.hostname or ""
+    blocked = (
+        "localhost", "127.0.0.1", "0.0.0.0", "169.254.",
+        "10.", "172.16.", "192.168.", "::1", "[::1]",
+    )
+    for b in blocked:
+        if host.startswith(b) or host == b:
+            return False
+    return True
 
 
 # ============ SCHEMAS ============
@@ -310,6 +334,255 @@ async def rollback_version(
     }
 
 
+# ============ PHOTO MAP ============
+
+# Italian section metadata for photo-map endpoint
+_SECTION_META = {
+    "hero": {
+        "label": "Immagine principale del sito (Hero)",
+        "description": "La prima foto che i visitatori vedono. Occupa tutta la larghezza in alto.",
+        "size_hint": "Orizzontale, 1920x1080 ideale",
+    },
+    "about": {
+        "label": "Foto sezione Chi Siamo",
+        "description": "Mostra chi sei: il tuo locale, il tuo team, o te stesso al lavoro.",
+        "size_hint": "Verticale o quadrata, 800x1000 ideale",
+    },
+    "gallery": {
+        "label": "Galleria foto",
+        "description": "Mostra i tuoi lavori, piatti, prodotti o ambienti.",
+        "size_hint": "Quadrata, 800x800 ideale",
+    },
+    "team": {
+        "label": "Foto membro del team",
+        "description": "Le persone del tuo team. Usa foto professionali.",
+        "size_hint": "Verticale, 400x500 ideale",
+    },
+    "services": {
+        "label": "Foto servizio",
+        "description": "Rappresenta il servizio che offri.",
+        "size_hint": "Orizzontale o quadrata, 800x600 ideale",
+    },
+    "blog": {
+        "label": "Immagine articolo",
+        "description": "Immagine di copertina del post del blog.",
+        "size_hint": "Orizzontale, 1200x630 ideale",
+    },
+    "portfolio": {
+        "label": "Foto progetto portfolio",
+        "description": "Mostra i tuoi progetti e lavori migliori.",
+        "size_hint": "Orizzontale o quadrata, 800x800 ideale",
+    },
+    "listings": {
+        "label": "Foto annuncio",
+        "description": "Immagine dell'elemento in vetrina.",
+        "size_hint": "Quadrata, 600x600 ideale",
+    },
+    "menu": {
+        "label": "Foto piatto del menu",
+        "description": "Foto appetitosa del piatto o prodotto.",
+        "size_hint": "Quadrata, 600x600 ideale",
+    },
+    "donations": {
+        "label": "Foto causa/donazione",
+        "description": "Immagine che rappresenta la causa.",
+        "size_hint": "Orizzontale, 800x600 ideale",
+    },
+    "app-download": {
+        "label": "Immagine app/prodotto digitale",
+        "description": "Screenshot o mockup della tua app.",
+        "size_hint": "Verticale, 400x800 ideale",
+    },
+    "video": {
+        "label": "Anteprima video",
+        "description": "Immagine di copertina per il video.",
+        "size_hint": "Orizzontale, 1280x720 ideale",
+    },
+    "testimonials": {
+        "label": "Foto cliente/testimonianza",
+        "description": "Foto del cliente che ha lasciato la recensione.",
+        "size_hint": "Quadrata, 200x200 ideale",
+    },
+    "contact": {
+        "label": "Foto sezione contatti",
+        "description": "Immagine della sezione contattaci.",
+        "size_hint": "Orizzontale, 800x600 ideale",
+    },
+    "cta": {
+        "label": "Immagine call-to-action",
+        "description": "Immagine di sfondo della sezione azione.",
+        "size_hint": "Orizzontale, 1920x600 ideale",
+    },
+    "features": {
+        "label": "Foto funzionalita",
+        "description": "Immagine che illustra una funzionalita o vantaggio.",
+        "size_hint": "Quadrata, 600x600 ideale",
+    },
+    "pricing": {
+        "label": "Foto piano/offerta",
+        "description": "Immagine della sezione prezzi.",
+        "size_hint": "Quadrata, 600x600 ideale",
+    },
+}
+
+_DEFAULT_SECTION_META = {
+    "label": "Foto del sito",
+    "description": "Immagine usata nel sito.",
+    "size_hint": "800x600 ideale",
+}
+
+
+def _is_stock_url(url: str) -> bool:
+    """Check if a URL is a stock photo (Unsplash)."""
+    if not url:
+        return False
+    return "images.unsplash.com" in url or "unsplash.com" in url
+
+
+def _is_real_photo_url(url: str) -> bool:
+    """Return True only for real image URLs (http/https), skip SVGs and data URIs."""
+    if not url or not isinstance(url, str):
+        return False
+    url = url.strip()
+    if url.startswith("data:"):
+        return False
+    if url.startswith("#") or url == "placeholder" or url == "placeholder.jpg":
+        return False
+    if url.startswith("{{"):
+        return False
+    if url.startswith("http://") or url.startswith("https://"):
+        return True
+    return False
+
+
+def _extract_photos_from_html(html: str) -> list:
+    """Parse HTML to extract all real photo <img> tags with their section context."""
+    photos = []
+
+    section_pattern = re.compile(
+        r'<section[^>]*\bid=["\']([^"\']+)["\']', re.IGNORECASE
+    )
+    img_pattern = re.compile(
+        r'<img\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>', re.IGNORECASE
+    )
+
+    # Find all section start positions and their IDs
+    section_starts = []
+    for m in section_pattern.finditer(html):
+        section_starts.append((m.start(), m.group(1).lower().strip()))
+
+    # For each img, determine which section it belongs to
+    for img_match in img_pattern.finditer(html):
+        src = img_match.group(1).strip()
+
+        if not _is_real_photo_url(src):
+            continue
+
+        img_pos = img_match.start()
+
+        # Find the closest section that starts before this img
+        current_section = "other"
+        for sec_start, sec_id in reversed(section_starts):
+            if sec_start <= img_pos:
+                current_section = sec_id
+                break
+
+        # Extract alt text
+        alt_match = re.search(
+            r'alt=["\']([^"\']*)["\']', img_match.group(0), re.IGNORECASE
+        )
+        alt_text = alt_match.group(1) if alt_match else ""
+
+        photos.append({
+            "section_type": current_section,
+            "current_url": src,
+            "alt": alt_text,
+        })
+
+    return photos
+
+
+def _build_photo_map(photos: list) -> list:
+    """Convert raw extracted photos into the final photo-map with Italian labels."""
+    result = []
+    # Count totals per section first for "N di X" labels
+    section_totals: dict = {}
+    for photo in photos:
+        s = photo["section_type"]
+        section_totals[s] = section_totals.get(s, 0) + 1
+
+    section_counters: dict = {}
+    for photo in photos:
+        section = photo["section_type"]
+        section_counters[section] = section_counters.get(section, 0) + 1
+        idx = section_counters[section]
+        total = section_totals[section]
+
+        meta = _SECTION_META.get(section, _DEFAULT_SECTION_META)
+
+        # Build unique ID
+        if total == 1:
+            photo_id = f"{section}_main"
+        else:
+            photo_id = f"{section}_{idx}"
+
+        # Build label: singular if only one, "N di X" if multiple
+        if total == 1:
+            label = meta["label"]
+        else:
+            label = f"{meta['label']} {idx} di {total}"
+
+        result.append({
+            "id": photo_id,
+            "section_type": section,
+            "label": label,
+            "description": meta["description"],
+            "current_url": photo["current_url"],
+            "is_stock": _is_stock_url(photo["current_url"]),
+            "size_hint": meta["size_hint"],
+            "alt": photo.get("alt", ""),
+        })
+
+    return result
+
+
+@router.get("/{site_id}/photo-map")
+async def get_photo_map(
+    site_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Returns a map of all photos in the site with Italian labels and section context.
+
+    Scans the site's generated HTML for <img> tags, identifies the enclosing
+    section (hero, about, gallery, team, etc.), and returns a structured list
+    with user-friendly Italian labels, stock detection, and size hints.
+    """
+    site = db.query(Site).filter(
+        Site.id == site_id,
+        Site.owner_id == current_user.id,
+    ).first()
+
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    if not site.html_content:
+        raise HTTPException(status_code=400, detail="Sito non ancora generato")
+
+    raw_photos = _extract_photos_from_html(site.html_content)
+    photo_map = _build_photo_map(raw_photos)
+
+    stock_count = sum(1 for p in photo_map if p["is_stock"])
+    custom_count = len(photo_map) - stock_count
+
+    return {
+        "photos": photo_map,
+        "total_photos": len(photo_map),
+        "stock_count": stock_count,
+        "custom_count": custom_count,
+    }
+
+
 @router.get("/{site_id}/export")
 async def export_site(
     site_id: int,
@@ -343,3 +616,119 @@ async def export_site(
             "Content-Disposition": f'attachment; filename="{filename}"',
         },
     )
+
+
+# ============ PHOTO SWAP ============
+
+class PhotoSwapRequest(BaseModel):
+    """Request to swap a single photo in a generated site."""
+    photo_id: str  # e.g. "hero_main", "gallery_2", "team_1"
+    action: str  # "upload" or "keep_stock"
+    photo_url: Optional[str] = None  # New URL (required when action="upload")
+    current_url: Optional[str] = None  # Current URL to replace (from photo-map)
+
+
+@router.post("/{site_id}/photo-swap")
+async def swap_photo(
+    site_id: int,
+    data: PhotoSwapRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Swap a single photo in a generated site's HTML.
+
+    Finds the image by its current URL and replaces it with the new URL.
+    Works for both <img src="..."> and background-image: url(...) patterns.
+    """
+    # Validate action
+    if data.action not in ("upload", "keep_stock"):
+        raise HTTPException(
+            status_code=400,
+            detail="action deve essere 'upload' o 'keep_stock'",
+        )
+
+    # keep_stock: nothing to do
+    if data.action == "keep_stock":
+        return {
+            "success": True,
+            "photo_id": data.photo_id,
+            "action": "keep_stock",
+            "message": "Foto stock mantenuta",
+        }
+
+    # For upload action, photo_url is required
+    if not data.photo_url:
+        raise HTTPException(
+            status_code=400,
+            detail="photo_url e' obbligatorio per action='upload'",
+        )
+
+    # current_url is required to know what to replace
+    if not data.current_url:
+        raise HTTPException(
+            status_code=400,
+            detail="current_url e' obbligatorio per identificare la foto da sostituire",
+        )
+
+    # Validate the new URL (SSRF protection)
+    if not _validate_image_url(data.photo_url):
+        raise HTTPException(
+            status_code=400,
+            detail="URL immagine non valido. Usa https:// o data:image/",
+        )
+
+    # Block dangerous URL schemes in current_url too
+    if data.current_url.startswith(("javascript:", "file:", "data:text/html")):
+        raise HTTPException(
+            status_code=400,
+            detail="current_url non valido",
+        )
+
+    # Load site (owner check)
+    site = db.query(Site).filter(
+        Site.id == site_id,
+        Site.owner_id == current_user.id,
+    ).first()
+
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    if not site.html_content:
+        raise HTTPException(status_code=400, detail="Sito non ancora generato")
+
+    html = site.html_content
+    old_url = data.current_url
+
+    # Check that the old URL actually exists in the HTML
+    if old_url not in html:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Foto con URL corrente non trovata nell'HTML del sito (photo_id: {data.photo_id})",
+        )
+
+    # Replace: simple string replacement (URLs are unique in the HTML)
+    new_html = html.replace(old_url, data.photo_url)
+
+    # Verify replacement actually happened
+    if new_html == html:
+        raise HTTPException(
+            status_code=500,
+            detail="Sostituzione foto fallita",
+        )
+
+    # Save updated HTML
+    site.html_content = new_html
+    db.commit()
+    db.refresh(site)
+
+    logger.info(
+        "[PhotoSwap] User %d swapped photo '%s' in site %d",
+        current_user.id, data.photo_id, site_id,
+    )
+
+    return {
+        "success": True,
+        "photo_id": data.photo_id,
+        "old_url": old_url,
+        "new_url": data.photo_url,
+    }

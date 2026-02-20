@@ -20,15 +20,18 @@ import {
   CodeBracketIcon,
   ArrowUturnLeftIcon,
   QuestionMarkCircleIcon,
+  CameraIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import {
   getSite, updateSite, refineWebsite, deploySite, regenerateImages, Site,
   uploadMedia, getSiteImages, replaceImage, addVideo, SiteImage,
+  getPhotoMap,
 } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/i18n";
 import EquipePromo from "@/components/EquipePromo";
+import PhotoSwapPanel from "@/components/PhotoSwapPanel";
 
 interface ChatMessage {
   id: string;
@@ -209,6 +212,9 @@ export default function Editor() {
   // Guide panel state
   const [showGuidePanel, setShowGuidePanel] = useState(false);
 
+  // Photo swap panel state
+  const [showPhotoSwapPanel, setShowPhotoSwapPanel] = useState(false);
+
   // Media panel state
   const [showMediaPanel, setShowMediaPanel] = useState(false);
   const [siteImages, setSiteImages] = useState<SiteImage[]>([]);
@@ -257,6 +263,43 @@ export default function Editor() {
     }
   }, [site?.status, liveHtml, siteId]);
 
+  // Auto-show photo swap panel on first visit if site has stock photos
+  useEffect(() => {
+    if (site && siteId && (site.status === "ready" || site.status === "published") && liveHtml) {
+      try {
+        const seen = localStorage.getItem(`photo-swap-seen-${siteId}`);
+        if (seen) return;
+        getPhotoMap(Number(siteId))
+          .then((data) => {
+            if (data.stock_count > 0) {
+              setShowPhotoSwapPanel(true);
+              setShowGuidePanel(false);
+              setChatOpen(false);
+              setShowMediaPanel(false);
+            }
+            localStorage.setItem(`photo-swap-seen-${siteId}`, "true");
+          })
+          .catch(() => {
+            // API not ready yet, ignore
+          });
+      } catch {
+        // localStorage may throw
+      }
+    }
+  }, [site?.status, liveHtml, siteId]);
+
+  const openPhotoSwapPanel = () => {
+    setShowPhotoSwapPanel(true);
+    setShowGuidePanel(false);
+    setChatOpen(false);
+    setShowMediaPanel(false);
+  };
+
+  const handlePhotoSwapped = () => {
+    // Reload the site to refresh the iframe with updated HTML
+    loadSite();
+  };
+
   const handleGuideDismiss = () => {
     setShowGuidePanel(false);
     setChatOpen(true);
@@ -292,6 +335,7 @@ export default function Editor() {
     setShowMediaPanel(true);
     setShowGuidePanel(false);
     setChatOpen(false);
+    setShowPhotoSwapPanel(false);
     loadSiteImages();
   };
 
@@ -782,6 +826,20 @@ export default function Editor() {
               <QuestionMarkCircleIcon className="w-5 h-5" />
             </button>
 
+            {/* Photo Swap Toggle */}
+            <button
+              onClick={openPhotoSwapPanel}
+              className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                showPhotoSwapPanel
+                  ? "bg-blue-600 text-white"
+                  : "text-slate-300 hover:text-white hover:bg-white/5"
+              }`}
+              title={language === "en" ? "Customize photos" : "Personalizza foto"}
+            >
+              <CameraIcon className="w-4 h-4" />
+              <span className="hidden md:inline">{language === "en" ? "Photos" : "Foto"}</span>
+            </button>
+
             {/* Media Toggle */}
             <button
               onClick={openMediaPanel}
@@ -803,6 +861,7 @@ export default function Editor() {
                   setShowGuidePanel(false);
                 }
                 setShowMediaPanel(false);
+                setShowPhotoSwapPanel(false);
                 setChatOpen(!chatOpen);
               }}
               disabled={!liveHtml}
@@ -962,10 +1021,17 @@ export default function Editor() {
           )}
         </div>
 
-        {/* Left Sidebar: Guide Panel, Chat Panel, or Media Panel */}
-        {(chatOpen || showGuidePanel || showMediaPanel) && (
+        {/* Left Sidebar: Guide Panel, Chat Panel, Media Panel, or Photo Swap Panel */}
+        {(chatOpen || showGuidePanel || showMediaPanel || showPhotoSwapPanel) && (
           <aside className="w-full sm:w-[380px] fixed sm:relative inset-0 sm:inset-auto z-50 sm:z-auto bg-[#0d0d12] border-r border-white/10 flex flex-col flex-shrink-0 order-1">
-            {showMediaPanel ? (
+            {showPhotoSwapPanel ? (
+              <PhotoSwapPanel
+                siteId={Number(siteId)}
+                onClose={() => setShowPhotoSwapPanel(false)}
+                onPhotoSwapped={handlePhotoSwapped}
+                language={language}
+              />
+            ) : showMediaPanel ? (
               <>
                 {/* Media Panel Header */}
                 <div className="p-4 border-b border-white/10 flex items-center justify-between">

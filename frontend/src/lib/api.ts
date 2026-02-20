@@ -647,6 +647,54 @@ export async function addVideo(siteId: number, videoUrl: string, afterSection: s
   return handleResponse<{ html_content: string; message: string }>(res);
 }
 
+// ============ PHOTO MAP / PHOTO SWAP ============
+
+export interface PhotoMapItem {
+  id: string;
+  section_type: string;
+  label: string;
+  description: string;
+  current_url: string;
+  is_stock: boolean;
+  size_hint: string;
+}
+
+export interface PhotoMapResponse {
+  photos: PhotoMapItem[];
+  total_photos: number;
+  stock_count: number;
+  custom_count: number;
+}
+
+export interface PhotoSwapResponse {
+  success: boolean;
+  photo_id: string;
+  new_url: string;
+}
+
+export async function getPhotoMap(siteId: number): Promise<PhotoMapResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${siteId}/photo-map`, { headers });
+  return handleResponse<PhotoMapResponse>(res);
+}
+
+export async function swapPhoto(
+  siteId: number,
+  photoId: string,
+  action: "upload" | "keep_stock",
+  photoUrl?: string
+): Promise<PhotoSwapResponse> {
+  const headers = getAuthHeaders();
+  const body: Record<string, string> = { photo_id: photoId, action };
+  if (photoUrl) body.photo_url = photoUrl;
+  const res = await fetch(`${API_BASE}/api/sites/${siteId}/photo-swap`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+  return handleResponse<PhotoSwapResponse>(res);
+}
+
 // ============ IMAGE ANALYSIS ============
 
 export async function analyzeImage(imageUrl: string): Promise<{ analysis: string } | null> {
