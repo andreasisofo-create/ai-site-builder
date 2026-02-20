@@ -1,0 +1,89 @@
+{
+  "_doc": "Regole personalizzate del proprietario. Queste regole vengono lette dal Site Planner e dal Questioner OLTRE alle regole degli esperti (site_quality_guide.py). Modifica questo file per aggiungere requisiti specifici che il sistema deve sempre rispettare.",
+  "_updated": "2026-02-20",
+
+  "mandatory_checks": {
+    "photos": {
+      "rule": "Ogni sito DEVE avere almeno una foto reale nell'hero e nella sezione about. Se l'utente non fornisce foto, usare stock photos Unsplash o generare con AI.",
+      "severity": "critical",
+      "sections_requiring_photos": ["hero", "about", "gallery", "team"],
+      "fallback_strategy": "stock_photos_first_then_ai"
+    },
+    "video": {
+      "rule": "Chiedere SEMPRE all'utente se ha un video di presentazione (YouTube/Vimeo). Se fornito, inserirlo nella hero section o in una sezione video dedicata.",
+      "severity": "high",
+      "ask_always": true
+    },
+    "no_empty_images": {
+      "rule": "Nessun tag <img> deve avere src vuoto o placeholder nel sito finale. Ogni immagine deve avere un URL valido (foto utente, stock, o generata AI).",
+      "severity": "critical"
+    },
+    "alt_text": {
+      "rule": "Ogni immagine deve avere alt text descrittivo in italiano. Mai lasciare alt vuoto.",
+      "severity": "critical"
+    }
+  },
+
+  "content_rules": {
+    "no_generic_text": {
+      "rule": "Mai usare frasi generiche come 'benvenuti', 'siamo un'azienda leader', 'lorem ipsum'. Ogni testo deve essere specifico per il business dell'utente.",
+      "severity": "critical"
+    },
+    "italian_language": {
+      "rule": "Tutto il contenuto testuale deve essere in italiano corretto e naturale.",
+      "severity": "critical"
+    },
+    "cta_specifici": {
+      "rule": "I bottoni CTA devono avere testo specifico (non generico 'Scopri di più'). Esempi: 'Prenota un Tavolo', 'Richiedi Preventivo', 'Prova Gratis'.",
+      "severity": "high"
+    }
+  },
+
+  "design_rules": {
+    "animations_required": {
+      "rule": "Ogni sezione deve avere almeno un'animazione GSAP. Hero h1 DEVE avere text-split, CTA DEVE avere magnetic.",
+      "severity": "high"
+    },
+    "mobile_first": {
+      "rule": "Il sito deve essere responsive e ottimizzato per mobile. Immagini dopo testo su mobile.",
+      "severity": "high"
+    },
+    "color_consistency": {
+      "rule": "Usare SOLO CSS variables per i colori. Mai colori hardcoded.",
+      "severity": "medium"
+    }
+  },
+
+  "interaction_rules": {
+    "always_ask_photos": {
+      "rule": "Chiedere SEMPRE se l'utente vuole caricare foto per hero, about e gallery. Non assumere mai che non ha foto.",
+      "when": "before_generation"
+    },
+    "always_ask_video": {
+      "rule": "Chiedere SEMPRE se l'utente ha un video di presentazione (YouTube/Vimeo URL).",
+      "when": "before_generation"
+    },
+    "offer_ai_generation": {
+      "rule": "Per ogni foto/testo mancante, offrire esplicitamente: 'Vuoi che lo generi io con AI, oppure preferisci caricarlo tu?'",
+      "when": "before_generation"
+    },
+    "pre_delivery_review": {
+      "rule": "Prima di mostrare il sito all'utente, verificare: nessun placeholder, nessuna foto mancante, nessun testo generico, tutte le sezioni presenti.",
+      "when": "after_generation"
+    }
+  },
+
+  "quality_thresholds": {
+    "min_pre_delivery_score": 70,
+    "min_images_per_site": 3,
+    "max_placeholder_tolerance": 0,
+    "required_gsap_animations": true
+  },
+
+  "custom_notes": [
+    "I siti per ristoranti DEVONO avere foto dei piatti nella gallery",
+    "I siti SaaS DEVONO avere screenshot del prodotto",
+    "Le testimonianze DEVONO avere foto avatar dei clienti",
+    "La sezione team DEVE avere foto professionali dei membri"
+  ]
+}

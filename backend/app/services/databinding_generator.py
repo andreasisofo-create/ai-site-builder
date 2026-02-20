@@ -5799,8 +5799,19 @@ RULES:
 
     @staticmethod
     def _is_placeholder_url(url: str) -> bool:
-        """Check if a URL is a placeholder (inline SVG data URI or legacy placehold.co)."""
-        return isinstance(url, str) and ("placehold.co" in url or url.startswith("data:image/svg+xml,"))
+        """Check if a URL is a placeholder, empty, or missing — needs replacement."""
+        if not url or not isinstance(url, str):
+            return True
+        url = url.strip()
+        if not url:
+            return True
+        # Known placeholder patterns
+        if "placehold.co" in url or url.startswith("data:image/svg+xml,"):
+            return True
+        # Template placeholders that weren't replaced
+        if url.startswith("{{") or url == "#" or url == "placeholder" or url == "placeholder.jpg":
+            return True
+        return False
 
     def _inject_stock_photos(self, site_data: Dict[str, Any], template_style_id: Optional[str] = None) -> Dict[str, Any]:
         """Replace placeholder images with high-quality Unsplash stock photos.

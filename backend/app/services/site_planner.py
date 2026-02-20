@@ -26,7 +26,9 @@ The resulting plan is injected into _generate_theme() and _generate_texts() as
 context, and can override _select_components_deterministic() choices.
 """
 
+import json
 import logging
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.services.resource_catalog import catalog
@@ -34,6 +36,23 @@ from app.services.site_quality_guide import quality_guide
 from app.services.usage_tracker import usage_tracker
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Owner Rules — custom requirements beyond expert guide
+# ---------------------------------------------------------------------------
+_OWNER_RULES_PATH = Path(__file__).parent / "owner_rules.json"
+
+def _load_owner_rules() -> Dict[str, Any]:
+    """Load owner rules from JSON file. Returns empty dict on failure."""
+    try:
+        if _OWNER_RULES_PATH.exists():
+            with open(_OWNER_RULES_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception as e:
+        logger.warning("Failed to load owner_rules.json: %s", e)
+    return {}
+
+OWNER_RULES = _load_owner_rules()
 
 # ---------------------------------------------------------------------------
 # Category alias map (user speaks Italian, style IDs use English)
@@ -511,6 +530,19 @@ class SitePlanner:
                 if need not in missing:
                     missing.append(need)
 
+        # Owner rules: enforce mandatory photo/video checks
+        owner_photos = OWNER_RULES.get("mandatory_checks", {}).get("photos", {})
+        if owner_photos.get("severity") == "critical":
+            for section in owner_photos.get("sections_requiring_photos", []):
+                photo_need = f"{section}_photo" if section != "gallery" else "gallery_photos"
+                if section in sections and photo_need not in missing:
+                    # Always flag photos as needed — let the questioner ask
+                    missing.append(photo_need)
+
+        if OWNER_RULES.get("mandatory_checks", {}).get("video", {}).get("ask_always"):
+            if "presentation_video" not in missing:
+                missing.append("presentation_video")
+
         return missing
 
     def _is_info_missing(
@@ -689,6 +721,23 @@ class SitePlanner:
             lines.append("  L'utente NON ha fornito questi dati. Genera contenuti plausibili e realistici.")
             for item in missing:
                 lines.append(f"  - {item}")
+
+        # Owner rules (custom notes)
+        custom_notes = OWNER_RULES.get("custom_notes", [])
+        if custom_notes:
+            lines.append("\n### Regole obbligatorie del proprietario:")
+            for note in custom_notes:
+                lines.append(f"  - {note}")
+
+        # Owner rules: photo/video requirements
+        photo_rule = OWNER_RULES.get("mandatory_checks", {}).get("photos", {}).get("rule", "")
+        video_rule = OWNER_RULES.get("mandatory_checks", {}).get("video", {}).get("rule", "")
+        if photo_rule or video_rule:
+            lines.append("\n### Requisiti foto/video:")
+            if photo_rule:
+                lines.append(f"  FOTO: {photo_rule}")
+            if video_rule:
+                lines.append(f"  VIDEO: {video_rule}")
 
         # Quality score
         score = plan.get("quality_score", 0)

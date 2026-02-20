@@ -290,6 +290,55 @@ class SiteQuestioner:
             "priority": 2,
             "_condition": "needs_testimonials",
         },
+        # ── Photo & Video common questions ──
+        {
+            "id": "common_hero_photo",
+            "section": "hero",
+            "field": "photos",
+            "question_it": "Vuoi caricare una foto/immagine per l'intestazione del sito?",
+            "type": "image_upload",
+            "options": None,
+            "default_action": "generate_ai",
+            "required": False,
+            "priority": 1,
+            "_condition": "needs_hero_photo",
+        },
+        {
+            "id": "common_about_photo",
+            "section": "about",
+            "field": "photos",
+            "question_it": "Hai una foto del tuo team, ufficio o attivita da inserire nella sezione 'Chi siamo'?",
+            "type": "image_upload",
+            "options": None,
+            "default_action": "generate_ai",
+            "required": False,
+            "priority": 1,
+            "_condition": "needs_about_photo",
+        },
+        {
+            "id": "common_gallery_photos",
+            "section": "gallery",
+            "field": "photos",
+            "question_it": "Vuoi caricare foto per la galleria? (Puoi caricare piu immagini)",
+            "type": "image_upload",
+            "options": None,
+            "default_action": "generate_ai",
+            "required": False,
+            "priority": 1,
+            "_condition": "needs_gallery",
+        },
+        {
+            "id": "common_video",
+            "section": "hero",
+            "field": "video_url",
+            "question_it": "Hai un video di presentazione? (URL YouTube o Vimeo)",
+            "type": "text",
+            "options": None,
+            "default_action": "skip",
+            "required": False,
+            "priority": 2,
+            "_condition": None,
+        },
     ]
 
     # ------------------------------------------------------------------
@@ -628,6 +677,25 @@ class SiteQuestioner:
             elif condition == "needs_testimonials":
                 # Only ask if testimonials section is in the plan
                 if not self._section_present(sections, "testimonials"):
+                    continue
+
+            elif condition == "needs_hero_photo":
+                # Only ask if hero section exists and no photos uploaded
+                if not self._section_present(sections, "hero"):
+                    continue
+                if user_data.get("photo_urls"):
+                    continue
+
+            elif condition == "needs_about_photo":
+                # Only ask if about section exists
+                if not self._section_present(sections, "about"):
+                    continue
+                if user_data.get("photo_urls") and len(user_data["photo_urls"]) >= 2:
+                    continue
+
+            elif condition == "needs_gallery":
+                # Only ask if gallery section exists
+                if not self._section_present(sections, "gallery"):
                     continue
 
             # Social links: always ask (no condition), but skip if already provided
