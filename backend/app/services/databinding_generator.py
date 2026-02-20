@@ -4241,6 +4241,35 @@ RULES:
             # If reference_analysis was passed in already, parse it too
             parsed_reference = _parse_reference_analysis(reference_analysis)
 
+        # === SITE PLANNER: Consult quality guide + usage tracker for smart planning ===
+        planning_context = ""
+        try:
+            from app.services.site_planner import site_planner
+            category = _get_category_from_style_id(template_style_id)
+            site_plan = await site_planner.create_plan(
+                business_name=business_name,
+                business_description=business_description,
+                category=category,
+                sections=sections,
+                style_id=template_style_id,
+                primary_color=(style_preferences or {}).get("primary_color"),
+                logo_url=logo_url,
+                contact_info=contact_info,
+            )
+            planning_context = site_plan.get("planning_prompt", "")
+            # If planner resolved better sections order, use it
+            if site_plan.get("sections"):
+                sections = site_plan["sections"]
+            logger.info(
+                "[DataBinding] SitePlanner: quality_score=%.1f, %d sections, %d missing_info, context=%d chars",
+                site_plan.get("quality_score", 0),
+                len(site_plan.get("sections", [])),
+                len(site_plan.get("missing_info", [])),
+                len(planning_context),
+            )
+        except Exception as e:
+            logger.warning("[DataBinding] SitePlanner failed (non-blocking): %s", e)
+
         # === PICK VARIETY CONTEXT (anti-repetition personality, color mood, font pairing) ===
         variety = _pick_variety_context(category=_get_category_from_style_id(template_style_id))
         # When user specified colors, disable color_mood to avoid contradictions
@@ -4265,10 +4294,15 @@ RULES:
                 "phase": "analyzing",
             })
 
+        # Merge planning context into creative context for AI prompts
+        enriched_context = creative_context
+        if planning_context:
+            enriched_context = f"{creative_context}\n\n{planning_context}" if creative_context else planning_context
+
         theme_task = self._generate_theme(
             business_name, business_description,
             style_preferences, reference_image_url,
-            creative_context=creative_context,
+            creative_context=enriched_context,
             reference_url_context=reference_url_context,
             variety_context=variety,
             reference_analysis=reference_analysis,
@@ -4279,7 +4313,7 @@ RULES:
         texts_task = self._generate_texts(
             business_name, business_description,
             sections, contact_info,
-            creative_context=creative_context,
+            creative_context=enriched_context,
             reference_url_context=reference_url_context,
             variety_context=variety,
             reference_analysis=reference_analysis,
@@ -4543,6 +4577,41 @@ RULES:
             on_progress(5, "Sito assemblato, controllo qualita'...", {
                 "phase": "assembled",
             })
+
+        # === Pre-Delivery Check (fast, deterministic) ===
+        try:
+            from app.services.pre_delivery_check import pre_delivery_check
+            pdc_report = pre_delivery_check.check(
+                html=html_content,
+                requested_sections=sections,
+            )
+            if pdc_report.fixes_applied:
+                html_content = pdc_report.html_fixed
+                logger.info(
+                    "[DataBinding] PreDeliveryCheck: score=%.1f, %d fix(es) applied, %d issue(s)",
+                    pdc_report.score, len(pdc_report.fixes_applied), len(pdc_report.issues),
+                )
+            elif pdc_report.issues:
+                logger.info(
+                    "[DataBinding] PreDeliveryCheck: score=%.1f, %d issue(s), no auto-fixes needed",
+                    pdc_report.score, len(pdc_report.issues),
+                )
+        except Exception as e:
+            logger.warning("[DataBinding] PreDeliveryCheck failed (non-blocking): %s", e)
+
+        # === Record generation in UsageTracker ===
+        try:
+            from app.services.usage_tracker import usage_tracker
+            import uuid
+            gen_id = f"{site_id or 'anon'}-{uuid.uuid4().hex[:8]}"
+            usage_tracker.record_generation(
+                generation_id=gen_id,
+                category=category,
+                style=template_style_id or "",
+                components_dict=selections,
+            )
+        except Exception as e:
+            logger.warning("[DataBinding] UsageTracker record failed (non-blocking): %s", e)
 
         # === Quality Control ===
         qc_report_data = None

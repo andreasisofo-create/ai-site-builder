@@ -210,6 +210,71 @@ export async function generateWebsite(data: GenerateRequest): Promise<GenerateRe
   return handleResponse<GenerateResponse>(res);
 }
 
+// ============ SITE PLANNING (Pre-generation) ============
+
+export interface PlanRequest {
+  business_name: string;
+  business_description: string;
+  category?: string;
+  sections?: string[];
+  template_style_id?: string;
+  primary_color?: string;
+  logo_url?: string;
+  contact_info?: Record<string, string>;
+  photo_urls?: string[];
+}
+
+export interface SitePlanQuestion {
+  id: string;
+  section: string;
+  field: string;
+  question_it: string;
+  type: "text" | "image_upload" | "choice" | "toggle";
+  options?: string[];
+  default_action: string;
+  required: boolean;
+  priority: number;
+}
+
+export interface PlanResponse {
+  success: boolean;
+  plan: Record<string, any>;
+  questions: SitePlanQuestion[];
+  missing_fields: string[];
+}
+
+export interface AnswerRequest {
+  plan: Record<string, any>;
+  answers: Record<string, any>;
+}
+
+export interface AnswerResponse {
+  success: boolean;
+  plan: Record<string, any>;
+  ready: boolean;
+  remaining_questions: number;
+}
+
+export async function createSitePlan(data: PlanRequest): Promise<PlanResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/generate/plan`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<PlanResponse>(res);
+}
+
+export async function submitPlanAnswers(data: AnswerRequest): Promise<AnswerResponse> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/generate/answer`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<AnswerResponse>(res);
+}
+
 // ============ V2 AI GENERATION (pgvector pipeline) ============
 
 export interface GenerateV2Request {

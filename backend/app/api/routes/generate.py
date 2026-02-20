@@ -652,6 +652,127 @@ async def test_generation(
     return await generate_website(request, test_data, current_user, db)
 
 
+# ============ SITE PLANNING (Pre-generation) ============
+
+class PlanRequest(BaseModel):
+    """Request to create a site plan before generation."""
+    business_name: str
+    business_description: str
+    category: str = ""
+    sections: List[str] = ["hero", "about", "services", "contact", "footer"]
+    template_style_id: Optional[str] = None
+    primary_color: Optional[str] = None
+    logo_url: Optional[str] = None
+    contact_info: Optional[Dict[str, str]] = None
+    photo_urls: Optional[List[str]] = None
+
+
+class AnswerRequest(BaseModel):
+    """User answers to pre-generation questions."""
+    plan: Dict[str, Any]  # The SitePlan dict returned by /plan
+    answers: Dict[str, Any] = {}  # question_id -> answer value
+
+
+@router.post("/plan")
+@limiter.limit("10/hour")
+async def create_site_plan(
+    request: Request,
+    data: PlanRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Create a site plan: select components, identify missing info, generate questions.
+    Returns the plan + interactive questions for the user.
+    """
+    try:
+        from app.services.site_planner import site_planner
+        from app.services.site_questioner import site_questioner
+    except ImportError as e:
+        logger.error(f"[Plan] Import error: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail="Planning system not available",
+        )
+
+    try:
+        # Create the site plan
+        plan = await site_planner.create_plan(
+            business_name=data.business_name,
+            business_description=data.business_description,
+            category=data.category,
+            sections=data.sections,
+            style_id=data.template_style_id,
+            primary_color=data.primary_color,
+            logo_url=data.logo_url,
+            contact_info=data.contact_info,
+        )
+
+        # Generate questions for missing info
+        user_data = {
+            "business_name": data.business_name,
+            "business_description": data.business_description,
+            "contact_info": data.contact_info or {},
+            "photo_urls": data.photo_urls or [],
+            "logo_url": data.logo_url or "",
+        }
+        questions = site_questioner.analyze_completeness(plan, user_data)
+
+        return {
+            "success": True,
+            "plan": plan,
+            "questions": questions,
+            "missing_fields": plan.get("missing_info", []),
+        }
+
+    except Exception as e:
+        logger.exception("[Plan] Error creating site plan")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/answer")
+@limiter.limit("20/hour")
+async def submit_answers(
+    request: Request,
+    data: AnswerRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Submit user answers to pre-generation questions.
+    Returns updated plan with user content integrated.
+    """
+    try:
+        from app.services.site_questioner import site_questioner
+    except ImportError as e:
+        logger.error(f"[Answer] Import error: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail="Questioning system not available",
+        )
+
+    try:
+        updated_plan = site_questioner.apply_answers(data.plan, data.answers)
+
+        # Check if we have enough info to proceed
+        remaining_required = [
+            q for q in site_questioner.analyze_completeness(
+                updated_plan,
+                updated_plan.get("user_content", {}),
+            )
+            if q.get("required") and q["id"] not in data.answers
+        ]
+
+        return {
+            "success": True,
+            "plan": updated_plan,
+            "ready": len(remaining_required) == 0,
+            "remaining_questions": len(remaining_required),
+        }
+
+    except Exception as e:
+        logger.exception("[Answer] Error processing answers")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============ UPGRADE / PAYMENT ============
 
 class PaletteRequest(BaseModel):

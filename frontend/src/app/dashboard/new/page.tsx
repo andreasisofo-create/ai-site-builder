@@ -29,7 +29,9 @@ import {
 } from "@heroicons/react/24/outline";
 import GenerationExperience, { type PreviewData } from "@/components/GenerationExperience";
 import toast from "react-hot-toast";
-import { createSite, generateWebsite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus, analyzeImage } from "@/lib/api";
+import { createSite, generateWebsite, generateSlug, CreateSiteData, getQuota, upgradeToPremium, getGenerationStatus, analyzeImage, createSitePlan, submitPlanAnswers } from "@/lib/api";
+import type { SitePlanQuestion } from "@/lib/api";
+import PreGenerationQuestions from "@/components/PreGenerationQuestions";
 import {
   TEMPLATE_CATEGORIES, TemplateCategory, TemplateStyle,
   SECTION_LABELS, STYLE_OPTIONS, CTA_OPTIONS, ALL_SECTIONS, STYLE_TO_MOOD,
@@ -300,6 +302,12 @@ function NewProjectContent() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
 
+  // Planning state (pre-generation questions)
+  const [isPlanning, setIsPlanning] = useState(false);
+  const [sitePlan, setSitePlan] = useState<Record<string, any> | null>(null);
+  const [planQuestions, setPlanQuestions] = useState<SitePlanQuestion[]>([]);
+  const [showQuestions, setShowQuestions] = useState(false);
+
   // Steps definition - 3 step wizard
   const WIZARD_STEPS = [
     { id: 0, title: language === "en" ? "Your Brand" : "Il tuo Brand", icon: BuildingStorefrontIcon },
@@ -428,6 +436,87 @@ function NewProjectContent() {
   };
 
   // Polling is handled by the /generate/[id] page after navigation
+
+  // Plan: create site plan and show questions before generating
+  const handlePlanAndGenerate = async () => {
+    if (isGenerating || isPlanning) return;
+    if (!formData.businessName.trim()) {
+      toast.error(language === "en" ? "Enter the business name" : "Inserisci il nome del business");
+      return;
+    }
+    if (formData.selectedSections.length === 0) {
+      toast.error(language === "en" ? "Select at least one section" : "Seleziona almeno una sezione");
+      return;
+    }
+
+    // If we already have a plan with questions and they haven't been shown yet
+    if (sitePlan && planQuestions.length > 0 && !showQuestions) {
+      setShowQuestions(true);
+      return;
+    }
+
+    setIsPlanning(true);
+    try {
+      const effectiveTemplateStyle = selectedStyle?.id
+        || (selectedV2Category ? pickRandomV1Style(selectedV2Category.slug) : undefined);
+
+      const planResult = await createSitePlan({
+        business_name: formData.businessName,
+        business_description: formData.description,
+        category: selectedV2Category?.slug || selectedCategory?.id || "",
+        sections: formData.selectedSections,
+        template_style_id: effectiveTemplateStyle,
+        primary_color: colorPalette[0],
+        logo_url: formData.logo || undefined,
+        contact_info: {
+          ...(formData.contactInfo.address ? { address: formData.contactInfo.address } : {}),
+          ...(formData.contactInfo.phone ? { phone: formData.contactInfo.phone } : {}),
+          ...(formData.contactInfo.email ? { email: formData.contactInfo.email } : {}),
+          ...(formData.contactInfo.hours ? { hours: formData.contactInfo.hours } : {}),
+        },
+        photo_urls: formData.photos.map(p => p.dataUrl),
+      });
+
+      if (planResult.success && planResult.questions.length > 0) {
+        setSitePlan(planResult.plan);
+        setPlanQuestions(planResult.questions);
+        setShowQuestions(true);
+        setIsPlanning(false);
+        return;
+      }
+
+      // No questions needed, proceed directly to generation
+      setSitePlan(planResult.plan);
+      setIsPlanning(false);
+      handleGenerate();
+    } catch (error: any) {
+      // Planning failed - proceed with generation anyway (non-blocking)
+      console.warn("Planning failed, proceeding without plan:", error);
+      setIsPlanning(false);
+      handleGenerate();
+    }
+  };
+
+  // Handle question answers
+  const handleQuestionsSubmit = async (answers: Record<string, any>) => {
+    if (sitePlan) {
+      try {
+        const result = await submitPlanAnswers({ plan: sitePlan, answers });
+        if (result.success) {
+          setSitePlan(result.plan);
+        }
+      } catch {
+        // Non-blocking, proceed anyway
+      }
+    }
+    setShowQuestions(false);
+    handleGenerate();
+  };
+
+  const handleQuestionsSkip = () => {
+    setShowQuestions(false);
+    handleGenerate();
+  };
 
   // Generate
   const handleGenerate = async () => {
@@ -1338,6 +1427,19 @@ function NewProjectContent() {
                   </button>
                 </div>
 
+                {/* --- Pre-Generation Questions --- */}
+                {showQuestions && planQuestions.length > 0 && (
+                  <div className="pt-4">
+                    <PreGenerationQuestions
+                      questions={planQuestions}
+                      plan={sitePlan || {}}
+                      onSubmit={handleQuestionsSubmit}
+                      onSkipAll={handleQuestionsSkip}
+                      language={language}
+                    />
+                  </div>
+                )}
+
                 {/* --- Generate Button --- */}
                 <div className="pt-4 space-y-4">
                   {isGenerating ? (
@@ -1353,12 +1455,21 @@ function NewProjectContent() {
                   ) : (
                     <>
                       <button
-                        onClick={handleGenerate}
-                        disabled={!canProceed()}
+                        onClick={handlePlanAndGenerate}
+                        disabled={!canProceed() || isPlanning}
                         className="w-full py-4 bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl font-semibold text-lg hover:opacity-90 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <SparklesIcon className="w-5 h-5" />
-                        {language === "en" ? "Generate My Site" : "Genera il Mio Sito"}
+                        {isPlanning ? (
+                          <>
+                            <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
+                            {language === "en" ? "Planning..." : "Pianificazione..."}
+                          </>
+                        ) : (
+                          <>
+                            <SparklesIcon className="w-5 h-5" />
+                            {language === "en" ? "Generate My Site" : "Genera il Mio Sito"}
+                          </>
+                        )}
                       </button>
                       <p className="text-center text-sm text-slate-500">
                         {language === "en" ? "AI pipeline — Estimated time: 40-60 seconds" : "Pipeline AI — Tempo stimato: 40-60 secondi"}
@@ -1391,12 +1502,12 @@ function NewProjectContent() {
           <button
             onClick={() => {
               if (currentStep === 2) {
-                handleGenerate();
+                handlePlanAndGenerate();
               } else {
                 setCurrentStep(prev => Math.min(2, prev + 1));
               }
             }}
-            disabled={!canProceed() || isGenerating}
+            disabled={!canProceed() || isGenerating || isPlanning}
             className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-medium transition-all"
           >
             {currentStep === 2 ? (language === "en" ? "Generate" : "Genera") : (language === "en" ? "Next" : "Avanti")}
