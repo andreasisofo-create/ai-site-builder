@@ -95,7 +95,7 @@ def _validate_image_url(url: str) -> bool:
         return False
     host = parsed.hostname or ""
     # Block internal/private IPs
-    blocked = ("localhost", "127.0.0.1", "0.0.0.0", "169.254.", "10.", "172.16.", "192.168.", "[::1]")
+    blocked = ("localhost", "127.0.0.1", "0.0.0.0", "169.254.", "10.", "172.16.", "192.168.", "::1", "[::1]")
     for b in blocked:
         if host.startswith(b) or host == b:
             return False

@@ -4545,6 +4545,7 @@ RULES:
             _pending_photo_choices[site_id] = {
                 "event": choice_event,
                 "choices": None,  # Will be set by the API endpoint
+                "scan_choices": photo_choices,  # Scanned choices for get_pending_photo_choices()
                 "site_data": site_data,
                 "template_style_id": template_style_id,
             }
