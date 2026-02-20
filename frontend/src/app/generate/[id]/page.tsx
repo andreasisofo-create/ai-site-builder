@@ -13,8 +13,12 @@ import {
   ArrowLeftIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { getGenerationStatus } from "@/lib/api";
+import { getGenerationStatus, uploadMedia, API_BASE } from "@/lib/api";
 import { useLanguage } from "@/lib/i18n";
+import PhotoChoicePanel, {
+  type PhotoChoice,
+  type PhotoDecision,
+} from "@/components/PhotoChoicePanel";
 
 // ============ TYPES ============
 
@@ -351,6 +355,9 @@ function GeneratePageContent() {
   const [isComplete, setIsComplete] = useState(false);
   const [siteName, setSiteName] = useState<string>("");
 
+  // Photo choice state
+  const [photoChoices, setPhotoChoices] = useState<PhotoChoice[] | null>(null);
+
   // Countdown state for redirect
   const [countdown, setCountdown] = useState(3);
 
@@ -439,6 +446,18 @@ function GeneratePageContent() {
           setPreviewData(genStatus.preview_data);
         }
 
+        // Check for photo choices from backend (sent inside preview_data)
+        if (
+          genStatus.preview_data &&
+          (genStatus.preview_data as Record<string, unknown>).phase === "photo_choices" &&
+          Array.isArray((genStatus.preview_data as Record<string, unknown>).choices)
+        ) {
+          const choices = (genStatus.preview_data as Record<string, unknown>).choices as PhotoChoice[];
+          if (choices.length > 0) {
+            setPhotoChoices(choices);
+          }
+        }
+
         // Generation complete
         if (!genStatus.is_generating && genStatus.status === "ready") {
           stopPolling();
@@ -476,6 +495,46 @@ function GeneratePageContent() {
   const { displayed: typedHeroTitle, done: heroTypeDone } = useTypewriter(
     previewData?.hero_title || "",
     45
+  );
+
+  // ---- Photo choice handlers ----
+  const handlePhotoConfirm = useCallback(
+    async (decisions: PhotoDecision[]) => {
+      if (!siteId || isNaN(siteId)) return;
+      try {
+        const token =
+          typeof window !== "undefined"
+            ? localStorage.getItem("token")
+            : null;
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+        };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        await fetch(`${API_BASE}/api/generate/${siteId}/photo-choices`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ decisions }),
+        });
+      } catch {
+        // Ignore errors, generation will continue
+      }
+      setPhotoChoices(null);
+    },
+    [siteId]
+  );
+
+  const handlePhotoCancel = useCallback(() => {
+    setPhotoChoices(null);
+  }, []);
+
+  const handlePhotoUpload = useCallback(
+    async (file: File): Promise<string> => {
+      if (!siteId || isNaN(siteId)) throw new Error("Invalid site ID");
+      const result = await uploadMedia(siteId, file);
+      return result.url;
+    },
+    [siteId]
   );
 
   // ---- Derive phase ----
@@ -899,6 +958,16 @@ function GeneratePageContent() {
           <MatrixRain />
         </div>
       </div>
+
+      {/* ===== PHOTO CHOICE OVERLAY ===== */}
+      {photoChoices && photoChoices.length > 0 && (
+        <PhotoChoicePanel
+          choices={photoChoices}
+          onConfirm={handlePhotoConfirm}
+          onCancel={handlePhotoCancel}
+          onUploadFile={handlePhotoUpload}
+        />
+      )}
     </div>
   );
 }

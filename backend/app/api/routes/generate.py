@@ -58,6 +58,19 @@ class GenerateRequest(BaseModel):
     hero_video_url: Optional[str] = None  # YouTube URL for video hero
 
 
+class PhotoChoiceItem(BaseModel):
+    """A single photo choice for one section."""
+    section_type: str  # "hero", "about", "gallery", etc.
+    action: str  # "stock" | "upload"
+    photo_url: Optional[str] = None  # URL of uploaded photo (for action="upload")
+    photo_urls: Optional[List[str]] = None  # Multiple URLs (for gallery/team sections)
+
+
+class PhotoChoiceRequest(BaseModel):
+    """User photo choices for sections with placeholder images."""
+    choices: List[PhotoChoiceItem]
+
+
 class RefineRequest(BaseModel):
     """Richiesta modifica sito via chat."""
     site_id: int
@@ -527,7 +540,7 @@ async def get_generation_status(
 
     is_generating = site.status == "generating"
     step = site.generation_step if is_generating else 0
-    total_steps = 5 if settings.GENERATION_PIPELINE == "databinding" else 3
+    total_steps = 7 if settings.GENERATION_PIPELINE == "databinding" else 3
 
     # Calcola percentuale
     if not is_generating:
@@ -552,6 +565,81 @@ async def get_generation_status(
         "percentage": percentage,
         "message": site.generation_message or "",
         "preview_data": preview_data,
+    }
+
+
+# ============ PHOTO CHOICES ============
+
+@router.post("/{site_id}/photo-choices")
+async def submit_photo_choices(
+    site_id: int,
+    data: PhotoChoiceRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Submit user photo choices during generation.
+
+    Called by the frontend when the user decides to upload their own photos
+    or use stock photos for sections with placeholder images.
+    """
+    # Verify the site belongs to this user
+    site = db.query(Site).filter(
+        Site.id == site_id,
+        Site.owner_id == current_user.id,
+    ).first()
+
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    if site.status != "generating":
+        raise HTTPException(
+            status_code=400,
+            detail="Il sito non e' in fase di generazione",
+        )
+
+    # Validate photo URLs in upload choices
+    validated_choices = []
+    for choice in data.choices:
+        choice_dict = {
+            "section_type": choice.section_type,
+            "action": choice.action,
+        }
+        if choice.action == "upload":
+            if choice.photo_url and _validate_image_url(choice.photo_url):
+                choice_dict["photo_url"] = choice.photo_url
+            elif choice.photo_urls:
+                choice_dict["photo_urls"] = [
+                    url for url in choice.photo_urls if _validate_image_url(url)
+                ]
+            else:
+                # No valid URL provided for upload — fallback to stock
+                choice_dict["action"] = "stock"
+                logger.warning(
+                    "[PhotoChoices] No valid URL for upload in section '%s', falling back to stock",
+                    choice.section_type,
+                )
+        validated_choices.append(choice_dict)
+
+    # Signal the generation pipeline
+    from app.services.databinding_generator import submit_photo_choices as _submit_choices
+
+    accepted = _submit_choices(site_id, validated_choices)
+
+    if not accepted:
+        raise HTTPException(
+            status_code=409,
+            detail="Nessuna generazione in attesa di scelta foto per questo sito",
+        )
+
+    logger.info(
+        "[PhotoChoices] User %d submitted %d choices for site %d",
+        current_user.id, len(validated_choices), site_id,
+    )
+
+    return {
+        "success": True,
+        "message": "Scelte foto ricevute, la generazione continua",
+        "choices_count": len(validated_choices),
     }
 
 

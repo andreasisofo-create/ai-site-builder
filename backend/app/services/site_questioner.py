@@ -361,6 +361,36 @@ class SiteQuestioner:
     }
 
     # ------------------------------------------------------------------
+    # Photo choice labels (Italian) for interactive photo selection
+    # ------------------------------------------------------------------
+    PHOTO_CHOICE_LABELS: Dict[str, str] = {
+        "hero": "Sezione Hero (immagine principale)",
+        "about": "Chi Siamo",
+        "gallery": "Gallery / Portfolio",
+        "team": "Il Nostro Team",
+        "services": "Servizi",
+        "blog": "Blog",
+        "contact": "Contatti",
+        "products": "Prodotti",
+        "menu": "Menu",
+        "testimonials": "Testimonianze",
+        "features": "Funzionalita'",
+        "speakers": "Relatori",
+    }
+
+    @classmethod
+    def get_photo_choice_labels(cls) -> Dict[str, str]:
+        """Return section_type -> Italian label mapping for photo choice UI."""
+        return dict(cls.PHOTO_CHOICE_LABELS)
+
+    @classmethod
+    def get_photo_choice_label(cls, section_type: str) -> str:
+        """Return the Italian label for a given section type."""
+        return cls.PHOTO_CHOICE_LABELS.get(
+            section_type, section_type.replace("_", " ").title()
+        )
+
+    # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
 

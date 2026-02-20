@@ -2886,6 +2886,17 @@ def _parse_reference_analysis(analysis_text: str) -> Dict[str, Any]:
     return result
 
 
+# =========================================================
+# Pending Photo Choices Registry
+# Stores asyncio.Events and user choices for the interactive
+# photo selection flow during generation.
+# Key: site_id (int), Value: dict with event, choices, site_data
+# =========================================================
+_pending_photo_choices: Dict[int, Dict[str, Any]] = {}
+
+PHOTO_CHOICE_TIMEOUT = 300  # 5 minutes
+
+
 class DataBindingGenerator:
     def __init__(self):
         self.kimi = kimi
@@ -4523,12 +4534,50 @@ RULES:
                         logger.info(f"[DataBinding] Injected YouTube video embed into hero")
                         break
 
-        # Inject stock photos as fallback for any remaining placeholder images.
-        # Runs ALWAYS — even if AI images were generated, some sections may
-        # still have placeholders (AI might have failed or not covered all sections).
-        site_data = self._inject_stock_photos(site_data, template_style_id)
+        # === Interactive Photo Choice Flow ===
+        # Scan for placeholder images and offer user a choice:
+        # upload their own photo or use stock photos.
+        photo_choices = self._scan_placeholder_photos(site_data, template_style_id)
+
+        if photo_choices and site_id and on_progress:
+            # Register an asyncio.Event so the API endpoint can signal us
+            choice_event = asyncio.Event()
+            _pending_photo_choices[site_id] = {
+                "event": choice_event,
+                "choices": None,  # Will be set by the API endpoint
+                "site_data": site_data,
+                "template_style_id": template_style_id,
+            }
+
+            # Send photo choices to frontend via progress callback
+            on_progress(5, "Scelta foto...", {
+                "phase": "photo_choices",
+                "choices": photo_choices,
+            })
+
+            # Wait for user response (or timeout after 5 minutes)
+            try:
+                await asyncio.wait_for(choice_event.wait(), timeout=PHOTO_CHOICE_TIMEOUT)
+                user_choices = _pending_photo_choices.get(site_id, {}).get("choices")
+                if user_choices:
+                    logger.info("[DataBinding] Applying %d user photo choices", len(user_choices))
+                    site_data = self.apply_photo_choices(site_data, user_choices, template_style_id)
+                else:
+                    # Event was set but no choices provided — fallback to stock
+                    logger.info("[DataBinding] Photo choice event set but no choices, using stock photos")
+                    site_data = self._inject_stock_photos(site_data, template_style_id)
+            except asyncio.TimeoutError:
+                logger.info("[DataBinding] Photo choice timeout (%ds), auto-injecting stock photos", PHOTO_CHOICE_TIMEOUT)
+                site_data = self._inject_stock_photos(site_data, template_style_id)
+            finally:
+                # Clean up the pending entry
+                _pending_photo_choices.pop(site_id, None)
+        else:
+            # No placeholders found or no site_id — use stock photos directly
+            site_data = self._inject_stock_photos(site_data, template_style_id)
 
         # Inject user-uploaded photos (override stock/placeholder photos)
+        # Only runs if user provided photos at generation start (not via photo choice flow)
         if photo_urls:
             site_data = self._inject_user_photos(site_data, photo_urls)
 
@@ -4587,7 +4636,7 @@ RULES:
             _effect_db.close()
 
         if on_progress:
-            on_progress(5, "Sito assemblato, controllo qualita'...", {
+            on_progress(6, "Sito assemblato, controllo qualita'...", {
                 "phase": "assembled",
             })
 
@@ -4648,7 +4697,7 @@ RULES:
 
             if on_progress:
                 status_msg = "Sito approvato!" if qc_report.passed else "Sito pronto (revisione consigliata)"
-                on_progress(6, status_msg, {
+                on_progress(7, status_msg, {
                     "phase": "complete",
                     "qc_score": qc_report.final_score,
                     "qc_passed": qc_report.passed,
@@ -4657,7 +4706,7 @@ RULES:
             logger.warning(f"[DataBinding] QC pipeline failed (non-blocking): {e}")
             # QC failure is non-blocking: return the original HTML
             if on_progress:
-                on_progress(6, "Il tuo sito e' pronto!", {
+                on_progress(7, "Il tuo sito e' pronto!", {
                     "phase": "complete",
                 })
 
@@ -4686,7 +4735,7 @@ RULES:
             "tokens_output": total_tokens_out,
             "cost_usd": cost,
             "generation_time_ms": generation_time,
-            "pipeline_steps": 6,
+            "pipeline_steps": 7,
             "ai_images_generated": should_generate_images if _has_image_generation else False,
             "site_data": site_data,
             "qc_report": qc_report_data,
@@ -5988,6 +6037,270 @@ RULES:
 
         return site_data
 
+    def _scan_placeholder_photos(
+        self,
+        site_data: Dict[str, Any],
+        template_style_id: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Scan site_data components for placeholder images and build a photo_choices list.
+
+        Returns a list of dicts, one per section needing a photo:
+        {
+            "section_type": "hero",
+            "section_label": "Sezione Hero (immagine principale)",
+            "placeholder_key": "HERO_IMAGE_URL",
+            "stock_preview_url": "https://images.unsplash.com/...",
+            "current_url": "data:image/svg+xml,...",
+        }
+        """
+        from app.services.site_questioner import SiteQuestioner
+
+        photos = _get_stock_photos(template_style_id or "default")
+        choices: List[Dict[str, Any]] = []
+        seen_sections: set = set()
+
+        for component in site_data.get("components", []):
+            data = component.get("data", {})
+            variant_id = component.get("variant_id", "")
+
+            # Detect section type from variant_id (e.g. "hero-classic-01" -> "hero")
+            section_type = variant_id.split("-")[0] if variant_id else ""
+
+            # Hero image
+            hero_url = str(data.get("HERO_IMAGE_URL", ""))
+            if self._is_placeholder_url(hero_url) and "hero" not in seen_sections:
+                hero_pool = photos.get("hero", [])
+                choices.append({
+                    "section_type": "hero",
+                    "section_label": SiteQuestioner.get_photo_choice_label("hero"),
+                    "placeholder_key": "HERO_IMAGE_URL",
+                    "stock_preview_url": hero_pool[0] if hero_pool else "",
+                    "current_url": hero_url,
+                })
+                seen_sections.add("hero")
+
+            # About image
+            about_url = str(data.get("ABOUT_IMAGE_URL", ""))
+            if self._is_placeholder_url(about_url) and "about" not in seen_sections:
+                about_pool = photos.get("about", [])
+                choices.append({
+                    "section_type": "about",
+                    "section_label": SiteQuestioner.get_photo_choice_label("about"),
+                    "placeholder_key": "ABOUT_IMAGE_URL",
+                    "stock_preview_url": about_pool[0] if about_pool else "",
+                    "current_url": about_url,
+                })
+                seen_sections.add("about")
+
+            # Gallery — check if any gallery items have placeholders
+            gallery_items = data.get("GALLERY_ITEMS", [])
+            if isinstance(gallery_items, list) and "gallery" not in seen_sections:
+                has_placeholder = any(
+                    isinstance(item, dict) and self._is_placeholder_url(str(item.get("GALLERY_IMAGE_URL", "")))
+                    for item in gallery_items
+                )
+                if has_placeholder:
+                    gallery_pool = photos.get("gallery", [])
+                    choices.append({
+                        "section_type": "gallery",
+                        "section_label": SiteQuestioner.get_photo_choice_label("gallery"),
+                        "placeholder_key": "GALLERY_IMAGE_URL",
+                        "stock_preview_url": gallery_pool[0] if gallery_pool else "",
+                        "current_url": "",
+                    })
+                    seen_sections.add("gallery")
+
+            # Team members
+            team_members = data.get("TEAM_MEMBERS", [])
+            if isinstance(team_members, list) and "team" not in seen_sections:
+                has_placeholder = any(
+                    isinstance(m, dict) and self._is_placeholder_url(str(m.get("MEMBER_IMAGE_URL", "")))
+                    for m in team_members
+                )
+                if has_placeholder:
+                    team_pool = photos.get("team", [])
+                    choices.append({
+                        "section_type": "team",
+                        "section_label": SiteQuestioner.get_photo_choice_label("team"),
+                        "placeholder_key": "MEMBER_IMAGE_URL",
+                        "stock_preview_url": team_pool[0] if team_pool else "",
+                        "current_url": "",
+                    })
+                    seen_sections.add("team")
+
+            # Services
+            service_items = data.get("SERVICE_ITEMS", [])
+            if isinstance(service_items, list) and "services" not in seen_sections:
+                has_placeholder = any(
+                    isinstance(s, dict) and self._is_placeholder_url(str(s.get("SERVICE_IMAGE_URL", "")))
+                    for s in service_items
+                )
+                if has_placeholder:
+                    gallery_pool = photos.get("gallery", [])
+                    choices.append({
+                        "section_type": "services",
+                        "section_label": SiteQuestioner.get_photo_choice_label("services"),
+                        "placeholder_key": "SERVICE_IMAGE_URL",
+                        "stock_preview_url": gallery_pool[0] if gallery_pool else "",
+                        "current_url": "",
+                    })
+                    seen_sections.add("services")
+
+            # Blog posts
+            blog_posts = data.get("BLOG_POSTS", [])
+            if isinstance(blog_posts, list) and "blog" not in seen_sections:
+                has_placeholder = any(
+                    isinstance(p, dict) and self._is_placeholder_url(str(p.get("POST_IMAGE_URL", "")))
+                    for p in blog_posts
+                )
+                if has_placeholder:
+                    gallery_pool = photos.get("gallery", [])
+                    choices.append({
+                        "section_type": "blog",
+                        "section_label": SiteQuestioner.get_photo_choice_label("blog"),
+                        "placeholder_key": "POST_IMAGE_URL",
+                        "stock_preview_url": gallery_pool[0] if gallery_pool else "",
+                        "current_url": "",
+                    })
+                    seen_sections.add("blog")
+
+        logger.info(
+            "[DataBinding] Photo scan: %d sections need photos: %s",
+            len(choices),
+            [c["section_type"] for c in choices],
+        )
+        return choices
+
+    def apply_photo_choices(
+        self,
+        site_data: Dict[str, Any],
+        choices: List[Dict[str, Any]],
+        template_style_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Apply user photo choices to site_data.
+
+        Each choice dict has:
+        - section_type: "hero", "about", "gallery", etc.
+        - action: "stock" | "upload"
+        - photo_url: URL of the uploaded photo (only for action="upload")
+
+        For "stock" actions, injects stock photos for that section only.
+        For "upload" actions, injects the user-provided photo_url.
+        Sections not in the choices list are left with their current (placeholder) URLs.
+        """
+        if not choices:
+            return site_data
+
+        photos = _get_stock_photos(template_style_id or "default")
+
+        # Build a lookup: section_type -> choice
+        choice_map: Dict[str, Dict[str, Any]] = {}
+        for choice in choices:
+            section_type = choice.get("section_type", "")
+            if section_type:
+                choice_map[section_type] = choice
+
+        for component in site_data.get("components", []):
+            data = component.get("data", {})
+
+            # Hero
+            if "hero" in choice_map and self._is_placeholder_url(str(data.get("HERO_IMAGE_URL", ""))):
+                c = choice_map["hero"]
+                if c.get("action") == "upload" and c.get("photo_url"):
+                    data["HERO_IMAGE_URL"] = c["photo_url"]
+                elif c.get("action") == "stock":
+                    hero_pool = photos.get("hero", [])
+                    if hero_pool:
+                        data["HERO_IMAGE_URL"] = hero_pool[0]
+
+            # About
+            if "about" in choice_map and self._is_placeholder_url(str(data.get("ABOUT_IMAGE_URL", ""))):
+                c = choice_map["about"]
+                if c.get("action") == "upload" and c.get("photo_url"):
+                    data["ABOUT_IMAGE_URL"] = c["photo_url"]
+                elif c.get("action") == "stock":
+                    about_pool = photos.get("about", [])
+                    if about_pool:
+                        data["ABOUT_IMAGE_URL"] = about_pool[0]
+
+            # Gallery
+            gallery_items = data.get("GALLERY_ITEMS", [])
+            if "gallery" in choice_map and isinstance(gallery_items, list):
+                c = choice_map["gallery"]
+                if c.get("action") == "upload" and c.get("photo_url"):
+                    # Single upload: apply to first placeholder gallery item
+                    photo_url = c["photo_url"]
+                    photo_urls_list = c.get("photo_urls", [photo_url]) if isinstance(c.get("photo_urls"), list) else [photo_url]
+                    for i, item in enumerate(gallery_items):
+                        if isinstance(item, dict) and self._is_placeholder_url(str(item.get("GALLERY_IMAGE_URL", ""))):
+                            if i < len(photo_urls_list):
+                                item["GALLERY_IMAGE_URL"] = photo_urls_list[i]
+                            elif photo_urls_list:
+                                item["GALLERY_IMAGE_URL"] = photo_urls_list[i % len(photo_urls_list)]
+                elif c.get("action") == "stock":
+                    gallery_pool = photos.get("gallery", [])
+                    for i, item in enumerate(gallery_items):
+                        if isinstance(item, dict) and self._is_placeholder_url(str(item.get("GALLERY_IMAGE_URL", ""))):
+                            if gallery_pool:
+                                item["GALLERY_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
+
+            # Team
+            team_members = data.get("TEAM_MEMBERS", [])
+            if "team" in choice_map and isinstance(team_members, list):
+                c = choice_map["team"]
+                if c.get("action") == "upload" and c.get("photo_url"):
+                    photo_urls_list = c.get("photo_urls", [c["photo_url"]]) if isinstance(c.get("photo_urls"), list) else [c["photo_url"]]
+                    for i, member in enumerate(team_members):
+                        if isinstance(member, dict) and self._is_placeholder_url(str(member.get("MEMBER_IMAGE_URL", ""))):
+                            if i < len(photo_urls_list):
+                                member["MEMBER_IMAGE_URL"] = photo_urls_list[i]
+                elif c.get("action") == "stock":
+                    team_pool = photos.get("team", [])
+                    for i, member in enumerate(team_members):
+                        if isinstance(member, dict) and self._is_placeholder_url(str(member.get("MEMBER_IMAGE_URL", ""))):
+                            if team_pool:
+                                member["MEMBER_IMAGE_URL"] = team_pool[i % len(team_pool)]
+
+            # Services
+            service_items = data.get("SERVICE_ITEMS", [])
+            if "services" in choice_map and isinstance(service_items, list):
+                c = choice_map["services"]
+                gallery_pool = photos.get("gallery", [])
+                if c.get("action") == "upload" and c.get("photo_url"):
+                    photo_urls_list = c.get("photo_urls", [c["photo_url"]]) if isinstance(c.get("photo_urls"), list) else [c["photo_url"]]
+                    for i, svc in enumerate(service_items):
+                        if isinstance(svc, dict) and self._is_placeholder_url(str(svc.get("SERVICE_IMAGE_URL", ""))):
+                            if i < len(photo_urls_list):
+                                svc["SERVICE_IMAGE_URL"] = photo_urls_list[i]
+                elif c.get("action") == "stock":
+                    for i, svc in enumerate(service_items):
+                        if isinstance(svc, dict) and self._is_placeholder_url(str(svc.get("SERVICE_IMAGE_URL", ""))):
+                            if gallery_pool:
+                                svc["SERVICE_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
+
+            # Blog
+            blog_posts = data.get("BLOG_POSTS", [])
+            if "blog" in choice_map and isinstance(blog_posts, list):
+                c = choice_map["blog"]
+                gallery_pool = photos.get("gallery", [])
+                if c.get("action") == "upload" and c.get("photo_url"):
+                    photo_urls_list = c.get("photo_urls", [c["photo_url"]]) if isinstance(c.get("photo_urls"), list) else [c["photo_url"]]
+                    for i, post in enumerate(blog_posts):
+                        if isinstance(post, dict) and self._is_placeholder_url(str(post.get("POST_IMAGE_URL", ""))):
+                            if i < len(photo_urls_list):
+                                post["POST_IMAGE_URL"] = photo_urls_list[i]
+                elif c.get("action") == "stock":
+                    for i, post in enumerate(blog_posts):
+                        if isinstance(post, dict) and self._is_placeholder_url(str(post.get("POST_IMAGE_URL", ""))):
+                            if gallery_pool:
+                                post["POST_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
+
+        logger.info(
+            "[DataBinding] Applied photo choices for %d sections",
+            len(choice_map),
+        )
+        return site_data
+
     def _inject_ai_images(
         self,
         texts: Dict[str, Any],
@@ -6462,3 +6775,33 @@ RULES:
 
 # Singleton
 databinding_generator = DataBindingGenerator()
+
+
+def submit_photo_choices(site_id: int, choices: List[Dict[str, Any]]) -> bool:
+    """Submit user photo choices for an in-progress generation.
+
+    Called by the API endpoint. Stores the choices and signals the
+    asyncio.Event so the pipeline can resume.
+
+    Returns True if choices were accepted, False if no pending generation found.
+    """
+    pending = _pending_photo_choices.get(site_id)
+    if not pending:
+        logger.warning("[DataBinding] No pending photo choice for site_id=%d", site_id)
+        return False
+
+    pending["choices"] = choices
+    pending["event"].set()
+    logger.info("[DataBinding] Photo choices submitted for site_id=%d (%d choices)", site_id, len(choices))
+    return True
+
+
+def get_pending_photo_choices(site_id: int) -> Optional[List[Dict[str, Any]]]:
+    """Check if a generation is waiting for photo choices.
+
+    Returns the photo_choices list if waiting, None otherwise.
+    """
+    pending = _pending_photo_choices.get(site_id)
+    if pending and not pending["event"].is_set():
+        return pending.get("scan_choices")
+    return None
