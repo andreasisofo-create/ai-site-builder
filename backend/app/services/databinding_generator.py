@@ -3776,19 +3776,20 @@ Return ONLY the JSON object, no explanation."""
     def _diversity_weighted_choice(
         self, pool: List[str], usage_counts: Dict[str, int], max_count: int = 10
     ) -> str:
-        """Pick from pool with diversity weighting — less-used variants are preferred.
+        """Pick from pool with aggressive diversity weighting.
 
-        Each variant gets weight = max_count + 1 - usage_count (minimum 1).
-        This means a variant used 0 times has ~10x the chance of one used 10 times.
+        Uses exponential decay: weight = 2^(max_count - usage_count).
+        A variant used 0 times has ~1000x the chance of one used 10 times.
+        This ensures real variety across generations.
         """
         if not pool:
             return ""
         weights = []
         for v in pool:
-            count = usage_counts.get(v, 0)
-            weight = max(1, max_count + 1 - count)
+            count = min(usage_counts.get(v, 0), max_count)
+            # Exponential: 2^10 = 1024 for unused, 2^0 = 1 for most-used
+            weight = max(1, 2 ** (max_count - count))
             weights.append(weight)
-        # random.choices returns a list
         return random.choices(pool, weights=weights, k=1)[0]
 
     @staticmethod

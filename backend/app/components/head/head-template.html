@@ -131,6 +131,18 @@
     }
     img[src=""] { display: none !important; }
     img:not([src]) { display: none !important; }
+    /* Hide SVG placeholder images (data URI circles that look broken) */
+    img[src^="data:image/svg+xml"] {
+      border-radius: 8px !important;
+      object-fit: cover;
+      background: var(--color-bg-alt, #f3f4f6);
+      min-height: 60px;
+    }
+    /* Prevent broken circular placeholders in menu/about sections */
+    .menu-list-items img[src^="data:image/svg"],
+    .list-image img[src^="data:image/svg"] {
+      display: none !important;
+    }
     /* Image loading shimmer placeholder */
     img[loading="lazy"] {
       background: linear-gradient(90deg, var(--color-bg-alt) 25%, var(--color-bg) 50%, var(--color-bg-alt) 75%);

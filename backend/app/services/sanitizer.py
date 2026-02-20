@@ -106,12 +106,13 @@ ALLOWED_SCRIPT_SRCS = [
 ]
 
 
-def _sanitize_scripts(html: str) -> str:
+def _sanitize_scripts(html: str, is_template_assembled: bool = False) -> str:
     """
     Filtra script tag selettivamente:
     - Mantieni <script src="..."> da CDN whitelistate
     - Mantieni <script>...</script> inline solo se non contengono pattern pericolosi
     - Rimuovi script con src da domini non consentiti
+    - Se is_template_assembled=True, mantieni script inline trusted (GSAP, form handler)
     """
     import re as _re
 
@@ -133,6 +134,17 @@ def _sanitize_scripts(html: str) -> str:
         r'postMessage',
     ]
 
+    # Fingerprints of our own trusted inline scripts (template-assembled)
+    _TRUSTED_SCRIPT_MARKERS = [
+        "GSAP Universal Animation Engine",
+        "ScrollTrigger",
+        "data-animate",
+        "web3forms",
+        "hamburger",
+        "mobile-nav",
+        "accordion",
+    ]
+
     def _check_script(match):
         tag = match.group(0)
         # Script con src
@@ -144,8 +156,13 @@ def _sanitize_scripts(html: str) -> str:
                     return tag
             logger.warning(f"Blocked script src: {src_url}")
             return ""
-        # Inline script: check for dangerous patterns
+        # Inline script: if template-assembled, check for trusted markers first
         content = _re.sub(r'<script[^>]*>|</script>', '', tag, flags=_re.IGNORECASE)
+        if is_template_assembled:
+            for marker in _TRUSTED_SCRIPT_MARKERS:
+                if marker in content:
+                    return tag  # Trusted template script, keep it
+        # Check for dangerous patterns
         for pattern in _DANGEROUS_JS_PATTERNS:
             if _re.search(pattern, content, _re.IGNORECASE):
                 logger.warning(f"Blocked inline script with dangerous pattern: {pattern}")
@@ -176,7 +193,8 @@ def sanitize_output(html: str, is_template_assembled: bool = False) -> str:
         return html
 
     # Rimuovi script pericolosi ma mantieni Tailwind CDN e inline vanilla JS
-    html = _sanitize_scripts(html)
+    # Per template-assembled HTML, preserva script trusted (GSAP, form handler)
+    html = _sanitize_scripts(html, is_template_assembled=is_template_assembled)
 
     # Rimuovi tag pericolosi (iframe, object, embed, applet)
     tags_to_remove = DANGEROUS_TAGS

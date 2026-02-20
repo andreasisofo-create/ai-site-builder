@@ -169,6 +169,63 @@ class TemplateAssembler:
             result[cat_name] = [v["id"] for v in cat_data["variants"]]
         return result
 
+    def _build_contrast_fix_css(self, head_data: Dict[str, Any]) -> str:
+        """Generate CSS overrides to fix .text-white on light backgrounds.
+
+        Many component templates hardcode .text-white regardless of the
+        actual theme colors. When the background/accent is light, white text
+        becomes unreadable. This injects a <style> block that overrides
+        .text-white to use the theme text color on light backgrounds.
+        """
+        accent_hex = head_data.get("ACCENT_COLOR", "#1e40af")
+        primary_hex = head_data.get("PRIMARY_COLOR", "#3b82f6")
+        secondary_hex = head_data.get("SECONDARY_COLOR", "#1e40af")
+        bg_hex = head_data.get("BG_COLOR", "#ffffff")
+        text_hex = head_data.get("TEXT_COLOR", "#1A1A2E")
+
+        overrides = []
+        # Check each color that might be used as section background
+        for color_name, color_hex in [
+            ("accent", accent_hex),
+            ("primary", primary_hex),
+            ("secondary", secondary_hex),
+            ("bg", bg_hex),
+        ]:
+            try:
+                lum = _relative_luminance(color_hex)
+                # If this color is light (luminance > 0.4), white text won't be readable
+                if lum > 0.4:
+                    white_ratio = _contrast_ratio("#ffffff", color_hex)
+                    if white_ratio < 4.5:
+                        overrides.append(color_name)
+            except (ValueError, IndexError):
+                continue
+
+        if not overrides:
+            return ""
+
+        # Build CSS that overrides .text-white and common white-text patterns
+        dark_text = text_hex if _relative_luminance(text_hex) < 0.4 else "#1A1A2E"
+        css = f"""<style>
+/* Contrast fix: override hardcoded .text-white on light backgrounds */
+.text-white, .text-white *, .text-white a,
+.text-white h1, .text-white h2, .text-white h3,
+.text-white h4, .text-white h5, .text-white h6,
+.text-white p, .text-white span, .text-white li {{
+  color: {dark_text} !important;
+}}
+/* Fix sections with bgc-* classes that assume dark backgrounds */
+[class*="bgc-"] {{
+  color: {dark_text};
+}}
+[class*="bgc-"] .text-white,
+[class*="bgc-"] .text-white * {{
+  color: {dark_text} !important;
+}}
+</style>"""
+        logger.info(f"[Assembler] Contrast fix applied: overriding .text-white (light backgrounds detected: {overrides})")
+        return css
+
     def _read_template(self, file_path: str) -> str:
         """Reads an HTML template file."""
         full_path = self.components_dir / file_path
@@ -490,7 +547,11 @@ class TemplateAssembler:
         style_id = site_data.get("style_id", "")
         body_style_class = f"style-{style_id} " if style_id else ""
 
+        # Fix: Override .text-white on light backgrounds to prevent unreadable text
+        contrast_fix_css = self._build_contrast_fix_css(head_data)
+
         complete_html = f"""{head_html}
+{contrast_fix_css}
 <body class="{body_style_class}bg-[var(--color-bg)] text-[var(--color-text)] font-body antialiased">
 
 {nav_html}
