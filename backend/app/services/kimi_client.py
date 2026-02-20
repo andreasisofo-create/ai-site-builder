@@ -117,9 +117,9 @@ class KimiClient:
         """Lazy-init del client httpx persistente."""
         if self._client is None or self._client.is_closed:
             self._client = httpx.AsyncClient(
-                timeout=httpx.Timeout(300.0, connect=15.0),
+                timeout=httpx.Timeout(120.0, connect=15.0),
                 headers=self._headers,
-                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+                limits=httpx.Limits(max_connections=5, max_keepalive_connections=2),
             )
         return self._client
 

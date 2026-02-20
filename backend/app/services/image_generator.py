@@ -15,16 +15,23 @@ import os
 import urllib.parse
 from typing import Dict, Any, Optional, List, Callable
 
-import fal_client
-
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# fal_client authenticates via FAL_KEY env var.
-# Sync from our config if not already set.
-if settings.FAL_API_KEY and not os.environ.get("FAL_KEY"):
-    os.environ["FAL_KEY"] = settings.FAL_API_KEY
+# Lazy import: fal_client is heavy and only needed when image generation is enabled.
+# On Render free tier (512MB), skipping this import saves ~30MB.
+fal_client = None
+
+def _get_fal_client():
+    global fal_client
+    if fal_client is None:
+        import fal_client as _fal
+        fal_client = _fal
+        # fal_client authenticates via FAL_KEY env var.
+        if settings.FAL_API_KEY and not os.environ.get("FAL_KEY"):
+            os.environ["FAL_KEY"] = settings.FAL_API_KEY
+    return fal_client
 
 # Type alias for progress callbacks: (percent, message)
 ProgressCallback = Optional[Callable[[int, str], None]]
@@ -340,7 +347,7 @@ async def generate_single_image(
     for attempt in range(2):
         try:
             result = await asyncio.wait_for(
-                fal_client.run_async(model, arguments=arguments),
+                _get_fal_client().run_async(model, arguments=arguments),
                 timeout=30.0,
             )
 
