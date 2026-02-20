@@ -357,6 +357,7 @@ function GeneratePageContent() {
 
   // Photo choice state
   const [photoChoices, setPhotoChoices] = useState<PhotoChoice[] | null>(null);
+  const photoChoicesHandledRef = useRef(false);
 
   // Countdown state for redirect
   const [countdown, setCountdown] = useState(3);
@@ -447,7 +448,9 @@ function GeneratePageContent() {
         }
 
         // Check for photo choices from backend (sent inside preview_data)
+        // Only show once — after user confirms/cancels, don't re-show
         if (
+          !photoChoicesHandledRef.current &&
           genStatus.preview_data &&
           (genStatus.preview_data as Record<string, unknown>).phase === "photo_choices" &&
           Array.isArray((genStatus.preview_data as Record<string, unknown>).choices)
@@ -501,6 +504,7 @@ function GeneratePageContent() {
   const handlePhotoConfirm = useCallback(
     async (decisions: PhotoDecision[]) => {
       if (!siteId || isNaN(siteId)) return;
+      photoChoicesHandledRef.current = true;
       try {
         const token =
           typeof window !== "undefined"
@@ -511,13 +515,21 @@ function GeneratePageContent() {
         };
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
+        // Map frontend PhotoDecision[] to backend PhotoChoiceItem[] schema
+        const choices = decisions.map((d) => ({
+          section_type: d.section_type,
+          action: d.action === "retry" ? "stock" : d.action,
+          photo_url: d.photo_url || null,
+          photo_urls: null,
+        }));
+
         await fetch(`${API_BASE}/api/generate/${siteId}/photo-choices`, {
           method: "POST",
           headers,
-          body: JSON.stringify({ decisions }),
+          body: JSON.stringify({ choices }),
         });
       } catch {
-        // Ignore errors, generation will continue
+        // Ignore errors, generation will continue with stock fallback
       }
       setPhotoChoices(null);
     },
@@ -525,6 +537,7 @@ function GeneratePageContent() {
   );
 
   const handlePhotoCancel = useCallback(() => {
+    photoChoicesHandledRef.current = true;
     setPhotoChoices(null);
   }, []);
 
