@@ -2894,7 +2894,7 @@ def _parse_reference_analysis(analysis_text: str) -> Dict[str, Any]:
 # =========================================================
 _pending_photo_choices: Dict[int, Dict[str, Any]] = {}
 
-PHOTO_CHOICE_TIMEOUT = 300  # 5 minutes
+PHOTO_CHOICE_TIMEOUT = 60  # 60 seconds (was 300s, reduced to save memory on Render 512MB)
 
 
 class DataBindingGenerator:
@@ -4534,48 +4534,25 @@ RULES:
                         logger.info(f"[DataBinding] Injected YouTube video embed into hero")
                         break
 
-        # === Interactive Photo Choice Flow ===
-        # Scan for placeholder images and offer user a choice:
-        # upload their own photo or use stock photos.
+        # === Photo Injection (non-blocking) ===
+        # Inject stock photos immediately to avoid blocking the pipeline.
+        # Render free tier (512MB) can't afford holding the pipeline for minutes.
+        # Users can swap photos later in the editor.
         photo_choices = self._scan_placeholder_photos(site_data, template_style_id)
+        site_data = self._inject_stock_photos(site_data, template_style_id)
 
         if photo_choices and site_id and on_progress:
-            # Register an asyncio.Event so the API endpoint can signal us
-            choice_event = asyncio.Event()
-            _pending_photo_choices[site_id] = {
-                "event": choice_event,
-                "choices": None,  # Will be set by the API endpoint
-                "scan_choices": photo_choices,  # Scanned choices for get_pending_photo_choices()
-                "site_data": site_data,
-                "template_style_id": template_style_id,
-            }
-
-            # Send photo choices to frontend via progress callback
-            on_progress(5, "Scelta foto...", {
-                "phase": "photo_choices",
+            # Notify frontend which sections have stock photos (for later swap in editor)
+            on_progress(5, "Foto stock inserite, potrai cambiarle nell'editor...", {
+                "phase": "photo_choices_info",
                 "choices": photo_choices,
+                "auto_stock": True,
             })
-
-            # Wait for user response (or timeout after 5 minutes)
-            try:
-                await asyncio.wait_for(choice_event.wait(), timeout=PHOTO_CHOICE_TIMEOUT)
-                user_choices = _pending_photo_choices.get(site_id, {}).get("choices")
-                if user_choices:
-                    logger.info("[DataBinding] Applying %d user photo choices", len(user_choices))
-                    site_data = self.apply_photo_choices(site_data, user_choices, template_style_id)
-                else:
-                    # Event was set but no choices provided — fallback to stock
-                    logger.info("[DataBinding] Photo choice event set but no choices, using stock photos")
-                    site_data = self._inject_stock_photos(site_data, template_style_id)
-            except asyncio.TimeoutError:
-                logger.info("[DataBinding] Photo choice timeout (%ds), auto-injecting stock photos", PHOTO_CHOICE_TIMEOUT)
-                site_data = self._inject_stock_photos(site_data, template_style_id)
-            finally:
-                # Clean up the pending entry
-                _pending_photo_choices.pop(site_id, None)
-        else:
-            # No placeholders found or no site_id — use stock photos directly
-            site_data = self._inject_stock_photos(site_data, template_style_id)
+            logger.info(
+                "[DataBinding] Auto-injected stock photos for %d sections: %s",
+                len(photo_choices),
+                [c["section_type"] for c in photo_choices],
+            )
 
         # Inject user-uploaded photos (override stock/placeholder photos)
         # Only runs if user provided photos at generation start (not via photo choice flow)

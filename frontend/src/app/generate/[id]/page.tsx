@@ -13,12 +13,8 @@ import {
   ArrowLeftIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { getGenerationStatus, uploadMedia, API_BASE } from "@/lib/api";
+import { getGenerationStatus } from "@/lib/api";
 import { useLanguage } from "@/lib/i18n";
-import PhotoChoicePanel, {
-  type PhotoChoice,
-  type PhotoDecision,
-} from "@/components/PhotoChoicePanel";
 
 // ============ TYPES ============
 
@@ -355,10 +351,6 @@ function GeneratePageContent() {
   const [isComplete, setIsComplete] = useState(false);
   const [siteName, setSiteName] = useState<string>("");
 
-  // Photo choice state
-  const [photoChoices, setPhotoChoices] = useState<PhotoChoice[] | null>(null);
-  const photoChoicesHandledRef = useRef(false);
-
   // Countdown state for redirect
   const [countdown, setCountdown] = useState(3);
 
@@ -447,19 +439,9 @@ function GeneratePageContent() {
           setPreviewData(genStatus.preview_data);
         }
 
-        // Check for photo choices from backend (sent inside preview_data)
-        // Only show once — after user confirms/cancels, don't re-show
-        if (
-          !photoChoicesHandledRef.current &&
-          genStatus.preview_data &&
-          (genStatus.preview_data as Record<string, unknown>).phase === "photo_choices" &&
-          Array.isArray((genStatus.preview_data as Record<string, unknown>).choices)
-        ) {
-          const choices = (genStatus.preview_data as Record<string, unknown>).choices as PhotoChoice[];
-          if (choices.length > 0) {
-            setPhotoChoices(choices);
-          }
-        }
+        // Photo choices info: backend auto-injects stock photos (non-blocking).
+        // User can swap photos later in the editor.
+        // No blocking panel during generation — avoids OOM on Render 512MB.
 
         // Generation complete
         if (!genStatus.is_generating && genStatus.status === "ready") {
@@ -500,55 +482,8 @@ function GeneratePageContent() {
     45
   );
 
-  // ---- Photo choice handlers ----
-  const handlePhotoConfirm = useCallback(
-    async (decisions: PhotoDecision[]) => {
-      if (!siteId || isNaN(siteId)) return;
-      photoChoicesHandledRef.current = true;
-      try {
-        const token =
-          typeof window !== "undefined"
-            ? localStorage.getItem("token")
-            : null;
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json",
-        };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-
-        // Map frontend PhotoDecision[] to backend PhotoChoiceItem[] schema
-        const choices = decisions.map((d) => ({
-          section_type: d.section_type,
-          action: d.action === "retry" ? "stock" : d.action,
-          photo_url: d.photo_url || null,
-          photo_urls: null,
-        }));
-
-        await fetch(`${API_BASE}/api/generate/${siteId}/photo-choices`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ choices }),
-        });
-      } catch {
-        // Ignore errors, generation will continue with stock fallback
-      }
-      setPhotoChoices(null);
-    },
-    [siteId]
-  );
-
-  const handlePhotoCancel = useCallback(() => {
-    photoChoicesHandledRef.current = true;
-    setPhotoChoices(null);
-  }, []);
-
-  const handlePhotoUpload = useCallback(
-    async (file: File): Promise<string> => {
-      if (!siteId || isNaN(siteId)) throw new Error("Invalid site ID");
-      const result = await uploadMedia(siteId, file);
-      return result.url;
-    },
-    [siteId]
-  );
+  // Photo swap is now handled in the editor after generation completes.
+  // No blocking photo choice panel during generation (avoids OOM on Render 512MB).
 
   // ---- Derive phase ----
   const phase = previewData?.phase || "analyzing";
@@ -972,15 +907,7 @@ function GeneratePageContent() {
         </div>
       </div>
 
-      {/* ===== PHOTO CHOICE OVERLAY ===== */}
-      {photoChoices && photoChoices.length > 0 && (
-        <PhotoChoicePanel
-          choices={photoChoices}
-          onConfirm={handlePhotoConfirm}
-          onCancel={handlePhotoCancel}
-          onUploadFile={handlePhotoUpload}
-        />
-      )}
+      {/* Photo swap moved to editor — no blocking overlay during generation */}
     </div>
   );
 }
