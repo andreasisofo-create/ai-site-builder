@@ -4414,6 +4414,7 @@ RULES:
                     image_style_mood = parts[-1]
 
             # Run component selection and image generation in parallel
+            # Global timeout: 90s max for the entire image generation step
             selection_coro = self._select_components(
                 business_description, sections, mood,
                 template_style_id=template_style_id,
@@ -4429,9 +4430,21 @@ RULES:
                 user_photos=photo_urls,
                 quality="fast",
             )
-            selection_result, generated_images = await asyncio.gather(
-                selection_coro, images_coro,
-            )
+            try:
+                selection_result, generated_images = await asyncio.wait_for(
+                    asyncio.gather(selection_coro, images_coro),
+                    timeout=90.0,
+                )
+            except asyncio.TimeoutError:
+                logger.warning("[DataBinding] Image generation timed out (90s), using placeholders")
+                # Run component selection alone (should be fast)
+                selection_result = await self._select_components(
+                    business_description, sections, mood,
+                    template_style_id=template_style_id,
+                    parsed_reference=parsed_reference,
+                    harmony_keywords=harmony_keywords,
+                )
+                generated_images = {}
 
             # Replace placeholder URLs in texts with generated images
             total_ai_images = sum(
