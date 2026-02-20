@@ -4404,8 +4404,11 @@ RULES:
             mood = "modern"
 
         # Determine if we should generate AI images
+        # DISABLED: fal.ai image generation causes OOM on Render 512MB free tier.
+        # Stock photos are injected later in the pipeline instead.
+        # To re-enable: remove the "False and" below.
         should_generate_images = (
-            generate_images
+            False and generate_images
             and _has_image_generation
             and _has_image_api_key()
         )

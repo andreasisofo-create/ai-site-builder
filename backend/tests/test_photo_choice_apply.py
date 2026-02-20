@@ -452,7 +452,7 @@ class TestGetPendingPhotoChoices:
 class TestTimeoutFlow:
 
     def test_photo_choice_timeout_constant(self):
-        assert PHOTO_CHOICE_TIMEOUT == 300
+        assert PHOTO_CHOICE_TIMEOUT == 60
 
     @pytest.mark.asyncio
     async def test_timeout_calls_inject_stock_photos(self):
