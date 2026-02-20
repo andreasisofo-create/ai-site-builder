@@ -4510,10 +4510,10 @@ RULES:
                         logger.info(f"[DataBinding] Injected YouTube video embed into hero")
                         break
 
-        # Inject stock photos as default (replace ugly placehold.co grey boxes)
-        # Only if no AI images were generated — stock photos are the fallback
-        if not should_generate_images:
-            site_data = self._inject_stock_photos(site_data, template_style_id)
+        # Inject stock photos as fallback for any remaining placeholder images.
+        # Runs ALWAYS — even if AI images were generated, some sections may
+        # still have placeholders (AI might have failed or not covered all sections).
+        site_data = self._inject_stock_photos(site_data, template_style_id)
 
         # Inject user-uploaded photos (override stock/placeholder photos)
         if photo_urls:
@@ -5815,26 +5815,43 @@ RULES:
 
     def _inject_stock_photos(self, site_data: Dict[str, Any], template_style_id: Optional[str] = None) -> Dict[str, Any]:
         """Replace placeholder images with high-quality Unsplash stock photos.
-        Only replaces URLs that are placeholders (inline SVG or legacy placehold.co)."""
+
+        Handles: hero, about (+ numbered _2 through _10), gallery, team,
+        blog posts, services, listings, and logos.
+        Runs ALWAYS as a safety net — real URLs are never overwritten.
+        """
         photos = _get_stock_photos(template_style_id or "default")
 
         hero_pool = photos.get("hero", [])
         gallery_pool = photos.get("gallery", [])
         about_pool = photos.get("about", [])
         team_pool = photos.get("team", [])
+        replaced_count = 0
 
         for component in site_data.get("components", []):
             data = component.get("data", {})
 
             # Hero image
-            if "HERO_IMAGE_URL" in data and self._is_placeholder_url(str(data.get("HERO_IMAGE_URL", ""))):
+            if self._is_placeholder_url(str(data.get("HERO_IMAGE_URL", ""))):
                 if hero_pool:
                     data["HERO_IMAGE_URL"] = hero_pool[0]
+                    replaced_count += 1
 
-            # About image
-            if "ABOUT_IMAGE_URL" in data and self._is_placeholder_url(str(data.get("ABOUT_IMAGE_URL", ""))):
+            # About image (primary)
+            if self._is_placeholder_url(str(data.get("ABOUT_IMAGE_URL", ""))):
                 if about_pool:
                     data["ABOUT_IMAGE_URL"] = about_pool[0]
+                    replaced_count += 1
+
+            # About numbered images (ABOUT_IMAGE_URL_2 through _10)
+            # New components from ThemeForest may use multiple about images
+            for n in range(2, 11):
+                key = f"ABOUT_IMAGE_URL_{n}"
+                if key in data and self._is_placeholder_url(str(data.get(key, ""))):
+                    pool = gallery_pool if gallery_pool else about_pool
+                    if pool:
+                        data[key] = pool[(n - 1) % len(pool)]
+                        replaced_count += 1
 
             # Gallery images
             gallery_items = data.get("GALLERY_ITEMS", [])
@@ -5843,6 +5860,7 @@ RULES:
                     if isinstance(item, dict) and self._is_placeholder_url(str(item.get("GALLERY_IMAGE_URL", ""))):
                         if gallery_pool:
                             item["GALLERY_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
+                            replaced_count += 1
 
             # Team member images
             team_members = data.get("TEAM_MEMBERS", [])
@@ -5851,6 +5869,49 @@ RULES:
                     if isinstance(member, dict) and self._is_placeholder_url(str(member.get("MEMBER_IMAGE_URL", ""))):
                         if team_pool:
                             member["MEMBER_IMAGE_URL"] = team_pool[i % len(team_pool)]
+                            replaced_count += 1
+
+            # Blog post images
+            blog_posts = data.get("BLOG_POSTS", [])
+            if isinstance(blog_posts, list):
+                for i, post in enumerate(blog_posts):
+                    if isinstance(post, dict) and self._is_placeholder_url(str(post.get("POST_IMAGE_URL", ""))):
+                        if gallery_pool:
+                            post["POST_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
+                            replaced_count += 1
+
+            # Service images (some service components use images)
+            service_items = data.get("SERVICE_ITEMS", [])
+            if isinstance(service_items, list):
+                for i, svc in enumerate(service_items):
+                    if isinstance(svc, dict) and self._is_placeholder_url(str(svc.get("SERVICE_IMAGE_URL", ""))):
+                        if gallery_pool:
+                            svc["SERVICE_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
+                            replaced_count += 1
+
+            # Listing images
+            listing_items = data.get("LISTING_ITEMS", [])
+            if isinstance(listing_items, list):
+                for i, item in enumerate(listing_items):
+                    if isinstance(item, dict) and self._is_placeholder_url(str(item.get("LISTING_IMAGE_URL", ""))):
+                        if gallery_pool:
+                            item["LISTING_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
+                            replaced_count += 1
+
+            # Donation images
+            donation_items = data.get("DONATION_ITEMS", [])
+            if isinstance(donation_items, list):
+                for i, item in enumerate(donation_items):
+                    if isinstance(item, dict) and self._is_placeholder_url(str(item.get("DONATION_IMAGE_URL", ""))):
+                        if gallery_pool:
+                            item["DONATION_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
+                            replaced_count += 1
+
+            # App download image
+            if self._is_placeholder_url(str(data.get("APP_IMAGE_URL", ""))):
+                if hero_pool:
+                    data["APP_IMAGE_URL"] = hero_pool[0]
+                    replaced_count += 1
 
             # Logo partner images - use inline SVG placeholders instead of grey boxes
             logos_items = data.get("LOGOS_ITEMS", [])
@@ -5859,8 +5920,9 @@ RULES:
                     if isinstance(logo, dict) and self._is_placeholder_url(str(logo.get("LOGO_IMAGE_URL", ""))):
                         name = logo.get("LOGO_NAME", f"Partner {i+1}")
                         logo["LOGO_IMAGE_URL"] = _svg_placeholder(160, 60, name, bg_color="#f8fafc", text_color="#64748b")
+                        replaced_count += 1
 
-        logger.info(f"[DataBinding] Injected stock photos for category: {template_style_id or 'default'}")
+        logger.info(f"[DataBinding] Stock photo injection: {replaced_count} images replaced (category: {template_style_id or 'default'})")
         return site_data
 
     def _inject_user_photos(self, site_data: Dict[str, Any], photo_urls: List[str]) -> Dict[str, Any]:
