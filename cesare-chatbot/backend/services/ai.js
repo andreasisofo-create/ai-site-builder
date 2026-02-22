@@ -14,7 +14,7 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 // ─── Sessioni in memoria ──────────────────────────────────────────────────────
 const SESSION_TTL_MS = (parseInt(process.env.SESSION_TTL_MINUTES) || 30) * 60 * 1000;
-const MAX_TURNS = 10;
+const MAX_TURNS = 0; // 0 = nessun limite
 const sessions = new Map();
 
 setInterval(() => {
@@ -132,14 +132,8 @@ export async function chat(sessionId, message) {
   if (s.history.length === 0) s.language = detectLanguage(message);
   const language = s.language;
 
-  if (s.history.length >= MAX_TURNS * 2) {
-    return {
-      response: language === 'en'
-        ? 'Conversation limit reached. Please start a new chat.'
-        : 'Limite conversazione raggiunto. Inizia una nuova chat.',
-      language, sessionId,
-    };
-  }
+  // Limite turni disabilitato per test (MAX_TURNS = 0)
+  // if (s.history.length >= MAX_TURNS * 2) { ... }
 
   const systemPrompt = buildSystemPrompt() + '\n\n--- KNOWLEDGE BASE ---\n' + getKnowledgeContext(message);
   s.history.push({ role: 'user', content: message });
