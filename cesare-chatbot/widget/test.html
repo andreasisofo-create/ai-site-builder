@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rally di Roma Capitale 2026 — Test Chatbot Cesare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0D1220;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: #0D1220;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px 0 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-logo {
+      height: 50px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .header-logo-fallback {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .header-logo-diamond {
+      width: 46px;
+      height: 46px;
+      background: #E31937;
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-logo-diamond span {
+      transform: rotate(-45deg);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      color: #fff;
+      letter-spacing: 0;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .header-logo-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.2;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-social {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-social a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-social a:hover {
+      color: #E31937;
+    }
+
+    .header-social svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .header-region {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 5px 10px;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+
+    .header-region:hover {
+      border-color: rgba(255,255,255,0.5);
+      color: #fff;
+    }
+
+    /* ===== BARRA SPONSOR / SUB-HEADER ===== */
+    .subheader {
+      background: #1A2744;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .subheader::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(to right, #009246 33.3%, #fff 33.3%, #fff 66.6%, #CE2B37 66.6%);
+    }
+
+    .subheader-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .subheader-text strong {
+      color: #fff;
+    }
+
+    /* ===== COUNTDOWN ===== */
+    .countdown-section {
+      background: #111827;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    .countdown-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 30px;
+    }
+
+    .countdown-label strong {
+      color: rgba(255,255,255,0.9);
+    }
+
+    .countdown-blocks {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .countdown-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .countdown-number {
+      background: #1A1A1A;
+      border: 1px solid rgba(227,25,55,0.2);
+      padding: 20px 30px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 72px;
+      line-height: 1;
+      color: #E31937;
+      min-width: 120px;
+      text-align: center;
+      letter-spacing: -2px;
+      position: relative;
+    }
+
+    .countdown-number::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #E31937;
+      opacity: 0.4;
+    }
+
+    .countdown-unit {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .countdown-separator {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 60px;
+      color: rgba(227,25,55,0.4);
+      line-height: 1;
+      padding-top: 20px;
+      align-self: flex-start;
+    }
+
+    .countdown-event {
+      margin-top: 24px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero {
+      min-height: 500px;
+      background: linear-gradient(135deg, #0D0D0D 0%, #1A0505 40%, #2D0A0A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 80px 20px;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 20px,
+        rgba(255,255,255,0.015) 20px,
+        rgba(255,255,255,0.015) 21px
+      );
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(ellipse at bottom left, rgba(227,25,55,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: 8px;
+      color: #E31937;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero-date {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(48px, 10vw, 96px);
+      color: #fff;
+      line-height: 1;
+      text-transform: uppercase;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+      text-shadow: 0 0 60px rgba(227,25,55,0.3), 0 4px 30px rgba(0,0,0,0.8);
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+    }
+
+    .hero-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 1px;
+      margin-bottom: 32px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: #E31937;
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      border-radius: 4px;
+    }
+
+    .hero-flags {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .hero-flag-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+    }
+
+    .flag-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .flag-dot.erc { background: #FFD700; }
+    .flag-dot.ciar { background: #009246; }
+
+    /* ===== SECTION CESARE ===== */
+    .cesare-section {
+      background: #0D1220;
+      padding: 100px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cesare-section::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(227,25,55,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cesare-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 40% 60%;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .cesare-mascotte {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .cesare-mascotte::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 60px;
+      background: radial-gradient(ellipse, rgba(227,25,55,0.4) 0%, transparent 70%);
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    .cesare-img {
+      height: 350px;
+      width: auto;
+      object-fit: contain;
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+    }
+
+    .cesare-img-fallback {
+      height: 350px;
+      width: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background: linear-gradient(145deg, #1A2744, #0D1220);
+      border: 2px dashed rgba(227,25,55,0.3);
+      border-radius: 20px;
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cesare-img-fallback .lion-emoji {
+      font-size: 80px;
+      margin-bottom: 12px;
+    }
+
+    .cesare-img-fallback p {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-18px); }
+    }
+
+    .cesare-content {
+      position: relative;
+    }
+
+    .cesare-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: #E31937;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cesare-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(227,25,55,0.3);
+      max-width: 60px;
+    }
+
+    .cesare-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(40px, 5vw, 60px);
+      color: #fff;
+      line-height: 1.05;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+
+    .cesare-title span {
+      color: #E31937;
+    }
+
+    .cesare-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 32px;
+      max-width: 480px;
+    }
+
+    .cesare-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .cesare-features li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(227,25,55,0.1);
+      border: 1px solid rgba(227,25,55,0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .cesare-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #E31937;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 18px 44px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      box-shadow: 0 8px 30px rgba(227,25,55,0.35);
+    }
+
+    .cesare-cta:hover {
+      background: #B01029;
+      box-shadow: 0 12px 40px rgba(227,25,55,0.5);
+      transform: translateY(-2px);
+    }
+
+    .cesare-cta:active {
+      transform: translateY(0);
+    }
+
+    .cesare-cta svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* ===== TIMELINE SECTION ===== */
+    .timeline-section {
+      background: #fff;
+      padding: 80px 40px;
+      color: #1a1a1a;
+    }
+
+    .timeline-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .timeline-title-plain {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 36px;
+      color: #1a1a1a;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+
+    .timeline-title-badge {
+      background: #E31937;
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 36px;
+      text-transform: uppercase;
+      padding: 4px 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .timeline-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .timeline-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 24px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.06);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timeline-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #E31937;
+    }
+
+    .timeline-card:hover {
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+      transform: translateY(-4px);
+    }
+
+    .card-day-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .card-day {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      text-transform: uppercase;
+      color: #E31937;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .card-date-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .card-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #444;
+    }
+
+    .card-desc strong {
+      color: #1a1a1a;
+    }
+
+    /* ===== PARTNER SECTION ===== */
+    .partner-section {
+      background: #F8F8F8;
+      padding: 50px 40px;
+      text-align: center;
+    }
+
+    .partner-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .partner-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 30px;
+    }
+
+    .partner-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .partner-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: #bbb;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .partner-logo:hover {
+      color: #555;
+    }
+
+    .partner-divider {
+      width: 1px;
+      height: 24px;
+      background: #ddd;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: #0D1220;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 50px 40px 0;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 40px;
+      align-items: start;
+    }
+
+    .footer-logo-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-diamond {
+      width: 40px;
+      height: 40px;
+      background: #E31937;
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .footer-diamond span {
+      transform: rotate(-45deg);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 11px;
+      color: #fff;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .footer-logo-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.2;
+    }
+
+    .footer-tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.6;
+      max-width: 220px;
+    }
+
+    .footer-center {
+      text-align: center;
+    }
+
+    .footer-company {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 8px;
+    }
+
+    .footer-address {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.8;
+    }
+
+    .footer-contacts {
+      text-align: right;
+    }
+
+    .footer-contact-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 12px;
+    }
+
+    .footer-contact-item {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 8px;
+    }
+
+    .footer-contact-item a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-contact-item a:hover {
+      color: #E31937;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .footer-copyright {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .footer-test-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: rgba(227,25,55,0.6);
+      text-transform: uppercase;
+      border: 1px solid rgba(227,25,55,0.2);
+      padding: 4px 10px;
+      border-radius: 3px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .timeline-cards {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .footer-contacts {
+        text-align: center;
+      }
+
+      .footer-contact-item {
+        justify-content: center;
+      }
+
+      .footer-bottom {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .footer-logo-col {
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .cesare-inner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .cesare-section {
+        padding: 60px 20px;
+      }
+
+      .cesare-mascotte {
+        order: -1;
+      }
+
+      .cesare-img, .cesare-img-fallback {
+        height: 260px;
+      }
+
+      .cesare-img-fallback {
+        width: 220px;
+      }
+
+      .header-region {
+        display: none;
+      }
+
+      .timeline-section {
+        padding: 60px 20px;
+      }
+
+      .countdown-number {
+        font-size: 48px;
+        padding: 14px 20px;
+        min-width: 80px;
+      }
+
+      .countdown-separator {
+        font-size: 40px;
+      }
+
+      .hero {
+        padding: 60px 20px;
+      }
+
+      .partner-logos {
+        gap: 24px;
+      }
+
+      .partner-divider {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .countdown-blocks {
+        gap: 6px;
+      }
+
+      .countdown-number {
+        font-size: 38px;
+        padding: 12px 14px;
+        min-width: 64px;
+      }
+
+      .countdown-separator {
+        font-size: 32px;
+        padding-top: 14px;
+      }
+
+      .cesare-cta {
+        padding: 14px 28px;
+        font-size: 16px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .hero-flags {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+
+    /* ===== WIDGET PLACEHOLDER STYLES ===== */
+    .widget-status-bar {
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      background: rgba(13,18,32,0.9);
+      border: 1px solid rgba(227,25,55,0.3);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 1px;
+      z-index: 9998;
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+    }
+
+    .widget-status-bar .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #4CAF50;
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <a href="#" class="header-logo-fallback">
+      <img
+        src="./logo-rally.png"
+        alt="Rally di Roma Capitale"
+        class="header-logo"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+      >
+      <div class="header-logo-diamond" style="display:none;">
+        <span>RRC</span>
+      </div>
+      <div class="header-logo-text" style="display:none;">
+        Rally di Roma<br>Capitale
+      </div>
+    </a>
+
+    <div class="header-right">
+      <div class="header-social">
+        <!-- Instagram -->
+        <a href="#" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+        <!-- Facebook -->
+        <a href="#" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </a>
+        <!-- YouTube -->
+        <a href="#" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
+          </svg>
+        </a>
+      </div>
+      <a href="#" class="header-region">Regione Lazio</a>
+    </div>
+  </header>
+
+  <!-- ===== BARRA SPONSOR ===== -->
+  <div class="subheader">
+    <p class="subheader-text">
+      <strong>FIA European Rally Championship</strong> &nbsp;|&nbsp; Official Event &nbsp;&middot;&nbsp; CIAR Sparco &nbsp;&middot;&nbsp; ERC Round 5
+    </p>
+  </div>
+
+  <!-- ===== COUNTDOWN ===== -->
+  <section class="countdown-section">
+    <p class="countdown-label">INIZIO RALLY TRA — <strong>4 LUGLIO 2026, ORE 18:00</strong></p>
+    <div class="countdown-blocks">
+      <div class="countdown-block">
+        <div class="countdown-number" id="cnt-giorni">132</div>
+        <div class="countdown-unit">Giorni</div>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-block">
+        <div class="countdown-number" id="cnt-ore">00</div>
+        <div class="countdown-unit">Ore</div>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-block">
+        <div class="countdown-number" id="cnt-minuti">00</div>
+        <div class="countdown-unit">Minuti</div>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-block">
+        <div class="countdown-number" id="cnt-secondi">00</div>
+        <div class="countdown-unit">Secondi</div>
+      </div>
+    </div>
+    <p class="countdown-event">3 · 4 · 5 luglio 2026 &nbsp;&nbsp;·&nbsp;&nbsp; Roma · Fiuggi · Lazio</p>
+  </section>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Save the Date</p>
+      <h1 class="hero-date">3 · 4 · 5 / 07 / 2026</h1>
+      <p class="hero-subtitle">Roma &nbsp;·&nbsp; Fiuggi &nbsp;·&nbsp; Lazio &nbsp;—&nbsp; FIA ERC + CIAR Sparco</p>
+      <a class="hero-badge">Ingresso Gratuito</a>
+      <div class="hero-flags">
+        <div class="hero-flag-pill">
+          <div class="flag-dot erc"></div>
+          FIA ERC Round 5
+        </div>
+        <div class="hero-flag-pill">
+          <div class="flag-dot ciar"></div>
+          CIAR Sparco
+        </div>
+        <div class="hero-flag-pill">
+          <div class="flag-dot" style="background:#E31937;"></div>
+          Colosseo Superspeciale
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION CESARE ===== -->
+  <section class="cesare-section">
+    <div class="cesare-inner">
+      <!-- Mascotte -->
+      <div class="cesare-mascotte">
+        <img
+          src="./cesare.png"
+          alt="Cesare — Mascotte Rally di Roma Capitale"
+          class="cesare-img"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+        >
+        <div class="cesare-img-fallback" style="display:none;">
+          <span class="lion-emoji">&#129408;</span>
+          <p>Cesare</p>
+        </div>
+      </div>
+
+      <!-- Contenuto -->
+      <div class="cesare-content">
+        <p class="cesare-eyebrow">Il tuo assistente ufficiale</p>
+        <h2 class="cesare-title">Ciao, sono <span>Cesare!</span></h2>
+        <p class="cesare-desc">
+          Sono il leone del Rally di Roma Capitale. Chiedimi tutto sull'evento:
+          programma, come arrivare, piloti, storia dei rally e molto altro ancora.
+          Sono qui per aiutarti a vivere l'esperienza al massimo!
+        </p>
+        <ul class="cesare-features">
+          <li>
+            <div class="feature-icon">&#128197;</div>
+            <span>Programma completo 3&ndash;5 luglio 2026</span>
+          </li>
+          <li>
+            <div class="feature-icon">&#128506;</div>
+            <span>GPS e indicazioni per le prove speciali</span>
+          </li>
+          <li>
+            <div class="feature-icon">&#128247;</div>
+            <span>Riconosco le auto da rally dalle foto</span>
+          </li>
+          <li>
+            <div class="feature-icon">&#127908;</div>
+            <span>Capisco anche i messaggi vocali</span>
+          </li>
+        </ul>
+        <button class="cesare-cta" onclick="apriCesare()">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+          </svg>
+          Chatta con Cesare
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TIMELINE SECTION ===== -->
+  <section class="timeline-section">
+    <div class="timeline-inner">
+      <div class="timeline-header">
+        <span class="timeline-title-plain">Timeline of</span>
+        <span class="timeline-title-badge">Rally di Roma Capitale</span>
+      </div>
+
+      <div class="timeline-cards">
+        <!-- Card 1 -->
+        <div class="timeline-card">
+          <span class="card-day-icon">&#127963;</span>
+          <div class="card-day">Venerd&igrave; 4 Luglio</div>
+          <div class="card-date-label">Day 1 &mdash; Roma</div>
+          <div class="card-desc">
+            <strong>Parata Bocca della Verit&agrave;</strong> ore 18:00<br>
+            <strong>PS Colosseo</strong> ore 20:05 &mdash; La prova speciale pi&ugrave; suggestiva del mondo: auto da rally sotto le arcate del Colosseo con il pubblico di Roma.<br><br>
+            <em>Zona spettatori: Piazza del Colosseo</em>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="timeline-card">
+          <span class="card-day-icon">&#127956;</span>
+          <div class="card-day">Sabato 5 Luglio</div>
+          <div class="card-date-label">Day 2 &mdash; Frosinone e dintorni</div>
+          <div class="card-desc">
+            <strong>Vico nel Lazio</strong> &mdash; Prove speciali nel cuore dei Monti Ernici<br>
+            <strong>Torre di Cicerone</strong> &mdash; PS panoramica con vista su Arpino<br>
+            <strong>Guarcino</strong> &mdash; Salita tecnica tra le faggete<br><br>
+            <em>Rigroup: Fiuggi Terme ore 19:00</em>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="timeline-card">
+          <span class="card-day-icon">&#127942;</span>
+          <div class="card-day">Domenica 6 Luglio</div>
+          <div class="card-date-label">Day 3 &mdash; Power Stage &amp; Podio</div>
+          <div class="card-desc">
+            <strong>Power Stage Jenne</strong> &mdash; La prova che decide tutto, trasmessa in diretta TV<br>
+            <strong>Fiuggi Terme</strong> &mdash; Podio finale ore 18:30 in Piazza Trento<br><br>
+            <em>Premiazione equipaggi e trofei CIAR + ERC</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PARTNER SECTION ===== -->
+  <section class="partner-section">
+    <div class="partner-inner">
+      <p class="partner-label">Partner Istituzionali</p>
+      <div class="partner-logos">
+        <span class="partner-logo">CONI</span>
+        <div class="partner-divider"></div>
+        <span class="partner-logo">ACI Sport</span>
+        <div class="partner-divider"></div>
+        <span class="partner-logo">Sport e Salute</span>
+        <div class="partner-divider"></div>
+        <span class="partner-logo">Regione Lazio</span>
+        <div class="partner-divider"></div>
+        <span class="partner-logo">ATAC</span>
+        <div class="partner-divider"></div>
+        <span class="partner-logo">FIA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <!-- Logo col -->
+      <div class="footer-logo-col">
+        <div class="footer-logo-badge">
+          <div class="footer-diamond"><span>RRC</span></div>
+          <div class="footer-logo-name">Rally di Roma<br>Capitale</div>
+        </div>
+        <p class="footer-tagline">
+          La gara di rally pi&ugrave; bella del mondo, nel cuore di Roma e del Lazio.
+          Dal 2012 un appuntamento imperdibile per gli appassionati di motorsport.
+        </p>
+      </div>
+
+      <!-- Centro -->
+      <div class="footer-center">
+        <p class="footer-company">Rally di Roma Capitale &mdash; Motorsport Italia S.p.A.</p>
+        <p class="footer-address">
+          Via Cesalpino Lowenmant 156<br>
+          00100 Roma RM, Italia<br>
+          P.IVA 12345678901
+        </p>
+      </div>
+
+      <!-- Contatti -->
+      <div class="footer-contacts">
+        <p class="footer-contact-label">Contatti</p>
+        <div class="footer-contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.4)">
+            <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+          </svg>
+          <a href="mailto:info@rallydiromacapitale.it">info@rallydiromacapitale.it</a>
+        </div>
+        <div class="footer-contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.4)">
+            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+          </svg>
+          <a href="tel:+390632742000">+39 06 3274200</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copyright">
+        &copy; 2026 Rally di Roma Capitale. Tutti i diritti riservati.
+      </p>
+      <span class="footer-test-badge">Test Page &mdash; Chatbot Cesare powered by AI</span>
+    </div>
+  </footer>
+
+  <!-- ===== WIDGET STATUS BAR ===== -->
+  <div class="widget-status-bar" id="widget-status">
+    <span class="dot"></span> Cesare &mdash; Widget attivo
+  </div>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    // ---- COUNTDOWN ----
+    function aggiornaCountdown() {
+      var target = new Date('2026-07-04T18:00:00+02:00').getTime();
+      var ora = Date.now();
+      var diff = target - ora;
+
+      if (diff <= 0) {
+        document.getElementById('cnt-giorni').textContent = '000';
+        document.getElementById('cnt-ore').textContent = '00';
+        document.getElementById('cnt-minuti').textContent = '00';
+        document.getElementById('cnt-secondi').textContent = '00';
+        document.querySelector('.countdown-label').innerHTML =
+          'IL RALLY &Egrave; IN CORSO! &mdash; <strong>Vivi l\'emozione!</strong>';
+        return;
+      }
+
+      var giorni   = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var ore      = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minuti   = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      var secondi  = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('cnt-giorni').textContent  = String(giorni).padStart(3, '0');
+      document.getElementById('cnt-ore').textContent     = String(ore).padStart(2, '0');
+      document.getElementById('cnt-minuti').textContent  = String(minuti).padStart(2, '0');
+      document.getElementById('cnt-secondi').textContent = String(secondi).padStart(2, '0');
+    }
+
+    setInterval(aggiornaCountdown, 1000);
+    aggiornaCountdown();
+
+    // ---- CTA BUTTON ----
+    function apriCesare() {
+      var fab = document.getElementById('rally-fab');
+      if (fab) {
+        fab.click();
+      } else {
+        window.open('https://cesare.e-quipe.app/widget/chat-widget.html', '_blank');
+      }
+    }
+
+    // ---- AUTO-OPEN WIDGET DOPO 1.5s ----
+    setTimeout(function() {
+      var fab = document.getElementById('rally-fab');
+      if (fab) {
+        fab.click();
+      }
+    }, 1500);
+
+    // ---- WIDGET STATUS BAR: nascondi dopo 5s ----
+    setTimeout(function() {
+      var bar = document.getElementById('widget-status');
+      if (bar) {
+        bar.style.transition = 'opacity 0.5s';
+        bar.style.opacity = '0';
+        setTimeout(function() { bar.style.display = 'none'; }, 500);
+      }
+    }, 5000);
+  </script>
+
+  <!-- ===== EMBED WIDGET CESARE ===== -->
+  <script>
+    window.RALLY_CHAT_URL = 'https://cesare.e-quipe.app';
+  </script>
+  <script src="./embed.js" data-url="https://cesare.e-quipe.app"></script>
+
+</body>
+</html>
