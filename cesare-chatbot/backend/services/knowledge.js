@@ -322,44 +322,86 @@ export function getKnowledgeContext(query) {
 
   // Programma / date / orari / prove speciali
   if (/quando|programma|orario|schedule|date|giorno|weekend|shakedown|ps|prova speciale|luglio|july|colosseo|vico|jenne|santopadre|guarcino|canterano|torre di cicerone|power stage/.test(q)) {
-    sezioni.push(`PROGRAMMA DETTAGLIATO 2026:\n${JSON.stringify(PROGRAMMA, null, 2)}`);
+    sezioni.push(
+      `PROGRAMMA 2026:\n` +
+      `Ven 4/7: Parade 18:00 Bocca Verità | PS Colosseo 20:05\n` +
+      `Sab 5/7: PS Vico nel Lazio 8:30 | PS Torre Cicerone 9:40 | PS Santopadre 11:10 | ripetizioni 14:45\n` +
+      `Dom 6/7: PS Guarcino 8:25 | PS Canterano 9:20 | PS Jenne 11:05 | ripetizioni 13:45 | ⚡POWER STAGE Jenne 17:05 | 🏆Podio Fiuggi 18:30\n` +
+      `Totale: ~140-160 km PS su asfalto`
+    );
   }
 
   // Biglietti / prezzi / costo / gratuito
   if (/bigliett|ticket|prezzo|prezzi|costo|acquist|euro|gratuito|gratis|free|vip|hospitality/.test(q)) {
-    sezioni.push(`BIGLIETTI E ACCESSO:\n${JSON.stringify(BIGLIETTI, null, 2)}`);
+    sezioni.push(
+      `ACCESSO:\nIngresso GRATUITO ovunque (Roma, prove speciali, Fiuggi).\n` +
+      `Aree gratuite: Colle Oppio Roma, tutte le PS, Village Fiuggi, Podio.\n` +
+      `VIP/Hospitality su richiesta: info@rallydiromacapitale.it | 06 5214260`
+    );
   }
 
   // Location / dove / come arrivare / parcheggio / mappe / spettatori
   if (/dove|location|posto|luogo|arrivare|parcheggio|parking|treno|aereo|fiumicino|auto|bus|navetta|colle oppio|fiuggi|bocca della verità|spettator|mappa|indicazioni/.test(q)) {
-    sezioni.push(`LOCATION, MAPPE E TRASPORTI:\n${JSON.stringify(LOCATION, null, 2)}`);
+    sezioni.push(
+      `LUOGHI CHIAVE:\n` +
+      `• Roma HQ (NOVITÀ 2026): Rally HQ + Parco Assistenza per la prima volta a Roma\n` +
+      `• Bocca della Verità: partenza Parade venerdì 18:00\n` +
+      `• Colosseo/Colle Oppio: PS serale venerdì + area spettatori\n` +
+      `• Zone Frusinate: Vico nel Lazio, Torre di Cicerone, Santopadre (sabato)\n` +
+      `• Guarcino, Canterano, Jenne: domenica + Power Stage\n` +
+      `• Fiuggi Corso Nuova Italia: Village + Podio domenica 18:30\n\n` +
+      `COME ARRIVARE:\n` +
+      `Aereo: Fiumicino FCO → Leonardo Express 32min 14€ oppure taxi 48€ fisso\n` +
+      `Treno: Roma Termini/Tiburtina. Da Roma a Fiuggi: Frosinone poi bus/taxi ~1h30\n` +
+      `Auto: A1 dir. Napoli, uscita Frosinone o Anagni-Fiuggi. Arrivare 2h prima.\n` +
+      `Parcheggi: gratuiti nelle zone gara — si riempiono presto`
+    );
   }
 
   // Storia / albo d'oro / edizioni passate / vincitori
   if (/storia|storico|vincitor|albo|passate|edizioni|anni|2013|2014|2015|2016|2017|2018|2019|2020|2021|2022|2023|2024|2025|basso|crugnola|scandola|bouffier|lukyanuk/.test(q)) {
-    sezioni.push(`STORIA E ALBO D'ORO:\n${JSON.stringify(STORIA, null, 2)}`);
+    sezioni.push(
+      `ALBO D'ORO:\n` +
+      `2025: Basso/Granai (Škoda Fabia RS Rally2) — 3ª vittoria di Basso\n` +
+      `2024: Crugnola/Ometto (Citroën C3 Rally2)\n` +
+      `2023: Crugnola/Ometto (Citroën C3 Rally2)\n` +
+      `2022: De Tommaso/Ascalone (Škoda Fabia Rally2 evo)\n` +
+      `2021: Basso/Granai (Škoda Fabia Rally2 evo)\n` +
+      `2020: Lukyanuk/Eremeev (Citroën C3 R5)\n` +
+      `2019: Basso/Granai (Škoda Fabia R5)\n` +
+      `2018: Lukyanuk/Arnautov (Ford Fiesta R5)\n` +
+      `2017: Bouffier/Panseri (Ford Fiesta R5) — 1ª edizione ERC\n` +
+      `2016: Scandola/D'Amore (Škoda Fabia R5)\n` +
+      `2015: Scandola/D'Amore (Škoda Fabia R5)\n` +
+      `2013: Dedo/Chiarcossi (Ford Focus RS WRC) — 1ª edizione`
+    );
   }
 
   // Info generali / cos'è / novità / wrc / erc
-  if (/cos.è|what is|evento|rally|erc|campionato|championship|storia|history|wrc|novit|2026|rendina|motorsport italia/.test(q)) {
-    sezioni.push(`INFO EVENTO 2026:\n${JSON.stringify(EVENT_INFO, null, 2)}`);
+  if (/cos.è|what is|evento|rally|erc|campionato|championship|wrc|novit|rendina|motorsport italia/.test(q)) {
+    sezioni.push(
+      `INFO EVENTO:\n` +
+      `Rally di Roma Capitale 2026 — 13ª edizione, 4-6 luglio 2026\n` +
+      `Campionati: FIA ERC + CIAR Sparco. Organizzatore: Motorsport Italia (dir. Max Rendina)\n` +
+      `Novità 2026: HQ+Parco Assistenza a Roma (prima volta!) | Candidatura WRC 2027\n` +
+      `Impatto: 9 milioni spettatori TV/streaming nel 2025`
+    );
   }
 
   // Contatti
   if (/contatt|email|telefono|phone|organizzaz|info@/.test(q)) {
     sezioni.push(
-      `CONTATTI:\nEmail: ${EVENT_INFO.email_contatto}\n` +
-      `Telefono: ${EVENT_INFO.telefono.join(' / ')}\n` +
-      `Sito: ${EVENT_INFO.sito_ufficiale}\n` +
-      `Organizzatore: ${EVENT_INFO.organizzatore} (dir. ${EVENT_INFO.direttore})`
+      `CONTATTI:\nEmail: info@rallydiromacapitale.it\n` +
+      `Tel: 06 5214260 | 331 805 8801\n` +
+      `Sito: https://www.rallydiromacapitale.it`
     );
   }
 
   // Fallback info base
   if (sezioni.length === 0) {
     sezioni.push(
-      `INFO BASE:\nDate: ${EVENT_INFO.date}\nIngresso: ${BIGLIETTI.ingresso_base}\n` +
-      `Sito: ${EVENT_INFO.sito_ufficiale}\nEmail: ${EVENT_INFO.email_contatto}`
+      `INFO BASE:\nDate: 4-6 luglio 2026 | Ingresso GRATUITO\n` +
+      `Sito: https://www.rallydiromacapitale.it | Email: info@rallydiromacapitale.it`
     );
   }
 
