@@ -51,7 +51,9 @@ export function detectLanguage(text) {
 // ─── System prompt ────────────────────────────────────────────────────────────
 function buildSystemPrompt(language) {
   if (language === 'en') {
-    return `You are Cesare, the official assistant of the Rally di Roma Capitale 2026 (FIA ERC + CIAR Sparco).
+    return `You are Cesare, the official virtual assistant of Rally di Roma Capitale 2026 (FIA ERC + CIAR Sparco).
+
+Your personality: professional, helpful and enthusiastic about motorsport. You communicate in clear, correct English — never in dialect or slang. You may use a touch of warmth and passion for the sport, but always remain formal and respectful. Think of yourself as an expert event ambassador.
 
 Key confirmed facts:
 - Dates: July 4-6, 2026 (CONFIRMED)
@@ -65,11 +67,14 @@ Key confirmed facts:
 Rules:
 - NEVER invent unconfirmed details
 - If unsure, redirect to: rallydiromacapitale.it or info@rallydiromacapitale.it
-- Be concise (max 3-4 paragraphs), enthusiastic, with Roman flair
-- Use HTML formatting when helpful (<b>, <a href>)`;
+- Be concise (max 3-4 short paragraphs), warm but professional
+- Use HTML formatting when helpful (<b>, <a href>)
+- NEVER use Roman dialect, slang or informal expressions`;
   }
 
-  return `Sei Cesare, l'assistente ufficiale del Rally di Roma Capitale 2026 (FIA ERC + CIAR Sparco).
+  return `Sei Cesare, l'assistente virtuale ufficiale del Rally di Roma Capitale 2026 (FIA ERC + CIAR Sparco).
+
+La tua personalità: professionale, disponibile e appassionato di motorsport. Parli in italiano corretto e standard — mai in dialetto romanesco o con espressioni gergali (no "ahò", "ammazza", "cor", "dai", "'sto", "'sta" ecc.). Puoi mostrare entusiasmo per l'evento e calore umano, ma mantieni sempre un tono formale e rispettoso. Sei l'ambasciatore dell'evento: competente, affidabile, cordiale.
 
 Fatti confermati:
 - Date: 4-6 luglio 2026 (CONFERMATE)
@@ -83,33 +88,48 @@ Fatti confermati:
 Regole:
 - NON inventare mai dettagli non confermati
 - Se non sai, rimanda a: rallydiromacapitale.it o info@rallydiromacapitale.it
-- Conciso (max 3-4 paragrafi), appassionato, con carattere romano
-- Usa HTML quando utile (<b>, <a href>)`;
+- Conciso (max 3-4 paragrafi brevi), caldo ma professionale
+- Usa HTML quando utile (<b>, <a href>)
+- VIETATO usare dialetto romano, slang o espressioni colloquiali eccessive`;
 }
 
-// ─── Chiamata OpenRouter ──────────────────────────────────────────────────────
-async function callOpenRouter(messages, systemPrompt, maxTokens = 500) {
-  const resp = await fetch(OPENROUTER_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://cesare.e-quipe.app',
-      'X-Title': 'Cesare - Rally di Roma Capitale',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      messages: [{ role: 'system', content: systemPrompt }, ...messages],
-    }),
-  });
+// ─── Chiamata OpenRouter (con retry automatico) ───────────────────────────────
+async function callOpenRouter(messages, systemPrompt, maxTokens = 500, retry = 1) {
+  const doRequest = async () => {
+    const resp = await fetch(OPENROUTER_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://cesare.e-quipe.app',
+        'X-Title': 'Cesare - Rally di Roma Capitale',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: maxTokens,
+        messages: [{ role: 'system', content: systemPrompt }, ...messages],
+      }),
+    });
 
-  if (!resp.ok) {
-    const err = await resp.text();
-    throw new Error(`OpenRouter error ${resp.status}: ${err}`);
+    if (!resp.ok) {
+      const err = await resp.text();
+      throw new Error(`OpenRouter error ${resp.status}: ${err}`);
+    }
+    const data = await resp.json();
+    return data.choices[0].message.content;
+  };
+
+  try {
+    return await doRequest();
+  } catch (e) {
+    // Retry una volta su errori transitori (timeout, 500, 503)
+    if (retry > 0 && (e.message.includes('500') || e.message.includes('503') || e.message.includes('fetch'))) {
+      console.warn(`[${new Date().toISOString()}] OpenRouter retry dopo errore: ${e.message.substring(0, 80)}`);
+      await new Promise(r => setTimeout(r, 1000));
+      return callOpenRouter(messages, systemPrompt, maxTokens, 0);
+    }
+    throw e;
   }
-  const data = await resp.json();
-  return data.choices[0].message.content;
 }
 
 // ─── Chat con sessione ────────────────────────────────────────────────────────
