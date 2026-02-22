@@ -6738,17 +6738,22 @@ RULES:
 
     @staticmethod
     def _generate_text_logo(business_name: str, theme: Dict[str, str]) -> str:
-        """Generate a data URI SVG logo with business initials when no logo is provided."""
+        """Generate a data URI SVG logo with business initials when no logo is provided.
+        Uses transparent background with primary-colored text so CSS brightness-0+invert
+        in footer templates inverts the text to white without creating a white rectangle.
+        """
         # Extract initials (max 2 characters)
         words = business_name.strip().split()
         initials = "".join(w[0].upper() for w in words[:2]) if words else "?"
         primary = theme.get("primary_color", "#3b82f6")
-        # SVG with rounded rect background and white text
+        # Transparent background + primary-color border + primary-color text.
+        # Footer templates apply `brightness-0 invert` which converts any colored pixel
+        # to white, making initials and border appear white on dark footers — no white rectangle.
         svg = (
             f'<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 120 40">'
-            f'<rect width="120" height="40" rx="8" fill="{primary}"/>'
+            f'<rect x="1" y="1" width="118" height="38" rx="7" fill="none" stroke="{primary}" stroke-width="1.5"/>'
             f'<text x="60" y="26" font-family="system-ui,sans-serif" font-size="16" '
-            f'font-weight="700" fill="white" text-anchor="middle">{initials}</text>'
+            f'font-weight="700" fill="{primary}" text-anchor="middle">{initials}</text>'
             f'</svg>'
         )
         import base64

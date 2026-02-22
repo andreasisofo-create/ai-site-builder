@@ -114,6 +114,13 @@
       transform: translateY(20px);
       will-change: transform, opacity;
     }
+    /* Images: never hidden — always show at full opacity to avoid "invisible photo" bug.
+       GSAP will still animate them via ScrollTrigger but they won't start invisible. */
+    img[data-animate] {
+      opacity: 1 !important;
+      transform: none !important;
+      will-change: auto;
+    }
     /* Hero elements: visible immediately (above the fold) */
     section:first-of-type [data-animate],
     [data-hero] [data-animate],
@@ -122,12 +129,12 @@
       opacity: 1;
       transform: none;
     }
-    /* Fallback: show content after 3s if GSAP hasn't initialized */
+    /* Fallback: show content after 1.5s if GSAP hasn't initialized (was 3.5s) */
     @keyframes gsapFallback {
       to { opacity: 1; transform: none; }
     }
     [data-animate] {
-      animation: gsapFallback 0s 3.5s forwards;
+      animation: gsapFallback 0s 1.5s forwards;
     }
     img[src=""] { display: none !important; }
     img:not([src]) { display: none !important; }
