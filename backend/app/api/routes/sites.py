@@ -732,3 +732,120 @@ async def swap_photo(
         "old_url": old_url,
         "new_url": data.photo_url,
     }
+
+
+# ============================================================
+# NOTIFICATION EMAIL — imposta email per ricezione form contatti
+# ============================================================
+
+class NotificationEmailRequest(BaseModel):
+    email: str
+
+
+@router.put("/{site_id}/notification-email")
+def set_notification_email(
+    site_id: int,
+    data: NotificationEmailRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Imposta l'email del proprietario per ricevere i messaggi dal form contatti.
+    Aggiorna il valore BIZ_EMAIL nello script Web3Forms dell'HTML generato
+    e lo salva in site.config["_notification_email"].
+    """
+    email = data.email.strip().lower()
+
+    # Validazione email base
+    if not email or "@" not in email or "." not in email.split("@")[-1]:
+        raise HTTPException(status_code=400, detail="Email non valida")
+
+    site = db.query(Site).filter(
+        Site.id == site_id,
+        Site.owner_id == current_user.id,
+    ).first()
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+    if not site.html_content:
+        raise HTTPException(status_code=400, detail="Sito non ancora generato")
+
+    html = site.html_content
+
+    # Sostituisce BIZ_EMAIL nella variabile JS del form handler
+    # Pattern: var BIZ_EMAIL = '...' (qualsiasi valore precedente, anche vuoto)
+    new_html = re.sub(
+        r"var BIZ_EMAIL\s*=\s*'[^']*'",
+        f"var BIZ_EMAIL = '{email}'",
+        html,
+    )
+
+    if new_html == html and f"var BIZ_EMAIL = '{email}'" not in html:
+        # Il form handler potrebbe non esserci (sito vecchio) — aggiunge in testa al </body>
+        inject_script = f"""<script>
+(function(){{
+  document.querySelectorAll('#contact form').forEach(function(form){{
+    form.addEventListener('submit', function(e){{
+      e.preventDefault();
+      var data = {{}};
+      form.querySelectorAll('input,textarea').forEach(function(el){{
+        if(el.name) data[el.name]=el.value;
+        else if(el.type==='email') data['email']=el.value;
+        else if(el.type==='text'&&!data['name']) data['name']=el.value;
+        else if(el.tagName==='TEXTAREA') data['message']=el.value;
+      }});
+      form.innerHTML='<div class="text-center py-12"><h3 style="color:var(--color-text)">Messaggio inviato!</h3><p style="color:var(--color-text-muted)">Grazie, ti risponderemo al pi\\u00f9 presto.</p></div>';
+      fetch('https://api.web3forms.com/submit',{{method:'POST',headers:{{'Content-Type':'application/json'}},body:JSON.stringify({{access_key:'{site.html_content.count("WEB3FORMS_KEY")}',to:'{email}',...data}})}}).catch(function(){{}});
+    }});
+  }});
+}})();
+</script>"""
+        new_html = html.replace("</body>", inject_script + "\n</body>")
+
+    # Salva email in config per riferimento futuro
+    config = site.config if isinstance(site.config, dict) else {}
+    config["_notification_email"] = email
+    site.config = config
+    site.html_content = new_html
+
+    db.commit()
+
+    logger.info("[NotificationEmail] Site %d: BIZ_EMAIL set to %s by user %d", site_id, email, current_user.id)
+
+    return {
+        "success": True,
+        "email": email,
+        "message": f"Email di notifica impostata: {email}",
+    }
+
+
+@router.get("/{site_id}/notification-email")
+def get_notification_email(
+    site_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Ritorna l'email di notifica corrente del sito."""
+    site = db.query(Site).filter(
+        Site.id == site_id,
+        Site.owner_id == current_user.id,
+    ).first()
+    if not site:
+        raise HTTPException(status_code=404, detail="Sito non trovato")
+
+    # Prima cerca in config, poi nell'HTML
+    config = site.config if isinstance(site.config, dict) else {}
+    email = config.get("_notification_email", "")
+
+    if not email and site.html_content:
+        m = re.search(r"var BIZ_EMAIL\s*=\s*'([^']*)'", site.html_content)
+        if m:
+            email = m.group(1)
+
+    # Fallback: email dell'account utente
+    if not email:
+        email = ""
+
+    return {
+        "email": email,
+        "account_email": current_user.email,
+    }

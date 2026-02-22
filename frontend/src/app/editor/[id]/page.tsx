@@ -26,7 +26,7 @@ import toast from "react-hot-toast";
 import {
   getSite, updateSite, refineWebsite, deploySite, regenerateImages, Site,
   uploadMedia, getSiteImages, replaceImage, addVideo, SiteImage,
-  getPhotoMap,
+  getPhotoMap, getNotificationEmail, setNotificationEmail,
 } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/i18n";
@@ -214,6 +214,11 @@ export default function Editor() {
 
   // Photo swap panel state
   const [showPhotoSwapPanel, setShowPhotoSwapPanel] = useState(false);
+
+  // Notification email state
+  const [notifEmail, setNotifEmail] = useState("");
+  const [notifEmailInput, setNotifEmailInput] = useState("");
+  const [savingNotifEmail, setSavingNotifEmail] = useState(false);
 
   // Media panel state
   const [showMediaPanel, setShowMediaPanel] = useState(false);
@@ -425,11 +430,35 @@ export default function Editor() {
       setLoading(true);
       const data = await getSite(Number(siteId));
       setSite(data);
+      // Load notification email
+      try {
+        const emailData = await getNotificationEmail(Number(siteId));
+        const currentEmail = emailData.email || "";
+        setNotifEmail(currentEmail);
+        setNotifEmailInput(currentEmail || emailData.account_email || "");
+      } catch {
+        // non-critical
+      }
     } catch (error: any) {
       toast.error(error.message || (language === "en" ? "Error loading site" : "Errore nel caricamento sito"));
       router.push("/dashboard");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveNotifEmail = async () => {
+    if (!site || !notifEmailInput.trim()) return;
+    setSavingNotifEmail(true);
+    try {
+      const res = await setNotificationEmail(site.id, notifEmailInput.trim());
+      setNotifEmail(res.email);
+      setNotifEmailInput(res.email);
+      toast.success(language === "en" ? "Notification email saved!" : "Email di notifica salvata!");
+    } catch (error: any) {
+      toast.error(error.message || (language === "en" ? "Error saving email" : "Errore nel salvataggio email"));
+    } finally {
+      setSavingNotifEmail(false);
     }
   };
 
@@ -1372,6 +1401,45 @@ export default function Editor() {
                           <span className="text-white font-medium">{suggestion.title}</span>
                         </button>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Notification email */}
+                  <div className="mt-4 pt-3 border-t border-white/10">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <svg className="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <p className="text-xs text-amber-400 font-medium">
+                        {language === "en" ? "Contact form notifications" : "Notifiche form contatti"}
+                      </p>
+                    </div>
+                    <p className="text-xs text-slate-500 mb-2">
+                      {language === "en"
+                        ? "Enter your email to receive contact form messages from site visitors."
+                        : "Inserisci la tua email per ricevere i messaggi che i visitatori inviano dal form contatti."}
+                    </p>
+                    {notifEmail && (
+                      <p className="text-xs text-green-400 mb-2">
+                        {language === "en" ? "Active:" : "Attiva:"} <span className="font-mono">{notifEmail}</span>
+                      </p>
+                    )}
+                    <div className="flex gap-1.5">
+                      <input
+                        type="email"
+                        value={notifEmailInput}
+                        onChange={e => setNotifEmailInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && handleSaveNotifEmail()}
+                        placeholder={language === "en" ? "your@email.com" : "tua@email.com"}
+                        className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400/50"
+                      />
+                      <button
+                        onClick={handleSaveNotifEmail}
+                        disabled={savingNotifEmail || !notifEmailInput.trim()}
+                        className="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black text-xs font-semibold rounded-lg transition-colors whitespace-nowrap"
+                      >
+                        {savingNotifEmail ? "..." : (language === "en" ? "Save" : "Salva")}
+                      </button>
                     </div>
                   </div>
 

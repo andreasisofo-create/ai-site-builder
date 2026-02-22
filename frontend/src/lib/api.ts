@@ -712,6 +712,24 @@ export async function analyzeImage(imageUrl: string): Promise<{ analysis: string
   }
 }
 
+// ============ NOTIFICATION EMAIL ============
+
+export async function getNotificationEmail(siteId: number): Promise<{ email: string; account_email: string }> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${siteId}/notification-email`, { headers });
+  return handleResponse(res);
+}
+
+export async function setNotificationEmail(siteId: number, email: string): Promise<{ success: boolean; email: string }> {
+  const headers = getAuthHeaders();
+  const res = await fetch(`${API_BASE}/api/sites/${siteId}/notification-email`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ email }),
+  });
+  return handleResponse(res);
+}
+
 // ============ SERVICE CATALOG / SUBSCRIPTIONS ============
 
 export interface ServiceCatalogItem {

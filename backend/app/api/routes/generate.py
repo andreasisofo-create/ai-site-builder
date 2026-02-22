@@ -218,6 +218,12 @@ async def _run_generation_background(
             generator = swarm  # fallback legacy
 
         # Pass template_style_id and photo_urls for databinding generator
+        # Auto-populate email in contact_info from user account if not provided
+        contact_info = request.contact_info or {}
+        if not contact_info.get("email") and current_user.email:
+            contact_info = dict(contact_info)
+            contact_info["email"] = current_user.email
+
         gen_kwargs = dict(
             business_name=request.business_name,
             business_description=request.business_description,
@@ -226,7 +232,7 @@ async def _run_generation_background(
             reference_image_url=request.reference_image_url,
             reference_analysis=request.reference_analysis,
             logo_url=request.logo_url,
-            contact_info=request.contact_info,
+            contact_info=contact_info,
             on_progress=on_progress,
         )
         # Only databinding_generator supports photo_urls, template_style_id, reference_urls
