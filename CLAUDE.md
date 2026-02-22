@@ -72,7 +72,7 @@ The `gsap-universal.js` engine supports these `data-animate` attributes:
 
 ## Deployment
 - **Frontend**: Vercel (auto-deploy from GitHub) — `site-generator-v2.vercel.app`
-- **Backend**: Render (auto-deploy from GitHub) — `site-builder-api.onrender.com`
+- **Backend**: Render (auto-deploy from GitHub) — `ai-site-builder-jz2g.onrender.com` (nota: `site-builder-api.onrender.com` è un custom domain non funzionante)
 - **Database**: PostgreSQL on Render
 - **AI**: Gemini 2.5 Pro (generation) + Gemini 2.5 Flash (refine/text) via OpenRouter
 - **AI Client**: `kimi_client.py` — provider-agnostic, legacy name. Routes to Gemini via OpenRouter API
