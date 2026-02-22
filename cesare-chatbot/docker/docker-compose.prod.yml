@@ -47,8 +47,8 @@ services:
       start_period: 15s
 
     networks:
-      - traefik-public
+      - n8n_default
 
 networks:
-  traefik-public:
+  n8n_default:
     external: true
