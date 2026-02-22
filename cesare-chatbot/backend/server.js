@@ -30,7 +30,12 @@ app.set('trust proxy', 1);
 // ─── Middleware globali ──────────────────────────────────────────────────────
 
 app.use(corsMiddleware);
-app.use(express.json({ limit: '10kb' }));
+app.use((req, res, next) => {
+  express.json({ limit: '10kb' })(req, res, (err) => {
+    if (err) return res.status(400).json({ success: false, error: 'JSON non valido nella richiesta.' });
+    next();
+  });
+});
 
 // Logging richieste
 app.use((req, _res, next) => {

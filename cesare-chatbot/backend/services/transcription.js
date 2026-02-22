@@ -1,69 +1,117 @@
 /**
- * transcription.js — Agente Trascrizione Vocale
+ * transcription.js — Trascrizione Vocale
  *
- * Usa Whisper per trascrivere note vocali OGG/Opus inviate su Telegram.
- * Approccio a cascata:
- *   1. Groq Whisper (whisper-large-v3-turbo) — se GROQ_API_KEY è presente
- *   2. OpenRouter Whisper (openai/whisper-large-v3) — se OPENROUTER_API_KEY è presente
- *   3. Errore esplicito — se nessuna chiave è configurata
+ * Strategia a cascata:
+ *   1. Groq Whisper (whisper-large-v3-turbo) — se GROQ_API_KEY presente
+ *   2. OpenRouter multimodal (google/gemini-2.0-flash-001) — transcribe via LLM con audio base64
+ *   3. Errore esplicito
  */
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const GROQ_URL = 'https://api.groq.com/openai/v1/audio/transcriptions';
-const OPENROUTER_AUDIO_URL = 'https://openrouter.ai/api/v1/audio/transcriptions';
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 /**
- * Trascrive un buffer audio (OGG/Opus da Telegram) in testo.
- * @param {Buffer} audioBuffer - Buffer del file audio
- * @param {string} mimeType - es. 'audio/ogg' o 'audio/mpeg'
- * @param {string} language - 'it' o 'en' (hint per Whisper)
- * @returns {Promise<string>} - Testo trascritto
+ * Trascrive un buffer audio in testo.
+ * @param {Buffer} audioBuffer
+ * @param {string} mimeType - es. 'audio/ogg'
+ * @param {string} language - 'it' o 'en'
+ * @returns {Promise<string>}
  */
 export async function transcribeAudio(audioBuffer, mimeType = 'audio/ogg', language = 'it') {
-  // Determina quale servizio usare
-  const apiKey = GROQ_API_KEY || OPENROUTER_API_KEY;
-  const apiUrl = GROQ_API_KEY ? GROQ_URL : OPENROUTER_AUDIO_URL;
-  const model = GROQ_API_KEY ? 'whisper-large-v3-turbo' : 'openai/whisper-large-v3';
-
-  if (!apiKey) {
-    throw new Error('Nessuna API key configurata per trascrizione vocale (GROQ_API_KEY o OPENROUTER_API_KEY)');
+  // ── Strategia 1: Groq Whisper (preferito — velocissimo) ────────────────────
+  if (GROQ_API_KEY) {
+    return transcribeGroq(audioBuffer, mimeType, language);
   }
 
-  // Determina estensione dal mime type
-  const ext = mimeType.includes('ogg') ? 'ogg'
-    : mimeType.includes('mpeg') || mimeType.includes('mp3') ? 'mp3'
-    : mimeType.includes('wav') ? 'wav'
-    : mimeType.includes('mp4') || mimeType.includes('m4a') ? 'm4a'
-    : 'ogg';
+  // ── Strategia 2: OpenRouter multimodal LLM con audio base64 ────────────────
+  if (OPENROUTER_API_KEY) {
+    return transcribeOpenRouterMultimodal(audioBuffer, mimeType, language);
+  }
 
-  // Crea FormData con il file audio
+  throw new Error('Nessuna API key configurata per trascrizione vocale');
+}
+
+// ── Groq Whisper ──────────────────────────────────────────────────────────────
+async function transcribeGroq(audioBuffer, mimeType, language) {
+  const ext = getExt(mimeType);
   const formData = new FormData();
-  const blob = new Blob([audioBuffer], { type: mimeType });
-  formData.append('file', blob, `voice.${ext}`);
-  formData.append('model', model);
+  formData.append('file', new Blob([audioBuffer], { type: mimeType }), `voice.${ext}`);
+  formData.append('model', 'whisper-large-v3-turbo');
   formData.append('language', language === 'en' ? 'en' : 'it');
   formData.append('response_format', 'text');
 
-  const resp = await fetch(apiUrl, {
+  const resp = await fetch(GROQ_URL, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      ...(OPENROUTER_API_KEY && !GROQ_API_KEY ? {
-        'HTTP-Referer': 'https://cesare.e-quipe.app',
-        'X-Title': 'Cesare - Rally di Roma Capitale',
-      } : {}),
-    },
+    headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` },
     body: formData,
   });
 
   if (!resp.ok) {
     const err = await resp.text();
-    throw new Error(`Whisper error ${resp.status}: ${err}`);
+    throw new Error(`Groq Whisper error ${resp.status}: ${err}`);
   }
 
   const testo = await resp.text();
-  const servizio = GROQ_API_KEY ? 'Groq' : 'OpenRouter';
-  console.log(`[${new Date().toISOString()}] Trascrizione ${servizio} completata: "${testo.trim().substring(0, 80)}"`);
+  console.log(`[${new Date().toISOString()}] Trascrizione Groq: "${testo.trim().substring(0, 80)}"`);
   return testo.trim();
+}
+
+// ── OpenRouter multimodal (Gemini 2.0 Flash — supporta audio base64) ──────────
+async function transcribeOpenRouterMultimodal(audioBuffer, mimeType, language) {
+  const base64Audio = audioBuffer.toString('base64');
+  const langHint = language === 'en' ? 'English' : 'Italian';
+
+  const prompt = `You are a transcription service. Transcribe EXACTLY what is said in this audio.
+Output ONLY the transcribed text, nothing else. No explanations, no quotes, just the words spoken.
+The speaker is likely speaking in ${langHint}. If you cannot understand the audio or it's not speech, reply with: [incomprensibile]`;
+
+  const resp = await fetch(OPENROUTER_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://cesare.e-quipe.app',
+      'X-Title': 'Cesare - Rally di Roma Capitale',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-2.0-flash-001',
+      max_tokens: 300,
+      messages: [{
+        role: 'user',
+        content: [
+          {
+            type: 'input_audio',
+            input_audio: {
+              data: base64Audio,
+              format: mimeType.includes('ogg') ? 'ogg' : mimeType.includes('mp4') ? 'mp4' : 'mp3',
+            },
+          },
+          { type: 'text', text: prompt },
+        ],
+      }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.text();
+    throw new Error(`OpenRouter multimodal error ${resp.status}: ${err.substring(0, 200)}`);
+  }
+
+  const data = await resp.json();
+  const testo = data.choices?.[0]?.message?.content?.trim();
+  if (!testo) throw new Error('Risposta vuota da OpenRouter multimodal');
+
+  console.log(`[${new Date().toISOString()}] Trascrizione OpenRouter Gemini: "${testo.substring(0, 80)}"`);
+  return testo;
+}
+
+// ── Utility ───────────────────────────────────────────────────────────────────
+function getExt(mimeType) {
+  if (mimeType.includes('ogg')) return 'ogg';
+  if (mimeType.includes('mpeg') || mimeType.includes('mp3')) return 'mp3';
+  if (mimeType.includes('wav')) return 'wav';
+  if (mimeType.includes('mp4') || mimeType.includes('m4a')) return 'm4a';
+  return 'ogg';
 }
