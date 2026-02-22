@@ -357,7 +357,7 @@ router.post('/', async (req, res) => {
       await sendChatAction(chatId, 'typing');
 
       // Controlla se il servizio di trascrizione è configurato
-      if (!process.env.GROQ_API_KEY) {
+      if (!process.env.GROQ_API_KEY && !process.env.OPENROUTER_API_KEY) {
         const errMsg = language === 'en'
           ? '🎤 Voice messages are not yet enabled. Please type your question!'
           : '🎤 Le note vocali non sono ancora attive. Scrivi la tua domanda!';
