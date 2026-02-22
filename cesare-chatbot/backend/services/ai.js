@@ -6,10 +6,11 @@
  */
 
 import { getKnowledgeContext } from './knowledge.js';
-import { getPartecipantiContext } from './rallyCarDatabase.js';
+import { getPartecipantiContext, getPilotiChatContext } from './rallyCarDatabase.js';
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const MODEL = process.env.AI_MODEL || 'google/gemini-2.0-flash-001';
+const VISION_MODEL = 'anthropic/claude-3.5-sonnet'; // Claude per analisi foto (più preciso)
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 // ─── Sessioni in memoria ──────────────────────────────────────────────────────
@@ -136,7 +137,10 @@ export async function chat(sessionId, message) {
   // Limite turni disabilitato per test (MAX_TURNS = 0)
   // if (s.history.length >= MAX_TURNS * 2) { ... }
 
-  const systemPrompt = buildSystemPrompt() + '\n\n--- KNOWLEDGE BASE ---\n' + getKnowledgeContext(message);
+  const knowledgeCtx = getKnowledgeContext(message);
+  const pilotiCtx = getPilotiChatContext(message);
+  const extraCtx = pilotiCtx ? `\n\n--- ISCRITTI 2025 ---\n${pilotiCtx}` : '';
+  const systemPrompt = buildSystemPrompt() + '\n\n--- KNOWLEDGE BASE ---\n' + knowledgeCtx + extraCtx;
   s.history.push({ role: 'user', content: message });
 
   try {
@@ -236,7 +240,7 @@ Rispondi in italiano, conciso e appassionato. Usa HTML (<b>, emoji). MAX 300 par
       'X-Title': 'Cesare - Rally di Roma Capitale',
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: VISION_MODEL, // Claude per vision — più preciso di Gemini per riconoscimento auto
       max_tokens: 600,
       messages: [{
         role: 'user',
