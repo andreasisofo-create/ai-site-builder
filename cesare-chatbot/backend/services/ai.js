@@ -84,7 +84,7 @@ REGOLE:
 }
 
 // ─── Chiamata OpenRouter (con retry automatico) ───────────────────────────────
-async function callOpenRouter(messages, systemPrompt, maxTokens = 500, retry = 1) {
+async function callOpenRouter(messages, systemPrompt, maxTokens = 300, retry = 1) {
   const doRequest = async () => {
     const resp = await fetch(OPENROUTER_URL, {
       method: 'POST',
