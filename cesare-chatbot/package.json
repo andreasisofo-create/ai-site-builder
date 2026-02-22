@@ -1,0 +1,29 @@
+{
+  "name": "rally-roma-chatbot",
+  "version": "1.0.0",
+  "description": "Chatbot ufficiale Rally di Roma Capitale 2026 — widget web + Telegram",
+  "type": "module",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "rally",
+    "roma",
+    "chatbot",
+    "telegram",
+    "anthropic"
+  ],
+  "license": "UNLICENSED"
+}

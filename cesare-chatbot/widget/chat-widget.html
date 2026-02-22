@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cesare — Assistente Rally di Roma Capitale</title>
+  <style>
+    /* ─── Reset e base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rosso: #E31937;
+      --rosso-scuro: #B01029;
+      --nero: #1A1A1A;
+      --grigio-chiaro: #F5F5F5;
+      --grigio-bordo: #E0E0E0;
+      --bianco: #FFFFFF;
+      --testo: #333333;
+      --testo-secondario: #888888;
+      --shadow: 0 8px 32px rgba(0,0,0,0.18);
+      --radius-widget: 16px;
+      --radius-bolla: 18px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      background: #f0f0f0;
+    }
+
+    /* ─── FAB (pulsante flottante) ─────────────────────────────── */
+    #rally-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--rosso);
+      color: var(--bianco);
+      border: none;
+      cursor: pointer;
+      z-index: 9999;
+      box-shadow: 0 4px 16px rgba(227,25,55,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      font-size: 26px;
+      line-height: 1;
+    }
+    #rally-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(227,25,55,0.55); }
+    #rally-fab:active { transform: scale(0.96); }
+    #rally-fab[aria-expanded="true"] { background: var(--rosso-scuro); }
+
+    /* Notifica (punto rosso) */
+    #rally-fab-badge {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 12px; height: 12px;
+      background: #ff9800;
+      border-radius: 50%;
+      border: 2px solid var(--bianco);
+      display: none;
+    }
+
+    /* ─── Finestra chat ─────────────────────────────────────────── */
+    #rally-widget {
+      position: fixed;
+      bottom: 96px;
+      right: 24px;
+      width: 380px;
+      height: 560px;
+      background: var(--bianco);
+      border-radius: var(--radius-widget);
+      box-shadow: var(--shadow);
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform-origin: bottom right;
+      transform: scale(0.85) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease;
+    }
+    #rally-widget.aperto {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Mobile: full-screen */
+    @media (max-width: 440px) {
+      #rally-widget {
+        bottom: 0; right: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 16px 16px 0 0;
+      }
+      #rally-fab { bottom: 16px; right: 16px; }
+    }
+
+    /* ─── Header ────────────────────────────────────────────────── */
+    #rally-header {
+      background: linear-gradient(135deg, var(--rosso) 0%, var(--rosso-scuro) 100%);
+      color: var(--bianco);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    #rally-avatar {
+      width: 42px; height: 42px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    #rally-header-info { flex: 1; }
+    #rally-header-nome {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.01em;
+    }
+    #rally-header-status {
+      font-size: 12px;
+      opacity: 0.85;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    #rally-status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4caf50;
+      animation: pulse-verde 2s infinite;
+    }
+    @keyframes pulse-verde {
+      0%,100% { opacity:1; }
+      50% { opacity:0.4; }
+    }
+    #rally-chiudi {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: var(--bianco);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    #rally-chiudi:hover { background: rgba(255,255,255,0.25); }
+
+    /* ─── Area messaggi ─────────────────────────────────────────── */
+    #rally-messaggi {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scroll-behavior: smooth;
+    }
+    #rally-messaggi::-webkit-scrollbar { width: 4px; }
+    #rally-messaggi::-webkit-scrollbar-track { background: transparent; }
+    #rally-messaggi::-webkit-scrollbar-thumb { background: var(--grigio-bordo); border-radius: 2px; }
+
+    /* Bolla messaggio */
+    .rally-msg {
+      max-width: 82%;
+      padding: 10px 14px;
+      border-radius: var(--radius-bolla);
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: break-word;
+      animation: slideIn 0.2s ease;
+    }
+    @keyframes slideIn {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* Bot — sinistra */
+    .rally-msg.bot {
+      align-self: flex-start;
+      background: var(--grigio-chiaro);
+      color: var(--testo);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Utente — destra */
+    .rally-msg.utente {
+      align-self: flex-end;
+      background: var(--rosso);
+      color: var(--bianco);
+      border-bottom-right-radius: 4px;
+    }
+
+    /* Timestamp */
+    .rally-msg-time {
+      font-size: 10px;
+      color: var(--testo-secondario);
+      margin-top: 2px;
+      text-align: right;
+    }
+    .rally-msg.bot ~ .rally-msg-time { text-align: left; }
+
+    /* Wrapper bolla + timestamp */
+    .rally-msg-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      animation: slideIn 0.2s ease;
+    }
+    .rally-msg-wrap.utente { align-items: flex-end; }
+    .rally-msg-wrap.bot    { align-items: flex-start; }
+
+    /* ─── Typing indicator ──────────────────────────────────────── */
+    #rally-typing {
+      display: none;
+      align-self: flex-start;
+      background: var(--grigio-chiaro);
+      padding: 12px 16px;
+      border-radius: var(--radius-bolla);
+      border-bottom-left-radius: 4px;
+      gap: 4px;
+    }
+    #rally-typing.visibile { display: flex; }
+    .typing-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--testo-secondario);
+      animation: bounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%,60%,100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+
+    /* ─── Quick actions ─────────────────────────────────────────── */
+    #rally-quick {
+      padding: 8px 12px 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      flex-shrink: 0;
+      border-top: 1px solid var(--grigio-bordo);
+    }
+    .rally-quick-btn {
+      background: var(--bianco);
+      border: 1.5px solid var(--rosso);
+      color: var(--rosso);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .rally-quick-btn:hover { background: var(--rosso); color: var(--bianco); }
+
+    /* ─── Area input ────────────────────────────────────────────── */
+    #rally-input-area {
+      padding: 10px 12px 12px;
+      border-top: 1px solid var(--grigio-bordo);
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+    #rally-textarea {
+      flex: 1;
+      border: 1.5px solid var(--grigio-bordo);
+      border-radius: 20px;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      min-height: 38px;
+      max-height: 80px;
+      overflow-y: auto;
+      transition: border-color 0.15s;
+      line-height: 1.4;
+      color: var(--testo);
+    }
+    #rally-textarea:focus { border-color: var(--rosso); }
+    #rally-textarea::placeholder { color: var(--testo-secondario); }
+    #rally-invia {
+      width: 38px; height: 38px;
+      background: var(--rosso);
+      color: var(--bianco);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      transition: background 0.15s, transform 0.1s;
+    }
+    #rally-invia:hover { background: var(--rosso-scuro); }
+    #rally-invia:active { transform: scale(0.92); }
+    #rally-invia:disabled { background: var(--grigio-bordo); cursor: not-allowed; }
+
+    /* ─── Powered by ────────────────────────────────────────────── */
+    #rally-powered {
+      text-align: center;
+      font-size: 10px;
+      color: var(--testo-secondario);
+      padding: 0 0 8px;
+    }
+    #rally-powered a { color: var(--testo-secondario); text-decoration: none; }
+
+    /* ─── Demo page (visibile solo se aperta direttamente) ──────── */
+    .demo-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1A1A1A 0%, #2d2d2d 100%);
+      color: #fff;
+      font-family: inherit;
+      text-align: center;
+      padding: 20px;
+    }
+    .demo-page h1 { font-size: 2rem; margin-bottom: 8px; }
+    .demo-page p { opacity: 0.7; margin-bottom: 24px; }
+    .demo-page .flag { font-size: 3rem; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+<!-- Contenuto demo della pagina (visibile solo in test diretto) -->
+<div class="demo-page">
+  <div class="flag">🏎️🇮🇹</div>
+  <h1>Rally di Roma Capitale 2026</h1>
+  <p>Clicca il pulsante in basso a destra per aprire il chatbot</p>
+</div>
+
+<!-- ── FAB ── -->
+<button
+  id="rally-fab"
+  aria-label="Apri chat assistente Rally di Roma Capitale"
+  aria-expanded="false"
+  aria-controls="rally-widget"
+>
+  🏎️
+  <span id="rally-fab-badge" aria-hidden="true"></span>
+</button>
+
+<!-- ── Widget chat ── -->
+<div
+  id="rally-widget"
+  role="dialog"
+  aria-label="Chat assistente Rally di Roma Capitale"
+  aria-modal="true"
+  aria-hidden="true"
+>
+  <!-- Header -->
+  <div id="rally-header">
+    <div id="rally-avatar" aria-hidden="true">🏎️</div>
+    <div id="rally-header-info">
+      <div id="rally-header-nome">Cesare 🏎️</div>
+      <div id="rally-header-status">
+        <span id="rally-status-dot" aria-hidden="true"></span>
+        <span>Assistente online</span>
+      </div>
+    </div>
+    <button id="rally-chiudi" aria-label="Chiudi chat">✕</button>
+  </div>
+
+  <!-- Messaggi -->
+  <div id="rally-messaggi" role="log" aria-live="polite" aria-label="Messaggi chat"></div>
+
+  <!-- Typing indicator -->
+  <div id="rally-typing" aria-hidden="true">
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+  </div>
+
+  <!-- Quick actions (spariscono dopo il primo messaggio) -->
+  <div id="rally-quick" aria-label="Domande rapide">
+    <button class="rally-quick-btn" data-msg="Qual è il programma dell'evento?">🗓 Programma</button>
+    <button class="rally-quick-btn" data-msg="Come si arriva all'evento?">🗺 Come arrivare</button>
+    <button class="rally-quick-btn" data-msg="Come acquisto i biglietti?">🎫 Biglietti</button>
+    <button class="rally-quick-btn" data-msg="Dove posso vedere foto e video?">📸 Galleria</button>
+  </div>
+
+  <!-- Input -->
+  <div id="rally-input-area">
+    <textarea
+      id="rally-textarea"
+      placeholder="Scrivi un messaggio..."
+      rows="1"
+      aria-label="Scrivi il tuo messaggio"
+      maxlength="1000"
+    ></textarea>
+    <button id="rally-invia" aria-label="Invia messaggio" disabled>
+      ➤
+    </button>
+  </div>
+
+  <div id="rally-powered">
+    <a href="https://www.rallydiromacapitale.it" target="_blank" rel="noopener">rallydiromacapitale.it</a>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ─── Configurazione ──────────────────────────────────────────────────────
+  // Legge l'URL API da window.RALLY_CHAT_URL (impostato da embed.js) o usa localhost
+  const API_URL = (window.RALLY_CHAT_URL || 'http://localhost:3000') + '/api/chat';
+
+  // ─── Elementi DOM ────────────────────────────────────────────────────────
+  const fab      = document.getElementById('rally-fab');
+  const widget   = document.getElementById('rally-widget');
+  const chiudi   = document.getElementById('rally-chiudi');
+  const messaggi = document.getElementById('rally-messaggi');
+  const typing   = document.getElementById('rally-typing');
+  const quick    = document.getElementById('rally-quick');
+  const textarea = document.getElementById('rally-textarea');
+  const btnInvia = document.getElementById('rally-invia');
+
+  // ─── Stato ───────────────────────────────────────────────────────────────
+  let aperto = false;
+  let invioInCorso = false;
+  let primoMessaggioInviato = false;
+  let sessionId = sessionStorage.getItem('rally_session_id') || null;
+
+  // ─── Apertura / chiusura widget ──────────────────────────────────────────
+  function apriWidget() {
+    aperto = true;
+    widget.classList.add('aperto');
+    widget.setAttribute('aria-hidden', 'false');
+    fab.setAttribute('aria-expanded', 'true');
+    textarea.focus();
+
+    // Messaggio di benvenuto al primo avvio
+    if (messaggi.children.length === 0) {
+      setTimeout(() => {
+        aggiungiBolla(
+          '👋 Ciao! Sono <b>Cesare</b>, l\'assistente ufficiale del <b>Rally di Roma Capitale 2026</b>.\n' +
+          'Posso aiutarti con date, programma, biglietti e come arrivare.\n\n' +
+          '📅 <b>3-5 luglio 2026</b> — segna la data! Cosa vuoi sapere?',
+          'bot'
+        );
+      }, 300);
+    }
+  }
+
+  function chiudiWidget() {
+    aperto = false;
+    widget.classList.remove('aperto');
+    widget.setAttribute('aria-hidden', 'true');
+    fab.setAttribute('aria-expanded', 'false');
+    fab.focus();
+  }
+
+  fab.addEventListener('click', () => aperto ? chiudiWidget() : apriWidget());
+  chiudi.addEventListener('click', chiudiWidget);
+
+  // Chiudi con ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && aperto) chiudiWidget();
+  });
+
+  // ─── Formattazione timestamp ─────────────────────────────────────────────
+  function oraNow() {
+    return new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ─── Aggiunge bolla messaggio ────────────────────────────────────────────
+  function aggiungiBolla(testo, ruolo) {
+    const wrap = document.createElement('div');
+    wrap.className = `rally-msg-wrap ${ruolo}`;
+
+    const bolla = document.createElement('div');
+    bolla.className = `rally-msg ${ruolo}`;
+    // Usa innerHTML per permettere <b> ecc. nelle risposte bot
+    bolla.innerHTML = testo.replace(/\n/g, '<br>');
+
+    const time = document.createElement('div');
+    time.className = 'rally-msg-time';
+    time.textContent = oraNow();
+    time.setAttribute('aria-hidden', 'true');
+
+    wrap.appendChild(bolla);
+    wrap.appendChild(time);
+    messaggi.appendChild(wrap);
+
+    // Scroll in fondo
+    messaggi.scrollTop = messaggi.scrollHeight;
+
+    return bolla;
+  }
+
+  // ─── Typing indicator ────────────────────────────────────────────────────
+  function mostraTyping() {
+    typing.classList.add('visibile');
+    typing.setAttribute('aria-hidden', 'false');
+    messaggi.scrollTop = messaggi.scrollHeight;
+  }
+
+  function nascondiTyping() {
+    typing.classList.remove('visibile');
+    typing.setAttribute('aria-hidden', 'true');
+  }
+
+  // ─── Invio messaggio ─────────────────────────────────────────────────────
+  async function inviaMsggio(testo) {
+    if (!testo.trim() || invioInCorso) return;
+
+    invioInCorso = true;
+    btnInvia.disabled = true;
+
+    // Nasconde quick actions dopo il primo messaggio
+    if (!primoMessaggioInviato) {
+      primoMessaggioInviato = true;
+      quick.style.display = 'none';
+    }
+
+    // Mostra messaggio utente
+    aggiungiBolla(escapeHtml(testo), 'utente');
+    textarea.value = '';
+    resizeTextarea();
+
+    // Typing indicator
+    mostraTyping();
+
+    try {
+      const body = { message: testo };
+      if (sessionId) body.session_id = sessionId;
+
+      const resp = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const dati = await resp.json();
+
+      nascondiTyping();
+
+      if (dati.success) {
+        // Salva session_id per continuità conversazione
+        sessionId = dati.session_id;
+        sessionStorage.setItem('rally_session_id', sessionId);
+        aggiungiBolla(dati.response, 'bot');
+      } else {
+        aggiungiBolla(
+          '⚠️ ' + (dati.error || 'Errore sconosciuto. Riprova tra qualche istante.'),
+          'bot'
+        );
+      }
+    } catch (err) {
+      nascondiTyping();
+      aggiungiBolla(
+        '⚠️ Impossibile contattare il server. Controlla la connessione e riprova.',
+        'bot'
+      );
+      console.error('[Rally Chat] Errore fetch:', err);
+    } finally {
+      invioInCorso = false;
+      btnInvia.disabled = textarea.value.trim().length === 0;
+    }
+  }
+
+  // ─── Escape HTML (per messaggi utente) ──────────────────────────────────
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ─── Auto-resize textarea ────────────────────────────────────────────────
+  function resizeTextarea() {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 80) + 'px';
+  }
+
+  textarea.addEventListener('input', () => {
+    resizeTextarea();
+    btnInvia.disabled = textarea.value.trim().length === 0 || invioInCorso;
+  });
+
+  // Enter invia, Shift+Enter va a capo
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!btnInvia.disabled) inviaMsggio(textarea.value);
+    }
+  });
+
+  btnInvia.addEventListener('click', () => inviaMsggio(textarea.value));
+
+  // ─── Quick actions ───────────────────────────────────────────────────────
+  quick.querySelectorAll('.rally-quick-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const msg = btn.getAttribute('data-msg');
+      if (msg) {
+        textarea.value = msg;
+        inviaMsggio(msg);
+      }
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

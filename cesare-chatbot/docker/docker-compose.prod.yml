@@ -1,0 +1,54 @@
+services:
+  cesare-chatbot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: cesare-chatbot
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+    # Carica le variabili dal .env nella root del progetto
+    env_file:
+      - ../.env
+
+    labels:
+      # Abilita Traefik per questo container
+      - traefik.enable=true
+
+      # ── HTTPS ──────────────────────────────────────────────────────────
+      - "traefik.http.routers.cesare.rule=Host(`cesare.e-quipe.app`)"
+      - traefik.http.routers.cesare.entrypoints=websecure
+      - traefik.http.routers.cesare.tls=true
+      - traefik.http.routers.cesare.tls.certresolver=mytlschallenge
+      - traefik.http.services.cesare.loadbalancer.server.port=3000
+
+      # ── HTTP → HTTPS redirect ──────────────────────────────────────────
+      - "traefik.http.routers.cesare-http.rule=Host(`cesare.e-quipe.app`)"
+      - traefik.http.routers.cesare-http.entrypoints=web
+      - traefik.http.routers.cesare-http.middlewares=cesare-redirect@docker
+      - traefik.http.middlewares.cesare-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.cesare-redirect.redirectscheme.permanent=true
+
+    # Log rotation
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true
