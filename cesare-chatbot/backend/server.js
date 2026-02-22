@@ -69,8 +69,8 @@ const server = app.listen(PORT, () => {
   console.log(`[${new Date().toISOString()}] Widget disponibile su http://localhost:${PORT}/widget/chat-widget.html`);
   console.log(`[${new Date().toISOString()}] Health check: http://localhost:${PORT}/health`);
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn(`[${new Date().toISOString()}] ⚠️  ANTHROPIC_API_KEY non configurata!`);
+  if (!process.env.OPENROUTER_API_KEY) {
+    console.warn(`[${new Date().toISOString()}] ⚠️  OPENROUTER_API_KEY non configurata!`);
   }
   if (!process.env.TELEGRAM_BOT_TOKEN) {
     console.warn(`[${new Date().toISOString()}] ⚠️  TELEGRAM_BOT_TOKEN non configurato (Telegram disabilitato)`);
