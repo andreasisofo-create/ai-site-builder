@@ -456,8 +456,15 @@ router.post('/', async (req, res) => {
       return;
     }
 
-    // Fallback AI con sessione per chat_id
-    const risultato = await chat(sessionId, testo, 'html');
+    // Fallback AI — typing indicator persistente + risposta
+    await sendChatAction(chatId, 'typing');
+    const typingInterval = setInterval(() => sendChatAction(chatId, 'typing'), 4000);
+    let risultato;
+    try {
+      risultato = await chat(sessionId, testo, 'html');
+    } finally {
+      clearInterval(typingInterval);
+    }
     await sendMessage(chatId, risultato.response);
 
   } catch (errore) {
