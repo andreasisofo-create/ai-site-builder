@@ -381,18 +381,21 @@ function NewProjectContent() {
     });
   };
 
-  // Photo uploads
+  // Photo uploads — compress aggressively to keep HTML size < 2MB total
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     Array.from(files).forEach(file => {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error(language === "en" ? "File too large (max 2MB)" : "File troppo grande (max 2MB)");
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(language === "en" ? "File too large (max 10MB)" : "File troppo grande (max 10MB)");
         return;
       }
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
+        const raw = reader.result as string;
+        // Compress: max 800px wide, JPEG 0.72 → ~150KB per photo
+        const compressed = await compressImageForRef(raw, 800);
         setFormData(prev => {
           if (prev.photos.length >= 8) {
             toast.error(language === "en" ? "Maximum 8 photos" : "Massimo 8 foto");
@@ -404,7 +407,7 @@ function NewProjectContent() {
               ...prev.photos,
               {
                 id: `photo-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-                dataUrl: reader.result as string,
+                dataUrl: compressed,
                 label: file.name,
               },
             ],
@@ -413,7 +416,6 @@ function NewProjectContent() {
       };
       reader.readAsDataURL(file);
     });
-    // Reset input
     if (photoInputRef.current) photoInputRef.current.value = "";
   };
 

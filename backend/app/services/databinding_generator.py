@@ -5974,52 +5974,55 @@ RULES:
         return site_data
 
     def _inject_user_photos(self, site_data: Dict[str, Any], photo_urls: List[str]) -> Dict[str, Any]:
-        """Replace placeholder URLs with user-uploaded photos in site_data."""
+        """Replace stock/placeholder URLs with user-uploaded photos.
+
+        Distribution strategy: gallery slots first (maximise visible variety),
+        then hero, then about/team (only if surplus photos available).
+        """
         if not photo_urls:
             return site_data
 
-        photo_index = 0
-
-        def get_next_photo():
-            nonlocal photo_index
-            if not photo_urls:
-                return None
-            photo = photo_urls[photo_index % len(photo_urls)]
-            photo_index += 1
-            return photo
+        # ── Pass 1: collect all image slots by priority ──────────────
+        gallery_slots: List[Dict] = []   # list of item dicts with GALLERY_IMAGE_URL
+        hero_data_list: List[Dict] = []  # component data dicts with HERO_IMAGE_URL
+        other_slots: List[tuple] = []    # (key, dict) for ABOUT_IMAGE_URL, MEMBER_IMAGE_URL
 
         for component in site_data.get("components", []):
             data = component.get("data", {})
 
-            # Replace hero image
-            if "HERO_IMAGE_URL" in data:
-                photo = get_next_photo()
-                if photo:
-                    data["HERO_IMAGE_URL"] = photo
-
-            # Replace gallery images
             gallery_items = data.get("GALLERY_ITEMS", [])
             if isinstance(gallery_items, list):
                 for item in gallery_items:
                     if isinstance(item, dict) and "GALLERY_IMAGE_URL" in item:
-                        photo = get_next_photo()
-                        if photo:
-                            item["GALLERY_IMAGE_URL"] = photo
+                        gallery_slots.append(item)
 
-            # Replace about image if present
+            if "HERO_IMAGE_URL" in data:
+                hero_data_list.append(data)
+
             if "ABOUT_IMAGE_URL" in data:
-                photo = get_next_photo()
-                if photo:
-                    data["ABOUT_IMAGE_URL"] = photo
+                other_slots.append(("ABOUT_IMAGE_URL", data))
 
-            # Replace team member images
             team_members = data.get("TEAM_MEMBERS", [])
             if isinstance(team_members, list):
                 for member in team_members:
                     if isinstance(member, dict) and "MEMBER_IMAGE_URL" in member:
-                        photo = get_next_photo()
-                        if photo:
-                            member["MEMBER_IMAGE_URL"] = photo
+                        other_slots.append(("MEMBER_IMAGE_URL", member))
+
+        n = len(photo_urls)
+
+        # ── Pass 2: assign — gallery FIRST for maximum visible variety ──
+        for i, item in enumerate(gallery_slots):
+            item["GALLERY_IMAGE_URL"] = photo_urls[i % n]
+
+        # Hero always gets photo[0]
+        for data in hero_data_list:
+            data["HERO_IMAGE_URL"] = photo_urls[0]
+
+        # About / team: only if user uploaded more photos than gallery slots
+        if n > len(gallery_slots):
+            for i, (key, data) in enumerate(other_slots):
+                idx = (len(gallery_slots) + i) % n
+                data[key] = photo_urls[idx]
 
         return site_data
 

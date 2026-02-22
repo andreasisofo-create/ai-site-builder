@@ -122,8 +122,10 @@ document.addEventListener('DOMContentLoaded', function () {
   _gsapInitialized = true;
 
   // Cancel CSS fallback animation since GSAP is working
+  // Also reset clip-path so reveal-* elements don't stay clipped if GSAP re-runs
   document.querySelectorAll('[data-animate]').forEach(function (el) {
     el.style.animation = 'none';
+    el.style.clipPath = '';
   });
 
   // Per-style animation speed multiplier (set via --animation-speed CSS variable)
@@ -324,6 +326,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var text = el.textContent;
     el.innerHTML = '';
     el.style.opacity = 1;
+    // Ensure container doesn't clip child spans during stagger animation
+    el.style.overflow = 'visible';
 
     if (splitBy === 'lines') {
       // Wrap each line - use a temp container to measure
