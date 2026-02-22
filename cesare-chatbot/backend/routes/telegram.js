@@ -9,7 +9,7 @@
  */
 
 import { Router } from 'express';
-import { chat, detectLanguage, analyzeRallyCarPhoto } from '../services/ai.js';
+import { chat, detectLanguage, analyzeRallyCarPhoto, injectExchange } from '../services/ai.js';
 import { getMediaResponse, isMediaRequest } from '../services/media.js';
 import { PROGRAMMA, BIGLIETTI, EVENT_INFO, LOCATION, STORIA } from '../services/knowledge.js';
 
@@ -91,8 +91,12 @@ async function downloadTelegramFile(fileId) {
 
   // Determina MIME type dall'estensione
   const ext = filePath.split('.').pop().toLowerCase();
-  const mimeMap = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
-  const mimeType = mimeMap[ext] || 'image/jpeg';
+  const mimeMap = {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp',
+    ogg: 'audio/ogg', oga: 'audio/ogg', mp3: 'audio/mpeg', mp4: 'audio/mp4',
+    m4a: 'audio/mp4', wav: 'audio/wav', opus: 'audio/ogg',
+  };
+  const mimeType = mimeMap[ext] || (filePath.includes('voice') ? 'audio/ogg' : 'image/jpeg');
 
   return { buffer, mimeType };
 }
@@ -308,6 +312,7 @@ router.post('/', async (req, res) => {
   if (update?.message?.photo) {
     const { message } = update;
     const chatId = message.chat.id;
+    const sessionId = `telegram_${chatId}`;
     const language = detectLanguage(message.caption || '');
 
     try {
@@ -326,11 +331,8 @@ router.post('/', async (req, res) => {
 
       await sendMessage(chatId, analisi);
 
-      // Aggiunge invito a continuare la conversazione
-      const footer = language === 'en'
-        ? '\n\n💬 Ask me anything else about the rally!'
-        : '\n\n💬 Chiedimi altro sul rally!';
-      // Il footer è già nel testo — evita doppio messaggio
+      // Registra lo scambio nella sessione AI per mantenere il contesto
+      injectExchange(sessionId, '[Foto auto da rally]', analisi);
     } catch (errore) {
       console.error(`[${new Date().toISOString()}] Errore analisi foto:`, errore.message);
       await sendMessage(
@@ -343,10 +345,71 @@ router.post('/', async (req, res) => {
     return;
   }
 
+  // ─── Gestione nota vocale ─────────────────────────────────────────────────
+  if (update?.message?.voice || update?.message?.audio) {
+    const { message } = update;
+    const chatId = message.chat.id;
+    const sessionId = `telegram_${chatId}`;
+    const language = detectLanguage(''); // default IT
+    const mediaObj = message.voice || message.audio;
+
+    try {
+      await sendChatAction(chatId, 'typing');
+
+      // Controlla se il servizio di trascrizione è configurato
+      if (!process.env.GROQ_API_KEY) {
+        const errMsg = language === 'en'
+          ? '🎤 Voice messages are not yet enabled. Please type your question!'
+          : '🎤 Le note vocali non sono ancora attive. Scrivi la tua domanda!';
+        await sendMessage(chatId, errMsg);
+        return;
+      }
+
+      const avviso = language === 'en'
+        ? '🎤 Got your voice note! Transcribing...'
+        : '🎤 Ho ricevuto la nota vocale! Sto trascrivendo...';
+      await sendMessage(chatId, avviso);
+
+      // Scarica il file audio da Telegram
+      const { buffer, mimeType } = await downloadTelegramFile(mediaObj.file_id);
+
+      // Trascrivi con Groq Whisper
+      const { transcribeAudio } = await import('../services/transcription.js');
+      const testoTrascritto = await transcribeAudio(buffer, mimeType, language);
+
+      console.log(`[${new Date().toISOString()}] Voce trascritto chat=${chatId}: "${testoTrascritto.substring(0, 80)}"`);
+
+      // Mostra la trascrizione all'utente
+      const confermaTrascrizione = language === 'en'
+        ? `🎤 <i>I heard: "${testoTrascritto}"</i>\n\n`
+        : `🎤 <i>Ho capito: "${testoTrascritto}"</i>\n\n`;
+
+      // Elabora il testo trascritto come messaggio normale
+      const risultato = await chat(sessionId, testoTrascritto);
+      const risposta = confermaTrascrizione + risultato.response;
+
+      await sendMessage(chatId, risposta);
+
+      // Registra nella sessione (nota vocale → testo → risposta)
+      injectExchange(sessionId, `[Nota vocale trascritto]: ${testoTrascritto}`, risultato.response);
+
+    } catch (errore) {
+      console.error(`[${new Date().toISOString()}] Errore trascrizione vocale:`, errore.message);
+      await sendMessage(
+        chatId,
+        language === 'en'
+          ? '⚠️ I couldn\'t transcribe your voice note. Please type your message!'
+          : '⚠️ Non sono riuscito a trascrivere la nota vocale. Scrivi il tuo messaggio!'
+      );
+    }
+    return;
+  }
+
   if (!update?.message?.text) return;
 
   const { message } = update;
   const chatId = message.chat.id;
+  const sessionId = `telegram_${chatId}`;
   const testo = message.text.trim();
   const from = message.from;
 
@@ -364,12 +427,14 @@ router.post('/', async (req, res) => {
       // Comando /dove → invia GPS menu
       if (comando === 'dove') {
         await gestisciRichiestaPosizione(chatId, '', language);
+        injectExchange(sessionId, testo, '[Mappa luoghi principali Rally di Roma Capitale inviata]');
         return;
       }
 
       const rispostaComando = getComandoRisposta(comando, from);
       if (rispostaComando) {
         await sendMessage(chatId, rispostaComando);
+        injectExchange(sessionId, testo, rispostaComando);
         return;
       }
     }
@@ -377,17 +442,21 @@ router.post('/', async (req, res) => {
     // Richiesta di posizione / mappa
     if (KEYWORD_POSIZIONE.test(testo)) {
       const gestito = await gestisciRichiestaPosizione(chatId, testo, language);
-      if (gestito) return;
+      if (gestito) {
+        injectExchange(sessionId, testo, '[Posizione GPS inviata]');
+        return;
+      }
     }
 
     // Richiesta media (foto/video)
     if (isMediaRequest(testo)) {
-      await sendMessage(chatId, getMediaResponse(language));
+      const rispostaMedia = getMediaResponse(language);
+      await sendMessage(chatId, rispostaMedia);
+      injectExchange(sessionId, testo, rispostaMedia);
       return;
     }
 
     // Fallback AI con sessione per chat_id
-    const sessionId = `telegram_${chatId}`;
     const risultato = await chat(sessionId, testo, 'html');
     await sendMessage(chatId, risultato.response);
 

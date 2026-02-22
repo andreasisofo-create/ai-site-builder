@@ -6,6 +6,7 @@
  */
 
 import { getKnowledgeContext } from './knowledge.js';
+import { getPartecipantiContext } from './rallyCarDatabase.js';
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const MODEL = process.env.AI_MODEL || 'anthropic/claude-3.5-sonnet';
@@ -26,6 +27,16 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 export function getSessionCount() { return sessions.size; }
+
+export function injectExchange(sessionId, userMessage, assistantMessage) {
+  if (!sessions.has(sessionId)) {
+    sessions.set(sessionId, { history: [], lastActivity: Date.now(), language: 'it' });
+  }
+  const s = sessions.get(sessionId);
+  s.lastActivity = Date.now();
+  s.history.push({ role: 'user', content: userMessage });
+  s.history.push({ role: 'assistant', content: assistantMessage });
+}
 
 // ─── Rilevamento lingua ───────────────────────────────────────────────────────
 const PAROLE_EN = ['what','when','where','how','who','why','the','is','are','was',
@@ -136,25 +147,80 @@ export async function chat(sessionId, message) {
 }
 
 // ─── Vision: analisi foto auto da rally ──────────────────────────────────────
-export async function analyzeRallyCarPhoto(imageBuffer, mimeType = 'image/jpeg', language = 'it') {
+export async function analyzeRallyCarPhoto(imageBuffer, mimeType = 'image/jpeg', language = 'it', sessionId = null) {
   const base64Image = imageBuffer.toString('base64');
+
+  // Recupera il contesto partecipanti dal database (se disponibile)
+  let partecipantiContext = '';
+  try {
+    partecipantiContext = getPartecipantiContext();
+  } catch (e) {
+    partecipantiContext = '(database partecipanti non disponibile)';
+  }
+
   const prompt = language === 'en'
-    ? `You are Cesare, a rally expert. Analyze this rally car photo and provide:
-1. 🚗 Car model (e.g. Škoda Fabia RS Rally2, Ford Puma Rally1, etc.)
-2. 🔢 Race number (if visible)
-3. 🏷️ Main sponsors/livery colors
-4. 👤 Driver and team (if recognizable)
-5. 🏆 Category (Rally1, Rally2, Rally3, etc.)
-6. 💡 Fun facts about this car/driver if you know them
-Be honest if you cannot identify something. Answer in English, concise and passionate.`
-    : `Sei Cesare, esperto di rally. Analizza questa foto di un'auto da rally e fornisci:
-1. 🚗 Modello auto (es. Škoda Fabia RS Rally2, Ford Puma Rally1, ecc.)
-2. 🔢 Numero di gara (se visibile)
-3. 🏷️ Sponsor principali e colori livrea
-4. 👤 Pilota e team (se riconoscibili)
-5. 🏆 Categoria (Rally1, Rally2, Rally3, ecc.)
-6. 💡 Curiosità su quest'auto/pilota se le conosci
-Sii onesto se non riesci a identificare qualcosa. Risposta in italiano, concisa e appassionata.`;
+    ? `You are the Photo Agent of Cesare, official assistant of Rally di Roma Capitale 2026.
+
+A user has sent this photo. Follow EXACTLY these steps:
+
+STEP 1 — VALIDATION:
+Determine if the photo shows A RALLY CAR in competition or in paddock.
+Criteria: competition bodywork, visible roll cage, race number, racing livery, sponsor decals.
+If it is NOT a rally car, respond ONLY: "RIFIUTO"
+
+STEP 2 — RALLY DI ROMA CONTEXT:
+Look for elements in the photo indicating Rally di Roma Capitale:
+- "Rally di Roma Capitale" or "Rally Roma Capitale" logos on the car
+- Roman monuments in the background (Colosseum, etc.)
+- ERC/CIAR logos with "Fiuggi" or "Roma"
+If the photo seems to be from another rally (WRC in Finland, etc.), note it but proceed with the analysis if it is still a rally car.
+
+STEP 3 — IDENTIFICATION (only if STEP 1 = rally car):
+Read carefully the REAR WINDOW (usually has the race number and names in small print):
+1. 🔢 Race number (large number on the side or rear window)
+2. 👤 Driver and Co-driver (names on rear window or tailgate)
+3. 🚗 Car model (Škoda Fabia RS Rally2, Hyundai i20 N Rally2, Citroën C3 Rally2, Ford Puma Rally1, Toyota GR Yaris Rally2, etc.)
+4. 🏷️ Team and main sponsors visible on the livery
+5. 🏆 Category (Rally1, Rally2, Rally3, ERC, CIAR, etc.)
+6. 🌍 Crew nationality if visible (flag)
+
+STEP 4 — CROSS-CHECK WITH DATABASE:
+${partecipantiContext}
+
+If you find the race number in the database, confirm the data and add extra info about the crew.
+
+Answer in English, concise and passionate. Use HTML (<b>, emoji). MAX 300 words.`
+    : `Sei il Photo Agent di Cesare, assistente ufficiale del Rally di Roma Capitale 2026.
+
+Un utente ha inviato questa foto. Segui ESATTAMENTE questi passi:
+
+PASSO 1 — VALIDAZIONE:
+Determina se la foto mostra UN'AUTO DA RALLY in gara o in paddock.
+Criteri: carrozzeria da competizione, roll cage visibile, numero gara, livrea racing, decals sponsor.
+Se NON è un'auto da rally, rispondi SOLO: "RIFIUTO"
+
+PASSO 2 — CONTESTO RALLY DI ROMA:
+Cerca nella foto elementi che indicano Rally di Roma Capitale:
+- Loghi "Rally di Roma Capitale" o "Rally Roma Capitale" sull'auto
+- Monumenti romani sullo sfondo (Colosseo, ecc.)
+- Loghi ERC/CIAR con "Fiuggi" o "Roma"
+Se la foto sembra di un altro rally (WRC in Finlandia, ecc.), segnalalo ma procedi ugualmente con l'analisi se è comunque un'auto da rally.
+
+PASSO 3 — IDENTIFICAZIONE (solo se PASSO 1 = auto da rally):
+Leggi attentamente il VETRO POSTERIORE (di solito ha scritti in piccolo il numero gara e i nomi):
+1. 🔢 Numero di gara (numero grande sul fianco o lunotto)
+2. 👤 Pilota e Copilota (nomi scritti sul vetro posteriore o lunotto)
+3. 🚗 Modello auto (Škoda Fabia RS Rally2, Hyundai i20 N Rally2, Citroën C3 Rally2, Ford Puma Rally1, Toyota GR Yaris Rally2, ecc.)
+4. 🏷️ Team e sponsor principali visibili sulla livrea
+5. 🏆 Categoria (Rally1, Rally2, Rally3, ERC, CIAR, ecc.)
+6. 🌍 Nazionalità dell'equipaggio se visibile (bandiera)
+
+PASSO 4 — INCROCIA CON DATABASE:
+${partecipantiContext}
+
+Se trovi il numero di gara nel database, conferma i dati e aggiungi info extra sull'equipaggio.
+
+Rispondi in italiano, conciso e appassionato. Usa HTML (<b>, emoji). MAX 300 parole.`;
 
   const resp = await fetch(OPENROUTER_URL, {
     method: 'POST',
@@ -182,6 +248,16 @@ Sii onesto se non riesci a identificare qualcosa. Risposta in italiano, concisa 
     throw new Error(`OpenRouter Vision error ${resp.status}: ${err}`);
   }
   const data = await resp.json();
+  const risposta = data.choices[0].message.content;
+
+  // Se il modello ha rilevato che NON è un'auto da rally, restituisci messaggio di rifiuto
+  if (risposta.trim().startsWith('RIFIUTO')) {
+    console.log(`[${new Date().toISOString()}] Vision: foto rifiutata (non è auto da rally)`);
+    return language === 'en'
+      ? '⚠️ This doesn\'t look like a rally car photo! Send me a Rally di Roma Capitale car photo and I\'ll tell you everything about the driver, team and car. 🏎️'
+      : '⚠️ Questa non sembra essere una foto di un\'auto da rally! Inviami una foto di un\'auto da rally del Rally di Roma Capitale e ti dirò tutto su pilota, team e vettura. 🏎️';
+  }
+
   console.log(`[${new Date().toISOString()}] Vision: analisi foto completata`);
-  return data.choices[0].message.content;
+  return risposta;
 }
