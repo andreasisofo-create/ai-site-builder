@@ -267,10 +267,15 @@ async def _run_generation_background(
             site.generation_message = ""
             if result.get("site_data"):
                 site.config = result["site_data"]
-            # Store reference_analysis in config for future refine use
+            # Store template_style_id and reference_analysis in config for future refine use
+            meta_to_store = {}
+            if request.template_style_id:
+                meta_to_store["_template_style_id"] = request.template_style_id
             if request.reference_analysis:
+                meta_to_store["_reference_analysis"] = request.reference_analysis
+            if meta_to_store:
                 config = site.config if isinstance(site.config, dict) else {}
-                config["_reference_analysis"] = request.reference_analysis
+                config.update(meta_to_store)
                 site.config = config
             # Store QC results
             qc_data = result.get("qc_report")

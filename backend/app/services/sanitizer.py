@@ -39,12 +39,67 @@ ALLOWED_DOMAINS = [
     "cdnjs.cloudflare.com",
     "fal.media",           # fal.ai generated images
     "v3.fal.media",        # fal.ai generated images (v3)
+    "youtube.com",         # YouTube video embeds
+    "youtu.be",            # YouTube short URLs
+    "vimeo.com",           # Vimeo video embeds
+    "player.vimeo.com",    # Vimeo player
+    "youtube-nocookie.com", # YouTube privacy-enhanced embeds
+    "site-builder-api.onrender.com",  # Backend uploads (foto utente)
 ]
 
 # Tag HTML pericolosi da rimuovere
 # NOTA: "script" NON e' in lista perche' serve per Tailwind CDN e vanilla JS menu.
 # Gli script vengono filtrati selettivamente in sanitize_output().
-DANGEROUS_TAGS = ["iframe", "object", "embed", "applet"]
+# NOTA: "iframe" NON e' in lista perche' viene gestito separatamente con whitelist domini video.
+DANGEROUS_TAGS = ["object", "embed", "applet"]
+
+# Domini video trusted per iframe embed (YouTube, Vimeo)
+ALLOWED_IFRAME_DOMAINS = [
+    "youtube.com",
+    "youtube-nocookie.com",
+    "youtu.be",
+    "player.vimeo.com",
+    "vimeo.com",
+]
+
+
+def _is_safe_iframe(tag_html: str) -> bool:
+    """Controlla se un iframe proviene da un dominio video trusted."""
+    src_match = re.search(r'src\s*=\s*["\']([^"\']+)["\']', tag_html, re.IGNORECASE)
+    if not src_match:
+        return False
+    src = src_match.group(1)
+    return any(domain in src for domain in ALLOWED_IFRAME_DOMAINS)
+
+
+def _sanitize_iframes(html: str) -> str:
+    """
+    Filtra iframe selettivamente:
+    - Mantieni iframe da domini video trusted (YouTube, Vimeo)
+    - Rimuovi tutti gli altri iframe (sicurezza)
+    """
+    def _check_iframe(match):
+        tag = match.group(0)
+        if _is_safe_iframe(tag):
+            return tag  # Iframe video trusted, tienilo
+        logger.warning(f"Blocked untrusted iframe: {tag[:120]}")
+        return ""
+
+    # iframe con contenuto
+    html = re.sub(
+        r'<iframe[^>]*>.*?</iframe>',
+        _check_iframe,
+        html,
+        flags=re.DOTALL | re.IGNORECASE
+    )
+    # iframe self-closing
+    html = re.sub(
+        r'<iframe[^>]*/?>',
+        _check_iframe,
+        html,
+        flags=re.IGNORECASE
+    )
+    return html
 
 # Event handler inline da rimuovere
 EVENT_HANDLERS = [
@@ -196,7 +251,10 @@ def sanitize_output(html: str, is_template_assembled: bool = False) -> str:
     # Per template-assembled HTML, preserva script trusted (GSAP, form handler)
     html = _sanitize_scripts(html, is_template_assembled=is_template_assembled)
 
-    # Rimuovi tag pericolosi (iframe, object, embed, applet)
+    # Filtra iframe: mantieni YouTube/Vimeo, blocca tutti gli altri
+    html = _sanitize_iframes(html)
+
+    # Rimuovi tag pericolosi (object, embed, applet) — iframe gestito sopra
     tags_to_remove = DANGEROUS_TAGS
     for tag in tags_to_remove:
         # Rimuovi tag apertura e chiusura con contenuto

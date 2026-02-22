@@ -454,6 +454,54 @@ def get_creative_context(
     return "\n".join(context_parts) if context_parts else ""
 
 
+def get_refine_context(modification_request: str, site_category: str = "") -> str:
+    """
+    Query ChromaDB/FTS for relevant GSAP snippets and design patterns
+    during chat refinement. Returns a compact string to inject into the refine prompt.
+    Focuses on animations and effects the AI can use immediately.
+    """
+    if not modification_request:
+        return ""
+
+    context_parts: List[str] = []
+    query = f"{modification_request} {site_category}".strip()
+
+    # GSAP snippets relevant to request
+    gsap = search_patterns(query, n_results=4, category="gsap_snippets")
+    gsap = _mmr_rerank(gsap, 3)
+    if gsap:
+        context_parts.append("## GSAP Animation Snippets (use data-animate attributes):")
+        for g in gsap:
+            meta = g["metadata"]
+            context_parts.append(f"- {g['content'][:180]}")
+            if meta.get("code_snippet"):
+                context_parts.append(f"  Code: {meta['code_snippet'][:300]}")
+
+    # Scroll/animation effects
+    animations = search_patterns(query, n_results=4, category="scroll_effects")
+    animations = _mmr_rerank(animations, 2)
+    if animations:
+        context_parts.append("\n## Scroll & Animation Effects Available:")
+        for a in animations:
+            meta = a["metadata"]
+            context_parts.append(f"- {a['content'][:150]}")
+            if meta.get("code_snippet"):
+                context_parts.append(f"  HTML: {meta['code_snippet'][:200]}")
+
+    # Section references if user is adding/modifying a section
+    refs = search_patterns(query, n_results=3, category="section_references")
+    refs = _mmr_rerank(refs, 2)
+    if refs:
+        context_parts.append("\n## Section Design References:")
+        for r in refs:
+            meta = r["metadata"]
+            context_parts.append(f"- {r['content'][:200]}")
+            if meta.get("code_snippet"):
+                context_parts.append(f"  HTML: {meta['code_snippet'][:350]}")
+
+    return "\n".join(context_parts) if context_parts else ""
+
+
 # ---------------------------------------------------------------------------
 # Category Design Guides
 # ---------------------------------------------------------------------------

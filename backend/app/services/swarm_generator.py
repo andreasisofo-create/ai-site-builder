@@ -24,6 +24,14 @@ from app.services.kimi_client import kimi, kimi_refine, KimiClient
 from app.services.sanitizer import sanitize_input, sanitize_output, sanitize_refine_input
 from app.services.template_assembler import assembler as _assembler, _SECTION_NAV_LABELS
 
+try:
+    from app.services.design_knowledge import get_refine_context, get_collection_stats
+    _has_design_knowledge = True
+except ImportError:
+    _has_design_knowledge = False
+    def get_refine_context(*a, **kw): return ""
+    def get_collection_stats(): return {}
+
 logger = logging.getLogger(__name__)
 
 ProgressCallback = Optional[Callable[[int, str], None]]
@@ -1864,6 +1872,7 @@ Return ONLY valid JSON array, no explanation."""
 - Use Tailwind CSS + font-heading/font-body classes
 - Preserve all data-animate attributes. Headings: data-animate="text-split" data-split-type="words". Buttons: data-animate="magnetic". Grids: data-animate="stagger" with .stagger-item children.
 - Add data-animate to new elements (fade-up, scale-in, etc.)
+- VIDEO EMBEDS: YouTube and Vimeo iframes ARE ALLOWED. For YouTube links use: <iframe src="https://www.youtube.com/embed/VIDEO_ID" width="100%" style="aspect-ratio:16/9" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>. Extract VIDEO_ID from youtu.be/VIDEO_ID or ?v=VIDEO_ID.
 - Keep all <!-- __*_PLACEHOLDER__ --> and <!-- __STYLE_*__ --> and <!-- __SVG_INNER_*__ --> comments intact - they are auto-restored after your edit.
 - Return ONLY complete HTML between ```html and ``` tags. Do NOT truncate."""
 
@@ -1888,6 +1897,26 @@ When the user asks to insert/add/use an image, create an <img> tag with the exac
 Example: <img src="{photo_urls[0][:80]}..." alt="..." class="w-full h-64 object-cover rounded-xl" loading="lazy">
 Place images in contextually appropriate locations within the HTML."""
 
+        # === QUERY CHROMADB for GSAP snippets and design patterns ===
+        design_knowledge_context = ""
+        if _has_design_knowledge:
+            try:
+                stats = get_collection_stats()
+                if stats.get("total_patterns", 0) > 0:
+                    # Extract site category from site_config if available
+                    site_category = ""
+                    if site_config and isinstance(site_config, dict):
+                        style_id = site_config.get("_template_style_id", "")
+                        site_category = style_id.split("-")[0] if style_id else ""
+                    design_knowledge_context = get_refine_context(
+                        modification_request=modification_request,
+                        site_category=site_category,
+                    )
+                    if design_knowledge_context:
+                        logger.info(f"[Swarm] Design knowledge context: {len(design_knowledge_context)} chars from DB")
+            except Exception as e:
+                logger.warning(f"[Swarm] Design knowledge query failed during refine: {e}")
+
         # Strategy: ALWAYS use section-only mode when a section is specified
         # This dramatically reduces token usage and improves quality
         section_only_mode = False
@@ -1908,6 +1937,7 @@ Place images in contextually appropriate locations within the HTML."""
 REQUEST: {modification_request}
 {reference_context}
 {photo_context}
+{design_knowledge_context}
 
 {design_system}
 
@@ -1919,6 +1949,7 @@ SECTION HTML:
 REQUEST: {modification_request}
 {reference_context}
 {photo_context}
+{design_knowledge_context}
 
 {design_system}
 
@@ -1930,6 +1961,7 @@ HTML:
 REQUEST: {modification_request}
 {reference_context}
 {photo_context}
+{design_knowledge_context}
 
 {design_system}
 

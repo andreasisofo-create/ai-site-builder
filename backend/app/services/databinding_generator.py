@@ -6210,15 +6210,18 @@ RULES:
             if "gallery" in choice_map and isinstance(gallery_items, list):
                 c = choice_map["gallery"]
                 if c.get("action") == "upload" and c.get("photo_url"):
-                    # Single upload: apply to first placeholder gallery item
+                    # Apply uploaded photos 1:1 to gallery slots; remaining slots use stock
                     photo_url = c["photo_url"]
                     photo_urls_list = c.get("photo_urls", [photo_url]) if isinstance(c.get("photo_urls"), list) else [photo_url]
+                    gallery_pool = photos.get("gallery", [])  # stock fallback
                     for i, item in enumerate(gallery_items):
                         if isinstance(item, dict) and self._is_placeholder_url(str(item.get("GALLERY_IMAGE_URL", ""))):
                             if i < len(photo_urls_list):
+                                # Foto caricata dall'utente
                                 item["GALLERY_IMAGE_URL"] = photo_urls_list[i]
-                            elif photo_urls_list:
-                                item["GALLERY_IMAGE_URL"] = photo_urls_list[i % len(photo_urls_list)]
+                            elif gallery_pool:
+                                # Slot rimanente: usa foto stock (non ciclare le foto utente)
+                                item["GALLERY_IMAGE_URL"] = gallery_pool[i % len(gallery_pool)]
                 elif c.get("action") == "stock":
                     gallery_pool = photos.get("gallery", [])
                     for i, item in enumerate(gallery_items):
@@ -6232,10 +6235,13 @@ RULES:
                 c = choice_map["team"]
                 if c.get("action") == "upload" and c.get("photo_url"):
                     photo_urls_list = c.get("photo_urls", [c["photo_url"]]) if isinstance(c.get("photo_urls"), list) else [c["photo_url"]]
+                    team_pool = photos.get("team", [])  # stock fallback
                     for i, member in enumerate(team_members):
                         if isinstance(member, dict) and self._is_placeholder_url(str(member.get("MEMBER_IMAGE_URL", ""))):
                             if i < len(photo_urls_list):
                                 member["MEMBER_IMAGE_URL"] = photo_urls_list[i]
+                            elif team_pool:
+                                member["MEMBER_IMAGE_URL"] = team_pool[i % len(team_pool)]
                 elif c.get("action") == "stock":
                     team_pool = photos.get("team", [])
                     for i, member in enumerate(team_members):
