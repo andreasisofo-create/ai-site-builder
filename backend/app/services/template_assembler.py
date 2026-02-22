@@ -568,7 +568,25 @@ class TemplateAssembler:
         try:
             from app.services.effect_diversifier import diversify_effects
             recent_effects = site_data.get("_recent_effects")
-            complete_html, effects_used = diversify_effects(complete_html, used_effects=recent_effects)
+
+            # Query ChromaDB for category-specific GSAP effects and pass to diversifier
+            db_effects = None
+            try:
+                from app.services.design_knowledge import get_gsap_effects_for_category, get_collection_stats
+                stats = get_collection_stats()
+                if stats.get("total_patterns", 0) > 0:
+                    template_style_id = site_data.get("_template_style_id", "")
+                    category_label = template_style_id.split("-")[0] if template_style_id else ""
+                    if not category_label:
+                        # Try to detect from global data
+                        global_d = site_data.get("global", {})
+                        category_label = global_d.get("_category", "")
+                    if category_label:
+                        db_effects = get_gsap_effects_for_category(category_label, template_style_id)
+            except Exception as e_dk:
+                logger.debug(f"[Assembler] ChromaDB effects skipped: {e_dk}")
+
+            complete_html, effects_used = diversify_effects(complete_html, used_effects=recent_effects, db_effects=db_effects)
             self._last_effects_used = effects_used
         except Exception as e:
             logger.warning(f"[Assembler] Effect diversifier skipped: {e}")

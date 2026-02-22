@@ -3102,7 +3102,7 @@ STRICT RULES:
         # SKIP entirely when exact reference colors are provided
         palette_hint = ""
         if creative_context and not has_reference and not has_exact_colors:
-            palette_hint = f"\nPROFESSIONAL DESIGN REFERENCE:\n{creative_context[:500]}\n"
+            palette_hint = f"\nPROFESSIONAL DESIGN REFERENCE:\n{creative_context[:2000]}\n"
 
         # Inject reference URL analysis (colors and fonts from a real site)
         # SKIP when exact colors are already parsed from image
@@ -4562,6 +4562,10 @@ RULES:
         # Only runs if user provided photos at generation start (not via photo choice flow)
         if photo_urls:
             site_data = self._inject_user_photos(site_data, photo_urls)
+
+        # Store template_style_id in site_data so template assembler can pass to ChromaDB
+        if template_style_id:
+            site_data["_template_style_id"] = template_style_id
 
         # Query recent effects for diversification (before assembly)
         _effect_db = None

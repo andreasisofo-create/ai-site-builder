@@ -502,6 +502,69 @@ def get_refine_context(modification_request: str, site_category: str = "") -> st
     return "\n".join(context_parts) if context_parts else ""
 
 
+def get_gsap_effects_for_category(
+    category_label: str,
+    style_id: str = "",
+    n_effects: int = 12,
+) -> dict:
+    """
+    Query ChromaDB for GSAP effects relevant to a category and return
+    structured effect names to be used DIRECTLY in HTML assembly (not as AI hints).
+
+    Returns a dict of pool_key -> [effect_name, ...] to extend/override
+    effect_diversifier.EFFECT_POOLS with category-specific effects.
+    """
+    query = f"{category_label} {style_id} website animation effects gsap"
+
+    # Fetch GSAP snippets + scroll effects from DB
+    gsap = search_patterns(query, n_results=n_effects, category="gsap_snippets")
+    scroll = search_patterns(query, n_results=n_effects, category="scroll_effects")
+    text_anim = search_patterns(f"{category_label} text animation headline", n_results=6, category="text_animations")
+
+    all_patterns = (gsap or []) + (scroll or []) + (text_anim or [])
+
+    if not all_patterns:
+        return {}
+
+    # Extract data-animate effect names from code snippets
+    _ANIMATE_RE = re.compile(r'data-animate=["\']([a-z0-9_-]+)["\']')
+
+    extracted: dict = {}
+    for p in all_patterns:
+        code = p.get("metadata", {}).get("code_snippet", "") or p.get("content", "")
+        for match in _ANIMATE_RE.finditer(code):
+            effect = match.group(1)
+            # Map effect to a pool key based on common element types
+            if effect in ("text-split", "text-reveal", "text-fill", "typewriter", "rubber-text"):
+                for k in ("h1", "h2", "h3"):
+                    extracted.setdefault(k, [])
+                    if effect not in extracted[k]:
+                        extracted[k].append(effect)
+            elif effect in ("blur-slide", "fade-up", "fade-left", "fade-right", "reveal-up", "blur-in"):
+                extracted.setdefault("p", [])
+                if effect not in extracted["p"]:
+                    extracted["p"].append(effect)
+            elif effect in ("clip-reveal", "image-zoom", "scale-in", "reveal-left", "reveal-right"):
+                extracted.setdefault("img", [])
+                if effect not in extracted["img"]:
+                    extracted["img"].append(effect)
+            elif effect in ("tilt", "rotate-3d", "border-beam", "shimmer", "card-hover-3d"):
+                extracted.setdefault("card", [])
+                if effect not in extracted["card"]:
+                    extracted["card"].append(effect)
+            elif effect in ("magnetic", "bounce-in", "scale-in"):
+                extracted.setdefault("cta", [])
+                if effect not in extracted["cta"]:
+                    extracted["cta"].append(effect)
+            elif effect in ("fade-up", "fade-down", "reveal-up", "rotate-3d", "flip-up", "blur-slide"):
+                extracted.setdefault("section_entrance", [])
+                if effect not in extracted["section_entrance"]:
+                    extracted["section_entrance"].append(effect)
+
+    logger.info(f"[DesignKnowledge] Extracted {sum(len(v) for v in extracted.values())} GSAP effects for category '{category_label}'")
+    return extracted
+
+
 # ---------------------------------------------------------------------------
 # Category Design Guides
 # ---------------------------------------------------------------------------

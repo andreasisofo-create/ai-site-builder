@@ -47,13 +47,13 @@ _SKIP_REGIONS_RE = re.compile(
 )
 
 
-def _pick_effect(pool_key: str, used_effects: Optional[List[dict]] = None) -> str:
+def _pick_effect(pool_key: str, used_effects: Optional[List[dict]] = None, pools: Optional[Dict[str, List[str]]] = None) -> str:
     """Pick an effect from the pool, deprioritizing recently used ones.
 
     Uses weighted random selection: effects used fewer times recently
     get higher weight, making them more likely to be picked.
     """
-    pool = EFFECT_POOLS.get(pool_key, [])
+    pool = (pools or EFFECT_POOLS).get(pool_key, [])
     if not pool:
         return "fade-up"
 
@@ -91,6 +91,7 @@ def _build_animate_attr(effect: str) -> str:
 def diversify_effects(
     html: str,
     used_effects: Optional[List[dict]] = None,
+    db_effects: Optional[Dict[str, List[str]]] = None,
 ) -> Tuple[str, dict]:
     """Post-process assembled HTML to ensure all key elements have animations.
 
@@ -110,6 +111,18 @@ def diversify_effects(
     """
     if not html:
         return html, {}
+
+    # Merge ChromaDB effects into local pools (db_effects take priority via prepend)
+    active_pools = dict(EFFECT_POOLS)
+    if db_effects:
+        for pool_key, effects in db_effects.items():
+            if pool_key in active_pools:
+                # Prepend DB effects so they are picked first (higher weight)
+                merged = list(effects) + [e for e in active_pools[pool_key] if e not in effects]
+                active_pools[pool_key] = merged
+            else:
+                active_pools[pool_key] = list(effects)
+        logger.info(f"Effect diversifier: using {sum(len(v) for v in db_effects.values())} DB-sourced effects")
 
     effects_used: Dict[str, List[str]] = {}
 
@@ -152,8 +165,8 @@ def diversify_effects(
         has_animate = 'data-animate' in attrs
 
         if not has_animate:
-            # Inject new effect
-            effect = _pick_effect(pool_key, used_effects)
+            # Inject new effect (use DB-enriched pools)
+            effect = _pick_effect(pool_key, used_effects, pools=active_pools)
             animate_attr = _build_animate_attr(effect)
             delay_attr = ""
             if add_delay:
@@ -164,8 +177,8 @@ def diversify_effects(
             return f'{tag_open} {animate_attr}{delay_attr}{attrs}{tag_close}'
 
         elif random.random() < SWAP_PROBABILITY:
-            # Swap existing effect to a different one from the same pool
-            effect = _pick_effect(pool_key, used_effects)
+            # Swap existing effect to a different one from the same pool (use DB-enriched pools)
+            effect = _pick_effect(pool_key, used_effects, pools=active_pools)
             animate_val = effect.split("|")[0] if "|" in effect else effect
             new_attrs = re.sub(
                 r'data-animate="[^"]*"',
