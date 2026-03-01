@@ -367,6 +367,7 @@ def get_creative_context(
     style_id: str,
     category_label: str,
     sections: Optional[List[str]] = None,
+    max_chars: int = 8000,
 ) -> str:
     """
     Build a creative context string for AI generation.
@@ -388,7 +389,7 @@ def get_creative_context(
     if blueprints:
         context_parts.append("## PROFESSIONAL SITE BLUEPRINT (follow this closely):")
         for bp in blueprints:
-            context_parts.append(bp["content"][:600])
+            context_parts.append(bp["content"][:1200])
 
     # PRIORITY 2: Section-specific design references
     if sections:
@@ -399,9 +400,9 @@ def get_creative_context(
             context_parts.append("\n## Section Design References:")
             for r in refs:
                 meta = r["metadata"]
-                context_parts.append(f"- {r['content'][:300]}")
+                context_parts.append(f"- {r['content'][:600]}")
                 if meta.get("code_snippet"):
-                    context_parts.append(f"  HTML: {meta['code_snippet'][:400]}")
+                    context_parts.append(f"  HTML: {meta['code_snippet'][:800]}")
 
     # Search for style-relevant animations
     style_query = f"{category_label} {style_id} website animations effects"
@@ -411,9 +412,9 @@ def get_creative_context(
         context_parts.append("\n## Animation Effects to Apply:")
         for a in animations:
             meta = a["metadata"]
-            context_parts.append(f"- {a['content'][:200]}")
+            context_parts.append(f"- {a['content'][:400]}")
             if meta.get("code_snippet"):
-                context_parts.append(f"  Code: {meta['code_snippet'][:300]}")
+                context_parts.append(f"  Code: {meta['code_snippet'][:500]}")
 
     # Search for layout patterns
     layout_patterns = search_patterns(f"{category_label} layout design", n_results=6, category="layout_patterns")
@@ -451,7 +452,12 @@ def get_creative_context(
                 if meta.get("code_snippet"):
                     context_parts.append(f"- {meta['code_snippet'][:400]}")
 
-    return "\n".join(context_parts) if context_parts else ""
+    result = "\n".join(context_parts) if context_parts else ""
+    # Respect max_chars limit
+    if len(result) > max_chars:
+        result = result[:max_chars]
+        logger.info(f"[DesignKnowledge] Creative context truncated to {max_chars} chars")
+    return result
 
 
 def get_refine_context(modification_request: str, site_category: str = "") -> str:

@@ -564,6 +564,11 @@ class TemplateAssembler:
 </body>
 </html>"""
 
+        # Post-process: apply animation map from Choreographer (if available)
+        animation_map = site_data.get("_animation_map")
+        if animation_map:
+            complete_html = self._apply_animation_map(complete_html, animation_map)
+
         # Post-process: diversify GSAP effects across elements
         try:
             from app.services.effect_diversifier import diversify_effects
@@ -593,6 +598,88 @@ class TemplateAssembler:
             self._last_effects_used = {}
 
         return complete_html
+
+    def _apply_animation_map(self, html: str, animation_map: Dict[str, Any]) -> str:
+        """Apply the Animation Choreographer's map to the assembled HTML.
+
+        For each section in the map, replaces or injects data-animate attributes
+        on key elements (headings, paragraphs, images, buttons) within that section.
+        """
+        import re as _re
+
+        for section_id, effects in animation_map.items():
+            if not isinstance(effects, dict):
+                continue
+
+            # Find the section block in HTML by id attribute
+            section_pattern = _re.compile(
+                rf'(<section[^>]*id="{_re.escape(section_id)}"[^>]*>)(.*?)(</section>)',
+                _re.DOTALL | _re.IGNORECASE,
+            )
+            match = section_pattern.search(html)
+            if not match:
+                continue
+
+            section_html = match.group(2)
+
+            # Apply heading effect
+            heading_effect = effects.get("heading")
+            if heading_effect:
+                # Add data-animate to first h1/h2/h3 without one
+                for tag in ("h1", "h2", "h3"):
+                    pattern = _re.compile(
+                        rf'(<{tag}(?![^>]*data-animate)[^>]*)(>)',
+                        _re.IGNORECASE,
+                    )
+                    section_html, count = pattern.subn(
+                        rf'\1 data-animate="{heading_effect}"\2',
+                        section_html, count=1,
+                    )
+                    if count > 0:
+                        break
+
+            # Apply CTA effect
+            cta_effect = effects.get("cta")
+            if cta_effect:
+                # Target buttons and <a> with button-like classes
+                btn_pattern = _re.compile(
+                    r'(<(?:button|a)[^>]*class="[^"]*(?:btn|button|cta)[^"]*"(?![^>]*data-animate)[^>]*)(>)',
+                    _re.IGNORECASE,
+                )
+                section_html = btn_pattern.sub(
+                    rf'\1 data-animate="{cta_effect}"\2',
+                    section_html,
+                )
+
+            # Apply image effect
+            image_effect = effects.get("image")
+            if image_effect:
+                img_pattern = _re.compile(
+                    r'(<img(?![^>]*data-animate)[^>]*)(>)',
+                    _re.IGNORECASE,
+                )
+                section_html = img_pattern.sub(
+                    rf'\1 data-animate="{image_effect}"\2',
+                    section_html,
+                )
+
+            # Apply card effect
+            card_effect = effects.get("cards")
+            if card_effect:
+                card_pattern = _re.compile(
+                    r'(<div[^>]*class="[^"]*(?:card|feature|service|pricing|team)[^"]*"(?![^>]*data-animate)[^>]*)(>)',
+                    _re.IGNORECASE,
+                )
+                section_html = card_pattern.sub(
+                    rf'\1 data-animate="{card_effect}"\2',
+                    section_html,
+                )
+
+            # Replace section content in full HTML
+            html = html[:match.start(2)] + section_html + html[match.end(2):]
+
+        logger.info("[Assembler] Animation map applied: %d sections", len(animation_map))
+        return html
 
     def _build_nav(self, site_data: Dict[str, Any], nav_style: str = "nav-classic-01") -> str:
         """Generate a sticky navigation bar with anchor links to each section.

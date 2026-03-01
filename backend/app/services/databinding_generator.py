@@ -92,6 +92,25 @@ try:
 except Exception:
     _has_palette_gen = False
 
+# Multi-agent pipeline: Design Director, Animation Choreographer, Quality Reviewer
+try:
+    from app.services.agents.design_director import DesignDirector
+    from app.services.agents.animation_choreographer import AnimationChoreographer
+    from app.services.agents.quality_reviewer import QualityReviewer
+    _has_agents = True
+except Exception:
+    _has_agents = False
+
+# Design Memory: remembers past briefs for anti-repetition
+try:
+    from app.services.design_memory import (
+        save_generation as _save_generation_memory,
+        get_anti_repetition_context as _get_memory_context,
+    )
+    _has_design_memory = True
+except Exception:
+    _has_design_memory = False
+
 # URL analyzer for reference websites
 try:
     from app.services.url_analyzer import analyze_reference_url, format_analysis_for_prompt
@@ -2902,6 +2921,10 @@ class DataBindingGenerator:
         self.kimi = kimi
         self.kimi_text = kimi_text
         self.assembler = template_assembler
+        # Multi-agent pipeline components
+        self._design_director = DesignDirector(kimi) if _has_agents else None
+        self._anim_choreographer = AnimationChoreographer(kimi_text) if _has_agents else None
+        self._quality_reviewer = QualityReviewer() if _has_agents else None
 
     # =========================================================
     # Blueprint Ordering
@@ -3009,6 +3032,7 @@ class DataBindingGenerator:
         parsed_reference: Optional[Dict[str, Any]] = None,
         photo_urls: Optional[List[str]] = None,
         template_style_id: Optional[str] = None,
+        design_brief_prompt: str = "",
     ) -> Dict[str, Any]:
         """Kimi returns JSON with color palette and fonts.
 
@@ -3102,7 +3126,7 @@ STRICT RULES:
         # SKIP entirely when exact reference colors are provided
         palette_hint = ""
         if creative_context and not has_reference and not has_exact_colors:
-            palette_hint = f"\nPROFESSIONAL DESIGN REFERENCE:\n{creative_context[:2000]}\n"
+            palette_hint = f"\nPROFESSIONAL DESIGN REFERENCE:\n{creative_context[:6000]}\n"
 
         # Inject reference URL analysis (colors and fonts from a real site)
         # SKIP when exact colors are already parsed from image
@@ -3196,6 +3220,7 @@ The reference uses MINIMAL/CLEAN typography. Use one of these pairings:
 
         prompt = f"""You are a Dribbble/Awwwards-level UI designer. Generate a STUNNING, BOLD color palette and typography for a website.
 Return ONLY valid JSON, no markdown, no explanation.
+{design_brief_prompt}
 {exact_colors_block}{reference_override}
 BUSINESS: {business_name} - {business_description[:1200]}
 {style_hint}
@@ -3371,6 +3396,7 @@ Return ONLY the JSON object"""
         reference_analysis: Optional[str] = None,
         photo_urls: Optional[List[str]] = None,
         template_style_id: Optional[str] = None,
+        design_brief_prompt: str = "",
     ) -> Dict[str, Any]:
         """Kimi returns JSON with all text content for every section."""
         contact_str = ""
@@ -3394,7 +3420,7 @@ If the reference is bold/edgy, write bold/edgy copy. If elegant, write elegant c
         # Inject creative context from design knowledge base
         knowledge_hint = ""
         if creative_context:
-            knowledge_hint = f"\n\nDESIGN KNOWLEDGE (follow these professional guidelines closely):\n{creative_context[:2500]}\n"
+            knowledge_hint = f"\n\nDESIGN KNOWLEDGE (follow these professional guidelines closely):\n{creative_context[:6000]}\n"
 
         # Inject reference URL analysis (tone and content structure from a real site)
         if reference_url_context:
@@ -3477,6 +3503,7 @@ Write copy that fits this creative vision. Every section should feel like it bel
 
         prompt = f"""You are Italy's most awarded copywriter — think Oliviero Toscani meets Apple. You write text for websites that win design awards.
 Return ONLY valid JSON, no markdown.
+{design_brief_prompt}
 {reference_tone_hint}{knowledge_hint}{reference_hint}{photo_hint}{texts_diversity_block}
 === ABSOLUTE BANNED PHRASES (using ANY of these = automatic failure) ===
 - "Benvenuti" / "Benvenuto" (in any form)
@@ -4300,16 +4327,64 @@ RULES:
                 f"font={variety['font_pairing']['heading']}/{variety['font_pairing']['body']}"
             )
 
-        # === STEP 1+2 PARALLEL: Theme + Texts ===
-        if on_progress:
-            on_progress(1, "Analisi stile e generazione testi...", {
-                "phase": "analyzing",
-            })
+        # === PHASE 0.5: DESIGN MEMORY (local, instant) ===
+        memory_context = ""
+        if _has_design_memory:
+            try:
+                category = _get_category_from_style_id(template_style_id)
+                memory_context = _get_memory_context(category=category, limit=5)
+                if memory_context:
+                    logger.info(f"[DataBinding] Memory context: {len(memory_context)} chars")
+            except Exception as e:
+                logger.warning(f"[DataBinding] Design memory query failed: {e}")
 
         # Merge planning context into creative context for AI prompts
         enriched_context = creative_context
         if planning_context:
             enriched_context = f"{creative_context}\n\n{planning_context}" if creative_context else planning_context
+
+        # === PHASE 1: DESIGN DIRECTOR (Gemini Pro, ~8s) ===
+        design_brief = None
+        if self._design_director and not (parsed_reference and parsed_reference.get("primary_color")):
+            if on_progress:
+                on_progress(1, "Il Design Director sta progettando il sito...", {
+                    "phase": "design_direction",
+                })
+            try:
+                category = _get_category_from_style_id(template_style_id)
+                director_result = await self._design_director.create_brief(
+                    business_name=business_name,
+                    business_description=business_description,
+                    category=category,
+                    style_id=template_style_id or "custom-free",
+                    sections=sections,
+                    creative_context=enriched_context,
+                    memory_context=memory_context,
+                    variety_context=variety,
+                    user_color=(style_preferences or {}).get("primary_color"),
+                )
+                design_brief = director_result.get("brief")
+                if director_result.get("success"):
+                    total_tokens_in += director_result.get("tokens_input", 0)
+                    total_tokens_out += director_result.get("tokens_output", 0)
+                    logger.info("[DataBinding] Design Director brief created successfully")
+                else:
+                    logger.warning("[DataBinding] Design Director used fallback brief: %s", director_result.get("error"))
+            except Exception as e:
+                logger.warning("[DataBinding] Design Director failed (non-blocking): %s", e)
+
+        # Build Design Brief prompt blocks for downstream agents
+        brief_theme_prompt = ""
+        brief_texts_prompt = ""
+        if design_brief and _has_agents:
+            brief_theme_prompt = DesignDirector.brief_to_theme_prompt(design_brief)
+            brief_texts_prompt = DesignDirector.brief_to_texts_prompt(design_brief)
+
+        # === PHASE 2: PARALLEL — Theme + Texts + Animation Choreographer ===
+        if on_progress:
+            on_progress(2 if design_brief else 1, "Generazione palette, testi e animazioni...", {
+                "phase": "analyzing",
+            })
 
         theme_task = self._generate_theme(
             business_name, business_description,
@@ -4321,6 +4396,7 @@ RULES:
             parsed_reference=parsed_reference,
             photo_urls=photo_urls,
             template_style_id=template_style_id,
+            design_brief_prompt=brief_theme_prompt,
         )
         texts_task = self._generate_texts(
             business_name, business_description,
@@ -4331,8 +4407,22 @@ RULES:
             reference_analysis=reference_analysis,
             photo_urls=photo_urls,
             template_style_id=template_style_id,
+            design_brief_prompt=brief_texts_prompt,
         )
-        theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
+
+        # Run Animation Choreographer in parallel if we have a brief
+        if self._anim_choreographer and design_brief:
+            anim_task = self._anim_choreographer.create_animation_map(
+                sections=sections,
+                brief=design_brief,
+                style_id=template_style_id or "",
+            )
+            theme_result, texts_result, animation_map = await asyncio.gather(
+                theme_task, texts_task, anim_task,
+            )
+        else:
+            theme_result, texts_result = await asyncio.gather(theme_task, texts_task)
+            animation_map = None
 
         # Extract results (use reference colors in fallback if available)
         theme = theme_result.get("parsed", self._fallback_theme(style_preferences, reference_colors=parsed_reference))
@@ -4567,6 +4657,11 @@ RULES:
         if template_style_id:
             site_data["_template_style_id"] = template_style_id
 
+        # === INJECT ANIMATION MAP from Choreographer ===
+        if animation_map:
+            site_data["_animation_map"] = animation_map
+            logger.info("[DataBinding] Animation map injected: %d sections choreographed", len(animation_map))
+
         # Query recent effects for diversification (before assembly)
         _effect_db = None
         if user_id:
@@ -4646,6 +4741,41 @@ RULES:
                 )
         except Exception as e:
             logger.warning("[DataBinding] PreDeliveryCheck failed (non-blocking): %s", e)
+
+        # === QUALITY REVIEW (local, instant) ===
+        quality_score = 0.0
+        if self._quality_reviewer and design_brief:
+            try:
+                qa_report = self._quality_reviewer.check(
+                    html=html_content,
+                    brief=design_brief,
+                    sections=sections,
+                )
+                quality_score = qa_report.get("score", 0)
+                logger.info(
+                    "[DataBinding] QualityReview: score=%.0f, passed=%s, issues=%d",
+                    quality_score,
+                    qa_report.get("passed", False),
+                    len(qa_report.get("issues", [])),
+                )
+            except Exception as e:
+                logger.warning("[DataBinding] QualityReview failed (non-blocking): %s", e)
+
+        # === SAVE TO DESIGN MEMORY ===
+        if _has_design_memory and design_brief:
+            try:
+                category = _get_category_from_style_id(template_style_id)
+                theme_summary = f"primary={theme.get('primary_color', '')}, font={theme.get('font_heading', '')}"
+                _save_generation_memory(
+                    category=category,
+                    style_id=template_style_id or "",
+                    business_name=business_name,
+                    brief=design_brief,
+                    theme_summary=theme_summary,
+                    quality_score=quality_score,
+                )
+            except Exception as e:
+                logger.warning("[DataBinding] Design memory save failed (non-blocking): %s", e)
 
         # === Record generation in UsageTracker ===
         try:
