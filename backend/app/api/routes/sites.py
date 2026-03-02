@@ -22,6 +22,76 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+def _section_aware_replace(
+    html: str, old_url: str, new_url: str, section_name: str, occurrence_idx: int
+) -> str:
+    """Replace old_url with new_url inside the correct HTML section.
+
+    Finds `<section id="section_name">` block and replaces the N-th occurrence
+    of old_url within it. Falls back to global Nth occurrence if section not found.
+    """
+    # Try to find the section block: <section id="gallery" ...> ... </section>
+    pattern = re.compile(
+        rf'(<section[^>]*\bid\s*=\s*["\']{re.escape(section_name)}["\'][^>]*>)',
+        re.IGNORECASE,
+    )
+    match = pattern.search(html)
+
+    if match:
+        section_start = match.start()
+        # Find the matching </section> after this point
+        # Count nested <section> tags to find the correct closing tag
+        depth = 1
+        pos = match.end()
+        while pos < len(html) and depth > 0:
+            next_open = html.find("<section", pos)
+            next_close = html.find("</section>", pos)
+            if next_close == -1:
+                break
+            if next_open != -1 and next_open < next_close:
+                depth += 1
+                pos = next_open + 8
+            else:
+                depth -= 1
+                if depth == 0:
+                    section_end = next_close + len("</section>")
+                    break
+                pos = next_close + 10
+        else:
+            section_end = len(html)
+
+        section_html = html[section_start:section_end]
+
+        # Replace the N-th occurrence within the section
+        count = 0
+        search_pos = 0
+        while search_pos < len(section_html):
+            idx = section_html.find(old_url, search_pos)
+            if idx == -1:
+                break
+            if count == occurrence_idx:
+                new_section = section_html[:idx] + new_url + section_html[idx + len(old_url):]
+                return html[:section_start] + new_section + html[section_end:]
+            count += 1
+            search_pos = idx + len(old_url)
+
+    # Fallback: if section not found or occurrence not in section,
+    # find the global Nth occurrence of old_url
+    count = 0
+    search_pos = 0
+    while search_pos < len(html):
+        idx = html.find(old_url, search_pos)
+        if idx == -1:
+            break
+        if count == occurrence_idx:
+            return html[:idx] + new_url + html[idx + len(old_url):]
+        count += 1
+        search_pos = idx + len(old_url)
+
+    # Last resort: replace first occurrence
+    return html.replace(old_url, new_url, 1)
+
+
 def _validate_image_url(url: str) -> bool:
     """Validate image URL to prevent SSRF. Allow data:image/ URIs and public HTTPS URLs."""
     if url.startswith("data:image/"):
@@ -709,8 +779,17 @@ async def swap_photo(
             detail=f"Foto con URL corrente non trovata nell'HTML del sito (photo_id: {data.photo_id})",
         )
 
-    # Replace only the FIRST occurrence (gallery items may share the same stock URL)
-    new_html = html.replace(old_url, data.photo_url, 1)
+    # Section-aware replacement: use photo_id to target the correct section
+    # photo_id format: "hero_main", "gallery_2", "about_main", "team_1", etc.
+    section_name = data.photo_id.rsplit("_", 1)[0] if "_" in data.photo_id else data.photo_id
+    # Parse occurrence index: "gallery_2" means 2nd image (1-indexed), convert to 0-indexed
+    try:
+        raw_idx = int(data.photo_id.rsplit("_", 1)[1]) if "_" in data.photo_id else 1
+        occurrence_idx = max(0, raw_idx - 1)  # Convert 1-indexed to 0-indexed
+    except (ValueError, IndexError):
+        occurrence_idx = 0
+
+    new_html = _section_aware_replace(html, old_url, data.photo_url, section_name, occurrence_idx)
 
     # Verify replacement actually happened
     if new_html == html:

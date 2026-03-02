@@ -4907,7 +4907,7 @@ RULES:
                 continue
             section_texts = texts.get(section, {})
             if isinstance(section_texts, dict):
-                section_texts = self._normalize_section_data(section, section_texts, variant_id, business_name)
+                section_texts = self._normalize_section_data(section, section_texts, variant_id, business_name, template_style_id=template_style_id)
 
             # Skip sections where the AI returned no real content at all
             # (empty dict or only empty-string values). Keep hero, footer, contact always.
@@ -5013,6 +5013,7 @@ RULES:
 
     def _normalize_section_data(
         self, section: str, data: Dict[str, Any], variant_id: str, business_name: str,
+        template_style_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Transform AI-generated flat data into the array/repeat format templates expect.
 
@@ -5076,7 +5077,7 @@ RULES:
                 alt_keys=["GALLERY", "GALLERY_LIST", "GALLERY_IMAGES", "items", "gallery"],
                 item_fields=["GALLERY_IMAGE_URL", "GALLERY_IMAGE_ALT", "GALLERY_CAPTION"],
                 flat_prefix="GALLERY",
-                fallback_items=self._fallback_gallery(),
+                fallback_items=self._fallback_gallery(template_style_id),
             )
 
         elif section == "team":
@@ -5933,10 +5934,11 @@ RULES:
             },
         ]
 
-    def _fallback_gallery(self) -> List[Dict[str, str]]:
+    def _fallback_gallery(self, template_style_id: Optional[str] = None) -> List[Dict[str, str]]:
         """Generate fallback gallery items with Unsplash stock images."""
-        # Use default/business gallery pool for high-quality fallback images
-        gallery_photos = _UNSPLASH_PHOTOS.get("default", {}).get("gallery", [])
+        # Use category-specific gallery pool (fall back to default)
+        photos = _get_stock_photos(template_style_id or "default")
+        gallery_photos = photos.get("gallery", [])
         captions = [
             "Creatività in ogni dettaglio",
             "Dove l'idea prende forma",
@@ -6004,11 +6006,16 @@ RULES:
         url = url.strip()
         if not url:
             return True
-        # Known placeholder patterns
-        if "placehold.co" in url or url.startswith("data:image/svg+xml,"):
+        # Known placeholder patterns (AI may use any of these)
+        if ("placehold.co" in url or "placeholder.com" in url
+                or "via.placeholder" in url or "dummyimage.com" in url
+                or url.startswith("data:image/svg+xml,")):
             return True
         # Template placeholders that weren't replaced
         if url.startswith("{{") or url == "#" or url == "placeholder" or url == "placeholder.jpg":
+            return True
+        # Generic placeholder-like URLs (short or no real path)
+        if url.startswith("http") and len(url) < 35:
             return True
         return False
 
