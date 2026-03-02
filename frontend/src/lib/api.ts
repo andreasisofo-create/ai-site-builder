@@ -682,11 +682,13 @@ export async function swapPhoto(
   siteId: number,
   photoId: string,
   action: "upload" | "keep_stock",
-  photoUrl?: string
+  photoUrl?: string,
+  currentUrl?: string
 ): Promise<PhotoSwapResponse> {
   const headers = getAuthHeaders();
   const body: Record<string, string> = { photo_id: photoId, action };
   if (photoUrl) body.photo_url = photoUrl;
+  if (currentUrl) body.current_url = currentUrl;
   const res = await fetch(`${API_BASE}/api/sites/${siteId}/photo-swap`, {
     method: "POST",
     headers,

@@ -36,5 +36,8 @@ resend>=2.5.0
 # pgvector removed — V2 pipeline works when installed locally but not needed
 # on production (protected by try/except in models/__init__.py)
 
+# Cloud Storage (Cloudflare R2 — S3-compatible)
+boto3>=1.35.0
+
 # Image Generation (Flux via fal.ai)
 fal-client>=0.5.0

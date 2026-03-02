@@ -22,6 +22,7 @@ from app.core.security import get_current_active_user
 from app.models.site import Site
 from app.models.site_version import SiteVersion
 from app.models.user import User
+from app.services.r2_storage import is_r2_available, upload_to_r2
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -103,23 +104,35 @@ def _validate_and_save_upload(content: bytes, original_filename: str, user_id: i
     if len(content) == 0:
         raise HTTPException(status_code=400, detail="File vuoto")
 
-    unique_name = f"{uuid.uuid4().hex}{ext}"
-    user_dir = os.path.join(UPLOAD_DIR, f"user_{user_id}")
-    os.makedirs(user_dir, exist_ok=True)
-
-    file_path = os.path.join(user_dir, unique_name)
-    with open(file_path, "wb") as f:
-        f.write(content)
-
-    base = settings.RENDER_EXTERNAL_URL or ""
-    url = f"{base}/static/uploads/user_{user_id}/{unique_name}"
     mime = ALLOWED_MIME_TYPES.get(ext, "application/octet-stream")
+
+    # Try R2 first (persistent cloud storage), fall back to local filesystem
+    r2_url = None
+    if is_r2_available():
+        r2_url = upload_to_r2(content, ext, user_id=user_id)
+
+    if r2_url:
+        url = r2_url
+        filename = r2_url.rsplit("/", 1)[-1]
+    else:
+        # Fallback: local filesystem (development or R2 unavailable)
+        unique_name = f"{uuid.uuid4().hex}{ext}"
+        user_dir = os.path.join(UPLOAD_DIR, f"user_{user_id}")
+        os.makedirs(user_dir, exist_ok=True)
+
+        file_path = os.path.join(user_dir, unique_name)
+        with open(file_path, "wb") as f:
+            f.write(content)
+
+        base = settings.RENDER_EXTERNAL_URL or ""
+        url = f"{base}/static/uploads/user_{user_id}/{unique_name}"
+        filename = unique_name
 
     logger.info(f"Wizard upload: {url} ({len(content)} bytes) by user {user_id}")
 
     return UploadResponse(
         url=url,
-        filename=unique_name,
+        filename=filename,
         size=len(content),
         mime_type=mime,
     )
@@ -246,21 +259,30 @@ async def upload_media(
             detail=f"File troppo grande ({len(content) / 1024 / 1024:.1f} MB). Massimo: 5 MB",
         )
 
-    # Generate unique filename
-    unique_name = f"{uuid.uuid4().hex}{ext}"
-    site_dir = os.path.join(UPLOAD_DIR, str(site_id))
-    os.makedirs(site_dir, exist_ok=True)
+    # Try R2 first (persistent cloud storage), fall back to local filesystem
+    r2_url = None
+    if is_r2_available():
+        r2_url = upload_to_r2(content, ext, site_id=site_id)
 
-    file_path = os.path.join(site_dir, unique_name)
-    with open(file_path, "wb") as f:
-        f.write(content)
+    if r2_url:
+        url = r2_url
+        filename = r2_url.rsplit("/", 1)[-1]
+    else:
+        # Fallback: local filesystem (development or R2 unavailable)
+        unique_name = f"{uuid.uuid4().hex}{ext}"
+        site_dir = os.path.join(UPLOAD_DIR, str(site_id))
+        os.makedirs(site_dir, exist_ok=True)
 
-    # Build absolute URL so images work in srcdoc iframes (editor preview)
-    base = settings.RENDER_EXTERNAL_URL or ""
-    url = f"{base}/static/uploads/{site_id}/{unique_name}"
+        file_path = os.path.join(site_dir, unique_name)
+        with open(file_path, "wb") as f:
+            f.write(content)
+
+        base = settings.RENDER_EXTERNAL_URL or ""
+        url = f"{base}/static/uploads/{site_id}/{unique_name}"
+        filename = unique_name
+
     logger.info(f"File uploaded: {url} ({len(content)} bytes) by user {current_user.id}")
-
-    return {"url": url, "filename": unique_name}
+    return {"url": url, "filename": filename}
 
 
 @router.get("/sites/{site_id}/images", response_model=ImagesListResponse)

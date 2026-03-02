@@ -211,12 +211,16 @@ async def lifespan(app: FastAPI):
         else:
             logger.info("Category design guides ready")
 
-        # Extract and index patterns from professional templates
+        # Extract and index patterns from professional templates (skip if already seeded)
         try:
-            from app.services.extract_template_patterns import seed_extracted_patterns
-            tpl_count = seed_extracted_patterns()
-            if tpl_count > 0:
-                logger.info(f"Template patterns indexed: {tpl_count}")
+            stats_after = get_collection_stats()
+            if stats_after.get("total_patterns", 0) < 800:
+                from app.services.extract_template_patterns import seed_extracted_patterns
+                tpl_count = seed_extracted_patterns()
+                if tpl_count > 0:
+                    logger.info(f"Template patterns indexed: {tpl_count}")
+            else:
+                logger.info("Template patterns already present, skipping extraction")
         except Exception as e_tpl:
             logger.warning(f"Template pattern extraction skipped: {e_tpl}")
     except Exception as e:

@@ -57,7 +57,7 @@ function SwapCard({
 
   const handleKeepStock = async () => {
     try {
-      await swapPhoto(siteId, photo.id, "keep_stock");
+      await swapPhoto(siteId, photo.id, "keep_stock", undefined, photo.current_url);
       onStateChange({ status: "kept" });
     } catch {
       toast.error(
@@ -79,7 +79,7 @@ function SwapCard({
 
     try {
       const uploaded = await uploadMedia(siteId, file);
-      const result = await swapPhoto(siteId, photo.id, "upload", uploaded.url);
+      const result = await swapPhoto(siteId, photo.id, "upload", uploaded.url, photo.current_url);
       onStateChange({
         status: "uploaded",
         newUrl: result.new_url,
@@ -270,7 +270,7 @@ export default function PhotoSwapPanel({
     );
     for (const p of pending) {
       try {
-        await swapPhoto(siteId, p.id, "keep_stock");
+        await swapPhoto(siteId, p.id, "keep_stock", undefined, p.current_url);
         setCardStates((prev) => ({
           ...prev,
           [p.id]: { status: "kept" },

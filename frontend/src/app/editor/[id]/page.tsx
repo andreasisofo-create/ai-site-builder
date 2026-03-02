@@ -988,6 +988,8 @@ export default function Editor() {
                       `<style>
                         /* Editor preview overrides: force all content visible */
                         [data-animate] { opacity: 1 !important; transform: none !important; }
+                        [data-animate] > span, [data-animate] > div > span { opacity: 1 !important; transform: none !important; }
+                        .stagger-item { opacity: 1 !important; transform: none !important; }
                         footer { position: static !important; }
                         section::after { display: none !important; }
                         body::after { display: none !important; }

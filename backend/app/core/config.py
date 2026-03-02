@@ -156,6 +156,13 @@ class Settings(BaseSettings):
     REVOLUT_WEBHOOK_SECRET: str = ""    # Signing secret per verificare webhook
     REVOLUT_SANDBOX: bool = True        # True = sandbox, False = produzione
 
+    # Cloudflare R2 (persistent image storage, S3-compatible)
+    R2_ACCOUNT_ID: str = ""         # Cloudflare account ID
+    R2_ACCESS_KEY_ID: str = ""      # R2 API token access key
+    R2_SECRET_ACCESS_KEY: str = ""  # R2 API token secret key
+    R2_BUCKET_NAME: str = "site-builder-uploads"
+    R2_PUBLIC_URL: str = ""         # Public URL prefix (e.g. "https://pub-xxx.r2.dev")
+
     # fal.ai (Flux image generation) - $0.025/img schnell, $0.04/img pro
     FAL_API_KEY: str = ""  # fal.ai API key (get from https://fal.ai/dashboard/keys)
 

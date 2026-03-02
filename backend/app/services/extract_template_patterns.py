@@ -573,8 +573,31 @@ def extract_all_patterns() -> List[Dict]:
 # Database seeding
 # ---------------------------------------------------------------------------
 
+def _load_cached_patterns() -> List[Dict]:
+    """Load pre-extracted patterns from the JSON cache file.
+
+    This is used on Render where template/_extracted/ HTML files don't exist.
+    The cache is generated locally via: python -m app.services.extract_template_patterns
+    """
+    import json
+    cache_path = Path(__file__).parent / "extracted_patterns_cache.json"
+    if not cache_path.exists():
+        return []
+    try:
+        with open(cache_path, "r", encoding="utf-8") as f:
+            patterns = json.load(f)
+        logger.info(f"Loaded {len(patterns)} patterns from cache file")
+        return patterns
+    except Exception as e:
+        logger.warning(f"Failed to load pattern cache: {e}")
+        return []
+
+
 def seed_extracted_patterns() -> int:
     """Extract patterns from templates and save to the knowledge DB.
+
+    Tries live extraction first (if template HTML files exist).
+    Falls back to pre-extracted JSON cache (for Render/production).
 
     Returns the number of patterns saved.
     """
@@ -582,7 +605,10 @@ def seed_extracted_patterns() -> int:
 
     patterns = extract_all_patterns()
     if not patterns:
-        logger.info("No patterns extracted.")
+        # Fallback: load from pre-extracted cache (production without HTML files)
+        patterns = _load_cached_patterns()
+    if not patterns:
+        logger.info("No patterns extracted (no templates or cache found).")
         return 0
 
     saved = 0

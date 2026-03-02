@@ -440,7 +440,7 @@ def _is_stock_url(url: str) -> bool:
 
 
 def _is_real_photo_url(url: str) -> bool:
-    """Return True only for real image URLs (http/https), skip SVGs and data URIs."""
+    """Return True only for real image URLs (http/https), skip SVGs, data URIs, and avatar services."""
     if not url or not isinstance(url, str):
         return False
     url = url.strip()
@@ -449,6 +449,9 @@ def _is_real_photo_url(url: str) -> bool:
     if url.startswith("#") or url == "placeholder" or url == "placeholder.jpg":
         return False
     if url.startswith("{{"):
+        return False
+    # Exclude avatar service URLs (not swappable site photos)
+    if "ui-avatars.com" in url or "avatars.dicebear.com" in url or "gravatar.com" in url:
         return False
     if url.startswith("http://") or url.startswith("https://"):
         return True
@@ -706,8 +709,8 @@ async def swap_photo(
             detail=f"Foto con URL corrente non trovata nell'HTML del sito (photo_id: {data.photo_id})",
         )
 
-    # Replace: simple string replacement (URLs are unique in the HTML)
-    new_html = html.replace(old_url, data.photo_url)
+    # Replace only the FIRST occurrence (gallery items may share the same stock URL)
+    new_html = html.replace(old_url, data.photo_url, 1)
 
     # Verify replacement actually happened
     if new_html == html:
