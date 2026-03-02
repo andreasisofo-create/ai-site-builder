@@ -281,21 +281,33 @@ class TemplateAssembler:
                 return ""
 
             fragments = []
-            for idx, item in enumerate(items):
+            real_idx = 0
+            for item in items:
                 if isinstance(item, dict):
                     # Inject index placeholders for templates that need them
                     item_with_index = {
                         **item,
-                        "INDEX": str(idx + 1),
-                        "INDEX_PADDED": f"{idx + 1:02d}",
-                        "INDEX_ZERO": str(idx),
+                        "INDEX": str(real_idx + 1),
+                        "INDEX_PADDED": f"{real_idx + 1:02d}",
+                        "INDEX_ZERO": str(real_idx),
                     }
                     # Recursively expand nested repeats within this item
                     fragment = self._expand_repeats(inner_template, item_with_index)
                     fragment = self._replace_placeholders(fragment, item_with_index)
+
+                    # Skip items that rendered with no visible text content
+                    # (happens when AI returned items with empty/missing values)
+                    visible = re.sub(r'<[^>]+>', '', fragment)
+                    visible = re.sub(r'\s+', ' ', visible).strip()
+                    if len(visible) < 5:
+                        logger.warning(
+                            f"[Assembler] REPEAT:{key} item {real_idx} has no visible text, skipping"
+                        )
+                        continue
                 else:
                     fragment = inner_template
                 fragments.append(fragment)
+                real_idx += 1
             return "\n".join(fragments)
 
         return re.sub(pattern, expand_block, template, flags=re.DOTALL)
@@ -505,6 +517,11 @@ class TemplateAssembler:
         for component in site_data.get("components", []):
             variant_id = component.get("variant_id")
             component_data = component.get("data", {})
+
+            # Handle inline raw HTML components (e.g., YouTube video section)
+            if variant_id == "__inline_video__" and "__RAW_HTML__" in component_data:
+                sections_html.append(component_data["__RAW_HTML__"])
+                continue
 
             # Merge global data (lower priority) with component data (higher priority)
             merged_data = {**global_data, **component_data}

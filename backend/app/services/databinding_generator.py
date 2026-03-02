@@ -3595,7 +3595,7 @@ FINAL CHECK:
 
         result = await self.kimi_text.call(
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=4000, thinking=False, timeout=120.0,
+            max_tokens=8000, thinking=False, timeout=120.0,
             temperature=0.75, top_p=0.95, json_mode=True,
         )
 
@@ -3609,7 +3609,7 @@ FINAL CHECK:
                 # Retry with stricter prompt and lower temperature
                 retry_result = await self.kimi_text.call(
                     messages=[{"role": "user", "content": prompt + "\n\nIMPORTANT: Your previous response had invalid JSON. Return ONLY valid JSON. No comments, no trailing commas, no explanation."}],
-                    max_tokens=4000, thinking=False, timeout=120.0,
+                    max_tokens=8000, thinking=False, timeout=120.0,
                     temperature=0.5, json_mode=True,
                 )
                 if retry_result.get("success"):
@@ -4643,11 +4643,25 @@ RULES:
         if hero_type == "video" and hero_video_url:
             video_embed = self._build_youtube_embed(hero_video_url)
             if video_embed:
+                injected = False
                 for comp in site_data.get("components", []):
                     if comp.get("variant_id") == "hero-video-bg-01":
                         comp["data"]["HERO_VIDEO_EMBED"] = video_embed
-                        logger.info(f"[DataBinding] Injected YouTube video embed into hero")
+                        logger.info("[DataBinding] Injected YouTube video embed into hero background")
+                        injected = True
                         break
+                # If hero variant doesn't support video background, add visible embed after hero
+                if not injected:
+                    visible_embed = self._build_youtube_visible_embed(hero_video_url)
+                    if visible_embed:
+                        # Insert video section right after hero (index 0)
+                        video_component = {
+                            "variant_id": "__inline_video__",
+                            "data": {"__RAW_HTML__": visible_embed},
+                        }
+                        components = site_data.get("components", [])
+                        components.insert(1, video_component)
+                        logger.info("[DataBinding] Injected visible YouTube video section after hero")
 
         # === Photo Injection (non-blocking) ===
         # Inject stock photos immediately to avoid blocking the pipeline.
@@ -5772,6 +5786,26 @@ RULES:
             logger.info(f"[PostProcess] Section has {placeholder_count} unreplaced placeholders, removing")
             return True
 
+        # Content density check: if the section has a heading (h2/h3) but the content
+        # OUTSIDE headings has very little text, it's a "shell" section with only a title
+        heading_text = ""
+        for m in re.finditer(r'<h[1-3][^>]*>(.*?)</h[1-3]>', section_html, re.DOTALL):
+            heading_text += re.sub(r'<[^>]+>', '', m.group(1)) + " "
+        heading_text = re.sub(r'\s+', ' ', heading_text).strip()
+
+        if heading_text and len(heading_text) > 10:
+            # Text outside headings (subtitle + items) should be substantial
+            non_heading_text = text_only
+            for word in heading_text.split():
+                non_heading_text = non_heading_text.replace(word, "", 1)
+            non_heading_text = non_heading_text.strip()
+            if len(non_heading_text) < 40:
+                logger.info(
+                    f"[PostProcess] Section has heading ({len(heading_text)} chars) "
+                    f"but only {len(non_heading_text)} chars of body content, removing"
+                )
+                return True
+
         # Check for empty content containers that SHOULD have repeated items
         # These patterns catch the case where a REPEAT block rendered "" (no items)
 
@@ -5996,6 +6030,26 @@ RULES:
             f' class="absolute inset-0 w-full h-full pointer-events-none"'
             f' style="transform: scale(1.2);"'
             f' frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>'
+        )
+
+    @staticmethod
+    def _build_youtube_visible_embed(video_url: str) -> Optional[str]:
+        """Convert a YouTube URL to a visible, interactive video section."""
+        import re as _re
+        match = _re.search(r'(?:v=|youtu\.be/|embed/)([a-zA-Z0-9_-]{11})', video_url)
+        if not match:
+            return None
+        video_id = match.group(1)
+        return (
+            f'<section class="py-12 bg-[var(--color-bg-alt)]">'
+            f'<div class="max-w-4xl mx-auto px-6">'
+            f'<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%;" data-animate="scale-in">'
+            f'<iframe src="https://www.youtube.com/embed/{video_id}'
+            f'?rel=0&modestbranding=1&playsinline=1"'
+            f' class="absolute inset-0 w-full h-full"'
+            f' frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"'
+            f' allowfullscreen></iframe>'
+            f'</div></div></section>'
         )
 
     @staticmethod
