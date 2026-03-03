@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useLanguage, translations } from "@/lib/i18n";
 import Navbar from "@/components/layout/Navbar";
 import MainHero from "@/components/sections/MainHero";
+import AiRevolution from "@/components/sections/AiRevolution";
 import SocialProof from "@/components/sections/SocialProof";
 import HowItWorks from "@/components/sections/HowItWorks";
 import Portfolio from "@/components/sections/Portfolio";
 import ContactForm from "@/components/sections/ContactForm";
+import VoiceAssistant from "@/components/sections/VoiceAssistant";
 import Features from "@/components/sections/Features";
-import AiBuilderSection from "@/components/sections/AiBuilderSection";
 import AdsUpsell from "@/components/sections/AdsUpsell";
 import Faq from "@/components/sections/Faq";
 import FinalCta from "@/components/sections/FinalCta";
@@ -60,14 +61,13 @@ export default function LandingPage() {
 
       <main>
         <MainHero />
+        <AiRevolution />
         <SocialProof />
         <HowItWorks />
         <Portfolio />
         <ContactForm />
+        <VoiceAssistant />
         <Features />
-        {/* Pricing REMOVED from Home Agency page as requested */}
-        {/* ServicesList REMOVED from Home Agency page as requested */}
-        <AiBuilderSection />
         <AdsUpsell />
         <Faq />
         <FinalCta />

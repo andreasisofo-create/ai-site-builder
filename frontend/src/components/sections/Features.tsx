@@ -1,10 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Smartphone, PenTool, Server, Search, MessageSquare, Layout } from "lucide-react";
+import { Search, Mic, Image, Smartphone, PenTool, MessageSquare } from "lucide-react";
 import { useLanguage, translations } from "@/lib/i18n";
 
-const icons = [Layout, Smartphone, PenTool, Server, Search, MessageSquare];
+const icons = [Search, Mic, Image, Smartphone, PenTool, MessageSquare];
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },

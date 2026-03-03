@@ -1,18 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { Volume2, MessageCircle } from "lucide-react";
 import { useLanguage, translations } from "@/lib/i18n";
 
 export default function FinalCta() {
     const { language } = useLanguage();
     const txt = translations[language].finalCta;
-
-    const scrollToForm = () => {
-        document.getElementById("form-contatto")?.scrollIntoView({ behavior: "smooth" });
-    };
 
     return (
         <section className="py-24 relative overflow-hidden">
@@ -39,24 +33,10 @@ export default function FinalCta() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.1 }}
-                    className="text-xl text-white/90 mb-10 font-medium"
+                    className="text-xl text-white/90 mb-10 font-medium max-w-2xl mx-auto"
                 >
                     {txt.subtitle}
                 </motion.p>
-
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.15 }}
-                    className="mb-8"
-                >
-                    <a href="https://www.e-quipe.it" target="_blank" rel="noopener noreferrer" className="inline-block">
-                        <div className="relative w-36 h-10 mx-auto opacity-90 hover:opacity-100 transition-opacity">
-                            <Image src="/logo.png" alt="E-quipe" fill className="object-contain" />
-                        </div>
-                    </a>
-                </motion.div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -66,20 +46,24 @@ export default function FinalCta() {
                     className="flex flex-col sm:flex-row items-center justify-center gap-6"
                 >
                     <a
-                        href="https://www.e-quipe.it/it"
+                        href="https://www.e-quipe.it"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-8 py-4 bg-white text-[#0090FF] rounded-full font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl inline-block"
+                        className="px-8 py-4 bg-white text-[#0090FF] rounded-full font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl inline-flex items-center gap-2"
                     >
-                        Entra in E-quipe
+                        <Volume2 className="w-5 h-5" />
+                        {txt.cta}
                     </a>
 
-                    <Link
-                        href="/auth"
-                        className="flex items-center gap-2 text-white font-semibold hover:text-white/80 transition-colors group"
+                    <a
+                        href="https://wa.me/393899094183"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-white font-semibold hover:text-white/80 transition-colors group px-6 py-3 bg-white/10 rounded-full border border-white/20"
                     >
-                        {txt.ctaSecondary} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                        <MessageCircle className="w-5 h-5" />
+                        {txt.ctaSecondary}
+                    </a>
                 </motion.div>
             </div>
         </section>
