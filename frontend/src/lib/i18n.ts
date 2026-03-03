@@ -385,7 +385,7 @@ export const translations = {
         },
         {
           title: "3. Vedi e decidi",
-          description: "Ti mostriamo il risultato. Ti piace? Scegli un piano e vai online. Non ti piace? Nessun costo, nessun obbligo.",
+          description: "Ti mostriamo il risultato. Se ti piace, lo paghi.",
         },
       ],
       cta: "Contattaci ora — e' gratis",
@@ -475,7 +475,16 @@ export const translations = {
       badge: "Il mondo e' cambiato",
       title: "I tuoi clienti non usano piu' solo Google",
       description: "Sempre piu' persone chiedono direttamente a ChatGPT, Perplexity o Gemini:",
-      query: "\"migliore [attivita'] a [citta']\"",
+      queries: [
+        "\"miglior idraulico a Roma\"",
+        "\"ristorante romantico Milano centro\"",
+        "\"dentista bravo a Torino\"",
+        "\"avvocato divorzista Napoli\"",
+        "\"palestra con personal trainer vicino a me\"",
+        "\"parrucchiere uomo Bologna recensioni\"",
+        "\"commercialista per partita IVA Firenze\"",
+        "\"fotografo matrimonio Puglia prezzi\"",
+      ],
       punchline: "Se il tuo sito non e' costruito per essere letto e capito da queste AI, semplicemente non esisti.",
       cards: [
         { name: "ChatGPT", description: "450 milioni di utenti" },
@@ -1115,7 +1124,7 @@ export const translations = {
         },
         {
           title: "3. See and decide",
-          description: "We show you the result. Like it? Choose a plan and go live. Don't like it? No cost, no obligation.",
+          description: "We show you the result. If you like it, you pay.",
         },
       ],
       cta: "Contact us now — it's free",
@@ -1205,7 +1214,16 @@ export const translations = {
       badge: "The world has changed",
       title: "Your customers don't just use Google anymore",
       description: "More and more people ask ChatGPT, Perplexity or Gemini directly:",
-      query: "\"best [business] in [city]\"",
+      queries: [
+        "\"best plumber in Rome\"",
+        "\"romantic restaurant Milan downtown\"",
+        "\"good dentist in Turin\"",
+        "\"divorce lawyer Naples\"",
+        "\"gym with personal trainer near me\"",
+        "\"men's barber Bologna reviews\"",
+        "\"accountant for freelancers Florence\"",
+        "\"wedding photographer Puglia prices\"",
+      ],
       punchline: "If your site isn't built to be read and understood by these AIs, you simply don't exist.",
       cards: [
         { name: "ChatGPT", description: "450 million users" },

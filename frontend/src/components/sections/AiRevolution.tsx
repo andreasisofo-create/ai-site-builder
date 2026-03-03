@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Search, Brain } from "lucide-react";
 import { useLanguage, translations } from "@/lib/i18n";
 
@@ -10,6 +11,34 @@ const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0 },
 };
+
+function RotatingQuery({ queries }: { queries: string[] }) {
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIndex((prev) => (prev + 1) % queries.length);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, [queries.length]);
+
+    return (
+        <div className="h-10 relative overflow-hidden flex items-center justify-center">
+            <AnimatePresence mode="wait">
+                <motion.p
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                    className="text-xl font-semibold text-orange-400 italic absolute"
+                >
+                    {queries[index]}
+                </motion.p>
+            </AnimatePresence>
+        </div>
+    );
+}
 
 export default function AiRevolution() {
     const { language } = useLanguage();
@@ -51,7 +80,7 @@ export default function AiRevolution() {
                     {txt.title}
                 </motion.h2>
 
-                {/* Body */}
+                {/* Body with rotating queries */}
                 <motion.div
                     initial="hidden"
                     whileInView="visible"
@@ -60,9 +89,9 @@ export default function AiRevolution() {
                     transition={{ delay: 0.2 }}
                     className="text-center mb-12"
                 >
-                    <p className="text-lg text-gray-400 mb-2">{txt.description}</p>
-                    <p className="text-xl font-semibold text-orange-400 italic mb-4">{txt.query}</p>
-                    <p className="text-lg text-gray-300 font-medium">{txt.punchline}</p>
+                    <p className="text-lg text-gray-400 mb-4">{txt.description}</p>
+                    <RotatingQuery queries={txt.queries} />
+                    <p className="text-lg text-gray-300 font-medium mt-4">{txt.punchline}</p>
                 </motion.div>
 
                 {/* 3 AI Cards */}

@@ -62,11 +62,11 @@ export default function LandingPage() {
       <main>
         <MainHero />
         <AiRevolution />
+        <VoiceAssistant />
         <SocialProof />
         <HowItWorks />
         <Portfolio />
         <ContactForm />
-        <VoiceAssistant />
         <Features />
         <AdsUpsell />
         <Faq />
