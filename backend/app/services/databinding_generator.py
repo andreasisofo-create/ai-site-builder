@@ -2434,7 +2434,9 @@ RULES:
                 try:
                     from app.services.jinja_assembler import JinjaAssembler
                     jinja = JinjaAssembler()
-                    html_content = jinja.assemble(site_data)
+                    # Convert legacy site_data format to Jinja2 format
+                    jinja_data = self._convert_to_jinja_format(site_data)
+                    html_content = jinja.assemble(jinja_data)
                     logger.info("[DataBinding] Using Jinja2 assembler (v2)")
                 except Exception as jinja_err:
                     logger.warning(f"[DataBinding] Jinja2 assembler failed, falling back to legacy: {jinja_err}")
@@ -2638,6 +2640,74 @@ RULES:
     # =========================================================
     # Helpers
     # =========================================================
+    @staticmethod
+    def _convert_to_jinja_format(site_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert legacy site_data format to Jinja2 assembler format.
+
+        Legacy format (from _build_site_data):
+            {theme: {...}, components: [{variant_id, data}, ...], global: {...}}
+
+        Jinja2 format (expected by JinjaAssembler.assemble):
+            {head: {...}, sections: {section_key: {variant, data}, ...}}
+        """
+        from app.services.jinja_assembler import JinjaAssembler
+
+        theme = site_data.get("theme", {})
+        global_data = site_data.get("global", {})
+        components = site_data.get("components", [])
+
+        # Build head data (uppercase keys expected by _wrap_in_document)
+        head = {
+            "PRIMARY_COLOR": theme.get("primary_color", "#6366f1"),
+            "SECONDARY_COLOR": theme.get("secondary_color", "#1e40af"),
+            "ACCENT_COLOR": theme.get("accent_color", "#f59e0b"),
+            "BG_COLOR": theme.get("bg_color", "#ffffff"),
+            "BG_ALT_COLOR": theme.get("bg_alt_color", "#f8fafc"),
+            "TEXT_COLOR": theme.get("text_color", "#1e293b"),
+            "TEXT_MUTED_COLOR": theme.get("text_muted_color", "#64748b"),
+            "HEADING_FONT": theme.get("font_heading", "Playfair Display"),
+            "BODY_FONT": theme.get("font_body", "Inter"),
+            "BUSINESS_NAME": global_data.get("BUSINESS_NAME", ""),
+        }
+
+        # Build sections dict from components list
+        sections: Dict[str, Any] = {}
+        section_counts: Dict[str, int] = {}
+        for comp in components:
+            variant_id = comp.get("variant_id", "")
+            if not variant_id or variant_id.startswith("_"):
+                continue
+
+            # Extract section type from variant_id
+            section_type = variant_id.split("-")[0]
+            # Handle duplicate section types (about-01, about-02)
+            count = section_counts.get(section_type, 0)
+            section_key = section_type if count == 0 else f"{section_type}_{count}"
+            section_counts[section_type] = count + 1
+
+            # Normalize data: UPPERCASE → lowercase for Jinja2 templates
+            raw_data = comp.get("data", {})
+            normalized = JinjaAssembler.normalize_site_data(raw_data)
+
+            # Inject global data (lowercase)
+            normalized.setdefault("business_name", global_data.get("BUSINESS_NAME", ""))
+            normalized.setdefault("logo_url", global_data.get("LOGO_URL", ""))
+            normalized.setdefault("contact_phone", global_data.get("CONTACT_PHONE", ""))
+            normalized.setdefault("contact_email", global_data.get("CONTACT_EMAIL", ""))
+            normalized.setdefault("contact_address", global_data.get("CONTACT_ADDRESS", ""))
+            normalized.setdefault("current_year", global_data.get("CURRENT_YEAR", "2026"))
+
+            # Also inject theme colors for templates that reference them
+            normalized.setdefault("primary_color", head["PRIMARY_COLOR"])
+            normalized.setdefault("bg_color", head["BG_COLOR"])
+
+            sections[section_key] = {
+                "variant": variant_id,
+                "data": normalized,
+            }
+
+        return {"head": head, "sections": sections}
+
     def _build_site_data(
         self, theme, texts, selections, business_name, logo_url, contact_info, sections,
         template_style_id: Optional[str] = None,

@@ -114,7 +114,7 @@ class JinjaAssembler:
         self.env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(str(self._components_dir)),
             autoescape=jinja2.select_autoescape(["html"]),
-            undefined=jinja2.StrictUndefined,
+            undefined=jinja2.Undefined,  # Permissive: missing vars render as empty string
             trim_blocks=True,
             lstrip_blocks=True,
         )
