@@ -175,7 +175,7 @@ class Settings(BaseSettings):
 
     # Generation Pipeline
     GENERATION_PIPELINE: str = "databinding"  # "databinding" | "swarm" | "n8n"
-    USE_JINJA2_ASSEMBLER: bool = True  # v2 Jinja2 templates (with legacy fallback)
+    USE_JINJA2_ASSEMBLER: bool = False  # v2 Jinja2 templates (disabled: needs debugging)
     N8N_WEBHOOK_URL: str = ""  # n8n webhook URL for external generation
     N8N_CALLBACK_SECRET: str = ""  # Shared secret for n8n callback auth
     GENERATION_REFLEXION: bool = False  # Enable AI self-critique step for text quality
