@@ -41,3 +41,9 @@ boto3>=1.35.0
 
 # Image Generation (Flux via fal.ai)
 fal-client>=0.5.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Templating (v2 Jinja2 assembler)
+Jinja2>=3.1.0

@@ -1,0 +1,22 @@
+{# Footer Minimal: una riga compatta #}
+<footer id="footer" class="py-8 bg-[var(--color-bg-alt)] border-t border-[var(--color-text)]/5">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        {% if logo_url | is_valid_image %}
+        <img src="{{ logo_url }}" alt="" class="h-6 w-auto object-contain" loading="lazy">
+        {% endif %}
+        <span class="font-bold font-heading text-[var(--color-text)]">{{ business_name | default('', true) | e }}</span>
+        {% if footer_description %}
+        <span class="text-[var(--color-text-muted)] text-sm">&mdash; {{ footer_description | e }}</span>
+        {% endif %}
+      </div>
+      <nav class="flex items-center gap-6 text-sm">
+        {% for link in footer_links | default([{'label': 'Home', 'href': '#hero'}, {'label': 'Chi Siamo', 'href': '#about'}, {'label': 'Servizi', 'href': '#services'}, {'label': 'Contatti', 'href': '#contact'}], true) %}
+        <a href="{{ link.href | default('#', true) }}" class="text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">{{ link.label | default('', true) | e }}</a>
+        {% endfor %}
+      </nav>
+      <p class="text-[var(--color-text-muted)] text-sm">&copy; {{ current_year | default('2026', true) }} {{ business_name | default('', true) | e }}</p>
+    </div>
+  </div>
+</footer>

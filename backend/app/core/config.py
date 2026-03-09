@@ -163,6 +163,10 @@ class Settings(BaseSettings):
     R2_BUCKET_NAME: str = "site-builder-uploads"
     R2_PUBLIC_URL: str = ""         # Public URL prefix (e.g. "https://pub-xxx.r2.dev")
 
+    # Stock photo APIs (Pexels, Unsplash)
+    PEXELS_API_KEY: str = ""  # Pexels API key (https://www.pexels.com/api/)
+    UNSPLASH_ACCESS_KEY: str = ""  # Unsplash API key (https://unsplash.com/developers)
+
     # fal.ai (Flux image generation) - $0.025/img schnell, $0.04/img pro
     FAL_API_KEY: str = ""  # fal.ai API key (get from https://fal.ai/dashboard/keys)
 
@@ -171,6 +175,7 @@ class Settings(BaseSettings):
 
     # Generation Pipeline
     GENERATION_PIPELINE: str = "databinding"  # "databinding" | "swarm" | "n8n"
+    USE_JINJA2_ASSEMBLER: bool = False  # Feature flag for v2 Jinja2 templates
     N8N_WEBHOOK_URL: str = ""  # n8n webhook URL for external generation
     N8N_CALLBACK_SECRET: str = ""  # Shared secret for n8n callback auth
     GENERATION_REFLEXION: bool = False  # Enable AI self-critique step for text quality

@@ -1,0 +1,24 @@
+{# CTA Banner: full-width con gradiente #}
+<section id="cta" class="py-20 relative overflow-hidden" data-animate="section-reveal" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));">
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-80 h-80 bg-[var(--color-accent)] rounded-full blur-3xl"></div>
+  </div>
+  <div class="relative max-w-4xl mx-auto px-6 text-center">
+    <h2 class="text-3xl md:text-5xl font-bold font-heading text-white mb-6" data-animate="text-split" data-split-type="words">
+      {{ cta_title | default('', true) | e }}
+    </h2>
+    {% if cta_subtitle %}
+    <p class="text-lg text-white/80 mb-10 max-w-2xl mx-auto" data-animate="blur-slide" data-delay="0.2" data-duration="1">
+      {{ cta_subtitle | e }}
+    </p>
+    {% endif %}
+    {% if cta_button_text %}
+    <div data-animate="bounce-in" data-delay="0.4">
+      <a href="{{ cta_button_url | default('#contact', true) }}" data-animate="magnetic" class="inline-block px-10 py-4 bg-white text-[var(--color-primary)] font-bold rounded-xl hover:bg-white/90 transition-colors shadow-lg text-lg">
+        {{ cta_button_text | e }}
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>

@@ -116,6 +116,17 @@ def _fix_contrast(text_hex: str, bg_hex: str, min_ratio: float = 4.5) -> str:
         return text_hex
 
 
+# Minimum expected items per section type for REPEAT block validation
+_REPEAT_MIN_ITEMS = {
+    "services": 3,
+    "features": 3,
+    "testimonials": 2,
+    "pricing": 2,
+    "team": 2,
+    "faq": 3,
+    "menu": 3,
+}
+
 # Section labels for navigation (Italian)
 _SECTION_NAV_LABELS = {
     "hero": None,  # hero is the top of the page, no nav link needed
@@ -311,6 +322,92 @@ class TemplateAssembler:
             return "\n".join(fragments)
 
         return re.sub(pattern, expand_block, template, flags=re.DOTALL)
+
+    def _validate_repeat_results(
+        self,
+        template: str,
+        expanded_html: str,
+        variant_id: str,
+        data: Dict[str, Any],
+    ) -> tuple:
+        """Validate REPEAT block results after expansion.
+
+        Checks that sections with REPEAT blocks produced at least the minimum
+        expected items. Returns (validated_html, validation_issues) where
+        validation_issues is a list of dicts with 'section', 'expected', 'got'.
+
+        If a REPEAT block produced 0 items but the section header still exists,
+        removes the empty container div to prevent broken layout.
+        """
+        issues: List[Dict[str, Any]] = []
+
+        # Detect which section type this variant belongs to
+        section_type = ""
+        for stype in _REPEAT_MIN_ITEMS:
+            if variant_id and variant_id.startswith(stype):
+                section_type = stype
+                break
+
+        if not section_type:
+            return expanded_html, issues
+
+        min_items = _REPEAT_MIN_ITEMS[section_type]
+
+        # Find REPEAT keys in the original template
+        repeat_keys = re.findall(r'<!-- REPEAT:(\w+) -->', template)
+        if not repeat_keys:
+            return expanded_html, issues
+
+        for key in repeat_keys:
+            items = data.get(key)
+            if items is None:
+                # Case-insensitive fallback
+                for dk, dv in data.items():
+                    if dk.upper() == key.upper() and isinstance(dv, list):
+                        items = dv
+                        break
+
+            item_count = len(items) if isinstance(items, list) else 0
+
+            if item_count == 0:
+                logger.warning(
+                    "[Assembler] REPEAT validation: %s/%s produced 0 items "
+                    "(expected min %d). Removing empty container.",
+                    variant_id, key, min_items,
+                )
+                issues.append({
+                    "section": section_type,
+                    "repeat_key": key,
+                    "variant_id": variant_id,
+                    "expected": min_items,
+                    "got": 0,
+                    "action": "removed_empty_container",
+                })
+                # Remove the empty container: find the parent div/container that
+                # held the REPEAT block. The expanded HTML will have the section
+                # header but an empty grid/list. Remove empty grid containers.
+                expanded_html = re.sub(
+                    r'<div[^>]*(?:grid|flex|list)[^>]*>\s*</div>',
+                    '',
+                    expanded_html,
+                    flags=re.IGNORECASE,
+                )
+            elif item_count < min_items:
+                logger.warning(
+                    "[Assembler] REPEAT validation: %s/%s produced %d items "
+                    "(expected min %d).",
+                    variant_id, key, item_count, min_items,
+                )
+                issues.append({
+                    "section": section_type,
+                    "repeat_key": key,
+                    "variant_id": variant_id,
+                    "expected": min_items,
+                    "got": item_count,
+                    "action": "below_minimum",
+                })
+
+        return expanded_html, issues
 
     def _find_variant_file(self, variant_id: str) -> Optional[str]:
         """Finds the file path for a variant ID."""
@@ -537,9 +634,21 @@ class TemplateAssembler:
                 logger.warning(f"Template file '{file_path}' not found, skipping")
                 continue
 
-            # First expand repeats, then replace remaining placeholders
+            # First expand repeats, then validate and replace remaining placeholders
             section_html = self._expand_repeats(template, merged_data)
+            section_html, repeat_issues = self._validate_repeat_results(
+                template, section_html, variant_id, merged_data,
+            )
+            if repeat_issues:
+                # Store validation issues on site_data for downstream reporting
+                site_data.setdefault("_repeat_validation_issues", []).extend(repeat_issues)
             section_html = self._replace_placeholders(section_html, merged_data)
+
+            # Skip sections where all REPEAT blocks were empty (just structure, no content)
+            has_repeats = bool(re.search(r'<!-- REPEAT:\w+ -->', template))
+            if has_repeats and self._is_empty_section(section_html, variant_id):
+                logger.info(f"[Assembler] Skipping empty section '{variant_id}' — all REPEAT blocks produced no content")
+                continue
 
             # For footer sections, strip nav links to non-existent sections
             if variant_id and variant_id.startswith("footer"):
@@ -581,6 +690,9 @@ class TemplateAssembler:
 </body>
 </html>"""
 
+        # Post-process: hide empty/broken images to prevent white-space blocks
+        complete_html = self._inject_empty_image_fix(complete_html)
+
         # Post-process: apply animation map from Choreographer (if available)
         animation_map = site_data.get("_animation_map")
         if animation_map:
@@ -615,6 +727,71 @@ class TemplateAssembler:
             self._last_effects_used = {}
 
         return complete_html
+
+    def _is_empty_section(self, section_html: str, variant_id: str) -> bool:
+        """Check if a section is effectively empty after repeat expansion.
+
+        Returns True if the section has no meaningful text content (just HTML
+        structure with empty values). Skips hero/footer/nav sections which
+        don't rely on repeat blocks for their primary content.
+        """
+        # Never skip hero, footer, nav, or CTA sections
+        skip_prefixes = ("hero", "footer", "nav", "cta")
+        if variant_id:
+            for prefix in skip_prefixes:
+                if variant_id.startswith(prefix):
+                    return False
+
+        # Strip all HTML tags
+        visible = re.sub(r'<[^>]+>', ' ', section_html)
+        # Strip whitespace
+        visible = re.sub(r'\s+', ' ', visible).strip()
+
+        # If less than 20 chars of visible text, it's effectively empty
+        if len(visible) < 20:
+            return True
+
+        # Check if visible text is ONLY section headings (title/subtitle) with no list items
+        # Count how many distinct "words" there are — a heading-only section typically has < 15 words
+        words = visible.split()
+        if len(words) < 8:
+            return True
+
+        return False
+
+    def _inject_empty_image_fix(self, html: str) -> str:
+        """Inject CSS and JS to hide empty or broken images.
+
+        Prevents massive white-space blocks when image URLs are empty or missing.
+        CSS hides img[src=""] immediately; JS handles runtime errors and hides
+        parent wrappers that contain only the broken image.
+        """
+        empty_img_fix = """<style>
+img[src=""], img[src=" "], img:not([src]) { display: none !important; }
+img[src=""] + *, img:not([src]) + * { display: none !important; }
+</style>
+<script>
+document.querySelectorAll('img').forEach(function(img) {
+  if (!img.src || img.src === window.location.href || img.getAttribute('src') === '' || (img.getAttribute('src') || '').trim() === '') {
+    img.style.display = 'none';
+    var parent = img.parentElement;
+    if (parent && parent.children.length === 1) {
+      parent.style.display = 'none';
+    }
+  }
+  img.onerror = function() {
+    this.style.display = 'none';
+    var p = this.parentElement;
+    if (p && p.children.length <= 2) p.style.display = 'none';
+  };
+});
+</script>"""
+        # Inject before </body>
+        if "</body>" in html:
+            html = html.replace("</body>", empty_img_fix + "\n</body>")
+        else:
+            html += "\n" + empty_img_fix
+        return html
 
     def _apply_animation_map(self, html: str, animation_map: Dict[str, Any]) -> str:
         """Apply the Animation Choreographer's map to the assembled HTML.

@@ -120,173 +120,34 @@ except Exception:
 
 logger = logging.getLogger(__name__)
 
+# =========================================================
+# Config modules (extracted from this file for maintainability)
+# =========================================================
+from app.config.variety_pools import (
+    PERSONALITY_POOL, COLOR_MOOD_POOL, FONT_PAIRING_POOL,
+    FALLBACK_THEME_POOL, FEW_SHOT_EXAMPLES, _CATEGORY_FALLBACK_TEXTS,
+    ANIMATION_POOLS as _ANIMATION_POOLS,
+    STAGGER_VARIANTS as _STAGGER_VARIANTS,
+    EASE_VARIANTS as _EASE_VARIANTS,
+)
+from app.config.style_maps import (
+    CATEGORY_TONES, STYLE_TONE_MAP, STYLE_VARIANT_MAP,
+    STYLE_VARIANT_POOL, STYLE_CSS_PROFILES, SECTION_BG_ACCENTS,
+    BLUEPRINTS, HARMONY_GROUPS,
+    DEFAULT_SECTION_VARIANT_POOLS as _DEFAULT_SECTION_VARIANT_POOLS,
+)
+from app.config.stock_photos import (
+    _UNSPLASH_PHOTOS,
+    get_stock_photos as _get_stock_photos,
+)
+from app.config.section_schemas import (
+    SECTION_SCHEMAS as _SECTION_SCHEMAS,
+    SECTION_ARRAY_RULES as _SECTION_ARRAY_RULES,
+    KEY_SYNONYMS,
+)
+
+
 ProgressCallback = Optional[Callable[[int, str, Optional[Dict[str, Any]]], None]]
-
-# =========================================================
-# VARIETY ENGINE: Personality, mood, and creative direction pools.
-# Each generation randomly picks from these pools to ensure
-# every site feels unique even for the same template style.
-# =========================================================
-
-# Creative personality archetypes that shape ALL copy tone
-PERSONALITY_POOL = [
-    {
-        "name": "provocative",
-        "directive": "You are PROVOCATIVE. Challenge assumptions. Use contrasts, paradoxes, and unexpected juxtapositions. 'Il Caos che Crea Ordine'. Make the reader stop and think.",
-        "headline_style": "contrasting, paradoxical, thought-provoking",
-    },
-    {
-        "name": "poetic",
-        "directive": "You are POETIC. Write like a modern poet. Use metaphors drawn from nature, art, and human emotion. 'Dove il Vento Incontra la Pietra'. Rhythm matters — alternate short and flowing.",
-        "headline_style": "lyrical, metaphorical, evocative",
-    },
-    {
-        "name": "minimal",
-        "directive": "You are MINIMALIST. Less is everything. Each word is surgical. No adjective without purpose. 'Meno. Meglio.' White space is your friend. Think Dieter Rams meets copywriting.",
-        "headline_style": "ultra-short, punchy, stark",
-    },
-    {
-        "name": "bold",
-        "directive": "You are BOLD and LOUD. Capital energy. Confidence that borders on audacity. 'Noi Non Seguiamo Tendenze. Le Creiamo.' Every sentence should feel like a manifesto.",
-        "headline_style": "declarative, confident, manifesto-like",
-    },
-    {
-        "name": "storytelling",
-        "directive": "You are a STORYTELLER. Every section is a chapter. Create narrative tension — hint at a journey, a transformation, a before/after. 'C era un Vuoto. Poi Siamo Arrivati Noi.' Hook the reader emotionally.",
-        "headline_style": "narrative, hook-driven, emotional arc",
-    },
-    {
-        "name": "data-driven",
-        "directive": "You are DATA-DRIVEN. Lead with proof, numbers, evidence. '847 Progetti. Zero Compromessi.' Use specific numbers, percentages, timeframes. Credibility through precision.",
-        "headline_style": "numbers-first, evidence-based, precise",
-    },
-    {
-        "name": "emotional",
-        "directive": "You are DEEPLY EMOTIONAL. Write from the heart. What does the customer FEEL? Fear of missing out? Joy of discovery? Relief? 'Finalmente, Qualcuno Che Capisce.' Touch nerves.",
-        "headline_style": "empathetic, feelings-first, intimate",
-    },
-    {
-        "name": "visionary",
-        "directive": "You are a VISIONARY. Write from the future. Paint a picture of what could be. 'Il Futuro Non Aspetta. Noi Nemmeno.' Aspirational, forward-looking, transformative.",
-        "headline_style": "future-oriented, aspirational, transformative",
-    },
-    {
-        "name": "irreverent",
-        "directive": "You are IRREVERENT. Break the mold. Use unexpected humor, informal tone, and anti-corporate language. 'Basta Siti Noiosi.' Be the brand that winks at the reader.",
-        "headline_style": "witty, informal, rule-breaking",
-    },
-    {
-        "name": "luxurious",
-        "directive": "You are LUXURIOUS. Every word drips exclusivity. Understated elegance. 'Per Chi Non Si Accontenta.' Use words like esclusivo, raffinato, senza tempo, artigianale. Appeal to taste, not price.",
-        "headline_style": "refined, exclusive, understated elegance",
-    },
-    {
-        "name": "scientific",
-        "directive": "You are SCIENTIFIC. Precision meets clarity. Explain complex things simply. 'La Scienza Dietro Ogni Dettaglio.' Use structured arguments, cause-effect chains, and evidence.",
-        "headline_style": "analytical, precise, clarity-first",
-    },
-    {
-        "name": "warm",
-        "directive": "You are WARM and HUMAN. Write like a trusted friend giving honest advice. 'Ti Meriti di Meglio.' Conversational, genuine, zero corporate veneer. Use 'tu' form naturally.",
-        "headline_style": "conversational, genuine, friendly",
-    },
-]
-
-# Color mood presets — injected into theme prompt to push the AI toward diverse palettes
-COLOR_MOOD_POOL = [
-    {"mood": "Sunset Warmth", "hint": "Think golden hour: amber #F59E0B, terracotta #C2410C, warm cream #FFFBEB, deep mahogany #7C2D12. Warm, inviting, organic."},
-    {"mood": "Ocean Depth", "hint": "Think deep sea: teal #0D9488, navy #0C4A6E, seafoam #CCFBF1, coral accent #FB7185. Cool, professional, trustworthy."},
-    {"mood": "Forest Calm", "hint": "Think ancient forest: emerald #059669, sage #D1FAE5, bark brown #78350F, golden light #FDE68A. Natural, grounded, sustainable."},
-    {"mood": "Electric Night", "hint": "Think neon city: electric purple #A855F7, hot pink #EC4899, dark navy #0F172A, cyan spark #22D3EE. Bold, modern, energetic."},
-    {"mood": "Desert Minimal", "hint": "Think desert sand: sand #D4A574, terracotta #9A3412, bone white #FEF3C7, indigo sky #4338CA. Earthy, warm, Mediterranean."},
-    {"mood": "Nordic Clean", "hint": "Think Scandinavian: slate blue #475569, ice white #F8FAFC, pine green #166534, blush #FECDD3. Clean, crisp, functional."},
-    {"mood": "Art Deco Luxe", "hint": "Think 1920s glamour: gold #D4AF37, black #1C1917, cream #FFFDD0, emerald #047857. Opulent, dramatic, sophisticated."},
-    {"mood": "Candy Pop", "hint": "Think playful: bubblegum #F472B6, lavender #C4B5FD, mint #A7F3D0, sunny yellow #FDE047. Fun, youthful, creative."},
-    {"mood": "Monochrome Power", "hint": "Think high contrast: charcoal #1E293B, silver #CBD5E1, white #FFFFFF, one vivid accent (red #EF4444 OR orange #F97316). Powerful, dramatic, sophisticated."},
-    {"mood": "Terracotta Earth", "hint": "Think Italian countryside: burnt sienna #A0522D, olive #808000, cream #FAF0E6, dusty rose #BC8F8F. Warm, artisanal, authentic."},
-    {"mood": "Cyber Fresh", "hint": "Think tech startup: lime #84CC16, dark slate #1E1B4B, electric blue #3B82F6, white #F5F5F5. Fresh, innovative, dynamic."},
-    {"mood": "Royal Velvet", "hint": "Think regal: deep burgundy #831843, royal purple #581C87, gold #B8860B, ivory #FFFFF0. Rich, prestigious, commanding."},
-]
-
-# Extended font pairings pool — more options to reduce repetition
-FONT_PAIRING_POOL = [
-    {"heading": "Playfair Display", "body": "Inter", "personality": "ELEGANT/LUXURY", "url_h": "Playfair+Display:wght@400;600;700;800", "url_b": "Inter:wght@400;500;600"},
-    {"heading": "Space Grotesk", "body": "DM Sans", "personality": "MODERN TECH/SAAS", "url_h": "Space+Grotesk:wght@400;600;700", "url_b": "DM+Sans:wght@400;500;600"},
-    {"heading": "Sora", "body": "Inter", "personality": "CLEAN STARTUP", "url_h": "Sora:wght@400;600;700;800", "url_b": "Inter:wght@400;500;600"},
-    {"heading": "DM Serif Display", "body": "Plus Jakarta Sans", "personality": "EDITORIAL/BLOG", "url_h": "DM+Serif+Display:wght@400", "url_b": "Plus+Jakarta+Sans:wght@400;500;600;700"},
-    {"heading": "Outfit", "body": "DM Sans", "personality": "GEOMETRIC MODERN", "url_h": "Outfit:wght@400;600;700;800", "url_b": "DM+Sans:wght@400;500;600"},
-    {"heading": "Fraunces", "body": "Nunito Sans", "personality": "WARM ARTISAN", "url_h": "Fraunces:wght@400;600;700;800", "url_b": "Nunito+Sans:wght@400;500;600;700"},
-    {"heading": "Epilogue", "body": "Source Sans 3", "personality": "PROFESSIONAL", "url_h": "Epilogue:wght@400;600;700;800", "url_b": "Source+Sans+3:wght@400;500;600"},
-    {"heading": "Bricolage Grotesque", "body": "Inter", "personality": "PLAYFUL MODERN", "url_h": "Bricolage+Grotesque:wght@400;600;700;800", "url_b": "Inter:wght@400;500;600"},
-    {"heading": "Instrument Serif", "body": "Instrument Sans", "personality": "REFINED EDITORIAL", "url_h": "Instrument+Serif:wght@400", "url_b": "Instrument+Sans:wght@400;500;600;700"},
-    {"heading": "Libre Baskerville", "body": "Karla", "personality": "CLASSIC LITERARY", "url_h": "Libre+Baskerville:wght@400;700", "url_b": "Karla:wght@400;500;600;700"},
-    {"heading": "Unbounded", "body": "Figtree", "personality": "FUTURISTIC BOLD", "url_h": "Unbounded:wght@400;600;700;800;900", "url_b": "Figtree:wght@400;500;600;700"},
-    {"heading": "Cormorant Garamond", "body": "Lato", "personality": "TIMELESS LUXURY", "url_h": "Cormorant+Garamond:wght@400;600;700", "url_b": "Lato:wght@400;700"},
-    {"heading": "Archivo Black", "body": "Work Sans", "personality": "IMPACT INDUSTRIAL", "url_h": "Archivo+Black", "url_b": "Work+Sans:wght@400;500;600"},
-    {"heading": "Josefin Sans", "body": "Mulish", "personality": "SLEEK GEOMETRIC", "url_h": "Josefin+Sans:wght@400;600;700", "url_b": "Mulish:wght@400;500;600;700"},
-    {"heading": "Bitter", "body": "Poppins", "personality": "WARM PROFESSIONAL", "url_h": "Bitter:wght@400;600;700;800", "url_b": "Poppins:wght@400;500;600"},
-    {"heading": "Albert Sans", "body": "IBM Plex Sans", "personality": "SWISS CLEAN", "url_h": "Albert+Sans:wght@400;600;700;800", "url_b": "IBM+Plex+Sans:wght@400;500;600"},
-]
-
-# Fallback theme palettes — used when Kimi fails, each is distinct
-FALLBACK_THEME_POOL = [
-    {
-        "primary_color": "#7C3AED", "secondary_color": "#1E3A5F", "accent_color": "#F59E0B",
-        "bg_color": "#FAF7F2", "bg_alt_color": "#F0EDE6", "text_color": "#1A1A2E", "text_muted_color": "#6B7280",
-        "font_heading": "Space Grotesk", "font_heading_url": "Space+Grotesk:wght@400;600;700;800",
-        "font_body": "DM Sans", "font_body_url": "DM+Sans:wght@400;500;600",
-        "border_radius_style": "soft", "shadow_style": "soft", "spacing_density": "normal",
-    },
-    {
-        "primary_color": "#0D9488", "secondary_color": "#0C4A6E", "accent_color": "#FB7185",
-        "bg_color": "#F0FDFA", "bg_alt_color": "#CCFBF1", "text_color": "#0F172A", "text_muted_color": "#64748B",
-        "font_heading": "Sora", "font_heading_url": "Sora:wght@400;600;700;800",
-        "font_body": "Inter", "font_body_url": "Inter:wght@400;500;600",
-        "border_radius_style": "pill", "shadow_style": "soft", "spacing_density": "normal",
-    },
-    {
-        "primary_color": "#DC2626", "secondary_color": "#1E293B", "accent_color": "#FBBF24",
-        "bg_color": "#FFFBEB", "bg_alt_color": "#FEF3C7", "text_color": "#1C1917", "text_muted_color": "#78716C",
-        "font_heading": "DM Serif Display", "font_heading_url": "DM+Serif+Display:wght@400",
-        "font_body": "Plus Jakarta Sans", "font_body_url": "Plus+Jakarta+Sans:wght@400;500;600;700",
-        "border_radius_style": "sharp", "shadow_style": "none", "spacing_density": "compact",
-    },
-    {
-        "primary_color": "#059669", "secondary_color": "#78350F", "accent_color": "#F472B6",
-        "bg_color": "#ECFDF5", "bg_alt_color": "#D1FAE5", "text_color": "#064E3B", "text_muted_color": "#6B7280",
-        "font_heading": "Fraunces", "font_heading_url": "Fraunces:wght@400;600;700;800",
-        "font_body": "Nunito Sans", "font_body_url": "Nunito+Sans:wght@400;500;600;700",
-        "border_radius_style": "round", "shadow_style": "soft", "spacing_density": "generous",
-    },
-    {
-        "primary_color": "#7C2D12", "secondary_color": "#4338CA", "accent_color": "#22D3EE",
-        "bg_color": "#FEF3C7", "bg_alt_color": "#FDE68A", "text_color": "#1C1917", "text_muted_color": "#92400E",
-        "font_heading": "Playfair Display", "font_heading_url": "Playfair+Display:wght@400;600;700;800",
-        "font_body": "Lato", "font_body_url": "Lato:wght@400;700",
-        "border_radius_style": "soft", "shadow_style": "dramatic", "spacing_density": "generous",
-    },
-    {
-        "primary_color": "#A855F7", "secondary_color": "#EC4899", "accent_color": "#22D3EE",
-        "bg_color": "#0F172A", "bg_alt_color": "#1E293B", "text_color": "#F1F5F9", "text_muted_color": "#CBD5E1",
-        "font_heading": "Outfit", "font_heading_url": "Outfit:wght@400;600;700;800",
-        "font_body": "DM Sans", "font_body_url": "DM+Sans:wght@400;500;600",
-        "border_radius_style": "pill", "shadow_style": "dramatic", "spacing_density": "normal",
-    },
-    {
-        "primary_color": "#B8860B", "secondary_color": "#1C1917", "accent_color": "#047857",
-        "bg_color": "#FFFDD0", "bg_alt_color": "#FEF9C3", "text_color": "#1C1917", "text_muted_color": "#78716C",
-        "font_heading": "Cormorant Garamond", "font_heading_url": "Cormorant+Garamond:wght@400;600;700",
-        "font_body": "Lato", "font_body_url": "Lato:wght@400;700",
-        "border_radius_style": "soft", "shadow_style": "soft", "spacing_density": "generous",
-    },
-    {
-        "primary_color": "#831843", "secondary_color": "#581C87", "accent_color": "#FBBF24",
-        "bg_color": "#FFFFF0", "bg_alt_color": "#FEF3C7", "text_color": "#1E1B4B", "text_muted_color": "#6B7280",
-        "font_heading": "Libre Baskerville", "font_heading_url": "Libre+Baskerville:wght@400;700",
-        "font_body": "Karla", "font_body_url": "Karla:wght@400;500;600;700",
-        "border_radius_style": "round", "shadow_style": "none", "spacing_density": "normal",
-    },
-]
 
 
 def _pick_variety_context(category: str = "") -> Dict[str, Any]:
@@ -340,308 +201,6 @@ def _pick_variety_context(category: str = "") -> Dict[str, Any]:
     }
 
 
-# =========================================================
-# CATEGORY TONE PROFILES
-# Injected into _generate_texts() prompt so the AI adapts
-# its voice to the business sector, not just the personality.
-# =========================================================
-CATEGORY_TONES: Dict[str, str] = {
-    "restaurant": (
-        "TONO: Sensoriale, intimo, poetico. Evoca profumi, consistenze, luci soffuse. "
-        "Scrivi come se il lettore potesse assaggiare le parole. Usa sinestesie "
-        "(\"un sapore che suona come jazz\"). Il cibo e' memoria, identita', rituale."
-    ),
-    "saas": (
-        "TONO: Affilato, sicuro, orientato ai risultati. Numeri specifici, "
-        "contrasti prima/dopo, promesse misurabili. Niente buzzword vuote: "
-        "ogni frase deve rispondere a 'perche' dovrei scegliere voi?'. "
-        "Pensa a Stripe, Linear, Vercel — copy che taglia."
-    ),
-    "portfolio": (
-        "TONO: Autoriale, visionario, leggermente enigmatico. "
-        "Ogni progetto e' una storia, non una voce di catalogo. "
-        "Parla del PERCHE', non del cosa. Il designer/artista ha una filosofia, "
-        "non solo competenze. Ispira curiosita'."
-    ),
-    "ecommerce": (
-        "TONO: Desiderio, identita', trasformazione. Non vendi prodotti, "
-        "vendi chi il cliente DIVENTA. Linguaggio aspirazionale ma autentico. "
-        "Dettagli sensoriali sui materiali, la fattura, l'esperienza di unboxing. "
-        "Urgenza sottile, mai aggressiva."
-    ),
-    "business": (
-        "TONO: Autorevole, visionario, concreto. Bilancia fiducia e ambizione. "
-        "Numeri che dimostrano, non che vantano. Parla del futuro del cliente, "
-        "non del passato dell'azienda. Ogni frase costruisce credibilita' "
-        "attraverso specificita', non attraverso aggettivi."
-    ),
-    "blog": (
-        "TONO: Intellettuale, curioso, provocatorio. Ogni titolo e' una domanda "
-        "che il lettore non sapeva di avere. Crea tensione tra il conosciuto e "
-        "l'inaspettato. Il blog non informa — sfida, reinterpreta, illumina."
-    ),
-    "event": (
-        "TONO: Elettrico, urgente, esperienziale. Il lettore deve sentire "
-        "l'energia PRIMA di arrivare. FOMO strategico: non 'partecipa', "
-        "ma 'non puoi permetterti di perdere questo'. Date, numeri, "
-        "countdown. Ogni parola accelera il battito."
-    ),
-    "custom": (
-        "TONO: Adatta il tono al tipo di attivita' descritto. "
-        "Se non e' chiaro, usa un mix di autorevolezza e calore. "
-        "Copy che potrebbe vincere un Awwwards: specifico, ritmato, memorabile."
-    ),
-}
-
-# =========================================================
-# STYLE_TONE_MAP: Per-style copywriting directives.
-# While CATEGORY_TONES sets the broad sector voice (restaurant,
-# saas, etc.), this map overrides/refines the tone for each
-# specific template sub-style. "restaurant-elegant" should read
-# COMPLETELY different from "restaurant-cozy".
-# Injected into BOTH _generate_texts() and _generate_theme()
-# so that fonts, colors, AND copy all speak the same language.
-# =========================================================
-STYLE_TONE_MAP: Dict[str, Dict[str, str]] = {
-    "restaurant-elegant": {
-        "voice": (
-            "VOCE: Formale, raffinata, sussurrata. Come un maitre d'hotel che ti accoglie per nome. "
-            "Frasi lunghe ed eleganti, vocabolario ricercato (degustazione, mise en place, terroir). "
-            "Mai esclamazioni, mai punti esclamativi. Il lusso non grida."
-        ),
-        "headlines": "Titoli evocativi e poetici. Metafore sensoriali. MAX 5 parole. Es: 'Dove il Gusto Diventa Arte'.",
-        "theme_hint": (
-            "Palette calda e profonda: bordeaux, oro antico, crema avorio. Font serif classico (Playfair, Cormorant). "
-            "shadow_style: soft. spacing_density: generous. border_radius_style: soft."
-        ),
-    },
-    "restaurant-cozy": {
-        "voice": (
-            "VOCE: Calda, familiare, come una nonna che ti invita a sederti. Tono colloquiale ma mai sciatto. "
-            "Frasi brevi e affettuose. Parole che sanno di casa: 'fatto a mano', 'ricetta della nonna', "
-            "'come una volta'. Accogliente, mai formale."
-        ),
-        "headlines": "Titoli che sorridono. Tono amichevole, quasi intimo. Es: 'A Casa Nostra, Si Mangia Col Cuore'.",
-        "theme_hint": (
-            "Colori caldi e terrosi: terracotta, arancio tenue, verde salvia, beige. Font morbido e arrotondato "
-            "(Nunito, Quicksand heading). shadow_style: soft. spacing_density: normal. border_radius_style: round."
-        ),
-    },
-    "restaurant-modern": {
-        "voice": (
-            "VOCE: Tagliente, contemporanea, magazine-style. Come Bon Appetit o Eater. "
-            "Frasi corte e d'impatto. Giustapposizioni: 'Tradizione. Rivista.' — 'Fuoco. Tecnica. Ossessione.' "
-            "Zero nostalgia, tutta innovazione. Food come design."
-        ),
-        "headlines": "Titoli brutali e minimali. Una parola. Un concetto. Es: 'Fuoco Vivo' o 'Crudo. Puro. Nostro.'.",
-        "theme_hint": (
-            "Palette ad alto contrasto: nero/bianco con un accento vivace (rosso fuoco, lime). Font sans-serif "
-            "geometrico bold (Space Grotesk, Archivo). shadow_style: none. spacing_density: compact. "
-            "border_radius_style: sharp."
-        ),
-    },
-    "saas-gradient": {
-        "voice": (
-            "VOCE: Energica, futuristica, tech-ottimista. Come la landing page di Vercel o Linear. "
-            "Promesse audaci con numeri specifici. Linguaggio da startup che sta cambiando il mondo. "
-            "Verbi d'azione forti: 'accelera', 'scala', 'automatizza', 'domina'."
-        ),
-        "headlines": "Titoli brevi e potenti con numeri o verbi d'azione. Es: '10x Piu' Veloce' o 'Il Futuro e' Adesso'.",
-        "theme_hint": (
-            "Palette scura con gradienti vibranti: deep purple→electric blue, dark bg con glow neon. "
-            "Font geometrico moderno (Sora, Inter heading bold). shadow_style: dramatic. "
-            "spacing_density: normal. border_radius_style: soft."
-        ),
-    },
-    "saas-clean": {
-        "voice": (
-            "VOCE: Chiara, diretta, senza fronzoli. Come Notion o Stripe. Ogni parola ha uno scopo. "
-            "Niente metafore eccessive — chiarezza sopra tutto. Il prodotto parla da solo. "
-            "Benefici misurabili, frasi che un CEO condividerebbe su LinkedIn."
-        ),
-        "headlines": "Titoli funzionali ma eleganti. Chiarezza > creativita'. Es: 'Tutto in Un Solo Strumento'.",
-        "theme_hint": (
-            "Palette luminosa e pulita: bianco/grigio chiaro con un primary vibrante (blue, indigo). "
-            "Font sans-serif pulito (Inter, Plus Jakarta Sans). shadow_style: soft. "
-            "spacing_density: normal. border_radius_style: soft."
-        ),
-    },
-    "saas-dark": {
-        "voice": (
-            "VOCE: Tecnica, affilata, da developer-tool. Come GitHub, Raycast, o Warp terminal. "
-            "Gergo tech accettato. Poche parole, massima densita' informativa. "
-            "Copy che sembra codice: preciso, senza sprechi. Mai 'soluzione innovativa' — "
-            "piuttosto 'build, ship, iterate'."
-        ),
-        "headlines": "Titoli ultra-minimali, quasi comandi. Es: 'Ship Faster.' o 'Zero Config. Full Power.'.",
-        "theme_hint": (
-            "Palette dark-mode: charcoal/navy profondo, accento neon (cyan, green, amber). "
-            "Font monospace o geometric (JetBrains Mono heading, Space Grotesk). shadow_style: none. "
-            "spacing_density: compact. border_radius_style: sharp."
-        ),
-    },
-    "portfolio-gallery": {
-        "voice": (
-            "VOCE: Visiva, minimale, ogni parola e' didascalia. Come un catalogo d'arte o Behance. "
-            "I progetti parlano — il testo accompagna, non domina. Frasi poetiche e frammentarie. "
-            "Il designer non spiega, mostra. 'Esplora il progetto' non 'Guarda i nostri lavori'."
-        ),
-        "headlines": "Titoli evocativi e astratti. Es: 'Forme che Parlano' o 'Spazio. Luce. Intenzione.'.",
-        "theme_hint": (
-            "Palette neutra con un accento deciso: bianco/nero + un colore signature (rosso, electric blue). "
-            "Font display con carattere (Instrument Serif, Space Grotesk). shadow_style: none. "
-            "spacing_density: generous. border_radius_style: sharp."
-        ),
-    },
-    "portfolio-minimal": {
-        "voice": (
-            "VOCE: Ultra-ridotta, zen-like. Come il portfolio di un designer svizzero. "
-            "Ogni parola e' pesata come in un haiku. Nessun aggettivo superfluo. "
-            "Il vuoto parla piu' del pieno. Bio in terza persona, distaccata e autorevole."
-        ),
-        "headlines": "Titoli di una o due parole. Es: 'Design.' o 'Meno, Meglio.'.",
-        "theme_hint": (
-            "Palette monocromatica: bianco purissimo o nero profondo, quasi nessun colore. "
-            "Font sans-serif raffinato con molto tracking (Epilogue, Albert Sans). shadow_style: none. "
-            "spacing_density: generous. border_radius_style: sharp."
-        ),
-    },
-    "portfolio-creative": {
-        "voice": (
-            "VOCE: Esplosiva, giocosa, anti-convenzionale. Come un manifesto artistico. "
-            "Rompi le regole della punteggiatura. Mix di lingue accettato. Emotivo e viscerale. "
-            "Il creativo non e' un fornitore — e' un visionario che trasforma brand."
-        ),
-        "headlines": "Titoli provocatori, anche irriverenti. Es: 'Facciamo Cose Belle (Sul Serio)' o 'Caos Calcolato'.",
-        "theme_hint": (
-            "Palette audace e inaspettata: accostamenti non convenzionali (lime+magenta, coral+indigo). "
-            "Font display grassissimo (Unbounded, Archivo Black). shadow_style: dramatic. "
-            "spacing_density: normal. border_radius_style: round."
-        ),
-    },
-    "ecommerce-modern": {
-        "voice": (
-            "VOCE: Aspirazionale ma accessibile. Come Glossier o Everlane. "
-            "Il prodotto diventa lifestyle. Linguaggio sensoriale sui materiali e l'esperienza. "
-            "Urgenza morbida: 'Edizione limitata' non 'COMPRA ORA'. "
-            "Ogni descrizione e' una micro-storia."
-        ),
-        "headlines": "Titoli che creano desiderio. Es: 'Progettato per Chi Non si Accontenta'.",
-        "theme_hint": (
-            "Palette lifestyle: toni neutri caldi (blush, sand, sage) con primary deciso. "
-            "Font moderno elegante (DM Sans, Plus Jakarta Sans). shadow_style: soft. "
-            "spacing_density: normal. border_radius_style: soft."
-        ),
-    },
-    "ecommerce-luxury": {
-        "voice": (
-            "VOCE: Esclusiva, sussurrata, da maison. Come Hermes o Bottega Veneta. "
-            "Mai vendere — invitare. Mai 'economico' — 'accessibile'. Mai 'prodotto' — 'creazione'. "
-            "Frasi brevi, peso specifico altissimo. L'understatement e' il vero lusso."
-        ),
-        "headlines": "Titoli che non spiegano, evocano. Es: 'L'Arte del Dettaglio' o 'Senza Tempo'.",
-        "theme_hint": (
-            "Palette lusso: nero/champagne/oro, fondi scuri con tipografia chiara. "
-            "Font serif sofisticato (Playfair Display, DM Serif Display). shadow_style: dramatic. "
-            "spacing_density: generous. border_radius_style: soft."
-        ),
-    },
-    "business-corporate": {
-        "voice": (
-            "VOCE: Autorevole, strutturata, da report annuale di alto livello. Come McKinsey o Deloitte. "
-            "Dati concreti, case study impliciti, linguaggio che ispira fiducia istituzionale. "
-            "Mai informale. Il 'noi' aziendale e' forte e coeso."
-        ),
-        "headlines": "Titoli che comunicano solidita' e visione. Es: 'Costruiamo il Futuro delle Imprese'.",
-        "theme_hint": (
-            "Palette professionale: navy, grigio-blu, bianco. Accento corporate (teal o gold). "
-            "Font serif autorevole per heading (DM Serif Display), sans-serif per body. "
-            "shadow_style: soft. spacing_density: normal. border_radius_style: soft."
-        ),
-    },
-    "business-trust": {
-        "voice": (
-            "VOCE: Empatica, rassicurante, concreta. Come un consulente che ti prende per mano. "
-            "Meno 'noi siamo bravi' e piu' 'tu otterrai questo'. Focus su risultati tangibili. "
-            "Testimonial e numeri costruiscono credibilita' naturale."
-        ),
-        "headlines": "Titoli orientati al risultato del cliente. Es: 'Il Tuo Successo e' la Nostra Misura'.",
-        "theme_hint": (
-            "Palette calda e affidabile: blu medio, verde, terra di Siena. Sfondo caldo (cream/ivory). "
-            "Font amichevole ma professionale (Source Serif, Lora heading). shadow_style: soft. "
-            "spacing_density: normal. border_radius_style: round."
-        ),
-    },
-    "business-fresh": {
-        "voice": (
-            "VOCE: Giovane, energica, startup-vibes. Come Mailchimp o Slack. "
-            "Tono conversazionale, quasi amichevole. Emoji strategici OK. "
-            "Humor sottile accettato. Parole corte, frasi che rimbalzano. "
-            "Il business e' serio, il tono no."
-        ),
-        "headlines": "Titoli giocosi e diretti. Es: 'Basta Fogli Excel. Davvero.' o 'Lavora Meglio, Non di Piu''.",
-        "theme_hint": (
-            "Palette vivace e pop: primary brillante (viola, coral, teal), sfondo chiaro e fresco. "
-            "Font sans-serif rotondo e friendly (Nunito, Outfit). shadow_style: soft. "
-            "spacing_density: normal. border_radius_style: round."
-        ),
-    },
-    "blog-editorial": {
-        "voice": (
-            "VOCE: Intellettuale, narrativa, da rivista letteraria. Come The Atlantic o Il Post. "
-            "Frasi lunghe e ben costruite. Citazioni, domande retoriche, aperture in medias res. "
-            "Il blog non informa — crea pensiero. Ogni articolo e' un mini-saggio."
-        ),
-        "headlines": "Titoli che pongono domande o provocano. Es: 'Perche' Nessuno Parla di Questo?' o 'La Fine di un'Era'.",
-        "theme_hint": (
-            "Palette editoriale: fondi carta (ivory, linen), testo scuro ricco, accento minimo. "
-            "Font serif da rivista (Instrument Serif, Lora heading). shadow_style: none. "
-            "spacing_density: generous. border_radius_style: sharp."
-        ),
-    },
-    "blog-dark": {
-        "voice": (
-            "VOCE: Intima, notturna, da blog tech/culture. Come The Verge o Wired dark mode. "
-            "Tono informato e opinionated. Mix di analisi tecnica e storytelling. "
-            "Linguaggio contemporaneo, riferimenti culturali, frasi nette e taglienti."
-        ),
-        "headlines": "Titoli d'impatto, stile news/tech. Es: 'L'Algoritmo Che Cambia Tutto' o 'Deep Dive: Oltre il Codice'.",
-        "theme_hint": (
-            "Palette dark: background scuro (charcoal, navy), testo chiaro, accento neon vivace. "
-            "Font moderno e leggibile (Space Grotesk, Sora). shadow_style: soft. "
-            "spacing_density: normal. border_radius_style: soft."
-        ),
-    },
-    "event-vibrant": {
-        "voice": (
-            "VOCE: Elettrica, urgente, da festival poster. Come Primavera Sound o Web Summit. "
-            "FOMO puro. Countdown implicito. Numeri ovunque (speaker, ore, partecipanti). "
-            "Frasi brevissime. Imperativi. 'Non Mancare.' 'Ci Vediamo Li'.' "
-            "L'energia deve uscire dallo schermo."
-        ),
-        "headlines": "Titoli da poster: grandi, audaci, 3 parole max. Es: 'L'Evento dell'Anno' o 'Preparati.'.",
-        "theme_hint": (
-            "Palette esplosiva: gradienti neon, accostamenti elettrici (magenta+cyan, arancio+viola). "
-            "Font display gigantesco (Unbounded, Space Grotesk 900). shadow_style: dramatic. "
-            "spacing_density: compact. border_radius_style: round."
-        ),
-    },
-    "event-minimal": {
-        "voice": (
-            "VOCE: Elegante, curata, da invito esclusivo. Come un vernissage o un TED Talk. "
-            "Poche parole, massima eleganza. L'evento parla di qualita', non di quantita'. "
-            "Dettagli pratici (data, luogo, orario) presentati con grazia tipografica."
-        ),
-        "headlines": "Titoli raffinati e puliti. Es: 'Un Incontro di Menti' o '12 Aprile. Milano. Sii Presente.'.",
-        "theme_hint": (
-            "Palette sofisticata: bianco/nero con un accento metallico (oro, argento). "
-            "Font serif elegante (Cormorant, Instrument Serif). shadow_style: none. "
-            "spacing_density: generous. border_radius_style: sharp."
-        ),
-    },
-}
-
-
 def _get_style_tone(template_style_id: Optional[str]) -> str:
     """Build style-specific tone directive for prompt injection.
 
@@ -675,344 +234,6 @@ def _get_style_theme_hint(template_style_id: Optional[str]) -> str:
         f"{tone['theme_hint']}\n"
         f"=== END STYLE IDENTITY ===\n"
     )
-
-
-# =========================================================
-# FEW-SHOT EXAMPLES: Award-winning Italian copy per category.
-# Injected into _generate_texts() so the AI sees CONCRETE
-# examples of the quality level expected. 2 examples each.
-# =========================================================
-FEW_SHOT_EXAMPLES: Dict[str, List[Dict[str, Any]]] = {
-    "restaurant": [
-        {
-            "hero_title": "Dove il Tempo si Ferma a Tavola",
-            "hero_subtitle": (
-                "Ogni piatto nasce da un dialogo silenzioso tra la terra e le mani "
-                "dello chef. Non serviamo cena — creiamo il ricordo che racconterai domani. "
-                "Stagionalita' radicale, zero compromessi."
-            ),
-            "service_title": "Il Rituale del Fuoco",
-            "service_description": (
-                "Cotture lente su brace di quercia centenaria. 14 ore di pazienza per "
-                "trasformare un taglio umile in qualcosa che non dimenticherai. La fiamma "
-                "non ha fretta, e nemmeno noi."
-            ),
-            "testimonial": (
-                "Ho chiuso gli occhi al primo boccone e ho rivisto la cucina di mia nonna "
-                "a Matera. Non succedeva da vent'anni. Mia moglie dice che ho pianto — "
-                "io dico che era il pepe. Ci torniamo ogni anniversario, ormai e' tradizione."
-            ),
-        },
-        {
-            "hero_title": "Sapori Che Raccontano Storie",
-            "hero_subtitle": (
-                "Trentadue ingredienti locali, sette fornitori che conosciamo per nome, "
-                "un menu che cambia quando cambia il vento. Cucina d'autore che sa di casa, "
-                "non di pretesa."
-            ),
-            "service_title": "L'Orto Segreto",
-            "service_description": (
-                "A 400 metri dal ristorante, il nostro orto biodinamico detta il menu. "
-                "Quello che raccogliamo la mattina, lo serviamo la sera. Nessun intermediario "
-                "tra la radice e il tuo piatto."
-            ),
-            "testimonial": (
-                "Siamo arrivati per caso, sotto la pioggia, senza prenotazione. Tre ore dopo "
-                "stavamo brindando col sommelier come vecchi amici. Il risotto allo zafferano "
-                "dell'orto? Ancora ci penso, a distanza di sei mesi."
-            ),
-        },
-    ],
-    "saas": [
-        {
-            "hero_title": "Meno Caos. Piu' Risultati.",
-            "hero_subtitle": (
-                "Il tuo team perde 23 ore a settimana in task ripetitivi. "
-                "Noi le restituiamo. Automazione intelligente che si adatta al tuo flusso, "
-                "non il contrario. Setup in 4 minuti, ROI dal primo giorno."
-            ),
-            "service_title": "Automazione Predittiva",
-            "service_description": (
-                "L'AI analizza 10.000 pattern nel tuo workflow e anticipa i colli di bottiglia "
-                "prima che esistano. Non reagire ai problemi — previenili. "
-                "I nostri clienti riducono i ritardi del 67% nel primo trimestre."
-            ),
-            "testimonial": (
-                "Prima gestivamo 200 ticket al giorno con 8 persone. Ora ne gestiamo 340 "
-                "con 5. Non e' magia — e' che finalmente il software lavora PER noi, "
-                "non CONTRO di noi. Il team e' tornato a fare il lavoro che conta."
-            ),
-        },
-        {
-            "hero_title": "847 Progetti. Zero Compromessi.",
-            "hero_subtitle": (
-                "Ogni feature nasce da un problema reale, non da una slide. "
-                "Dashboard che parla la tua lingua, integrazioni che funzionano al primo click, "
-                "supporto che risponde in 90 secondi. Provalo gratis, poi decidi."
-            ),
-            "service_title": "Dashboard Viva",
-            "service_description": (
-                "Dimentica i report statici di fine mese. La nostra dashboard si aggiorna "
-                "in tempo reale, evidenzia anomalie con alert intelligenti e suggerisce "
-                "azioni correttive. I tuoi dati, finalmente, parlano chiaro."
-            ),
-            "testimonial": (
-                "Ho convinto il CEO con un solo screenshot della dashboard. In 30 secondi "
-                "ha visto quello che prima richiedeva 3 riunioni e un foglio Excel da incubo. "
-                "Budget approvato in giornata — mai successo prima."
-            ),
-        },
-    ],
-    "portfolio": [
-        {
-            "hero_title": "Ogni Pixel Ha un Perche'",
-            "hero_subtitle": (
-                "Non creo siti web. Creo sistemi visivi che trasformano visitatori distratti "
-                "in clienti convinti. 12 anni di ossessione per il dettaglio, "
-                "47 brand reinventati, zero template riciclati."
-            ),
-            "service_title": "Brand Identity Radicale",
-            "service_description": (
-                "Parto da chi sei veramente, non da chi vorresti sembrare. Interviste, "
-                "analisi competitiva, moodboard che sfidano — e poi il logo arriva come "
-                "una conseguenza naturale, non come una decorazione."
-            ),
-            "testimonial": (
-                "Gli ho detto 'voglio qualcosa di diverso' aspettandomi il solito moodboard "
-                "su Pinterest. Mi ha presentato un manifesto di 12 pagine sulla mia azienda "
-                "che nemmeno io avrei saputo scrivere. Il rebranding ha aumentato "
-                "le conversioni del 180%."
-            ),
-        },
-        {
-            "hero_title": "Design Senza Compromessi",
-            "hero_subtitle": (
-                "Tre regole: funziona, emoziona, dura. Il bello senza sostanza e' decorazione. "
-                "La sostanza senza bellezza e' un foglio Excel. "
-                "Io cerco il punto esatto dove si incontrano."
-            ),
-            "service_title": "UX Che Respira",
-            "service_description": (
-                "Ogni interfaccia che disegno viene testata con utenti reali prima di "
-                "vedere la luce. Prototipi interattivi, A/B test, heatmap. "
-                "Il design bello che nessuno usa e' solo arte — io faccio strumenti."
-            ),
-            "testimonial": (
-                "Il nostro e-commerce aveva un tasso di abbandono carrello del 78%. "
-                "Dopo il redesign, e' sceso al 31%. Non ha cambiato i colori — ha ripensato "
-                "l'intero percorso dell'utente. Numeri che parlano."
-            ),
-        },
-    ],
-    "ecommerce": [
-        {
-            "hero_title": "Non Compri un Oggetto. Scegli Chi Vuoi Essere.",
-            "hero_subtitle": (
-                "Ogni pezzo della collezione nasce da 200 ore di artigianato e una domanda: "
-                "'Lo terrai per sempre?'. Materiali che invecchiano con grazia, "
-                "design che non segue le stagioni ma le anticipa."
-            ),
-            "service_title": "Pelle Che Racconta",
-            "service_description": (
-                "Conceria toscana, concia vegetale, 18 mesi di stagionatura. "
-                "Ogni borsa porta i segni del suo viaggio — graffi, patina, carattere. "
-                "Non la sostituirai. La erediterai."
-            ),
-            "testimonial": (
-                "Ho aperto la scatola e ho sentito l'odore del cuoio prima ancora di vederla. "
-                "La uso ogni giorno da 14 mesi e la pelle ha preso un colore ambrato "
-                "che non esisteva all'inizio. E' diventata piu' bella con il tempo, come "
-                "dovrebbero essere tutte le cose."
-            ),
-        },
-        {
-            "hero_title": "Il Lusso e' nella Scelta Consapevole",
-            "hero_subtitle": (
-                "Zero fast fashion, zero sovrapproduzione. Edizioni limitate da 50 pezzi, "
-                "tessuti certificati, filiera trasparente dal filo al bottone. "
-                "Quando scegli qualita', il pianeta ringrazia."
-            ),
-            "service_title": "Spedizione Rituale",
-            "service_description": (
-                "Packaging in carta riciclata con sigillo in ceralacca, biglietto scritto "
-                "a mano, sacchetto in cotone organico. L'esperienza inizia "
-                "dall'apertura della scatola, non dall'indossare il capo."
-            ),
-            "testimonial": (
-                "Mia figlia mi ha chiesto perche' quella maglietta costava 'cosi' tanto'. "
-                "Le ho fatto toccare il tessuto, leggere l'etichetta, sentire la differenza. "
-                "Ora e' lei che non vuole piu' comprare fast fashion. "
-                "Investimento migliore della mia vita."
-            ),
-        },
-    ],
-    "business": [
-        {
-            "hero_title": "Costruiamo il Domani. Oggi.",
-            "hero_subtitle": (
-                "In 15 anni abbiamo accompagnato 340 aziende dalla visione all'esecuzione. "
-                "Non vendiamo consulenza — costruiamo ponti tra dove sei "
-                "e dove il mercato ti aspetta. Risultati misurabili, non presentazioni."
-            ),
-            "service_title": "Strategia Operativa",
-            "service_description": (
-                "Basta piani strategici che finiscono in un cassetto. Il nostro metodo "
-                "traduce la visione in sprint da 90 giorni con KPI chiari, owner definiti "
-                "e review settimanali. La strategia funziona solo se cammina."
-            ),
-            "testimonial": (
-                "Avevamo provato 3 societa' di consulenza in 5 anni. Slide bellissime, "
-                "risultati zero. Questi sono entrati in azienda il lunedi' e il venerdi' "
-                "avevamo gia' il primo processo ottimizzato. Il fatturato e' cresciuto "
-                "del 34% in 8 mesi. Niente magia — metodo."
-            ),
-        },
-        {
-            "hero_title": "Dove Nasce il Cambiamento",
-            "hero_subtitle": (
-                "Il mercato non aspetta chi esita. Analisi predittiva, "
-                "trasformazione digitale e un team che ha detto 'no' a 200 clienti "
-                "per dire 'si' a quelli giusti. La tua crescita e' la nostra reputazione."
-            ),
-            "service_title": "Digital Acceleration",
-            "service_description": (
-                "Audit completo in 72 ore, roadmap personalizzata in 2 settimane, "
-                "primi risultati in 30 giorni. Non digitalizziamo processi rotti — "
-                "li ripensiamo da zero e poi li automatizziamo."
-            ),
-            "testimonial": (
-                "Il nostro settore era fermo agli anni '90. Processi cartacei, Excel ovunque, "
-                "decisioni a intuito. In 6 mesi ci hanno portato nel 2024. "
-                "I dipendenti che resistevano al cambiamento ora sono i piu' entusiasti. "
-                "Questo vale piu' di qualsiasi ROI."
-            ),
-        },
-    ],
-    "blog": [
-        {
-            "hero_title": "Le Idee Che Cambiano le Regole",
-            "hero_subtitle": (
-                "Non un altro blog di settore. Un laboratorio di pensiero dove "
-                "le certezze vengono smontate, le tendenze anticipate e le domande "
-                "scomode trovano risposte scomode. Leggi solo se vuoi cambiare idea."
-            ),
-            "service_title": "Deep Dive Settimanale",
-            "service_description": (
-                "Ogni giovedi', un'analisi di 2.000 parole che spacca un tema in due. "
-                "Dati originali, interviste esclusive, zero riciclo di comunicati stampa. "
-                "Il tipo di articolo che salvi nei preferiti e condividi con il team."
-            ),
-            "testimonial": (
-                "Ho smesso di leggere newsletter due anni fa. Questa e' l'unica che apro "
-                "il giovedi' mattina prima del caffe'. L'articolo sulla disruption del retail "
-                "l'ho fatto leggere a tutto il board. Ha cambiato la nostra strategia Q3."
-            ),
-        },
-        {
-            "hero_title": "Pensiero Critico, Zero Filtri",
-            "hero_subtitle": (
-                "47.000 lettori che preferiscono la verita' scomoda alla rassicurazione facile. "
-                "Analisi controcorrente, dati che contraddicono i titoli, "
-                "prospettive che nessun altro osa pubblicare."
-            ),
-            "service_title": "Il Contrarian Report",
-            "service_description": (
-                "Una volta al mese prendiamo la narrativa dominante del settore "
-                "e la mettiamo alla prova dei fatti. Con dati, fonti, e il coraggio "
-                "di dire quello che tutti pensano ma nessuno scrive."
-            ),
-            "testimonial": (
-                "L'analisi sul fallimento delle startup 'purpose-driven' mi ha fatto "
-                "ripensare l'intero pitch deck. Scomodo? Si'. Necessario? Assolutamente. "
-                "E' il blog che leggo per non restare nella bolla."
-            ),
-        },
-    ],
-    "event": [
-        {
-            "hero_title": "Non Partecipare. Vivi.",
-            "hero_subtitle": (
-                "12 ore che comprimeranno 12 mesi di ispirazione. "
-                "Speaker che hanno cambiato industrie, workshop dove le idee diventano "
-                "prototipi e 800 persone che condividono la stessa urgenza di fare."
-            ),
-            "service_title": "Masterclass Immersiva",
-            "service_description": (
-                "Niente slide da 50 pagine. 90 minuti di pratica pura con chi ha costruito "
-                "aziende da zero. Gruppi da massimo 15 persone, "
-                "un progetto reale da portare a casa. Impari facendo, non ascoltando."
-            ),
-            "testimonial": (
-                "Sono andata per networking e sono tornata con un co-founder, "
-                "tre clienti e un'idea che ha raccolto 200k in seed round. "
-                "L'anno prima ho saltato l'evento. Non faro' mai piu' quell'errore."
-            ),
-        },
-        {
-            "hero_title": "Il Momento e' Adesso",
-            "hero_subtitle": (
-                "350 posti. 2.400 richieste. Una sola edizione all'anno. "
-                "Non e' esclusivita' — e' la promessa che ogni persona in sala "
-                "ha qualcosa da insegnarti. La lista d'attesa apre tra 48 ore."
-            ),
-            "service_title": "After Dark Sessions",
-            "service_description": (
-                "Quando le luci del palco si spengono, il vero evento inizia. "
-                "Conversazioni informali con gli speaker, musica live, cena condivisa. "
-                "Le connessioni migliori nascono dopo le 22."
-            ),
-            "testimonial": (
-                "Al terzo cocktail ho trovato il coraggio di parlare con lo speaker "
-                "che seguivo da anni. Mi ha dato un feedback sul mio progetto che valeva "
-                "piu' di qualsiasi corso. Quell'incontro ha cambiato la traiettoria "
-                "della mia carriera."
-            ),
-        },
-    ],
-    "custom": [
-        {
-            "hero_title": "Dove Tutto Prende Forma",
-            "hero_subtitle": (
-                "Non siamo per tutti — e va bene cosi'. Per chi cerca l'eccezionale "
-                "nel quotidiano, per chi rifiuta il 'buono abbastanza', "
-                "per chi sa che la differenza sta nei dettagli che nessuno nota. Tranne te."
-            ),
-            "service_title": "L'Approccio Sartoriale",
-            "service_description": (
-                "Niente soluzioni preconfezionate, niente template mentali. "
-                "Ascoltiamo per tre volte il tempo che parliamo. Poi costruiamo "
-                "qualcosa che non esisteva prima — su misura, come un abito "
-                "che calza solo a te."
-            ),
-            "testimonial": (
-                "Ho cercato per mesi qualcuno che capisse la mia visione senza che dovessi "
-                "spiegarla tre volte. Alla prima call hanno completato le mie frasi. "
-                "Il risultato? Esattamente quello che avevo in testa, "
-                "ma meglio di come lo immaginavo."
-            ),
-        },
-        {
-            "hero_title": "L'Eccellenza Non e' un Caso",
-            "hero_subtitle": (
-                "Ogni dettaglio e' una decisione. Ogni decisione e' una dichiarazione. "
-                "Lavoriamo con chi capisce che il valore si costruisce, "
-                "non si dichiara. I risultati parlano — noi li facciamo gridare."
-            ),
-            "service_title": "Consulenza Strategica",
-            "service_description": (
-                "Due ore che valgono sei mesi di tentativi. Analizziamo il tuo mercato, "
-                "smontiamo le assunzioni sbagliate, ricostruiamo la strategia "
-                "su fondamenta solide. Niente teoria — solo azioni concrete con deadline."
-            ),
-            "testimonial": (
-                "Ero scettico — l'ennesimo consulente, pensavo. Poi hanno trovato in 48 ore "
-                "un problema che il mio team ignorava da 2 anni. Il fix ha aumentato "
-                "la retention del 40%. A volte serve uno sguardo esterno per vedere "
-                "l'ovvio."
-            ),
-        },
-    ],
-}
 
 
 def _get_category_from_style_id(template_style_id: Optional[str]) -> str:
@@ -1049,1022 +270,6 @@ def _build_few_shot_block(category: str) -> str:
     lines.append("=== FINE ESEMPI ===")
 
     return "\n".join(lines)
-
-
-# =========================================================
-# HIGH-QUALITY UNSPLASH PHOTO POOLS (by business category)
-# These replace ugly placehold.co grey boxes when no user photos
-# or AI-generated images are available. Free to use via Unsplash Source.
-# =========================================================
-_UNSPLASH_PHOTOS: Dict[str, Dict[str, List[str]]] = {
-    "restaurant": {
-        "hero": [
-            "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&h=800&fit=crop",
-        ],
-        "gallery": [
-            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=600&h=400&fit=crop",
-        ],
-        "about": [
-            "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&h=600&fit=crop",
-            "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop",
-        ],
-        "team": [
-            "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300&h=300&fit=crop",
-        ],
-    },
-    "saas": {
-        "hero": [
-            "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=800&fit=crop",
-        ],
-        "gallery": [
-            "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=400&fit=crop",
-        ],
-        "about": [
-            "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop",
-        ],
-        "team": [
-            "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop",
-        ],
-    },
-    "portfolio": {
-        "hero": [
-            "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1545665277-5937489d95eb?w=1200&h=800&fit=crop",
-        ],
-        "gallery": [
-            "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1558655146-d09347e92766?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=600&h=400&fit=crop",
-        ],
-        "about": [
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
-        ],
-        "team": [
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop",
-        ],
-    },
-    "ecommerce": {
-        "hero": [
-            "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=800&fit=crop",
-        ],
-        "gallery": [
-            "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=600&h=400&fit=crop",
-        ],
-        "about": [
-            "https://images.unsplash.com/photo-1556742111-a301076d9d18?w=800&h=600&fit=crop",
-        ],
-        "team": [
-            "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop",
-        ],
-    },
-    "business": {
-        "hero": [
-            "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1497215842964-222b430dc094?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=800&fit=crop",
-        ],
-        "gallery": [
-            "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=400&fit=crop",
-        ],
-        "about": [
-            "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=600&fit=crop",
-        ],
-        "team": [
-            "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop",
-        ],
-    },
-    "blog": {
-        "hero": [
-            "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1200&h=800&fit=crop",
-        ],
-        "gallery": [
-            "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1471107340929-a87cd0f5b5f3?w=600&h=400&fit=crop",
-        ],
-        "about": [
-            "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop",
-        ],
-        "team": [
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop",
-        ],
-    },
-    "event": {
-        "hero": [
-            "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1200&h=800&fit=crop",
-        ],
-        "gallery": [
-            "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=400&fit=crop",
-            "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600&h=400&fit=crop",
-        ],
-        "about": [
-            "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=600&fit=crop",
-        ],
-        "team": [
-            "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop",
-        ],
-    },
-}
-# Fallback for unknown categories
-_UNSPLASH_PHOTOS["default"] = _UNSPLASH_PHOTOS["business"]
-
-
-def _get_stock_photos(category: str) -> Dict[str, List[str]]:
-    """Get stock photo URLs for a business category. Picks from pool with shuffling."""
-    # Detect category from template_style_id prefix
-    for cat in _UNSPLASH_PHOTOS:
-        if cat != "default" and category and category.startswith(cat):
-            photos = _UNSPLASH_PHOTOS[cat]
-            break
-    else:
-        photos = _UNSPLASH_PHOTOS["default"]
-    # Return shuffled copies so each generation gets different photos
-    return {k: random.sample(v, len(v)) for k, v in photos.items()}
-
-
-# =========================================================
-# Deterministic style → component variant mapping.
-# Each frontend template style maps to curated component variants
-# ensuring visually distinct sites for every template choice.
-# =========================================================
-STYLE_VARIANT_MAP: Dict[str, Dict[str, str]] = {
-    # --- Restaurant ---
-    "restaurant-elegant": {
-        "nav": "nav-classic-01",
-        "hero": "hero-classic-01",
-        "about": "about-magazine-01",
-        "services": "services-alternating-rows-01",
-        "gallery": "gallery-spotlight-01",
-        "testimonials": "testimonials-spotlight-01",
-        "contact": "contact-minimal-01",
-        "footer": "footer-centered-01",
-    },
-    "restaurant-cozy": {
-        "nav": "nav-classic-01",
-        "hero": "hero-organic-01",
-        "about": "about-split-scroll-01",
-        "services": "services-icon-list-01",
-        "gallery": "gallery-masonry-01",
-        "testimonials": "testimonials-card-stack-01",
-        "contact": "contact-card-01",
-        "footer": "footer-multi-col-01",
-    },
-    "restaurant-modern": {
-        "nav": "nav-minimal-01",
-        "hero": "hero-zen-01",
-        "about": "about-bento-01",
-        "services": "services-tabs-01",
-        "gallery": "gallery-filmstrip-01",
-        "testimonials": "testimonials-marquee-01",
-        "contact": "contact-modern-form-01",
-        "footer": "footer-minimal-02",
-    },
-    # --- SaaS / Landing Page ---
-    "saas-gradient": {
-        "nav": "nav-minimal-01",
-        "hero": "hero-gradient-03",
-        "about": "about-timeline-02",
-        "services": "services-hover-reveal-01",
-        "features": "features-bento-grid-01",
-        "testimonials": "testimonials-marquee-01",
-        "cta": "cta-gradient-animated-01",
-        "contact": "contact-modern-form-01",
-        "footer": "footer-gradient-01",
-    },
-    "saas-clean": {
-        "nav": "nav-classic-01",
-        "hero": "hero-centered-02",
-        "about": "about-alternating-01",
-        "services": "services-cards-grid-01",
-        "features": "features-icons-grid-01",
-        "testimonials": "testimonials-grid-01",
-        "cta": "cta-banner-01",
-        "contact": "contact-form-01",
-        "footer": "footer-sitemap-01",
-    },
-    "saas-dark": {
-        "nav": "nav-minimal-01",
-        "hero": "hero-dark-bold-01",
-        "about": "about-split-cards-01",
-        "services": "services-bento-02",
-        "features": "features-hover-cards-01",
-        "testimonials": "testimonials-masonry-01",
-        "contact": "contact-minimal-02",
-        "footer": "footer-mega-01",
-    },
-    # --- Portfolio ---
-    "portfolio-gallery": {
-        "nav": "nav-centered-01",
-        "hero": "hero-editorial-01",
-        "about": "about-image-showcase-01",
-        "gallery": "gallery-masonry-01",
-        "services": "services-minimal-list-01",
-        "testimonials": "testimonials-grid-01",
-        "contact": "contact-minimal-01",
-        "footer": "footer-minimal-02",
-    },
-    "portfolio-minimal": {
-        "nav": "nav-minimal-01",
-        "hero": "hero-zen-01",
-        "about": "about-alternating-01",
-        "gallery": "gallery-lightbox-01",
-        "contact": "contact-minimal-02",
-        "footer": "footer-centered-01",
-    },
-    "portfolio-creative": {
-        "nav": "nav-minimal-01",
-        "hero": "hero-brutalist-01",
-        "about": "about-bento-01",
-        "gallery": "gallery-spotlight-01",
-        "services": "services-hover-expand-01",
-        "contact": "contact-card-01",
-        "footer": "footer-gradient-01",
-    },
-    # --- E-commerce / Shop ---
-    "ecommerce-modern": {
-        "nav": "nav-classic-01",
-        "hero": "hero-split-01",
-        "about": "about-image-showcase-01",
-        "services": "services-cards-grid-01",
-        "gallery": "gallery-masonry-01",
-        "testimonials": "testimonials-carousel-01",
-        "contact": "contact-modern-form-01",
-        "footer": "footer-multi-col-01",
-    },
-    "ecommerce-luxury": {
-        "nav": "nav-centered-01",
-        "hero": "hero-classic-01",
-        "about": "about-magazine-01",
-        "services": "services-alternating-rows-01",
-        "gallery": "gallery-spotlight-01",
-        "testimonials": "testimonials-spotlight-01",
-        "contact": "contact-minimal-01",
-        "footer": "footer-centered-01",
-    },
-    # --- Business ---
-    "business-corporate": {
-        "nav": "nav-classic-01",
-        "hero": "hero-split-01",
-        "about": "about-alternating-01",
-        "services": "services-cards-grid-01",
-        "features": "features-comparison-01",
-        "testimonials": "testimonials-carousel-01",
-        "contact": "contact-form-01",
-        "footer": "footer-mega-01",
-    },
-    "business-trust": {
-        "nav": "nav-classic-01",
-        "hero": "hero-classic-01",
-        "about": "about-timeline-01",
-        "services": "services-process-steps-01",
-        "team": "team-grid-01",
-        "testimonials": "testimonials-spotlight-01",
-        "contact": "contact-split-map-01",
-        "footer": "footer-sitemap-01",
-    },
-    "business-fresh": {
-        "nav": "nav-centered-01",
-        "hero": "hero-gradient-03",
-        "about": "about-split-cards-01",
-        "services": "services-hover-expand-01",
-        "features": "features-alternating-01",
-        "testimonials": "testimonials-carousel-01",
-        "cta": "cta-split-image-01",
-        "contact": "contact-modern-form-01",
-        "footer": "footer-multi-col-01",
-    },
-    # --- Blog / Magazine ---
-    "blog-editorial": {
-        "nav": "nav-centered-01",
-        "hero": "hero-editorial-01",
-        "about": "about-alternating-01",
-        "services": "services-minimal-list-01",
-        "gallery": "gallery-lightbox-01",
-        "blog": "blog-editorial-grid-01",
-        "contact": "contact-card-01",
-        "footer": "footer-content-grid-01",
-    },
-    "blog-dark": {
-        "nav": "nav-minimal-01",
-        "hero": "hero-neon-01",
-        "about": "about-split-cards-01",
-        "services": "services-hover-reveal-01",
-        "gallery": "gallery-filmstrip-01",
-        "blog": "blog-cards-grid-01",
-        "contact": "contact-minimal-02",
-        "footer": "footer-gradient-01",
-    },
-    # --- Evento / Community ---
-    "event-vibrant": {
-        "nav": "nav-minimal-01",
-        "hero": "hero-animated-shapes-01",
-        "about": "about-bento-01",
-        "services": "services-tabs-01",
-        "team": "team-carousel-01",
-        "schedule": "schedule-tabbed-multi-01",
-        "cta": "cta-gradient-animated-01",
-        "contact": "contact-modern-form-01",
-        "footer": "footer-gradient-01",
-    },
-    "event-minimal": {
-        "nav": "nav-centered-01",
-        "hero": "hero-centered-02",
-        "about": "about-timeline-01",
-        "services": "services-process-steps-01",
-        "team": "team-grid-01",
-        "schedule": "schedule-tabbed-multi-01",
-        "contact": "contact-form-01",
-        "footer": "footer-minimal-02",
-    },
-}
-
-# =========================================================
-# Randomized variant pools for variety.
-# Each style maps to a POOL of 2-3 compatible variants per section.
-# At generation time, one variant is randomly chosen from the pool.
-# STYLE_VARIANT_MAP above is kept as deterministic fallback.
-# =========================================================
-STYLE_VARIANT_POOL: Dict[str, Dict[str, List[str]]] = {
-    # --- Restaurant ---
-    "restaurant-elegant": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01", "nav-transparent-01"],
-        "hero": ["hero-classic-01", "hero-editorial-01", "hero-typewriter-01", "hero-parallax-01", "hero-video-bg-01", "hero-zen-01", "hero-counter-01", "hero-avatar-stack-01"],
-        "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01", "about-alternating-01", "about-timeline-01", "about-progress-bars-01"],
-        "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01", "services-cards-grid-01", "services-process-steps-01", "services-timeline-01", "services-numbered-zigzag-01"],
-        "gallery": ["gallery-spotlight-01", "gallery-lightbox-01", "gallery-masonry-01", "gallery-filmstrip-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-card-stack-01", "testimonials-masonry-01", "testimonials-minimal-01", "testimonials-video-01"],
-        "contact": ["contact-minimal-01", "contact-form-01", "contact-minimal-02", "contact-card-01", "contact-split-map-01", "contact-two-col-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-newsletter-01", "cta-bold-text-01"],
-        "footer": ["footer-centered-01", "footer-minimal-02", "footer-stacked-01", "footer-sitemap-01", "footer-multi-col-01"],
-        "booking": ["booking-form-01"],
-        "social-proof": ["social-bar-01"],
-    },
-    "restaurant-cozy": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-topbar-01"],
-        "hero": ["hero-organic-01", "hero-typewriter-01", "hero-classic-01", "hero-parallax-01", "hero-split-01", "hero-centered-02", "hero-avatar-stack-01"],
-        "about": ["about-split-scroll-01", "about-image-showcase-01", "about-magazine-01", "about-alternating-01", "about-timeline-01", "about-progress-bars-01"],
-        "services": ["services-icon-list-01", "services-minimal-list-01", "services-alternating-rows-01", "services-cards-grid-01", "services-process-steps-01", "services-timeline-01", "services-numbered-zigzag-01"],
-        "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01", "gallery-filmstrip-01"],
-        "testimonials": ["testimonials-card-stack-01", "testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-masonry-01", "testimonials-minimal-01", "testimonials-video-01"],
-        "contact": ["contact-card-01", "contact-minimal-01", "contact-form-01", "contact-split-map-01", "contact-modern-form-01", "contact-two-col-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-02", "cta-newsletter-01"],
-        "footer": ["footer-multi-col-01", "footer-centered-01", "footer-stacked-01", "footer-sitemap-01", "footer-minimal-02"],
-        "booking": ["booking-form-01"],
-        "social-proof": ["social-bar-01"],
-    },
-    "restaurant-modern": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-transparent-01", "nav-pill-01"],
-        "hero": ["hero-zen-01", "hero-parallax-01", "hero-glassmorphism-01", "hero-split-01", "hero-linear-01", "hero-video-bg-01", "hero-marquee-01"],
-        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01", "about-image-showcase-01", "about-magazine-01", "about-split-scroll-01"],
-        "services": ["services-tabs-01", "services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-minimal-list-01", "services-pricing-cards-01", "services-image-reveal-01"],
-        "gallery": ["gallery-filmstrip-01", "gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
-        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-spotlight-01", "testimonials-quote-wall-01", "testimonials-video-01"],
-        "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01", "contact-minimal-02", "contact-form-01", "contact-cards-grid-01"],
-        "cta": ["cta-gradient-banner-01", "cta-floating-card-01", "cta-split-image-01", "cta-countdown-01", "cta-bold-text-01"],
-        "footer": ["footer-minimal-02", "footer-gradient-01", "footer-cta-band-01", "footer-asymmetric-01", "footer-social-01"],
-        "booking": ["booking-form-01"],
-        "social-proof": ["social-bar-01"],
-    },
-    # --- SaaS / Landing Page ---
-    "saas-gradient": {
-        "nav": ["nav-minimal-01", "nav-classic-01", "nav-pill-01", "nav-split-cta-01", "nav-transparent-01"],
-        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-parallax-01", "hero-rotating-01", "hero-glassmorphism-01", "hero-floating-cards-01", "hero-aurora-01", "hero-calculator-01"],
-        "about": ["about-timeline-02", "about-bento-01", "about-split-cards-01", "about-image-showcase-01", "about-alternating-01", "about-progress-bars-01"],
-        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-tabs-01", "services-cards-grid-01", "services-pricing-cards-01", "services-interactive-tabs-01", "services-numbered-zigzag-01"],
-        "features": ["features-bento-01", "features-bento-grid-01", "features-hover-cards-01", "features-tabs-01", "features-icon-showcase-01", "features-showcase-01", "features-elevated-01"],
-        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-carousel-01", "testimonials-card-stack-01", "testimonials-grid-01", "testimonials-quote-wall-01", "testimonials-video-01"],
-        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01", "cta-floating-card-02", "cta-split-image-01", "cta-countdown-01", "cta-bold-text-01"],
-        "contact": ["contact-modern-form-01", "contact-split-map-01", "contact-card-01", "contact-form-01", "contact-minimal-02", "contact-cards-grid-01"],
-        "footer": ["footer-gradient-01", "footer-mega-01", "footer-cta-band-01", "footer-multi-col-01", "footer-sitemap-01"],
-        "comparison": ["comparison-table-01"],
-        "social-proof": ["social-bar-01"],
-        "app-download": ["app-download-01"],
-    },
-    "saas-clean": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-pill-01", "nav-topbar-01"],
-        "hero": ["hero-centered-02", "hero-split-01", "hero-linear-01", "hero-classic-01", "hero-gradient-03", "hero-counter-01", "hero-aurora-01", "hero-calculator-01", "hero-avatar-stack-01"],
-        "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02", "about-split-cards-01", "about-bento-01", "about-progress-bars-01"],
-        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01", "services-icon-list-01", "services-alternating-rows-01", "services-pricing-cards-01", "services-interactive-tabs-01", "services-numbered-zigzag-01"],
-        "features": ["features-icons-grid-01", "features-bento-01", "features-alternating-01", "features-icon-showcase-01", "features-comparison-01", "features-showcase-01", "features-elevated-01"],
-        "testimonials": ["testimonials-grid-01", "testimonials-carousel-01", "testimonials-spotlight-01", "testimonials-card-stack-01", "testimonials-masonry-01", "testimonials-rating-01", "testimonials-video-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-floating-card-02", "cta-gradient-banner-01", "cta-newsletter-01"],
-        "contact": ["contact-form-01", "contact-modern-form-01", "contact-minimal-01", "contact-split-map-01", "contact-card-01", "contact-two-col-01"],
-        "footer": ["footer-sitemap-01", "footer-multi-col-01", "footer-cta-band-01", "footer-centered-01", "footer-mega-01"],
-        "comparison": ["comparison-table-01"],
-        "social-proof": ["social-bar-01"],
-    },
-    "saas-dark": {
-        "nav": ["nav-minimal-01", "nav-classic-01", "nav-pill-01", "nav-transparent-01", "nav-split-cta-01"],
-        "hero": ["hero-linear-01", "hero-dark-bold-01", "hero-neon-01", "hero-animated-shapes-01", "hero-rotating-01", "hero-gradient-03", "hero-floating-cards-01", "hero-spotlight-01"],
-        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01", "about-timeline-02", "about-magazine-01"],
-        "services": ["services-bento-02", "services-hover-expand-01", "services-hover-reveal-01", "services-tabs-01", "services-minimal-list-01", "services-pricing-cards-01", "services-hover-cards-01", "services-image-reveal-01"],
-        "features": ["features-bento-01", "features-hover-cards-01", "features-bento-grid-01", "features-tabs-01", "features-comparison-01", "features-elevated-01"],
-        "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-quote-wall-01", "testimonials-video-01"],
-        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01", "cta-countdown-01", "cta-bold-text-01"],
-        "contact": ["contact-minimal-02", "contact-modern-form-01", "contact-card-01", "contact-form-01", "contact-split-map-01", "contact-cards-grid-01"],
-        "footer": ["footer-mega-01", "footer-gradient-01", "footer-cta-band-01", "footer-asymmetric-01", "footer-social-01"],
-        "comparison": ["comparison-table-01"],
-        "social-proof": ["social-bar-01"],
-        "app-download": ["app-download-01"],
-    },
-    # --- Portfolio ---
-    "portfolio-gallery": {
-        "nav": ["nav-centered-01", "nav-minimal-01", "nav-sidebar-01", "nav-transparent-01"],
-        "hero": ["hero-editorial-01", "hero-zen-01", "hero-typewriter-01", "hero-parallax-01", "hero-video-bg-01", "hero-marquee-01"],
-        "about": ["about-image-showcase-01", "about-magazine-01", "about-split-scroll-01", "about-alternating-01", "about-timeline-02"],
-        "gallery": ["gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01", "gallery-filmstrip-01"],
-        "services": ["services-minimal-list-01", "services-alternating-rows-01", "services-icon-list-01", "services-cards-grid-01", "services-hover-reveal-01"],
-        "testimonials": ["testimonials-grid-01", "testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-minimal-01", "testimonials-video-01"],
-        "contact": ["contact-minimal-01", "contact-minimal-02", "contact-form-01", "contact-card-01", "contact-modern-form-01", "contact-two-col-01"],
-        "footer": ["footer-minimal-02", "footer-social-01", "footer-asymmetric-01", "footer-centered-01", "footer-stacked-01"],
-        "awards": ["awards-timeline-01"],
-    },
-    "portfolio-minimal": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-transparent-01", "nav-sidebar-01"],
-        "hero": ["hero-zen-01", "hero-typewriter-01", "hero-editorial-01", "hero-centered-02", "hero-classic-01", "hero-spotlight-01"],
-        "about": ["about-alternating-01", "about-split-scroll-01", "about-image-showcase-01", "about-magazine-01", "about-timeline-01"],
-        "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01", "gallery-filmstrip-01"],
-        "services": ["services-minimal-list-01", "services-icon-list-01", "services-alternating-rows-01", "services-timeline-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-grid-01", "testimonials-carousel-01", "testimonials-minimal-01", "testimonials-video-01"],
-        "contact": ["contact-minimal-02", "contact-minimal-01", "contact-form-01", "contact-card-01", "contact-modern-form-01"],
-        "footer": ["footer-centered-01", "footer-social-01", "footer-minimal-02", "footer-stacked-01", "footer-asymmetric-01"],
-        "awards": ["awards-timeline-01"],
-    },
-    "portfolio-creative": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-sidebar-01", "nav-transparent-01", "nav-pill-01"],
-        "hero": ["hero-linear-01", "hero-brutalist-01", "hero-animated-shapes-01", "hero-neon-01", "hero-physics-01", "hero-rotating-01", "hero-marquee-01", "hero-aurora-01"],
-        "about": ["about-bento-01", "about-split-cards-01", "about-timeline-02", "about-image-showcase-01", "about-magazine-01"],
-        "gallery": ["gallery-spotlight-01", "gallery-filmstrip-01", "gallery-masonry-01", "gallery-lightbox-01"],
-        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02", "services-tabs-01", "services-cards-grid-01", "services-hover-cards-01", "services-image-reveal-01"],
-        "features": ["features-showcase-01", "features-bento-01", "features-hover-cards-01", "features-bento-grid-01", "features-elevated-01"],
-        "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-quote-wall-01", "testimonials-video-01"],
-        "contact": ["contact-card-01", "contact-modern-form-01", "contact-split-map-01", "contact-minimal-02", "contact-form-01"],
-        "cta": ["cta-gradient-animated-01", "cta-floating-card-01", "cta-split-image-01", "cta-countdown-01", "cta-bold-text-01"],
-        "footer": ["footer-gradient-01", "footer-asymmetric-01", "footer-social-01", "footer-cta-band-01", "footer-mega-01"],
-        "awards": ["awards-timeline-01"],
-    },
-    # --- E-commerce / Shop ---
-    "ecommerce-modern": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-split-cta-01", "nav-topbar-01", "nav-pill-01"],
-        "hero": ["hero-split-01", "hero-parallax-01", "hero-glassmorphism-01", "hero-classic-01", "hero-gradient-03", "hero-centered-02", "hero-counter-01", "hero-search-01"],
-        "about": ["about-image-showcase-01", "about-bento-01", "about-alternating-01", "about-split-cards-01", "about-magazine-01"],
-        "services": ["services-cards-grid-01", "services-hover-reveal-01", "services-tabs-01", "services-hover-expand-01", "services-icon-list-01", "services-pricing-cards-01", "services-interactive-tabs-01"],
-        "features": ["features-icons-grid-01", "features-bento-01", "features-comparison-01", "features-hover-cards-01", "features-alternating-01", "features-showcase-01", "features-elevated-01"],
-        "gallery": ["gallery-masonry-01", "gallery-filmstrip-01", "gallery-lightbox-01", "gallery-spotlight-01"],
-        "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-marquee-01", "testimonials-masonry-01", "testimonials-spotlight-01", "testimonials-rating-01", "testimonials-video-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-gradient-banner-01", "cta-countdown-01"],
-        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01", "contact-form-01", "contact-minimal-01", "contact-cards-grid-01"],
-        "footer": ["footer-multi-col-01", "footer-mega-01", "footer-cta-band-01", "footer-sitemap-01", "footer-stacked-01"],
-        "comparison": ["comparison-table-01"],
-        "social-proof": ["social-bar-01"],
-        "listings": ["listings-cards-01", "listings-filterable-01"],
-    },
-    "ecommerce-luxury": {
-        "nav": ["nav-centered-01", "nav-classic-01", "nav-topbar-01", "nav-transparent-01"],
-        "hero": ["hero-classic-01", "hero-editorial-01", "hero-video-bg-01", "hero-parallax-01", "hero-zen-01", "hero-typewriter-01", "hero-counter-01", "hero-spotlight-01"],
-        "about": ["about-magazine-01", "about-image-showcase-01", "about-split-scroll-01", "about-alternating-01", "about-timeline-01", "about-progress-bars-01"],
-        "services": ["services-alternating-rows-01", "services-minimal-list-01", "services-icon-list-01", "services-cards-grid-01", "services-process-steps-01", "services-timeline-01", "services-numbered-zigzag-01"],
-        "features": ["features-icon-showcase-01", "features-alternating-01", "features-comparison-01", "features-icons-grid-01", "features-showcase-01"],
-        "gallery": ["gallery-spotlight-01", "gallery-lightbox-01", "gallery-masonry-01", "gallery-filmstrip-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-card-stack-01", "testimonials-masonry-01", "testimonials-minimal-01", "testimonials-video-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-newsletter-01", "cta-bold-text-01"],
-        "contact": ["contact-minimal-01", "contact-form-01", "contact-minimal-02", "contact-card-01", "contact-split-map-01", "contact-two-col-01"],
-        "footer": ["footer-centered-01", "footer-stacked-01", "footer-sitemap-01", "footer-multi-col-01", "footer-minimal-02"],
-        "awards": ["awards-timeline-01"],
-        "social-proof": ["social-bar-01"],
-    },
-    # --- Business ---
-    "business-corporate": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01", "nav-split-cta-01"],
-        "hero": ["hero-split-01", "hero-classic-01", "hero-video-bg-01", "hero-centered-02", "hero-parallax-01", "hero-counter-01", "hero-calculator-01", "hero-avatar-stack-01"],
-        "about": ["about-alternating-01", "about-image-showcase-01", "about-timeline-02", "about-timeline-01", "about-magazine-01", "about-progress-bars-01"],
-        "services": ["services-cards-grid-01", "services-process-steps-01", "services-tabs-01", "services-alternating-rows-01", "services-icon-list-01", "services-timeline-01", "services-hover-cards-01", "services-numbered-zigzag-01"],
-        "features": ["features-comparison-01", "features-icons-grid-01", "features-alternating-01", "features-icon-showcase-01", "features-bento-01", "features-showcase-01", "features-elevated-01"],
-        "testimonials": ["testimonials-carousel-01", "testimonials-grid-01", "testimonials-spotlight-01", "testimonials-card-stack-01", "testimonials-masonry-01", "testimonials-rating-01", "testimonials-video-01"],
-        "team": ["team-grid-01", "team-carousel-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-gradient-banner-01", "cta-newsletter-01"],
-        "contact": ["contact-form-01", "contact-split-map-01", "contact-modern-form-01", "contact-card-01", "contact-minimal-01", "contact-cards-grid-01"],
-        "footer": ["footer-mega-01", "footer-sitemap-01", "footer-cta-band-01", "footer-multi-col-01", "footer-stacked-01"],
-        "comparison": ["comparison-table-01"],
-        "social-proof": ["social-bar-01"],
-        "awards": ["awards-timeline-01"],
-        "booking": ["booking-form-01"],
-    },
-    "business-trust": {
-        "nav": ["nav-classic-01", "nav-centered-01", "nav-topbar-01", "nav-split-cta-01"],
-        "hero": ["hero-classic-01", "hero-editorial-01", "hero-split-01", "hero-centered-02", "hero-video-bg-01", "hero-counter-01", "hero-avatar-stack-01"],
-        "about": ["about-timeline-01", "about-magazine-01", "about-image-showcase-01", "about-alternating-01", "about-split-scroll-01", "about-progress-bars-01"],
-        "services": ["services-process-steps-01", "services-alternating-rows-01", "services-cards-grid-01", "services-icon-list-01", "services-tabs-01", "services-timeline-01", "services-numbered-zigzag-01"],
-        "features": ["features-icons-grid-01", "features-comparison-01", "features-alternating-01", "features-icon-showcase-01", "features-showcase-01", "features-elevated-01"],
-        "team": ["team-grid-01", "team-carousel-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-card-stack-01", "testimonials-masonry-01", "testimonials-rating-01", "testimonials-video-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-02", "cta-newsletter-01"],
-        "contact": ["contact-split-map-01", "contact-form-01", "contact-modern-form-01", "contact-card-01", "contact-minimal-01", "contact-two-col-01"],
-        "footer": ["footer-sitemap-01", "footer-mega-01", "footer-stacked-01", "footer-multi-col-01", "footer-centered-01"],
-        "social-proof": ["social-bar-01"],
-        "awards": ["awards-timeline-01"],
-        "booking": ["booking-form-01"],
-    },
-    "business-fresh": {
-        "nav": ["nav-centered-01", "nav-minimal-01", "nav-pill-01", "nav-split-cta-01", "nav-transparent-01"],
-        "hero": ["hero-linear-01", "hero-gradient-03", "hero-animated-shapes-01", "hero-rotating-01", "hero-glassmorphism-01", "hero-floating-cards-01", "hero-calculator-01"],
-        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-02", "about-image-showcase-01", "about-alternating-01", "about-progress-bars-01"],
-        "services": ["services-hover-expand-01", "services-hover-reveal-01", "services-bento-02", "services-tabs-01", "services-cards-grid-01", "services-pricing-cards-01", "services-interactive-tabs-01", "services-image-reveal-01"],
-        "features": ["features-bento-01", "features-alternating-01", "features-bento-grid-01", "features-hover-cards-01", "features-icon-showcase-01", "features-elevated-01"],
-        "testimonials": ["testimonials-carousel-01", "testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-grid-01", "testimonials-quote-wall-01", "testimonials-video-01"],
-        "cta": ["cta-split-image-01", "cta-gradient-animated-01", "cta-floating-card-01", "cta-gradient-banner-01", "cta-floating-card-02", "cta-countdown-01", "cta-bold-text-01"],
-        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01", "contact-form-01", "contact-minimal-02", "contact-cards-grid-01"],
-        "footer": ["footer-multi-col-01", "footer-gradient-01", "footer-cta-band-01", "footer-social-01", "footer-mega-01"],
-        "comparison": ["comparison-table-01"],
-        "social-proof": ["social-bar-01"],
-        "app-download": ["app-download-01"],
-    },
-    # --- Blog / Magazine ---
-    "blog-editorial": {
-        "nav": ["nav-centered-01", "nav-classic-01", "nav-transparent-01", "nav-topbar-01"],
-        "hero": ["hero-editorial-01", "hero-typewriter-01", "hero-zen-01", "hero-classic-01", "hero-split-01", "hero-marquee-01"],
-        "about": ["about-alternating-01", "about-magazine-01", "about-split-scroll-01", "about-image-showcase-01", "about-timeline-01"],
-        "services": ["services-minimal-list-01", "services-icon-list-01", "services-alternating-rows-01", "services-cards-grid-01", "services-process-steps-01", "services-timeline-01"],
-        "features": ["features-showcase-01", "features-alternating-01", "features-icon-showcase-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-grid-01", "testimonials-carousel-01", "testimonials-card-stack-01", "testimonials-masonry-01", "testimonials-minimal-01", "testimonials-video-01"],
-        "gallery": ["gallery-lightbox-01", "gallery-spotlight-01", "gallery-masonry-01", "gallery-filmstrip-01"],
-        "cta": ["cta-newsletter-01", "cta-banner-01", "cta-split-image-01"],
-        "contact": ["contact-card-01", "contact-minimal-01", "contact-form-01", "contact-minimal-02", "contact-modern-form-01", "contact-two-col-01"],
-        "footer": ["footer-sitemap-01", "footer-centered-01", "footer-asymmetric-01", "footer-stacked-01", "footer-multi-col-01", "footer-content-grid-01"],
-        "blog": ["blog-editorial-grid-01", "blog-minimal-01"],
-    },
-    "blog-dark": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-pill-01", "nav-transparent-01"],
-        "hero": ["hero-neon-01", "hero-dark-bold-01", "hero-brutalist-01", "hero-linear-01", "hero-animated-shapes-01", "hero-floating-cards-01", "hero-spotlight-01"],
-        "about": ["about-split-cards-01", "about-bento-01", "about-timeline-01", "about-timeline-02", "about-magazine-01"],
-        "services": ["services-hover-reveal-01", "services-bento-02", "services-hover-expand-01", "services-tabs-01", "services-minimal-list-01", "services-image-reveal-01"],
-        "testimonials": ["testimonials-masonry-01", "testimonials-marquee-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-quote-wall-01", "testimonials-video-01"],
-        "gallery": ["gallery-filmstrip-01", "gallery-masonry-01", "gallery-spotlight-01", "gallery-lightbox-01"],
-        "contact": ["contact-minimal-02", "contact-card-01", "contact-modern-form-01", "contact-form-01", "contact-split-map-01", "contact-cards-grid-01"],
-        "cta": ["cta-gradient-animated-01", "cta-floating-card-01", "cta-gradient-banner-01", "cta-countdown-01", "cta-bold-text-01"],
-        "footer": ["footer-gradient-01", "footer-mega-01", "footer-social-01", "footer-asymmetric-01", "footer-cta-band-01", "footer-content-grid-01"],
-        "blog": ["blog-cards-grid-01", "blog-editorial-grid-01", "blog-minimal-01"],
-    },
-    # --- Evento / Community ---
-    "event-vibrant": {
-        "nav": ["nav-minimal-01", "nav-centered-01", "nav-pill-01", "nav-transparent-01", "nav-split-cta-01"],
-        "hero": ["hero-animated-shapes-01", "hero-gradient-03", "hero-parallax-01", "hero-physics-01", "hero-rotating-01", "hero-neon-01", "hero-marquee-01", "hero-aurora-01", "hero-countdown-01"],
-        "about": ["about-bento-01", "about-timeline-02", "about-split-cards-01", "about-image-showcase-01", "about-alternating-01"],
-        "services": ["services-tabs-01", "services-hover-expand-01", "services-bento-02", "services-hover-reveal-01", "services-cards-grid-01", "services-hover-cards-01"],
-        "features": ["features-bento-grid-01", "features-hover-cards-01", "features-tabs-01", "features-bento-01", "features-elevated-01"],
-        "team": ["team-carousel-01", "team-grid-01"],
-        "testimonials": ["testimonials-marquee-01", "testimonials-masonry-01", "testimonials-card-stack-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-quote-wall-01", "testimonials-video-01"],
-        "cta": ["cta-gradient-animated-01", "cta-gradient-banner-01", "cta-floating-card-01", "cta-floating-card-02", "cta-split-image-01", "cta-countdown-01", "cta-bold-text-01"],
-        "contact": ["contact-modern-form-01", "contact-card-01", "contact-split-map-01", "contact-form-01", "contact-minimal-02", "contact-cards-grid-01"],
-        "footer": ["footer-gradient-01", "footer-cta-band-01", "footer-social-01", "footer-mega-01", "footer-asymmetric-01"],
-        "schedule": ["schedule-tabbed-multi-01"],
-        "social-proof": ["social-bar-01"],
-        "booking": ["booking-form-01"],
-    },
-    "event-minimal": {
-        "nav": ["nav-centered-01", "nav-classic-01", "nav-transparent-01", "nav-minimal-01"],
-        "hero": ["hero-centered-02", "hero-typewriter-01", "hero-zen-01", "hero-editorial-01", "hero-classic-01", "hero-counter-01", "hero-aurora-01", "hero-countdown-01"],
-        "about": ["about-timeline-01", "about-alternating-01", "about-split-scroll-01", "about-image-showcase-01", "about-magazine-01"],
-        "services": ["services-process-steps-01", "services-cards-grid-01", "services-icon-list-01", "services-minimal-list-01", "services-alternating-rows-01", "services-timeline-01"],
-        "team": ["team-grid-01", "team-carousel-01"],
-        "testimonials": ["testimonials-spotlight-01", "testimonials-carousel-01", "testimonials-grid-01", "testimonials-card-stack-01", "testimonials-minimal-01", "testimonials-video-01"],
-        "cta": ["cta-banner-01", "cta-split-image-01", "cta-floating-card-01", "cta-newsletter-01"],
-        "contact": ["contact-form-01", "contact-minimal-01", "contact-minimal-02", "contact-card-01", "contact-split-map-01", "contact-two-col-01"],
-        "footer": ["footer-minimal-02", "footer-stacked-01", "footer-centered-01", "footer-sitemap-01", "footer-social-01"],
-        "schedule": ["schedule-tabbed-multi-01"],
-        "booking": ["booking-form-01"],
-    },
-}
-
-# Randomized pools for default section types (faq, pricing, stats, etc.)
-_DEFAULT_SECTION_VARIANT_POOLS: Dict[str, List[str]] = {
-    "faq": ["faq-accordion-01", "faq-accordion-02", "faq-two-column-01", "faq-search-01"],
-    "pricing": ["pricing-cards-01", "pricing-toggle-01", "pricing-toggle-02", "pricing-comparison-01", "pricing-minimal-01", "pricing-dark-parallax-01"],
-    "stats": ["stats-counters-01", "stats-wave-01"],
-    "logos": ["logos-marquee-01"],
-    "process": ["process-steps-01", "process-horizontal-01", "process-cards-01"],
-    "timeline": ["timeline-vertical-01"],
-    "blog": ["blog-editorial-grid-01", "blog-cards-grid-01", "blog-minimal-01"],
-    "awards": ["awards-timeline-01"],
-    "listings": ["listings-cards-01", "listings-filterable-01"],
-    "donations": ["donations-progress-01", "donations-form-01"],
-    "comparison": ["comparison-table-01"],
-    "booking": ["booking-form-01"],
-    "app-download": ["app-download-01"],
-    "social-proof": ["social-bar-01"],
-    "schedule": ["schedule-tabbed-multi-01"],
-}
-
-# =========================================================
-# STYLE CSS PROFILES: Per-style visual overrides
-# Each profile creates a distinct spatial/visual rhythm so
-# sites don't all share the same Tailwind defaults.
-# =========================================================
-STYLE_CSS_PROFILES: Dict[str, Dict[str, str]] = {
-    "restaurant-elegant": {
-        "space_section": "7rem",
-        "max_width": "75rem",
-        "radius": "1rem",
-        "shadow": "0 25px 60px -12px rgba(0,0,0,0.12)",
-        "h1_scale": "clamp(3rem, 6vw + 1rem, 6rem)",
-        "h2_scale": "clamp(2.2rem, 4vw + 0.5rem, 4rem)",
-        "animation_speed": "1.2",
-        "letter_spacing": "-0.03em",
-    },
-    "restaurant-cozy": {
-        "space_section": "6rem",
-        "max_width": "72rem",
-        "radius": "1.25rem",
-        "shadow": "0 10px 30px -5px rgba(0,0,0,0.1)",
-        "h1_scale": "clamp(2.5rem, 5vw + 0.5rem, 4.5rem)",
-        "h2_scale": "clamp(2rem, 3vw + 0.5rem, 3.2rem)",
-        "animation_speed": "1.0",
-        "letter_spacing": "-0.02em",
-    },
-    "restaurant-modern": {
-        "space_section": "5rem",
-        "max_width": "76rem",
-        "radius": "0.5rem",
-        "shadow": "0 4px 20px rgba(0,0,0,0.08)",
-        "h1_scale": "clamp(2.8rem, 6vw + 0.5rem, 5.5rem)",
-        "h2_scale": "clamp(1.8rem, 3vw + 0.5rem, 3rem)",
-        "animation_speed": "0.8",
-        "letter_spacing": "-0.04em",
-    },
-    "saas-gradient": {
-        "space_section": "5.5rem",
-        "max_width": "76rem",
-        "radius": "0.75rem",
-        "shadow": "0 8px 32px rgba(0,0,0,0.12)",
-        "h1_scale": "clamp(2.8rem, 5.5vw + 1rem, 5.5rem)",
-        "h2_scale": "clamp(2rem, 3vw + 0.5rem, 3.5rem)",
-        "animation_speed": "0.7",
-        "letter_spacing": "-0.03em",
-    },
-    "saas-clean": {
-        "space_section": "5rem",
-        "max_width": "72rem",
-        "radius": "0.5rem",
-        "shadow": "0 2px 12px rgba(0,0,0,0.06)",
-        "h1_scale": "clamp(2.5rem, 5vw + 0.5rem, 4.5rem)",
-        "h2_scale": "clamp(1.8rem, 2.5vw + 0.5rem, 3rem)",
-        "animation_speed": "0.6",
-        "letter_spacing": "-0.02em",
-    },
-    "saas-dark": {
-        "space_section": "5rem",
-        "max_width": "74rem",
-        "radius": "0.75rem",
-        "shadow": "0 4px 24px rgba(0,0,0,0.3)",
-        "h1_scale": "clamp(2.5rem, 5vw + 1rem, 5.5rem)",
-        "h2_scale": "clamp(1.8rem, 3vw + 0.5rem, 3rem)",
-        "animation_speed": "0.7",
-        "letter_spacing": "0em",
-    },
-    "portfolio-gallery": {
-        "space_section": "7rem",
-        "max_width": "80rem",
-        "radius": "0.25rem",
-        "shadow": "none",
-        "h1_scale": "clamp(3.5rem, 7vw + 1rem, 7rem)",
-        "h2_scale": "clamp(2.2rem, 4vw + 0.5rem, 4rem)",
-        "animation_speed": "1.3",
-        "letter_spacing": "-0.04em",
-    },
-    "portfolio-minimal": {
-        "space_section": "8rem",
-        "max_width": "68rem",
-        "radius": "0",
-        "shadow": "none",
-        "h1_scale": "clamp(2.5rem, 4vw + 1rem, 4.5rem)",
-        "h2_scale": "clamp(1.8rem, 3vw + 0.5rem, 3rem)",
-        "animation_speed": "1.5",
-        "letter_spacing": "-0.02em",
-    },
-    "portfolio-creative": {
-        "space_section": "6rem",
-        "max_width": "80rem",
-        "radius": "1.5rem",
-        "shadow": "0 12px 40px rgba(0,0,0,0.15)",
-        "h1_scale": "clamp(3.5rem, 8vw + 1rem, 8rem)",
-        "h2_scale": "clamp(2.2rem, 4vw + 1rem, 4.5rem)",
-        "animation_speed": "0.9",
-        "letter_spacing": "-0.05em",
-    },
-    "ecommerce-modern": {
-        "space_section": "5.5rem",
-        "max_width": "76rem",
-        "radius": "0.75rem",
-        "shadow": "0 8px 24px rgba(0,0,0,0.08)",
-        "h1_scale": "clamp(2.5rem, 5vw + 0.5rem, 5rem)",
-        "h2_scale": "clamp(1.8rem, 3vw + 0.5rem, 3rem)",
-        "animation_speed": "0.8",
-        "letter_spacing": "-0.02em",
-    },
-    "ecommerce-luxury": {
-        "space_section": "7rem",
-        "max_width": "74rem",
-        "radius": "1rem",
-        "shadow": "0 20px 50px -10px rgba(0,0,0,0.15)",
-        "h1_scale": "clamp(3rem, 6vw + 1rem, 6rem)",
-        "h2_scale": "clamp(2.2rem, 4vw + 0.5rem, 4rem)",
-        "animation_speed": "1.2",
-        "letter_spacing": "-0.03em",
-    },
-    "business-corporate": {
-        "space_section": "6rem",
-        "max_width": "76rem",
-        "radius": "0.5rem",
-        "shadow": "0 4px 16px rgba(0,0,0,0.08)",
-        "h1_scale": "clamp(2.5rem, 5vw + 0.5rem, 5rem)",
-        "h2_scale": "clamp(2rem, 3vw + 0.5rem, 3.2rem)",
-        "animation_speed": "1.0",
-        "letter_spacing": "-0.02em",
-    },
-    "business-trust": {
-        "space_section": "6rem",
-        "max_width": "74rem",
-        "radius": "0.75rem",
-        "shadow": "0 6px 20px rgba(0,0,0,0.08)",
-        "h1_scale": "clamp(2.5rem, 5vw + 0.5rem, 4.5rem)",
-        "h2_scale": "clamp(2rem, 3vw + 0.5rem, 3.2rem)",
-        "animation_speed": "1.0",
-        "letter_spacing": "-0.02em",
-    },
-    "business-fresh": {
-        "space_section": "5.5rem",
-        "max_width": "76rem",
-        "radius": "1rem",
-        "shadow": "0 8px 28px rgba(0,0,0,0.1)",
-        "h1_scale": "clamp(2.8rem, 5.5vw + 1rem, 5.5rem)",
-        "h2_scale": "clamp(2rem, 3vw + 0.5rem, 3.5rem)",
-        "animation_speed": "0.8",
-        "letter_spacing": "-0.03em",
-    },
-    "blog-editorial": {
-        "space_section": "7.5rem",
-        "max_width": "70rem",
-        "radius": "0",
-        "shadow": "none",
-        "h1_scale": "clamp(3rem, 6vw + 1rem, 6.5rem)",
-        "h2_scale": "clamp(2.2rem, 4vw + 0.5rem, 4rem)",
-        "animation_speed": "1.3",
-        "letter_spacing": "-0.04em",
-    },
-    "blog-dark": {
-        "space_section": "6rem",
-        "max_width": "72rem",
-        "radius": "0.5rem",
-        "shadow": "0 4px 20px rgba(0,0,0,0.25)",
-        "h1_scale": "clamp(2.5rem, 5vw + 0.5rem, 5rem)",
-        "h2_scale": "clamp(2rem, 3vw + 0.5rem, 3.2rem)",
-        "animation_speed": "1.0",
-        "letter_spacing": "-0.02em",
-    },
-    "event-vibrant": {
-        "space_section": "4.5rem",
-        "max_width": "80rem",
-        "radius": "1.5rem",
-        "shadow": "0 12px 36px rgba(0,0,0,0.15)",
-        "h1_scale": "clamp(3.5rem, 8vw + 1rem, 9rem)",
-        "h2_scale": "clamp(2.2rem, 4vw + 1rem, 4.5rem)",
-        "animation_speed": "0.5",
-        "letter_spacing": "-0.05em",
-    },
-    "event-minimal": {
-        "space_section": "7rem",
-        "max_width": "72rem",
-        "radius": "0.25rem",
-        "shadow": "none",
-        "h1_scale": "clamp(3rem, 6vw + 1rem, 6rem)",
-        "h2_scale": "clamp(2rem, 3.5vw + 0.5rem, 3.5rem)",
-        "animation_speed": "1.2",
-        "letter_spacing": "-0.03em",
-    },
-}
-
-
-
-# =========================================================
-# SECTION BACKGROUND ACCENTS: Break the monotonous bg/bg-alt alternation
-# by injecting special backgrounds on specific sections per style.
-# Uses CSS targeting section IDs (#testimonials, #cta, etc.) to add
-# gradients, patterns, or inverted color schemes.
-# =========================================================
-SECTION_BG_ACCENTS: Dict[str, str] = {
-    "restaurant-elegant": """
-    /* Testimonials: warm gradient overlay */
-    #testimonials { background: linear-gradient(135deg, var(--color-bg-alt), rgba(var(--color-primary-rgb), 0.06)) !important; }
-    /* CTA: inverted dark section */
-    #cta { background: var(--color-text) !important; color: var(--color-bg) !important; }
-    #cta h2, #cta p, #cta span { color: var(--color-bg) !important; }
-    #cta [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
-    """,
-    "restaurant-cozy": """
-    /* About: subtle warm pattern */
-    #about { background: radial-gradient(circle at 20% 80%, rgba(var(--color-primary-rgb), 0.04), transparent 50%), var(--color-bg-alt) !important; }
-    /* Testimonials: warm tint */
-    #testimonials { background: linear-gradient(180deg, var(--color-bg), rgba(var(--color-secondary-rgb), 0.05)) !important; }
-    """,
-    "restaurant-modern": """
-    /* Testimonials: full dark inversion */
-    #testimonials { background: var(--color-text) !important; color: var(--color-bg) !important; }
-    #testimonials h2, #testimonials p, #testimonials span, #testimonials blockquote { color: var(--color-bg) !important; }
-    #testimonials [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
-    #testimonials [style*="color: var(--color-text-muted)"] { color: rgba(var(--color-bg-rgb), 0.6) !important; }
-    """,
-    "saas-gradient": """
-    /* Features: gradient mesh */
-    #features { background: linear-gradient(135deg, var(--color-bg), rgba(var(--color-primary-rgb), 0.08) 40%, rgba(var(--color-secondary-rgb), 0.06)) !important; }
-    /* CTA: vibrant gradient */
-    #cta { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)) !important; color: #fff !important; }
-    #cta h2, #cta p, #cta span { color: #fff !important; }
-    """,
-    "saas-clean": """
-    /* Testimonials: subtle dot pattern */
-    #testimonials { background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.08) 1px, transparent 1px), var(--color-bg-alt) !important; background-size: 24px 24px !important; }
-    """,
-    "saas-dark": """
-    /* Features: glow gradient */
-    #features { background: radial-gradient(ellipse at 50% 0%, rgba(var(--color-primary-rgb), 0.12), transparent 70%), var(--color-bg) !important; }
-    /* CTA: accent glow */
-    #cta { background: radial-gradient(ellipse at 50% 100%, rgba(var(--color-accent-rgb), 0.15), transparent 60%), var(--color-bg-alt) !important; }
-    """,
-    "portfolio-gallery": """
-    /* About: clean white break */
-    #about { background: #fff !important; }
-    """,
-    "portfolio-minimal": """
-    /* Testimonials: single thin top border as accent */
-    #testimonials { border-top: 1px solid rgba(var(--color-primary-rgb), 0.15); }
-    """,
-    "portfolio-creative": """
-    /* Services: diagonal gradient */
-    #services { background: linear-gradient(160deg, var(--color-bg), rgba(var(--color-primary-rgb), 0.1) 30%, rgba(var(--color-accent-rgb), 0.08) 70%, var(--color-bg-alt)) !important; }
-    /* Testimonials: inverted */
-    #testimonials { background: var(--color-text) !important; color: var(--color-bg) !important; }
-    #testimonials h2, #testimonials p, #testimonials span, #testimonials blockquote { color: var(--color-bg) !important; }
-    #testimonials [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
-    """,
-    "ecommerce-modern": """
-    /* Testimonials: soft radial spotlight */
-    #testimonials { background: radial-gradient(ellipse at 50% 50%, rgba(var(--color-primary-rgb), 0.06), transparent 70%), var(--color-bg) !important; }
-    /* CTA: accent band */
-    #cta { background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) !important; color: #fff !important; }
-    #cta h2, #cta p, #cta span { color: #fff !important; }
-    """,
-    "ecommerce-luxury": """
-    /* Testimonials: dark luxurious section */
-    #testimonials { background: var(--color-text) !important; color: var(--color-bg) !important; }
-    #testimonials h2, #testimonials p, #testimonials span, #testimonials blockquote { color: var(--color-bg) !important; }
-    #testimonials [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
-    #testimonials [style*="color: var(--color-text-muted)"] { color: rgba(var(--color-bg-rgb), 0.5) !important; }
-    /* CTA: gold-tinted */
-    #cta { background: linear-gradient(135deg, var(--color-bg-alt), rgba(var(--color-primary-rgb), 0.08)) !important; }
-    """,
-    "business-corporate": """
-    /* Stats/features: corporate dark band */
-    #stats, #features { background: var(--color-text) !important; color: var(--color-bg) !important; }
-    #stats h2, #stats p, #stats span, #features h2, #features p, #features span { color: var(--color-bg) !important; }
-    #stats [style*="color: var(--color-text)"], #features [style*="color: var(--color-text)"] { color: var(--color-bg) !important; }
-    """,
-    "business-trust": """
-    /* Testimonials: warm trust gradient */
-    #testimonials { background: linear-gradient(180deg, rgba(var(--color-primary-rgb), 0.04), var(--color-bg-alt)) !important; }
-    """,
-    "business-fresh": """
-    /* Features: playful gradient mesh */
-    #features { background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.06), transparent 40%, rgba(var(--color-secondary-rgb), 0.06)) !important; }
-    /* CTA: vibrant gradient */
-    #cta { background: linear-gradient(135deg, var(--color-primary), var(--color-accent)) !important; color: #fff !important; }
-    #cta h2, #cta p, #cta span { color: #fff !important; }
-    """,
-    "blog-editorial": """
-    /* Pull-quote accent on testimonials */
-    #testimonials { border-top: 3px solid var(--color-primary); border-bottom: 3px solid var(--color-primary); }
-    """,
-    "blog-dark": """
-    /* About: glow from below */
-    #about { background: radial-gradient(ellipse at 50% 100%, rgba(var(--color-primary-rgb), 0.1), transparent 60%), var(--color-bg) !important; }
-    """,
-    "event-vibrant": """
-    /* CTA: explosive gradient */
-    #cta { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-accent)) !important; color: #fff !important; }
-    #cta h2, #cta p, #cta span { color: #fff !important; }
-    /* Testimonials: dark with glow */
-    #testimonials { background: radial-gradient(ellipse at 30% 50%, rgba(var(--color-primary-rgb), 0.15), transparent 50%), var(--color-text) !important; color: var(--color-bg) !important; }
-    #testimonials h2, #testimonials p, #testimonials span, #testimonials blockquote { color: var(--color-bg) !important; }
-    """,
-    "event-minimal": """
-    /* Subtle section dividers */
-    #about, #services, #contact { border-top: 1px solid rgba(var(--color-text-rgb), 0.08); }
-    """,
-}
-
-
-# =========================================================
-# ANIMATION RANDOMIZER: Replace hardcoded data-animate values
-# with randomly-chosen alternatives from equivalent pools.
-# This ensures each generation gets a unique animation fingerprint.
-# =========================================================
-_ANIMATION_POOLS = {
-    # Heading animations (replacements for text-split)
-    "heading": ["text-split", "text-reveal", "typewriter", "blur-in", "clip-reveal"],
-    # Subtitle/paragraph entrance
-    "subtitle": ["blur-slide", "fade-up", "fade-left", "slide-up", "fade-right", "reveal-up"],
-    # CTA button entrance
-    "cta": ["bounce-in", "scale-in", "magnetic", "blur-in", "fade-up"],
-    # Card/item entrance
-    "card": ["fade-up", "scale-in", "blur-in", "fade-left", "fade-right", "zoom-out"],
-    # Section entrance (generic)
-    "section": ["fade-up", "fade-left", "fade-right", "reveal-up", "reveal-left", "blur-in", "scale-in"],
-    # Image entrance
-    "image": ["scale-in", "blur-in", "fade-up", "clip-reveal", "zoom-out"],
-}
-
-# Stagger animation variants
-_STAGGER_VARIANTS = ["stagger", "stagger-scale"]
-
-# Ease function variants
-_EASE_VARIANTS = [
-    "power2.out", "power3.out", "power4.out",
-    "back.out(1.2)", "expo.out", "circ.out",
-    "elastic.out(0.5,0.3)",
-]
 
 
 def _randomize_animations(html: str) -> str:
@@ -2255,576 +460,6 @@ def _build_per_style_css(style_id: str) -> str:
     {s} {{ --animation-speed: {aspeed}; }}
     {scoped_accents}
     """
-
-
-# =========================================================
-# BLUEPRINTS: Optimal section ordering per business category.
-# Each blueprint defines the narrative flow that converts best
-# for that business type. Sections not in the blueprint are
-# kept but placed before the footer. Hero always first, footer last.
-# =========================================================
-BLUEPRINTS: Dict[str, List[str]] = {
-    "restaurant": [
-        "hero", "about", "gallery", "services", "testimonials",
-        "team", "faq", "contact",
-    ],
-    "saas": [
-        "hero", "features", "about", "services", "testimonials",
-        "pricing", "cta", "faq", "contact",
-    ],
-    "portfolio": [
-        "hero", "gallery", "about", "services", "testimonials",
-        "contact",
-    ],
-    "ecommerce": [
-        "hero", "services", "gallery", "about", "testimonials",
-        "pricing", "cta", "faq", "contact",
-    ],
-    "business": [
-        "hero", "about", "services", "features", "team",
-        "testimonials", "cta", "contact",
-    ],
-    "blog": [
-        "hero", "about", "services", "gallery", "contact",
-    ],
-    "event": [
-        "hero", "about", "services", "team", "gallery",
-        "cta", "faq", "contact",
-    ],
-    "custom": [
-        "hero", "about", "services", "gallery", "testimonials",
-        "contact",
-    ],
-}
-
-# =========================================================
-# HARMONY GROUPS: Visual families for cross-section cohesion.
-# When generating a site, one harmony group is selected and
-# component variants are preferentially chosen from it.
-# =========================================================
-HARMONY_GROUPS: Dict[str, List[str]] = {
-    "bento": [
-        "bento", "masonry", "hover-expand", "grid", "split-cards",
-    ],
-    "editorial": [
-        "alternating", "magazine", "spotlight", "editorial", "image-showcase",
-        "split-scroll",
-    ],
-    "interactive": [
-        "hover-expand", "hover-reveal", "tabs", "hover-cards", "card-stack",
-    ],
-    "classic": [
-        "classic", "centered", "grid", "cards", "carousel", "form",
-        "process-steps", "icon-list", "icons-grid",
-    ],
-    "dark-bold": [
-        "dark-bold", "neon", "brutalist", "gradient", "animated-shapes",
-    ],
-    "organic": [
-        "organic", "zen", "scroll", "minimal", "typewriter", "parallax",
-    ],
-}
-
-# =========================================================
-# SECTION SCHEMAS: JSON template for each section type.
-# _generate_texts() assembles only the schemas for the
-# sections the user actually requested, cutting prompt size
-# by 40-60% and reducing noise for the LLM.
-# =========================================================
-_SECTION_SCHEMAS: Dict[str, str] = {
-    "hero": '''"hero": {{
-    "HERO_TITLE": "Headline impattante (max 8 parole, MIN 3 parole)",
-    "HERO_SUBTITLE": "Sottotitolo evocativo (MIN 15 parole, 2-3 frasi che creano desiderio)",
-    "HERO_CTA_TEXT": "Testo bottone CTA (3-5 parole, verbo d'azione)",
-    "HERO_CTA_URL": "#contact",
-    "HERO_IMAGE_URL": "",
-    "HERO_IMAGE_ALT": "Descrizione immagine specifica per il business",
-    "HERO_ROTATING_TEXTS": "3-4 frasi alternative per il titolo hero, separate da | (es: Frase Uno|Frase Due|Frase Tre)"
-  }}''',
-    "about": '''"about": {{
-    "ABOUT_TITLE": "Titolo sezione (evocativo, NO 'Chi Siamo')",
-    "ABOUT_SUBTITLE": "Sottotitolo (MIN 10 parole)",
-    "ABOUT_TEXT": "MIN 40 parole: racconta la storia/missione con dettagli specifici, emozioni, visione futura",
-    "ABOUT_HIGHLIGHT_1": "Fatto chiave 1",
-    "ABOUT_HIGHLIGHT_2": "Fatto chiave 2",
-    "ABOUT_HIGHLIGHT_3": "Fatto chiave 3",
-    "ABOUT_HIGHLIGHT_NUM_1": "25",
-    "ABOUT_HIGHLIGHT_NUM_2": "500",
-    "ABOUT_HIGHLIGHT_NUM_3": "98"
-  }}''',
-    "services": '''"services": {{
-    "SERVICES_TITLE": "Titolo sezione",
-    "SERVICES_SUBTITLE": "Sottotitolo",
-    "SERVICES": [
-      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}},
-      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}},
-      {{"SERVICE_ICON": "emoji unico", "SERVICE_TITLE": "Nome servizio (2-4 parole)", "SERVICE_DESCRIPTION": "MIN 15 parole: beneficio concreto per il cliente"}}
-    ]
-  }}''',
-    "features": '''"features": {{
-    "FEATURES_TITLE": "Titolo sezione",
-    "FEATURES_SUBTITLE": "Sottotitolo",
-    "FEATURES": [
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}},
-      {{"FEATURE_ICON": "emoji unico", "FEATURE_TITLE": "Feature (2-4 parole)", "FEATURE_DESCRIPTION": "MIN 12 parole: cosa ottiene l'utente"}}
-    ]
-  }}''',
-    "testimonials": '''"testimonials": {{
-    "TESTIMONIALS_TITLE": "Titolo sezione",
-    "TESTIMONIALS": [
-      {{"TESTIMONIAL_TEXT": "MIN 20 parole: storia specifica con dettagli, emozioni, risultati concreti", "TESTIMONIAL_AUTHOR": "Nome e Cognome realistico italiano", "TESTIMONIAL_ROLE": "Ruolo specifico (es: CEO di NomeDitta)", "TESTIMONIAL_INITIAL": "N"}},
-      {{"TESTIMONIAL_TEXT": "MIN 20 parole: esperienza unica, diversa dalla precedente", "TESTIMONIAL_AUTHOR": "Nome e Cognome", "TESTIMONIAL_ROLE": "Ruolo specifico", "TESTIMONIAL_INITIAL": "N"}},
-      {{"TESTIMONIAL_TEXT": "MIN 20 parole: racconto con before/after, numeri o dettagli specifici", "TESTIMONIAL_AUTHOR": "Nome e Cognome", "TESTIMONIAL_ROLE": "Ruolo specifico", "TESTIMONIAL_INITIAL": "N"}}
-    ]
-  }}''',
-    "cta": '''"cta": {{
-    "CTA_TITLE": "Headline CTA urgente e persuasiva (4-8 parole)",
-    "CTA_SUBTITLE": "MIN 12 parole: motiva all'azione con beneficio chiaro",
-    "CTA_BUTTON_TEXT": "Verbo d'azione + risultato (3-5 parole)",
-    "CTA_BUTTON_URL": "#contact"
-  }}''',
-    "contact": '''"contact": {{
-    "CONTACT_TITLE": "Titolo sezione (invitante, NO 'Contattaci')",
-    "CONTACT_SUBTITLE": "MIN 10 parole: sottotitolo che invoglia a scrivere",
-    "CONTACT_ADDRESS": "indirizzo o vuoto",
-    "CONTACT_PHONE": "telefono o vuoto",
-    "CONTACT_EMAIL": "email o vuoto"
-  }}''',
-    "gallery": '''"gallery": {{
-    "GALLERY_TITLE": "Titolo galleria",
-    "GALLERY_SUBTITLE": "Sottotitolo",
-    "GALLERY_ITEMS": [
-      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
-      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
-      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
-      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
-      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}},
-      {{"GALLERY_IMAGE_URL": "", "GALLERY_IMAGE_ALT": "descrizione specifica", "GALLERY_CAPTION": "Didascalia evocativa"}}
-    ]
-  }}''',
-    "team": '''"team": {{
-    "TEAM_TITLE": "Titolo sezione team",
-    "TEAM_SUBTITLE": "Sottotitolo",
-    "TEAM_MEMBERS": [
-      {{"MEMBER_NAME": "Nome Cognome realistico", "MEMBER_ROLE": "Ruolo specifico (es: Direttore Creativo)", "MEMBER_IMAGE_URL": "", "MEMBER_BIO": "MIN 15 parole: personalita, passioni, competenze uniche"}},
-      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo specifico", "MEMBER_IMAGE_URL": "", "MEMBER_BIO": "MIN 15 parole: storia personale e approccio al lavoro"}},
-      {{"MEMBER_NAME": "Nome Cognome", "MEMBER_ROLE": "Ruolo specifico", "MEMBER_IMAGE_URL": "", "MEMBER_BIO": "MIN 15 parole: background e contributo al team"}}
-    ]
-  }}''',
-    "pricing": '''"pricing": {{
-    "PRICING_TITLE": "Titolo sezione prezzi",
-    "PRICING_SUBTITLE": "Sottotitolo",
-    "PRICING_PLANS": [
-      {{"PLAN_NAME": "Base", "PLAN_PRICE": "29", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Ideale per iniziare", "PLAN_FEATURES": "Feature 1, Feature 2, Feature 3", "PLAN_CTA_TEXT": "Inizia Ora", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "false"}},
-      {{"PLAN_NAME": "Pro", "PLAN_PRICE": "59", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Il piu popolare", "PLAN_FEATURES": "Tutto Base + Feature 4, Feature 5, Feature 6", "PLAN_CTA_TEXT": "Scegli Pro", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "true"}},
-      {{"PLAN_NAME": "Enterprise", "PLAN_PRICE": "99", "PLAN_PERIOD": "/mese", "PLAN_DESCRIPTION": "Per grandi aziende", "PLAN_FEATURES": "Tutto Pro + Feature 7, Feature 8, Supporto dedicato", "PLAN_CTA_TEXT": "Contattaci", "PLAN_CTA_URL": "#contact", "PLAN_FEATURED": "false"}}
-    ]
-  }}''',
-    "faq": '''"faq": {{
-    "FAQ_TITLE": "Domande Frequenti",
-    "FAQ_SUBTITLE": "Sottotitolo",
-    "FAQ_ITEMS": [
-      {{"FAQ_QUESTION": "Domanda 1?", "FAQ_ANSWER": "Risposta dettagliata (2-3 frasi)"}},
-      {{"FAQ_QUESTION": "Domanda 2?", "FAQ_ANSWER": "Risposta dettagliata"}},
-      {{"FAQ_QUESTION": "Domanda 3?", "FAQ_ANSWER": "Risposta dettagliata"}},
-      {{"FAQ_QUESTION": "Domanda 4?", "FAQ_ANSWER": "Risposta dettagliata"}},
-      {{"FAQ_QUESTION": "Domanda 5?", "FAQ_ANSWER": "Risposta dettagliata"}}
-    ]
-  }}''',
-    "stats": '''"stats": {{
-    "STATS_TITLE": "I Nostri Numeri",
-    "STATS_SUBTITLE": "Sottotitolo",
-    "STATS_ITEMS": [
-      {{"STAT_NUMBER": "150", "STAT_SUFFIX": "+", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
-      {{"STAT_NUMBER": "98", "STAT_SUFFIX": "%", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
-      {{"STAT_NUMBER": "10", "STAT_SUFFIX": "K", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}},
-      {{"STAT_NUMBER": "24", "STAT_SUFFIX": "/7", "STAT_LABEL": "Etichetta", "STAT_ICON": "emoji"}}
-    ]
-  }}''',
-    "logos": '''"logos": {{
-    "LOGOS_TITLE": "I Nostri Partner",
-    "LOGOS_ITEMS": [
-      {{"LOGO_IMAGE_URL": "", "LOGO_ALT": "Partner 1", "LOGO_NAME": "Partner 1"}},
-      {{"LOGO_IMAGE_URL": "", "LOGO_ALT": "Partner 2", "LOGO_NAME": "Partner 2"}},
-      {{"LOGO_IMAGE_URL": "", "LOGO_ALT": "Partner 3", "LOGO_NAME": "Partner 3"}},
-      {{"LOGO_IMAGE_URL": "", "LOGO_ALT": "Partner 4", "LOGO_NAME": "Partner 4"}}
-    ]
-  }}''',
-    "process": '''"process": {{
-    "PROCESS_TITLE": "Come Funziona",
-    "PROCESS_SUBTITLE": "Sottotitolo",
-    "PROCESS_STEPS": [
-      {{"STEP_NUMBER": "1", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}},
-      {{"STEP_NUMBER": "2", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}},
-      {{"STEP_NUMBER": "3", "STEP_TITLE": "Titolo step", "STEP_DESCRIPTION": "Descrizione breve", "STEP_ICON": "emoji"}}
-    ]
-  }}''',
-    "timeline": '''"timeline": {{
-    "TIMELINE_TITLE": "La Nostra Storia",
-    "TIMELINE_SUBTITLE": "Sottotitolo",
-    "TIMELINE_ITEMS": [
-      {{"TIMELINE_YEAR": "2020", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}},
-      {{"TIMELINE_YEAR": "2022", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}},
-      {{"TIMELINE_YEAR": "2024", "TIMELINE_HEADING": "Titolo", "TIMELINE_DESCRIPTION": "Descrizione evento", "TIMELINE_ICON": "emoji"}}
-    ]
-  }}''',
-    "footer": '''"footer": {{
-    "FOOTER_DESCRIPTION": "Breve descrizione per footer (1 frase)"
-  }}''',
-    "blog": '''"blog": {{
-    "BLOG_TITLE": "Titolo sezione blog",
-    "BLOG_SUBTITLE": "Sottotitolo",
-    "BLOG_POSTS": [
-      {{"POST_TITLE": "Titolo articolo (5-10 parole)", "POST_EXCERPT": "MIN 15 parole: anteprima accattivante dell'articolo", "POST_CATEGORY": "Categoria (1-2 parole)", "POST_DATE": "15 Gen 2025", "POST_AUTHOR": "Nome Cognome", "POST_IMAGE_URL": "", "POST_IMAGE_ALT": "descrizione immagine"}},
-      {{"POST_TITLE": "Titolo articolo diverso", "POST_EXCERPT": "MIN 15 parole: anteprima diversa dal precedente", "POST_CATEGORY": "Categoria", "POST_DATE": "8 Gen 2025", "POST_AUTHOR": "Nome Cognome", "POST_IMAGE_URL": "", "POST_IMAGE_ALT": "descrizione immagine"}},
-      {{"POST_TITLE": "Terzo titolo articolo", "POST_EXCERPT": "MIN 15 parole: anteprima unica", "POST_CATEGORY": "Categoria", "POST_DATE": "2 Gen 2025", "POST_AUTHOR": "Nome Cognome", "POST_IMAGE_URL": "", "POST_IMAGE_ALT": "descrizione immagine"}}
-    ]
-  }}''',
-    "awards": '''"awards": {{
-    "AWARDS_TITLE": "Titolo sezione premi/riconoscimenti",
-    "AWARDS_SUBTITLE": "Sottotitolo",
-    "AWARDS_IMAGE_1": "",
-    "AWARDS_IMAGE_2": "",
-    "AWARDS_IMAGE_3": "",
-    "AWARDS": [
-      {{"AWARD_YEAR": "2024", "AWARD_TITLE": "Nome premio", "AWARD_DESCRIPTION": "Breve descrizione del riconoscimento"}},
-      {{"AWARD_YEAR": "2023", "AWARD_TITLE": "Nome premio", "AWARD_DESCRIPTION": "Breve descrizione"}},
-      {{"AWARD_YEAR": "2022", "AWARD_TITLE": "Nome premio", "AWARD_DESCRIPTION": "Breve descrizione"}}
-    ]
-  }}''',
-    "listings": '''"listings": {{
-    "LISTINGS_TITLE": "Titolo sezione catalogo",
-    "LISTINGS_SUBTITLE": "Sottotitolo",
-    "LISTING_ITEMS": [
-      {{"LISTING_TITLE": "Titolo elemento", "LISTING_DESCRIPTION": "MIN 10 parole: descrizione", "LISTING_PRICE": "€99", "LISTING_IMAGE_URL": "", "LISTING_IMAGE_ALT": "descrizione", "LISTING_SPEC_1": "Specifica 1", "LISTING_SPEC_2": "Specifica 2", "LISTING_SPEC_3": "Specifica 3"}},
-      {{"LISTING_TITLE": "Titolo elemento", "LISTING_DESCRIPTION": "MIN 10 parole: descrizione", "LISTING_PRICE": "€149", "LISTING_IMAGE_URL": "", "LISTING_IMAGE_ALT": "descrizione", "LISTING_SPEC_1": "Specifica 1", "LISTING_SPEC_2": "Specifica 2", "LISTING_SPEC_3": "Specifica 3"}},
-      {{"LISTING_TITLE": "Titolo elemento", "LISTING_DESCRIPTION": "MIN 10 parole: descrizione", "LISTING_PRICE": "€199", "LISTING_IMAGE_URL": "", "LISTING_IMAGE_ALT": "descrizione", "LISTING_SPEC_1": "Specifica 1", "LISTING_SPEC_2": "Specifica 2", "LISTING_SPEC_3": "Specifica 3"}}
-    ]
-  }}''',
-    "donations": '''"donations": {{
-    "DONATIONS_TITLE": "Titolo sezione donazioni",
-    "DONATIONS_SUBTITLE": "Sottotitolo",
-    "DONATION_ITEMS": [
-      {{"DONATION_TITLE": "Nome campagna", "DONATION_DESCRIPTION": "MIN 10 parole: descrizione causa", "DONATION_RAISED": "€12.500", "DONATION_GOAL": "€25.000", "DONATION_PROGRESS": "50", "DONATION_IMAGE_URL": "", "DONATION_IMAGE_ALT": "descrizione"}},
-      {{"DONATION_TITLE": "Nome campagna", "DONATION_DESCRIPTION": "MIN 10 parole: descrizione", "DONATION_RAISED": "€8.200", "DONATION_GOAL": "€15.000", "DONATION_PROGRESS": "55", "DONATION_IMAGE_URL": "", "DONATION_IMAGE_ALT": "descrizione"}}
-    ]
-  }}''',
-    "comparison": '''"comparison": {{
-    "COMPARISON_TITLE": "Perche Scegliere Noi",
-    "COMPARISON_SUBTITLE": "Sottotitolo confronto",
-    "COMPARISON_BRAND_NAME": "Il Nostro Brand",
-    "COMPARISON_ITEMS": [
-      {{"COMPARISON_FEATURE": "Feature 1", "COMPARISON_US": "true", "COMPARISON_OTHERS": "false"}},
-      {{"COMPARISON_FEATURE": "Feature 2", "COMPARISON_US": "true", "COMPARISON_OTHERS": "false"}},
-      {{"COMPARISON_FEATURE": "Feature 3", "COMPARISON_US": "true", "COMPARISON_OTHERS": "true"}},
-      {{"COMPARISON_FEATURE": "Feature 4", "COMPARISON_US": "true", "COMPARISON_OTHERS": "false"}},
-      {{"COMPARISON_FEATURE": "Feature 5", "COMPARISON_US": "true", "COMPARISON_OTHERS": "false"}}
-    ],
-    "COMPARISON_CTA_TEXT": "Inizia Ora",
-    "COMPARISON_CTA_URL": "#contact"
-  }}''',
-    "booking": '''"booking": {{
-    "BOOKING_TITLE": "Prenota un Appuntamento",
-    "BOOKING_SUBTITLE": "Sottotitolo",
-    "BOOKING_DESCRIPTION": "MIN 15 parole: descrizione del servizio di prenotazione",
-    "BOOKING_PHONE": "telefono o vuoto",
-    "BOOKING_EMAIL": "email o vuoto",
-    "BOOKING_HOURS": "Lun-Ven: 9:00-18:00",
-    "BOOKING_SERVICE_LABEL": "Seleziona Servizio",
-    "BOOKING_NOTES_LABEL": "Note Aggiuntive",
-    "BOOKING_BUTTON_TEXT": "Prenota Ora"
-  }}''',
-    "app-download": '''"app-download": {{
-    "APP_TITLE": "Scarica la Nostra App",
-    "APP_SUBTITLE": "MIN 10 parole: sottotitolo che invoglia al download",
-    "APP_FEATURES": [
-      {{"APP_FEATURE_TEXT": "Feature 1 dell'app"}},
-      {{"APP_FEATURE_TEXT": "Feature 2 dell'app"}},
-      {{"APP_FEATURE_TEXT": "Feature 3 dell'app"}}
-    ],
-    "APP_IMAGE_URL": "",
-    "APP_STORE_URL": "#",
-    "APP_PLAY_URL": "#"
-  }}''',
-    "social-proof": '''"social-proof": {{
-    "SOCIAL_TITLE": "I Nostri Numeri Parlano",
-    "SOCIAL_ITEMS": [
-      {{"SOCIAL_ICON": "emoji", "SOCIAL_COUNT": "10K", "SOCIAL_LABEL": "Followers"}},
-      {{"SOCIAL_ICON": "emoji", "SOCIAL_COUNT": "500", "SOCIAL_LABEL": "Progetti"}},
-      {{"SOCIAL_ICON": "emoji", "SOCIAL_COUNT": "98%", "SOCIAL_LABEL": "Soddisfazione"}},
-      {{"SOCIAL_ICON": "emoji", "SOCIAL_COUNT": "24/7", "SOCIAL_LABEL": "Supporto"}}
-    ]
-  }}''',
-    "schedule": '''"schedule": {{
-    "SCHEDULE_TITLE": "Programma",
-    "SCHEDULE_SUBTITLE": "Sottotitolo",
-    "SCHEDULE_ITEMS": [
-      {{"SCHEDULE_TIME": "09:00", "SCHEDULE_TITLE": "Titolo sessione", "SCHEDULE_SPEAKER": "Nome Speaker", "SCHEDULE_DESCRIPTION": "Breve descrizione"}},
-      {{"SCHEDULE_TIME": "10:30", "SCHEDULE_TITLE": "Titolo sessione", "SCHEDULE_SPEAKER": "Nome Speaker", "SCHEDULE_DESCRIPTION": "Breve descrizione"}},
-      {{"SCHEDULE_TIME": "14:00", "SCHEDULE_TITLE": "Titolo sessione", "SCHEDULE_SPEAKER": "Nome Speaker", "SCHEDULE_DESCRIPTION": "Breve descrizione"}}
-    ]
-  }}''',
-}
-
-# Map array keys for dynamic structure-rule generation
-_SECTION_ARRAY_RULES: Dict[str, str] = {
-    "services": 'The "SERVICES" key MUST be an array of objects with EXACTLY: "SERVICE_ICON", "SERVICE_TITLE", "SERVICE_DESCRIPTION". At LEAST 3 items.',
-    "features": 'The "FEATURES" key MUST be an array of objects with EXACTLY: "FEATURE_ICON", "FEATURE_TITLE", "FEATURE_DESCRIPTION". At LEAST 4 items.',
-    "testimonials": 'The "TESTIMONIALS" key MUST be an array of objects with EXACTLY: "TESTIMONIAL_TEXT", "TESTIMONIAL_AUTHOR", "TESTIMONIAL_ROLE", "TESTIMONIAL_INITIAL". At LEAST 3 items.',
-    "gallery": 'The "GALLERY_ITEMS" key MUST be an array of objects with EXACTLY: "GALLERY_IMAGE_URL", "GALLERY_IMAGE_ALT", "GALLERY_CAPTION". At LEAST 4 items.',
-    "team": 'The "TEAM_MEMBERS" key MUST be an array of objects with EXACTLY: "MEMBER_NAME", "MEMBER_ROLE", "MEMBER_IMAGE_URL", "MEMBER_BIO". At LEAST 3 items.',
-    "blog": 'The "BLOG_POSTS" key MUST be an array of objects with EXACTLY: "POST_TITLE", "POST_EXCERPT", "POST_CATEGORY", "POST_DATE", "POST_AUTHOR", "POST_IMAGE_URL", "POST_IMAGE_ALT". At LEAST 3 items.',
-    "awards": 'The "AWARDS" key MUST be an array of objects with EXACTLY: "AWARD_YEAR", "AWARD_TITLE", "AWARD_DESCRIPTION". At LEAST 3 items.',
-    "listings": 'The "LISTING_ITEMS" key MUST be an array of objects with EXACTLY: "LISTING_TITLE", "LISTING_DESCRIPTION", "LISTING_PRICE", "LISTING_IMAGE_URL", "LISTING_IMAGE_ALT", "LISTING_SPEC_1", "LISTING_SPEC_2", "LISTING_SPEC_3". At LEAST 3 items.',
-    "donations": 'The "DONATION_ITEMS" key MUST be an array of objects with EXACTLY: "DONATION_TITLE", "DONATION_DESCRIPTION", "DONATION_RAISED", "DONATION_GOAL", "DONATION_PROGRESS", "DONATION_IMAGE_URL", "DONATION_IMAGE_ALT". At LEAST 2 items.',
-    "comparison": 'The "COMPARISON_ITEMS" key MUST be an array of objects with EXACTLY: "COMPARISON_FEATURE", "COMPARISON_US", "COMPARISON_OTHERS". At LEAST 4 items.',
-    "social-proof": 'The "SOCIAL_ITEMS" key MUST be an array of objects with EXACTLY: "SOCIAL_ICON", "SOCIAL_COUNT", "SOCIAL_LABEL". At LEAST 3 items.',
-    "schedule": 'The "SCHEDULE_ITEMS" key MUST be an array of objects with EXACTLY: "SCHEDULE_TIME", "SCHEDULE_TITLE", "SCHEDULE_SPEAKER", "SCHEDULE_DESCRIPTION". At LEAST 3 items.',
-    "app-download": 'The "APP_FEATURES" key MUST be an array of objects with EXACTLY: "APP_FEATURE_TEXT". At LEAST 3 items.',
-}
-
-# =========================================================
-# CATEGORY-SPECIFIC FALLBACK TEXTS
-# When AI text generation fails, use these instead of generic text.
-# Each category has tailored copy that matches the business type.
-# =========================================================
-_CATEGORY_FALLBACK_TEXTS: Dict[str, Dict[str, dict]] = {
-    "restaurant": {
-        "hero": {
-            "HERO_TITLE": "Dove il Gusto Incontra l'Arte",
-            "HERO_SUBTITLE": "Ogni piatto racconta una storia di passione, tradizione e ingredienti scelti con cura maniacale. Un viaggio sensoriale che inizia dal primo sguardo al menu.",
-            "HERO_CTA_TEXT": "Prenota il Tuo Tavolo",
-            "HERO_CTA_URL": "#contact",
-            "HERO_IMAGE_URL": "",
-            "HERO_IMAGE_ALT": "L'esperienza culinaria nel nostro ristorante",
-        },
-        "about": {
-            "ABOUT_TITLE": "La Nostra Filosofia in Cucina",
-            "ABOUT_SUBTITLE": "Ogni ingrediente ha una provenienza, ogni ricetta una storia che merita di essere raccontata",
-            "ABOUT_TEXT": "Nasciamo dalla convinzione che mangiare non sia solo nutrirsi, ma vivere un'esperienza. La nostra cucina parte dalla terra: collaboriamo con produttori locali selezionati, seguiamo la stagionalita e trasformiamo materie prime eccezionali in piatti che emozionano. Ogni ricetta e il risultato di ricerca, sperimentazione e amore per il dettaglio.",
-            "ABOUT_HIGHLIGHT_1": "Fornitori locali selezionati",
-            "ABOUT_HIGHLIGHT_2": "Coperti serviti ogni anno",
-            "ABOUT_HIGHLIGHT_3": "Valutazione media clienti",
-            "ABOUT_HIGHLIGHT_NUM_1": "18",
-            "ABOUT_HIGHLIGHT_NUM_2": "12400",
-            "ABOUT_HIGHLIGHT_NUM_3": "4.9",
-        },
-        "services": {
-            "SERVICES_TITLE": "I Nostri Piatti Signature",
-            "SERVICES_SUBTITLE": "Tre esperienze culinarie che definiscono la nostra identita gastronomica",
-            "SERVICES": [
-                {"SERVICE_ICON": "\U0001f372", "SERVICE_TITLE": "Menu Degustazione", "SERVICE_DESCRIPTION": "Un percorso di 7 portate che attraversa sapori e territori. Ogni piatto dialoga con il successivo in un crescendo di gusto che sorprende il palato."},
-                {"SERVICE_ICON": "\U0001f37e", "SERVICE_TITLE": "Cantina Curata", "SERVICE_DESCRIPTION": "Oltre 180 etichette selezionate personalmente dal nostro sommelier. Abbinamenti pensati per esaltare ogni singola portata del vostro menu."},
-                {"SERVICE_ICON": "\U0001f382", "SERVICE_TITLE": "Eventi Privati", "SERVICE_DESCRIPTION": "La nostra sala riservata accoglie fino a 40 ospiti per cene aziendali, celebrazioni e serate esclusive con menu personalizzati dallo chef."},
-            ],
-        },
-        "contact": {
-            "CONTACT_TITLE": "Riserva il Tuo Momento Speciale",
-            "CONTACT_SUBTITLE": "Che sia una cena romantica, un pranzo di lavoro o una serata tra amici, siamo pronti ad accoglierti con il calore che meriti.",
-            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
-        },
-        "cta": {
-            "CTA_TITLE": "La Tavola Ti Aspetta",
-            "CTA_SUBTITLE": "I posti migliori vanno via in fretta, soprattutto il venerdi e sabato sera. Prenota ora e assicurati un'esperienza indimenticabile.",
-            "CTA_BUTTON_TEXT": "Prenota Ora", "CTA_BUTTON_URL": "#contact",
-        },
-        "footer": {"FOOTER_DESCRIPTION": "Dove ogni pasto diventa un ricordo che vale la pena conservare."},
-    },
-    "saas": {
-        "hero": {
-            "HERO_TITLE": "Il Futuro e Adesso",
-            "HERO_SUBTITLE": "La piattaforma che trasforma il caos operativo in flussi intelligenti. Automatizza, analizza, scala - mentre tu ti concentri su cio che conta davvero.",
-            "HERO_CTA_TEXT": "Prova Gratis 14 Giorni",
-            "HERO_CTA_URL": "#contact", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "Dashboard della piattaforma",
-        },
-        "about": {
-            "ABOUT_TITLE": "Costruito per Chi Vuole di Piu",
-            "ABOUT_SUBTITLE": "Non un altro tool. Una rivoluzione nel modo in cui lavori ogni giorno",
-            "ABOUT_TEXT": "Siamo nati dalla frustrazione di chi usa 15 strumenti diversi per fare il lavoro di uno. La nostra piattaforma unifica, semplifica e potenzia ogni flusso operativo. Dietro ogni funzionalita c'e un team ossessionato dall'esperienza utente e dalla performance. Zero compromessi sulla velocita, zero compromessi sulla sicurezza.",
-            "ABOUT_HIGHLIGHT_1": "Aziende attive sulla piattaforma",
-            "ABOUT_HIGHLIGHT_2": "Uptime garantito",
-            "ABOUT_HIGHLIGHT_3": "Ore risparmiate al mese per utente",
-            "ABOUT_HIGHLIGHT_NUM_1": "2400", "ABOUT_HIGHLIGHT_NUM_2": "99.97", "ABOUT_HIGHLIGHT_NUM_3": "23",
-        },
-        "services": {
-            "SERVICES_TITLE": "Funzionalita che Cambiano le Regole",
-            "SERVICES_SUBTITLE": "Ogni feature e progettata per eliminare un problema reale, non per riempire una checklist",
-            "SERVICES": [
-                {"SERVICE_ICON": "\u26a1", "SERVICE_TITLE": "Automazione Intelligente", "SERVICE_DESCRIPTION": "Crea flussi di lavoro complessi in pochi click. Il nostro motore AI impara dai tuoi pattern e suggerisce ottimizzazioni che ti fanno risparmiare ore ogni settimana."},
-                {"SERVICE_ICON": "\U0001f4ca", "SERVICE_TITLE": "Analytics in Tempo Reale", "SERVICE_DESCRIPTION": "Dashboard personalizzabili con metriche che contano. Visualizza trend, anomalie e opportunita prima che diventino problemi o che la concorrenza le colga."},
-                {"SERVICE_ICON": "\U0001f6e1\ufe0f", "SERVICE_TITLE": "Sicurezza Enterprise", "SERVICE_DESCRIPTION": "Crittografia end-to-end, SSO, audit log completo e conformita GDPR integrata. La tua sicurezza non e un'opzione, e la nostra ossessione."},
-            ],
-        },
-        "contact": {
-            "CONTACT_TITLE": "Parliamo del Tuo Prossimo Livello",
-            "CONTACT_SUBTITLE": "Demo personalizzata in 15 minuti. Ti mostriamo esattamente come la piattaforma risolve i tuoi problemi specifici.",
-            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
-        },
-        "cta": {
-            "CTA_TITLE": "Smetti di Perdere Tempo",
-            "CTA_SUBTITLE": "Ogni giorno senza automazione e un giorno di produttivita sprecata. Inizia ora, i risultati arrivano dalla prima settimana.",
-            "CTA_BUTTON_TEXT": "Inizia la Prova Gratuita", "CTA_BUTTON_URL": "#contact",
-        },
-        "footer": {"FOOTER_DESCRIPTION": "La piattaforma che fa lavorare la tecnologia per te, non il contrario."},
-    },
-    "portfolio": {
-        "hero": {
-            "HERO_TITLE": "Creo Mondi Visivi",
-            "HERO_SUBTITLE": "Designer, pensatore, risolutore di problemi. Trasformo idee astratte in esperienze digitali che le persone ricordano e con cui vogliono interagire.",
-            "HERO_CTA_TEXT": "Esplora i Progetti",
-            "HERO_CTA_URL": "#gallery", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "Portfolio dei migliori progetti creativi",
-        },
-        "about": {
-            "ABOUT_TITLE": "Il Metodo Dietro la Creativita",
-            "ABOUT_SUBTITLE": "Ogni progetto inizia con una domanda: come posso superare le aspettative?",
-            "ABOUT_TEXT": "Con oltre un decennio di esperienza nel design digitale, ho sviluppato un approccio che unisce ricerca, intuizione e ossessione per il dettaglio. Non creo semplicemente interfacce - costruisco esperienze che risolvono problemi reali e generano risultati misurabili. Ogni pixel ha uno scopo, ogni interazione racconta una storia.",
-            "ABOUT_HIGHLIGHT_1": "Progetti completati", "ABOUT_HIGHLIGHT_2": "Premi e riconoscimenti",
-            "ABOUT_HIGHLIGHT_3": "Clienti in tutto il mondo",
-            "ABOUT_HIGHLIGHT_NUM_1": "127", "ABOUT_HIGHLIGHT_NUM_2": "14", "ABOUT_HIGHLIGHT_NUM_3": "38",
-        },
-        "services": {
-            "SERVICES_TITLE": "Competenze al Tuo Servizio",
-            "SERVICES_SUBTITLE": "Dalla strategia al pixel finale, ogni fase del progetto riceve la stessa cura maniacale",
-            "SERVICES": [
-                {"SERVICE_ICON": "\U0001f3a8", "SERVICE_TITLE": "Brand Identity", "SERVICE_DESCRIPTION": "Logo, palette, tipografia e sistema visivo completo. Costruisco identita che si distinguono nel rumore e restano impresse nella memoria."},
-                {"SERVICE_ICON": "\U0001f4f1", "SERVICE_TITLE": "UI/UX Design", "SERVICE_DESCRIPTION": "Interfacce intuitive che guidano l'utente verso l'obiettivo. Ricerca, wireframe, prototipazione e test - ogni decisione e supportata dai dati."},
-                {"SERVICE_ICON": "\U0001f680", "SERVICE_TITLE": "Design Strategico", "SERVICE_DESCRIPTION": "Non solo estetica: analizzo il mercato, studio i competitor e progetto soluzioni che generano conversioni reali e crescita misurabile."},
-            ],
-        },
-        "contact": {
-            "CONTACT_TITLE": "Costruiamo Qualcosa di Grande",
-            "CONTACT_SUBTITLE": "Hai un progetto ambizioso? Parliamone davanti a un caffe virtuale. Le migliori collaborazioni iniziano con una conversazione sincera.",
-            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
-        },
-        "cta": {
-            "CTA_TITLE": "Il Tuo Progetto Merita il Meglio",
-            "CTA_SUBTITLE": "Accetto solo 3 nuovi progetti al mese per garantire a ciascuno l'attenzione che merita. Verifica la mia disponibilita.",
-            "CTA_BUTTON_TEXT": "Richiedi una Consulenza", "CTA_BUTTON_URL": "#contact",
-        },
-        "footer": {"FOOTER_DESCRIPTION": "Design che risolve problemi e crea connessioni autentiche."},
-    },
-    "ecommerce": {
-        "hero": {
-            "HERO_TITLE": "Stile Che Parla di Te",
-            "HERO_SUBTITLE": "Prodotti selezionati con cura per chi non si accontenta del banale. Qualita artigianale, design contemporaneo, spedizione fulminante.",
-            "HERO_CTA_TEXT": "Scopri la Collezione",
-            "HERO_CTA_URL": "#services", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "La nostra collezione esclusiva",
-        },
-        "services": {
-            "SERVICES_TITLE": "Perche Scegliere Noi",
-            "SERVICES_SUBTITLE": "Tre promesse che manteniamo ogni singolo giorno",
-            "SERVICES": [
-                {"SERVICE_ICON": "\U0001f48e", "SERVICE_TITLE": "Qualita Certificata", "SERVICE_DESCRIPTION": "Ogni prodotto passa 3 controlli qualita prima di raggiungere le tue mani. Materiali premium, lavorazione impeccabile, durabilita garantita nel tempo."},
-                {"SERVICE_ICON": "\U0001f69a", "SERVICE_TITLE": "Spedizione Express", "SERVICE_DESCRIPTION": "Ordini prima delle 14? Spedito lo stesso giorno. Tracciamento in tempo reale e consegna in 24-48 ore in tutta Italia, gratis sopra i 59 euro."},
-                {"SERVICE_ICON": "\U0001f504", "SERVICE_TITLE": "Reso Senza Pensieri", "SERVICE_DESCRIPTION": "30 giorni per cambiare idea. Reso gratuito, rimborso immediato, zero domande. La tua soddisfazione e la nostra unica priorita."},
-            ],
-        },
-        "contact": {
-            "CONTACT_TITLE": "Siamo Qui Per Te",
-            "CONTACT_SUBTITLE": "Dubbi sulla taglia, domande sui materiali o bisogno di un consiglio personalizzato? Il nostro team risponde in meno di 2 ore.",
-            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
-        },
-        "cta": {
-            "CTA_TITLE": "Non Lasciarti Sfuggire Questo",
-            "CTA_SUBTITLE": "Nuovi arrivi ogni settimana. Iscriviti alla newsletter e ricevi il 15% di sconto sul primo ordine.",
-            "CTA_BUTTON_TEXT": "Ottieni il 15% di Sconto", "CTA_BUTTON_URL": "#contact",
-        },
-        "footer": {"FOOTER_DESCRIPTION": "Prodotti che raccontano chi sei, consegnati a casa tua con cura."},
-    },
-    "business": {
-        "hero": {
-            "HERO_TITLE": "Costruiamo il Domani",
-            "HERO_SUBTITLE": "Partner strategici per aziende che non si accontentano dello status quo. Trasformiamo sfide complesse in opportunita concrete di crescita misurabile.",
-            "HERO_CTA_TEXT": "Richiedi una Consulenza",
-            "HERO_CTA_URL": "#contact", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "Il nostro approccio strategico al business",
-        },
-        "about": {
-            "ABOUT_TITLE": "Il Nostro Approccio Strategico",
-            "ABOUT_SUBTITLE": "Non vendiamo servizi. Costruiamo partnership che generano risultati duraturi",
-            "ABOUT_TEXT": "Nasciamo dalla convinzione che il mercato merita di meglio. Non ci accontentiamo della mediocrita e non inseguiamo le scorciatoie. Ogni progetto diventa una sfida personale, un'opportunita per dimostrare che si puo fare di piu, meglio e con piu cura. La nostra storia e fatta di intuizioni brillanti e la testardaggine di chi crede davvero in quello che fa.",
-            "ABOUT_HIGHLIGHT_1": "Anni di esperienza sul campo",
-            "ABOUT_HIGHLIGHT_2": "Progetti completati con successo",
-            "ABOUT_HIGHLIGHT_3": "Tasso di soddisfazione clienti",
-            "ABOUT_HIGHLIGHT_NUM_1": "15", "ABOUT_HIGHLIGHT_NUM_2": "847", "ABOUT_HIGHLIGHT_NUM_3": "99.2",
-        },
-        "services": {
-            "SERVICES_TITLE": "Il Metodo Dietro i Risultati",
-            "SERVICES_SUBTITLE": "Tre pilastri che trasformano la complessita in vantaggio competitivo",
-            "SERVICES": [
-                {"SERVICE_ICON": "\U0001f3af", "SERVICE_TITLE": "Strategia su Misura", "SERVICE_DESCRIPTION": "Analizziamo a fondo il tuo contesto per costruire un percorso che rifletta la vera identita del tuo business e porti risultati misurabili nel tempo."},
-                {"SERVICE_ICON": "\U0001f680", "SERVICE_TITLE": "Esecuzione Fulminante", "SERVICE_DESCRIPTION": "Dalla visione al lancio in tempi record. Ogni fase del progetto segue un metodo collaudato che elimina gli sprechi e accelera i risultati concreti."},
-                {"SERVICE_ICON": "\U0001f4a1", "SERVICE_TITLE": "Evoluzione Continua", "SERVICE_DESCRIPTION": "Non ci fermiamo al primo traguardo. Monitoriamo, ottimizziamo e iteriamo per garantire che ogni aspetto cresca insieme al tuo business."},
-            ],
-        },
-        "contact": {
-            "CONTACT_TITLE": "Parliamo del Tuo Prossimo Passo",
-            "CONTACT_SUBTITLE": "Ogni grande progetto inizia con una conversazione. Raccontaci la tua idea e trasformiamola insieme in qualcosa di straordinario.",
-            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
-        },
-        "cta": {
-            "CTA_TITLE": "Il Momento e Adesso",
-            "CTA_SUBTITLE": "Ogni giorno che passa e un'opportunita persa. Fai il primo passo verso risultati che superano le aspettative.",
-            "CTA_BUTTON_TEXT": "Prenota una Consulenza Gratuita", "CTA_BUTTON_URL": "#contact",
-        },
-        "footer": {"FOOTER_DESCRIPTION": "Dove nascono le idee che cambiano le regole del gioco."},
-    },
-    "blog": {
-        "hero": {
-            "HERO_TITLE": "Parole Che Lasciano il Segno",
-            "HERO_SUBTITLE": "Storie, riflessioni e approfondimenti per chi vuole andare oltre la superficie. Contenuti che informano, ispirano e provocano il pensiero critico.",
-            "HERO_CTA_TEXT": "Leggi l'Ultimo Articolo",
-            "HERO_CTA_URL": "#services", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "Il nostro blog editoriale",
-        },
-        "services": {
-            "SERVICES_TITLE": "Le Nostre Rubriche",
-            "SERVICES_SUBTITLE": "Contenuti curati per menti curiose che cercano sostanza, non rumore",
-            "SERVICES": [
-                {"SERVICE_ICON": "\U0001f4dd", "SERVICE_TITLE": "Analisi di Fondo", "SERVICE_DESCRIPTION": "Approfondimenti che vanno oltre il titolo. Ricerche originali, dati verificati e prospettive che non trovi altrove. Ogni articolo e un viaggio."},
-                {"SERVICE_ICON": "\U0001f4a1", "SERVICE_TITLE": "Idee e Tendenze", "SERVICE_DESCRIPTION": "Cosa sta cambiando nel nostro settore e perche dovrebbe importarti. Anticipiamo i trend con analisi lucide e consigli pratici immediati."},
-                {"SERVICE_ICON": "\U0001f399\ufe0f", "SERVICE_TITLE": "Interviste Esclusive", "SERVICE_DESCRIPTION": "Conversazioni con chi sta plasmando il futuro. Storie vere, lezioni apprese e visioni che ampliano gli orizzonti di ogni lettore."},
-            ],
-        },
-        "contact": {
-            "CONTACT_TITLE": "Unisciti alla Conversazione",
-            "CONTACT_SUBTITLE": "Hai un'idea per un articolo, una storia da raccontare o semplicemente vuoi dire la tua? La nostra community cresce grazie a voci come la tua.",
-            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
-        },
-        "footer": {"FOOTER_DESCRIPTION": "Storie che contano, scritte per chi vuole capire davvero."},
-    },
-    "event": {
-        "hero": {
-            "HERO_TITLE": "Vivi l'Esperienza dal Vivo",
-            "HERO_SUBTITLE": "Gli eventi che creano connessioni autentiche, ispirano nuove idee e lasciano ricordi che durano. Non semplici incontri, ma momenti che cambiano prospettive.",
-            "HERO_CTA_TEXT": "Riserva il Tuo Posto",
-            "HERO_CTA_URL": "#contact", "HERO_IMAGE_URL": "", "HERO_IMAGE_ALT": "L'atmosfera dei nostri eventi esclusivi",
-        },
-        "services": {
-            "SERVICES_TITLE": "Cosa Ti Aspetta",
-            "SERVICES_SUBTITLE": "Un programma progettato per massimizzare ogni minuto della tua esperienza",
-            "SERVICES": [
-                {"SERVICE_ICON": "\U0001f3a4", "SERVICE_TITLE": "Speaker d'Eccezione", "SERVICE_DESCRIPTION": "Relatori selezionati tra i migliori del settore. Non le solite presentazioni, ma conversazioni che provocano idee e cambiano il modo di pensare."},
-                {"SERVICE_ICON": "\U0001f91d", "SERVICE_TITLE": "Networking Mirato", "SERVICE_DESCRIPTION": "Sessioni strutturate per connettere le persone giuste. Il nostro sistema di matching ti mette in contatto con chi puo davvero fare la differenza."},
-                {"SERVICE_ICON": "\U0001f3c6", "SERVICE_TITLE": "Esperienza Premium", "SERVICE_DESCRIPTION": "Dall'accoglienza al follow-up, ogni dettaglio e curato per offrirti un'esperienza che supera qualsiasi aspettativa. Location esclusiva, catering d'autore."},
-            ],
-        },
-        "contact": {
-            "CONTACT_TITLE": "Non Perdere Questa Occasione",
-            "CONTACT_SUBTITLE": "I posti sono limitati e ogni edizione registra il tutto esaurito. Assicurati il tuo ingresso prima che sia troppo tardi.",
-            "CONTACT_ADDRESS": "", "CONTACT_PHONE": "", "CONTACT_EMAIL": "",
-        },
-        "cta": {
-            "CTA_TITLE": "I Posti Stanno Finendo",
-            "CTA_SUBTITLE": "Le ultime tre edizioni hanno registrato il sold out in meno di una settimana. Non aspettare l'ultimo momento.",
-            "CTA_BUTTON_TEXT": "Acquista il Tuo Biglietto", "CTA_BUTTON_URL": "#contact",
-        },
-        "footer": {"FOOTER_DESCRIPTION": "Eventi che creano connessioni e ispirano il cambiamento."},
-    },
-}
-
 
 def _detect_category(template_style_id: Optional[str] = None, business_description: str = "") -> str:
     """Detect business category from template_style_id or business_description."""
@@ -4487,6 +2122,26 @@ RULES:
         # === OPTIONAL REFLEXION: Self-critique and quality improvement ===
         texts = await self._reflexion_review(texts, sections)
 
+        # Fix CamelCase text generated by AI (e.g. "IlTuoPalato..." → "Il Tuo Palato...")
+        texts = self._fix_camelcase_texts(texts)
+
+        # === Pydantic validation (non-blocking, log-only) ===
+        try:
+            from app.generation.schemas.validators import validate_section_content
+            for section_key, section_data in texts.items():
+                if not isinstance(section_data, dict):
+                    continue
+                section_type = section_key.lower().replace('_data', '')
+                is_valid, errors = validate_section_content(section_type, section_data)
+                if not is_valid:
+                    logger.warning(
+                        f"[DataBinding] Section '{section_type}' validation: {errors}"
+                    )
+        except ImportError:
+            pass  # Pydantic schemas not yet available
+        except Exception as e:
+            logger.debug(f"[DataBinding] Section validation skipped: {e}")
+
         # Accumulate tokens
         for r in [theme_result, texts_result]:
             if r.get("success"):
@@ -4639,6 +2294,69 @@ RULES:
             template_style_id=template_style_id,
         )
 
+        # === QUALITY GATE: validate structured data before assembly ===
+        # BLOCKING: if score < 40, retry failed sections (max 1 retry)
+        try:
+            from app.generation.quality_gate import QualityGate, MINIMUM_SCORE
+            gate = QualityGate()
+            qg_report = gate.validate_site(site_data)
+
+            if qg_report.score < 40 and qg_report.failed_sections:
+                logger.warning(
+                    "[QualityGate] BLOCKING score %d/100 — retrying %d failed sections: %s",
+                    qg_report.score, len(qg_report.failed_sections), qg_report.failed_sections,
+                )
+                # Retry: regenerate texts for failed sections only
+                retry_sections = [s for s in qg_report.failed_sections if s in sections]
+                if retry_sections:
+                    retry_prompt_extra = gate.generate_retry_prompt(qg_report, "")
+                    retry_texts_result = await self._generate_texts(
+                        business_name=business_name,
+                        business_description=business_description,
+                        sections=retry_sections,
+                        contact_info=contact_info,
+                        creative_context=creative_context,
+                        reference_url_context=reference_url_context,
+                        variety_context=variety_context,
+                        reference_analysis=reference_analysis,
+                        template_style_id=template_style_id,
+                        design_brief_prompt=design_brief_prompt + "\n" + retry_prompt_extra if design_brief_prompt else retry_prompt_extra,
+                    )
+                    if retry_texts_result.get("success") and retry_texts_result.get("parsed"):
+                        retry_texts = retry_texts_result["parsed"]
+                        retry_texts = self._fix_camelcase_texts(retry_texts)
+                        # Merge retried sections into texts
+                        for section_key, section_data in retry_texts.items():
+                            if isinstance(section_data, dict):
+                                texts[section_key] = section_data
+                        # Rebuild site_data with improved texts
+                        site_data = self._build_site_data(
+                            theme=theme,
+                            texts=texts,
+                            selections=selections,
+                            business_name=business_name,
+                            logo_url=logo_url,
+                            contact_info=contact_info,
+                            sections=sections,
+                            template_style_id=template_style_id,
+                        )
+                        # Re-validate after retry
+                        qg_report = gate.validate_site(site_data)
+                        logger.info(
+                            "[QualityGate] After retry: score %d/100 (was < 40)",
+                            qg_report.score,
+                        )
+
+            if not qg_report.passed:
+                logger.warning(
+                    "[QualityGate] Score %d/100 (threshold %d). Warnings: %s | Failed: %s",
+                    qg_report.score, MINIMUM_SCORE, qg_report.warnings[:5], qg_report.failed_sections,
+                )
+            else:
+                logger.info("[QualityGate] PASSED with score %d/100", qg_report.score)
+        except Exception as qg_exc:
+            logger.warning("[QualityGate] Gate execution failed (non-blocking): %s", qg_exc)
+
         # Inject YouTube video embed into hero if user selected video hero
         if hero_type == "video" and hero_video_url:
             video_embed = self._build_youtube_embed(hero_video_url)
@@ -4668,7 +2386,7 @@ RULES:
         # Render free tier (512MB) can't afford holding the pipeline for minutes.
         # Users can swap photos later in the editor.
         photo_choices = self._scan_placeholder_photos(site_data, template_style_id)
-        site_data = self._inject_stock_photos(site_data, template_style_id)
+        site_data = await self._inject_stock_photos(site_data, template_style_id)
 
         if photo_choices and site_id and on_progress:
             # Notify frontend which sections have stock photos (for later swap in editor)
@@ -4711,7 +2429,18 @@ RULES:
                 site_data["_recent_effects"] = []
 
         try:
-            html_content = self.assembler.assemble(site_data)
+            # Feature flag: use new Jinja2 assembler (v2) or legacy template assembler
+            if settings.USE_JINJA2_ASSEMBLER:
+                try:
+                    from app.services.jinja_assembler import JinjaAssembler
+                    jinja = JinjaAssembler()
+                    html_content = jinja.assemble(site_data)
+                    logger.info("[DataBinding] Using Jinja2 assembler (v2)")
+                except Exception as jinja_err:
+                    logger.warning(f"[DataBinding] Jinja2 assembler failed, falling back to legacy: {jinja_err}")
+                    html_content = self.assembler.assemble(site_data)
+            else:
+                html_content = self.assembler.assemble(site_data)
             html_content = sanitize_output(html_content, is_template_assembled=True)
             # Post-process: randomize GSAP animations for per-site uniqueness
             html_content = _randomize_animations(html_content)
@@ -4762,6 +2491,7 @@ RULES:
             pdc_report = pre_delivery_check.check(
                 html=html_content,
                 requested_sections=sections,
+                theme_config=theme,
             )
             if pdc_report.fixes_applied:
                 html_content = pdc_report.html_fixed
@@ -5265,105 +2995,8 @@ RULES:
 
         return data
 
-    # Synonym map: maps common AI key variations to canonical suffixes.
-    # Used by _normalize_item_keys to catch any creative key naming Kimi uses.
-    _KEY_SYNONYMS: Dict[str, str] = {
-        # ICON synonyms
-        "ICON": "ICON",
-        "EMOJI": "ICON",
-        "ICONA": "ICON",
-        "SYMBOL": "ICON",
-        "SIMBOLO": "ICON",
-        "IMAGE": "ICON",  # fallback: if no IMAGE_URL field, treat as icon
-        # TITLE synonyms
-        "TITLE": "TITLE",
-        "TITOLO": "TITLE",
-        "NAME": "TITLE",
-        "NOME": "TITLE",
-        "HEADING": "TITLE",
-        "LABEL": "TITLE",
-        "TITL": "TITLE",
-        # DESCRIPTION synonyms
-        "DESCRIPTION": "DESCRIPTION",
-        "DESCRIZIONE": "DESCRIPTION",
-        "DESC": "DESCRIPTION",
-        "TEXT": "DESCRIPTION",
-        "TESTO": "DESCRIPTION",
-        "BODY": "DESCRIPTION",
-        "CONTENT": "DESCRIPTION",
-        "DETAIL": "DESCRIPTION",
-        "DETAILS": "DESCRIPTION",
-        "SUMMARY": "DESCRIPTION",
-        # CTA synonyms
-        "CTA": "CTA",
-        "CTA_TEXT": "CTA",
-        "LINK": "CTA",
-        "LINK_TEXT": "CTA",
-        "BUTTON": "CTA",
-        "BUTTON_TEXT": "CTA",
-        # AUTHOR synonyms (for testimonials)
-        "AUTHOR": "AUTHOR",
-        "AUTORE": "AUTHOR",
-        "WRITER": "AUTHOR",
-        # ROLE synonyms (for testimonials)
-        "ROLE": "ROLE",
-        "RUOLO": "ROLE",
-        "JOB": "ROLE",
-        "POSITION": "ROLE",
-        "JOB_TITLE": "ROLE",
-        # INITIAL synonyms (for testimonials)
-        "INITIAL": "INITIAL",
-        "INIZIALE": "INITIAL",
-        "AVATAR": "INITIAL",
-        # IMAGE_URL synonyms
-        "IMAGE_URL": "IMAGE_URL",
-        "IMG_URL": "IMAGE_URL",
-        "PHOTO": "IMAGE_URL",
-        "FOTO": "IMAGE_URL",
-        "PHOTO_URL": "IMAGE_URL",
-        "IMAGE_SRC": "IMAGE_URL",
-        # IMAGE_ALT synonyms
-        "IMAGE_ALT": "IMAGE_ALT",
-        "IMG_ALT": "IMAGE_ALT",
-        "ALT": "IMAGE_ALT",
-        "ALT_TEXT": "IMAGE_ALT",
-        # CAPTION synonyms
-        "CAPTION": "CAPTION",
-        "DIDASCALIA": "CAPTION",
-        # BIO synonyms
-        "BIO": "BIO",
-        "BIOGRAFIA": "BIO",
-        "ABOUT": "BIO",
-        # NUMBER/NUM synonyms (for stats)
-        "NUMBER": "NUMBER",
-        "NUM": "NUMBER",
-        "NUMERO": "NUMBER",
-        "VALUE": "NUMBER",
-        "VALORE": "NUMBER",
-        # SUFFIX synonyms (for stats)
-        "SUFFIX": "SUFFIX",
-        "SUFFISSO": "SUFFIX",
-        "UNIT": "SUFFIX",
-        # QUESTION/ANSWER synonyms (for FAQ)
-        "QUESTION": "QUESTION",
-        "DOMANDA": "QUESTION",
-        "Q": "QUESTION",
-        "ANSWER": "ANSWER",
-        "RISPOSTA": "ANSWER",
-        "A": "ANSWER",
-        # YEAR synonyms (for timeline)
-        "YEAR": "YEAR",
-        "ANNO": "YEAR",
-        "DATE": "YEAR",
-        "DATA": "YEAR",
-        "PERIOD": "YEAR",
-        # HEADING synonym (for timeline)
-        "HEADING": "HEADING",
-        # STEP fields
-        "STEP_NUMBER": "NUMBER",
-        "STEP_TITLE": "TITLE",
-        "STEP_DESCRIPTION": "DESCRIPTION",
-    }
+    # KEY_SYNONYMS imported from app.config.section_schemas
+    _KEY_SYNONYMS = KEY_SYNONYMS
 
     def _normalize_item_keys(
         self,
@@ -6053,6 +3686,44 @@ RULES:
         )
 
     @staticmethod
+    def _fix_camelcase_texts(texts: dict) -> dict:
+        """Fix CamelCase text that AI sometimes generates without spaces.
+
+        Detects strings like 'IlTuoPalatoAttendeNuoviOrizzonti' and converts
+        them to 'Il Tuo Palato Attende Nuovi Orizzonti'.
+        """
+        CAMELCASE_KEYS = {"CTA_TITLE", "CTA_SUBTITLE", "HERO_TITLE", "HERO_SUBTITLE"}
+
+        def fix_camelcase(text: str) -> str:
+            if not text or len(text) < 10:
+                return text
+            # Count uppercase transitions (e.g. "IlTuo" has transitions at T)
+            transitions = sum(1 for i in range(1, len(text)) if text[i].isupper() and text[i - 1].islower())
+            # If many transitions and no spaces, it's CamelCase
+            if transitions >= 3 and ' ' not in text:
+                return re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', text)
+            return text
+
+        result = {**texts}
+        for key in list(result.keys()):
+            if key in CAMELCASE_KEYS and isinstance(result[key], str):
+                result[key] = fix_camelcase(result[key])
+            # Also check nested component data (lists of dicts)
+            if isinstance(result[key], list):
+                new_list = []
+                for item in result[key]:
+                    if isinstance(item, dict):
+                        new_item = {**item}
+                        for k, v in new_item.items():
+                            if isinstance(v, str):
+                                new_item[k] = fix_camelcase(v)
+                        new_list.append(new_item)
+                    else:
+                        new_list.append(item)
+                result[key] = new_list
+        return result
+
+    @staticmethod
     def _is_placeholder_url(url: str) -> bool:
         """Check if a URL is a placeholder, empty, or missing — needs replacement."""
         if not url or not isinstance(url, str):
@@ -6073,14 +3744,65 @@ RULES:
             return True
         return False
 
-    def _inject_stock_photos(self, site_data: Dict[str, Any], template_style_id: Optional[str] = None) -> Dict[str, Any]:
-        """Replace placeholder images with high-quality Unsplash stock photos.
+    async def _fetch_pexels_pools(self, template_style_id: Optional[str] = None) -> Optional[Dict[str, list]]:
+        """Fetch stock photo pools from Pexels API.
+
+        Returns a dict matching the hardcoded format: {hero: [...], gallery: [...], about: [...], team: [...]}
+        Returns None if Pexels is not configured or fails (caller falls back to hardcoded).
+        """
+        try:
+            from app.services.images.stock_api import stock_client
+            if not stock_client._pexels_key:
+                return None
+
+            category = template_style_id or "business"
+            # Fetch all section pools in parallel
+            import asyncio
+            hero_task = stock_client.get_section_photos(category, "hero", count=3)
+            gallery_task = stock_client.get_section_photos(category, "gallery", count=9)
+            about_task = stock_client.get_section_photos(category, "about", count=3)
+            team_task = stock_client.get_section_photos(category, "team", count=6)
+
+            hero_photos, gallery_photos, about_photos, team_photos = await asyncio.gather(
+                hero_task, gallery_task, about_task, team_task,
+                return_exceptions=True,
+            )
+
+            # Convert StockPhoto objects to URL strings (matching hardcoded format)
+            pools: Dict[str, list] = {}
+            for name, result in [("hero", hero_photos), ("gallery", gallery_photos),
+                                  ("about", about_photos), ("team", team_photos)]:
+                if isinstance(result, list) and result:
+                    pools[name] = [p.url for p in result]
+
+            if pools:
+                logger.info(
+                    "[DataBinding] Pexels pools fetched: %s",
+                    {k: len(v) for k, v in pools.items()},
+                )
+                return pools
+
+            return None
+        except Exception as e:
+            logger.warning("[DataBinding] Pexels fetch failed, using hardcoded fallback: %s", e)
+            return None
+
+    async def _inject_stock_photos(self, site_data: Dict[str, Any], template_style_id: Optional[str] = None) -> Dict[str, Any]:
+        """Replace placeholder images with stock photos.
 
         Handles: hero, about (+ numbered _2 through _10), gallery, team,
         blog posts, services, listings, and logos.
         Runs ALWAYS as a safety net — real URLs are never overwritten.
+
+        Uses Pexels API when configured, otherwise falls back to hardcoded URLs.
         """
-        photos = _get_stock_photos(template_style_id or "default")
+        # Try Pexels API first (if key configured)
+        pexels_pools = await self._fetch_pexels_pools(template_style_id)
+        if pexels_pools:
+            photos = pexels_pools
+            logger.info("[DataBinding] Using Pexels API for stock photos")
+        else:
+            photos = _get_stock_photos(template_style_id or "default")
 
         hero_pool = photos.get("hero", [])
         gallery_pool = photos.get("gallery", [])
@@ -6115,7 +3837,7 @@ RULES:
 
             # Gallery images — replace placeholders AND deduplicate
             gallery_items = data.get("GALLERY_ITEMS", [])
-            if isinstance(gallery_items, list) and len(gallery_items) > 1:
+            if isinstance(gallery_items, list) and len(gallery_items) >= 1:
                 # First pass: replace placeholders
                 for i, item in enumerate(gallery_items):
                     if isinstance(item, dict) and self._is_placeholder_url(str(item.get("GALLERY_IMAGE_URL", ""))):

@@ -14,6 +14,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional, Tuple
 
+from app.services.banned_phrases import BANNED_PHRASES
+
 logger = logging.getLogger(__name__)
 
 
@@ -106,26 +108,6 @@ _SECTION_ALIASES = {
 class PreDeliveryCheck:
     """Fast, deterministic quality check for generated HTML."""
 
-    # Banned generic phrases (Italian) - case-insensitive matching
-    BANNED_PHRASES = [
-        "lorem ipsum",
-        "dolor sit amet",
-        "benvenuti nel nostro sito",
-        "benvenuti sul nostro sito",
-        "siamo un'azienda leader",
-        "siamo un azienda leader",
-        "la nostra mission",
-        "azienda leader nel settore",
-        "siamo un team di professionisti",
-        "il nostro obiettivo",
-        "leader nel settore",
-        "a 360 gradi",
-        "offriamo servizi",
-        "qualita e professionalita",
-        "qualità e professionalità",
-        "la nostra azienda",
-    ]
-
     # Patterns for placeholder detection
     _PLACEHOLDER_RE = re.compile(r"\{\{[A-Z_][A-Z0-9_]*\}\}")
 
@@ -164,11 +146,24 @@ class PreDeliveryCheck:
     # Public API
     # ---------------------------------------------------------------------------
 
+    # Google Fonts URL pattern
+    _GOOGLE_FONTS_RE = re.compile(
+        r'href\s*=\s*["\']([^"\']*fonts\.googleapis\.com/css2[^"\']*)["\']',
+        re.IGNORECASE,
+    )
+    # Extract family= parameters from Google Fonts URL
+    _FONT_FAMILY_RE = re.compile(r'family=([^&:]+)', re.IGNORECASE)
+
+    # CSS variable reference and definition patterns
+    _CSS_VAR_REF_RE = re.compile(r'var\(\s*(--[\w-]+)', re.IGNORECASE)
+    _CSS_VAR_DEF_RE = re.compile(r'(--[\w-]+)\s*:', re.IGNORECASE)
+
     def check(
         self,
         html: str,
         requested_sections: Optional[List[str]] = None,
         site_plan: Optional[Dict[str, Any]] = None,
+        theme_config: Optional[Dict[str, Any]] = None,
     ) -> PreDeliveryReport:
         """
         Run all checks and auto-fixes on the generated HTML.
@@ -179,6 +174,8 @@ class PreDeliveryCheck:
                                 (e.g. ["hero", "about", "services", "contact", "footer"]).
             site_plan: Optional dict with generation metadata (unused for now,
                        reserved for future checks).
+            theme_config: Optional dict with theme settings (font_heading, font_body,
+                          primary_color, etc.) for font URL and CSS variable verification.
 
         Returns:
             PreDeliveryReport with score, issues, fixes, and corrected HTML.
@@ -218,6 +215,21 @@ class PreDeliveryCheck:
         all_issues.extend(issues)
 
         issues = self._check_empty_links(working_html)
+        all_issues.extend(issues)
+
+        issues = self._check_word_counts(working_html)
+        all_issues.extend(issues)
+
+        issues = self._check_nav_anchors(working_html)
+        all_issues.extend(issues)
+
+        # --- Font URL and CSS variable checks (auto-fixable) ---
+
+        issues, working_html, fixes = self._check_font_urls(working_html, theme_config)
+        all_issues.extend(issues)
+        all_fixes.extend(fixes)
+
+        issues = self._check_css_variables(working_html)
         all_issues.extend(issues)
 
         # --- Calculate score and build report ---
@@ -286,6 +298,17 @@ class PreDeliveryCheck:
 
         # Auto-fix: remove all placeholders
         fixed_html = self._PLACEHOLDER_RE.sub("", html)
+
+        # Clean up empty parent elements left behind after placeholder removal
+        _EMPTY_PARENT_RE = re.compile(
+            r"<(h[1-6]|p|span|li|td|a)\b[^>]*>\s*</\1>",
+            re.IGNORECASE,
+        )
+        prev_html = None
+        while prev_html != fixed_html:
+            prev_html = fixed_html
+            fixed_html = _EMPTY_PARENT_RE.sub("", fixed_html)
+
         fixes.append({
             "type": "remove_placeholders",
             "description": f"Removed {len(matches)} leftover placeholder(s): {', '.join(sorted(seen))}",
@@ -492,7 +515,7 @@ class PreDeliveryCheck:
         # primarily we care about visible content.
         html_lower = html.lower()
 
-        for phrase in self.BANNED_PHRASES:
+        for phrase in BANNED_PHRASES:
             phrase_lower = phrase.lower()
             # Find all occurrences
             start = 0
@@ -616,6 +639,275 @@ class PreDeliveryCheck:
                     check_type="empty_link",
                     message=f"<a> tag uses javascript: href ({href_value[:40]})",
                     location=self._approx_location(html, link_match.start()),
+                ))
+
+        return issues
+
+    def _check_font_urls(
+        self,
+        html: str,
+        theme_config: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[List[PreDeliveryIssue], str, List[Dict[str, str]]]:
+        """Verify Google Fonts URLs contain the fonts specified in theme config."""
+        issues: List[PreDeliveryIssue] = []
+        fixes: List[Dict[str, str]] = []
+
+        # Find Google Fonts URLs in the HTML
+        font_url_matches = list(self._GOOGLE_FONTS_RE.finditer(html))
+        if not font_url_matches:
+            issues.append(PreDeliveryIssue(
+                severity="high",
+                check_type="missing_font_url",
+                message="No Google Fonts URL found in the HTML",
+                location="<head>",
+            ))
+            return issues, html, fixes
+
+        if not theme_config:
+            return issues, html, fixes
+
+        font_heading = theme_config.get("font_heading", "")
+        font_body = theme_config.get("font_body", "")
+        font_heading_url = theme_config.get("font_heading_url", "")
+        font_body_url = theme_config.get("font_body_url", "")
+
+        if not font_heading and not font_body:
+            return issues, html, fixes
+
+        # Check each Google Fonts URL
+        fixed_html = html
+        for match in font_url_matches:
+            full_url = match.group(1)
+            # Extract font family names from URL
+            families_in_url = [
+                f.replace("+", " ")
+                for f in self._FONT_FAMILY_RE.findall(full_url)
+            ]
+
+            missing_fonts = []
+            if font_heading and not any(
+                font_heading.lower() in f.lower() for f in families_in_url
+            ):
+                missing_fonts.append(("font_heading", font_heading))
+            if font_body and not any(
+                font_body.lower() in f.lower() for f in families_in_url
+            ):
+                missing_fonts.append(("font_body", font_body))
+
+            if missing_fonts:
+                missing_names = [f"{role}: {name}" for role, name in missing_fonts]
+                issues.append(PreDeliveryIssue(
+                    severity="high",
+                    check_type="font_mismatch",
+                    message=f"Google Fonts URL missing theme fonts: {', '.join(missing_names)}",
+                    location="<head>",
+                ))
+
+                # Auto-fix: rebuild Google Fonts URL with the correct fonts
+                heading_part = font_heading_url or (
+                    font_heading.replace(" ", "+") + ":wght@400;600;700;800"
+                    if font_heading else ""
+                )
+                body_part = font_body_url or (
+                    font_body.replace(" ", "+") + ":wght@400;500;600"
+                    if font_body else ""
+                )
+                parts = [p for p in [heading_part, body_part] if p]
+                if parts:
+                    new_url = (
+                        "https://fonts.googleapis.com/css2?"
+                        + "&".join(f"family={p}" for p in parts)
+                        + "&display=swap"
+                    )
+                    fixed_html = fixed_html.replace(full_url, new_url)
+                    fixes.append({
+                        "type": "fix_font_url",
+                        "description": (
+                            f"Rebuilt Google Fonts URL to include: "
+                            f"{', '.join(p.split(':')[0].replace('+', ' ') for p in parts)}"
+                        ),
+                    })
+
+        return issues, fixed_html, fixes
+
+    def _check_css_variables(self, html: str) -> List[PreDeliveryIssue]:
+        """Check that var(--*) references have matching :root definitions."""
+        issues: List[PreDeliveryIssue] = []
+
+        # Find all CSS variable definitions in style blocks
+        style_blocks = re.findall(
+            r'<style[^>]*>(.*?)</style>', html, re.DOTALL | re.IGNORECASE
+        )
+        defined_vars: set = set()
+        for block in style_blocks:
+            for var_def in self._CSS_VAR_DEF_RE.findall(block):
+                defined_vars.add(var_def)
+
+        # Also count definitions in inline styles (rare but possible)
+        inline_style_defs = re.findall(
+            r'style\s*=\s*["\'][^"\']*?(--[\w-]+)\s*:', html, re.IGNORECASE
+        )
+        for var_name in inline_style_defs:
+            defined_vars.add(var_name)
+
+        # Find all var(--*) references in the entire HTML
+        all_refs: set = set()
+        for var_ref in self._CSS_VAR_REF_RE.findall(html):
+            all_refs.add(var_ref)
+
+        # Check for undefined variables
+        # Only flag the core design token variables - skip computed ones like
+        # color-mix() derived vars which may be defined via other means
+        core_vars = {
+            "--color-primary", "--color-secondary", "--color-accent",
+            "--color-bg", "--color-bg-alt", "--color-text", "--color-text-muted",
+            "--font-heading", "--font-body",
+            "--color-primary-rgb", "--color-bg-rgb",
+            "--color-secondary-rgb", "--color-accent-rgb",
+        }
+
+        undefined = all_refs - defined_vars
+        for var_name in sorted(undefined):
+            # Only report core vars as medium severity; skip obscure/derived ones
+            if var_name in core_vars:
+                issues.append(PreDeliveryIssue(
+                    severity="medium",
+                    check_type="undefined_css_var",
+                    message=f"CSS variable {var_name} is referenced but not defined in :root",
+                    location="stylesheet",
+                ))
+            elif var_name.startswith(("--color-", "--font-", "--radius-", "--shadow-", "--space-")):
+                issues.append(PreDeliveryIssue(
+                    severity="low",
+                    check_type="undefined_css_var",
+                    message=f"CSS variable {var_name} is referenced but not defined",
+                    location="stylesheet",
+                ))
+
+        return issues
+
+    # ---------------------------------------------------------------------------
+    # Word count validation
+    # ---------------------------------------------------------------------------
+
+    _WORD_COUNT_RULES = {
+        "hero_heading": {"selector_id": "hero", "tag": "h1", "min": 3, "max": 10},
+        "hero_subtitle": {"selector_id": "hero", "tag": "p", "min": 10, "max": None},
+        "about_text": {"selector_id": "about", "tag": "p", "min": 25, "max": None},
+    }
+
+    _REPEATING_SECTION_MIN_WORDS = 5
+
+    def _check_word_counts(self, html: str) -> List[PreDeliveryIssue]:
+        """Validate word counts for key section elements."""
+        issues: List[PreDeliveryIssue] = []
+
+        # Build map of section_id -> inner HTML
+        section_map: Dict[str, str] = {}
+        for m in self._SECTION_BLOCK_RE.finditer(html):
+            open_tag = m.group(1)
+            inner = m.group(2)
+            id_match = re.search(r'id\s*=\s*["\']([^"\']+)["\']', open_tag, re.IGNORECASE)
+            if id_match:
+                section_map[id_match.group(1).lower()] = inner
+
+        # Check fixed rules (hero heading, hero subtitle, about text)
+        for rule_name, rule in self._WORD_COUNT_RULES.items():
+            section_html = section_map.get(rule["selector_id"], "")
+            if not section_html:
+                continue
+
+            tag = rule["tag"]
+            tag_re = re.compile(
+                rf"<{tag}\b[^>]*>(.*?)</{tag}>",
+                re.IGNORECASE | re.DOTALL,
+            )
+            matches = tag_re.findall(section_html)
+            if not matches:
+                continue
+
+            texts = [matches[0]] if tag == "h1" else matches
+            for text_html in texts:
+                text = self._STRIP_TAGS_RE.sub("", text_html).strip()
+                words = text.split()
+                word_count = len(words)
+
+                min_w = rule["min"]
+                max_w = rule.get("max")
+
+                if word_count < min_w:
+                    issues.append(PreDeliveryIssue(
+                        severity="high",
+                        check_type="word_count",
+                        message=f"{rule_name}: {word_count} words (min {min_w})",
+                        location=f"section#{rule['selector_id']}",
+                    ))
+                elif max_w is not None and word_count > max_w:
+                    issues.append(PreDeliveryIssue(
+                        severity="high",
+                        check_type="word_count",
+                        message=f"{rule_name}: {word_count} words (max {max_w})",
+                        location=f"section#{rule['selector_id']}",
+                    ))
+                if tag == "p" and word_count >= min_w:
+                    break
+
+        # Check service/feature descriptions
+        for section_id in ("services", "features"):
+            section_html = section_map.get(section_id, "")
+            if not section_html:
+                continue
+
+            desc_re = re.compile(r"<p\b[^>]*>(.*?)</p>", re.IGNORECASE | re.DOTALL)
+            for p_match in desc_re.finditer(section_html):
+                text = self._STRIP_TAGS_RE.sub("", p_match.group(1)).strip()
+                words = text.split()
+                if 0 < len(words) < self._REPEATING_SECTION_MIN_WORDS:
+                    issues.append(PreDeliveryIssue(
+                        severity="high",
+                        check_type="word_count",
+                        message=f"{section_id} description: {len(words)} words (min {self._REPEATING_SECTION_MIN_WORDS})",
+                        location=f"section#{section_id}",
+                    ))
+
+        return issues
+
+    # ---------------------------------------------------------------------------
+    # Nav anchor validation
+    # ---------------------------------------------------------------------------
+
+    _NAV_BLOCK_RE = re.compile(
+        r"<nav\b[^>]*>.*?</nav>", re.IGNORECASE | re.DOTALL
+    )
+    _ANCHOR_HREF_RE = re.compile(
+        r'<a\b[^>]*href="#([^"]+)"', re.IGNORECASE
+    )
+    _ALL_IDS_RE = re.compile(r'\bid="([^"]*)"')
+
+    def _check_nav_anchors(self, html: str) -> List[PreDeliveryIssue]:
+        """Verify that every href='#section-id' in <nav> resolves to an existing element ID."""
+        issues: List[PreDeliveryIssue] = []
+
+        nav_blocks = self._NAV_BLOCK_RE.findall(html)
+        if not nav_blocks:
+            return issues
+
+        nav_hrefs: set = set()
+        for nav_html in nav_blocks:
+            nav_hrefs.update(self._ANCHOR_HREF_RE.findall(nav_html))
+
+        if not nav_hrefs:
+            return issues
+
+        all_ids = set(self._ALL_IDS_RE.findall(html))
+
+        for href_id in sorted(nav_hrefs):
+            if href_id not in all_ids:
+                issues.append(PreDeliveryIssue(
+                    severity="high",
+                    check_type="broken_nav_anchor",
+                    message=f"Nav link #{href_id} has no matching id in the document",
+                    location="nav",
                 ))
 
         return issues

@@ -1,0 +1,76 @@
+{# About Timeline: vertical milestone timeline with alternating left/right cards #}
+<section id="about" class="py-24 lg:py-32 bg-[var(--color-bg-alt)] relative overflow-hidden">
+
+  <div class="absolute top-20 left-0 w-80 h-80 rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.04) 0%, transparent 60%);"></div>
+  <div class="absolute bottom-20 right-0 w-64 h-64 rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(var(--color-secondary-rgb, var(--color-primary-rgb)), 0.03) 0%, transparent 60%);"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+    {# Section Header #}
+    <div class="text-center mb-20">
+      <div class="inline-flex items-center gap-3 mb-6" data-animate="blur-in">
+        <div class="w-8 h-px" style="background: var(--color-primary);"></div>
+        <span class="font-body text-[11px] tracking-[0.4em] uppercase text-[var(--color-primary)]">La Nostra Storia</span>
+        <div class="w-8 h-px" style="background: var(--color-primary);"></div>
+      </div>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-5 leading-tight" data-animate="text-split" data-split-type="words">
+        {{ about_title | default('', true) | e }}
+      </h2>
+      {% if about_subtitle %}
+      <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto font-body text-lg leading-relaxed" data-animate="blur-slide" data-delay="0.2" data-duration="1">
+        {{ about_subtitle | e }}
+      </p>
+      {% endif %}
+    </div>
+
+    {# About Description #}
+    {% if about_description %}
+    <div class="max-w-3xl mx-auto text-center mb-20" data-animate="fade-up" data-delay="0.15">
+      <p class="text-lg text-[var(--color-text-muted)] leading-relaxed font-body">
+        {{ about_description | e }}
+      </p>
+    </div>
+    {% endif %}
+
+    {# Timeline #}
+    {% if about_milestones %}
+    <div class="relative max-w-5xl mx-auto" data-animate="stagger">
+
+      <div class="absolute left-6 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-0.5 hidden md:block" style="background: linear-gradient(180deg, transparent, var(--color-primary), var(--color-primary), transparent);"></div>
+      <div class="absolute left-6 top-0 bottom-0 w-0.5 md:hidden" style="background: linear-gradient(180deg, transparent, var(--color-primary), var(--color-primary), transparent);"></div>
+
+      {% for milestone in about_milestones %}
+      <div class="stagger-item relative flex flex-col md:flex-row items-start md:items-center {% if not loop.last %}mb-16 md:mb-24{% endif %} {% if loop.index is even %}md:flex-row-reverse{% endif %}">
+        {# Content card #}
+        <div class="{% if loop.index is odd %}w-full md:w-1/2 md:pr-16 pl-16 md:pl-0 md:text-right{% else %}w-full md:w-1/2 md:pl-16 pl-16{% endif %}" data-animate="{% if loop.index is odd %}reveal-right{% else %}reveal-left{% endif %}">
+          <div class="bg-[var(--color-bg)] rounded-2xl p-8 shadow-xl border border-[var(--color-text)]/5 hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
+            {% if milestone.year %}
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style="background: rgba(var(--color-primary-rgb), 0.08);">
+              <span class="font-heading text-sm font-bold text-[var(--color-primary)]">{{ milestone.year | e }}</span>
+            </div>
+            {% endif %}
+            {% if milestone.number %}
+            <div class="text-4xl md:text-5xl font-bold font-heading mb-3" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" data-counter="{{ milestone.number }}">0</div>
+            {% endif %}
+            <p class="text-[var(--color-text)] font-semibold font-heading text-lg mb-2">{{ milestone.label | default('', true) | e }}</p>
+            {% if milestone.description %}
+            <p class="text-sm text-[var(--color-text-muted)] font-body">{{ milestone.description | e }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {# Dot on line #}
+        <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-8 md:top-1/2 md:-translate-y-1/2 z-10">
+          <div class="w-5 h-5 rounded-full border-4 border-[var(--color-bg-alt)] shadow-lg relative" style="background: var(--color-primary);">
+            <div class="absolute inset-0 rounded-full animate-ping opacity-20" style="background: var(--color-primary);"></div>
+          </div>
+        </div>
+        {# Empty space #}
+        <div class="hidden md:block w-1/2"></div>
+      </div>
+      {% endfor %}
+
+      <div class="absolute left-4 md:left-1/2 md:-translate-x-1/2 -bottom-3 w-3 h-3 rounded-full" style="background: rgba(var(--color-primary-rgb), 0.3);"></div>
+    </div>
+    {% endif %}
+  </div>
+</section>

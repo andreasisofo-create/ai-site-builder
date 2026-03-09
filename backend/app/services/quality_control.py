@@ -34,21 +34,7 @@ ProgressCallback = Optional[Callable[[int, str, Optional[Dict[str, Any]]], None]
 PASS_THRESHOLD = 7.0
 MAX_ITERATIONS = 2
 
-BANNED_PHRASES = [
-    "benvenuti",
-    "benvenuto",
-    "siamo un'azienda",
-    "siamo un azienda",
-    "leader nel settore",
-    "a 360 gradi",
-    "offriamo servizi",
-    "il nostro team",
-    "qualita e professionalita",
-    "qualit\u00e0 e professionalit\u00e0",
-    "la nostra azienda",
-    "benvenuti nel nostro sito",
-    "benvenuti sul nostro sito",
-]
+from app.services.banned_phrases import BANNED_PHRASES
 
 
 class QualityControlPipeline:

@@ -1,0 +1,84 @@
+{# Hero Dark Bold: dramatic dark hero with bold typography and geometric overlays #}
+<section id="hero" class="min-h-screen relative overflow-hidden" style="background: color-mix(in srgb, var(--color-text) 95%, black);">
+  {# Geometric pattern overlay #}
+  <div class="absolute inset-0 z-0 opacity-[0.03]" style="background-image: linear-gradient(var(--color-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-primary) 1px, transparent 1px); background-size: 80px 80px;"></div>
+
+  {# Accent glow effects #}
+  <div class="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
+    <div class="absolute top-[5%] right-[10%] w-[500px] h-[500px] rounded-full blur-[120px]" style="background: var(--color-primary); opacity: 0.12;"></div>
+    <div class="absolute bottom-[10%] left-[5%] w-[400px] h-[400px] rounded-full blur-[100px]" style="background: var(--color-accent); opacity: 0.08;"></div>
+    <div class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[80px]" style="background: var(--color-secondary); opacity: 0.06;"></div>
+  </div>
+
+  {# Diagonal accent line #}
+  <div class="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
+    <div class="absolute top-0 right-[30%] w-px h-full origin-top" style="background: linear-gradient(180deg, transparent, var(--color-primary), transparent); opacity: 0.1; transform: rotate(15deg) scaleY(1.5);"></div>
+    <div class="absolute top-0 right-[35%] w-px h-full origin-top" style="background: linear-gradient(180deg, transparent, var(--color-accent), transparent); opacity: 0.06; transform: rotate(15deg) scaleY(1.5);"></div>
+  </div>
+
+  {# Content #}
+  <div class="relative z-10 max-w-7xl mx-auto px-6 py-16 flex items-center" style="min-height: calc(100vh - 80px);">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full">
+
+      {# Left: Bold text content #}
+      <div class="lg:col-span-7">
+        <h1 class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-heading text-white leading-[1.05] mb-8" data-animate="text-split" data-split-type="chars">
+          {{ hero_title | default('', true) | e }}
+        </h1>
+
+        {# Accent underline #}
+        <div class="flex items-center gap-3 mb-8" data-animate="fade-right">
+          <div class="w-24 h-1 rounded-full" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent));"></div>
+          <div class="w-3 h-3 rounded-full" style="background: var(--color-accent);"></div>
+        </div>
+
+        {% if hero_subtitle %}
+        <p class="text-lg md:text-xl text-white/50 leading-relaxed mb-12 max-w-xl font-body" data-animate="blur-slide" data-delay="0.3" data-duration="1.2">
+          {{ hero_subtitle | e }}
+        </p>
+        {% endif %}
+
+        {# CTA buttons #}
+        {% if hero_cta_text %}
+        <div class="flex flex-wrap items-center gap-6" data-animate="fade-up" data-delay="0.5">
+          <a href="{{ hero_cta_url | default('#contact', true) }}" data-animate="magnetic" class="group inline-flex items-center gap-3 px-10 py-5 font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 text-white" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); box-shadow: 0 0 40px var(--color-primary), 0 0 80px rgba(0,0,0,0.3); --tw-shadow-color: var(--color-primary);">
+            {{ hero_cta_text | e }}
+            <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+          </a>
+          <a href="#about" class="inline-flex items-center gap-2 text-white/50 font-semibold hover:text-white transition-colors group">
+            <span>Scopri di pi&ugrave;</span>
+            <svg class="w-4 h-4 transition-transform group-hover:translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+
+      {# Right: Image with scale-in #}
+      <div class="lg:col-span-5 relative" data-animate="scale-in" data-delay="0.2" data-parallax="0.4">
+        <div class="absolute -inset-3 border border-white/5 rounded-3xl"></div>
+        <div class="absolute -inset-6 border border-white/[0.02] rounded-[2rem]"></div>
+        <div class="absolute -inset-8 rounded-3xl blur-2xl" style="background: var(--color-primary); opacity: 0.08;"></div>
+
+        <div class="relative rounded-2xl overflow-hidden">
+          {% if hero_image_url | is_valid_image %}
+          <img src="{{ hero_image_url }}" alt="{{ hero_image_alt | default('', true) | e }}" class="w-full object-cover aspect-[3/4] brightness-90" loading="eager">
+          {% else %}
+          <div class="w-full aspect-[3/4] bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-accent)]/10"></div>
+          {% endif %}
+          <div class="absolute inset-0 bg-gradient-to-t from-[var(--color-text)] via-transparent to-transparent opacity-60"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: var(--color-primary);">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+              <div>
+                <p class="text-white text-sm font-bold font-heading">{{ business_name | default('', true) | e }}</p>
+                <p class="text-white/40 text-xs font-body">Guarda il video</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

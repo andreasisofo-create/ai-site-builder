@@ -17,22 +17,7 @@ from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
-# Generic phrases that should never appear
-BANNED_PHRASES_IT = [
-    "benvenuti", "benvenuto", "benvenuta",
-    "siamo un'azienda", "siamo un team",
-    "leader nel settore", "leader del settore",
-    "eccellenza e innovazione",
-    "qualità e professionalità",
-    "soluzioni su misura", "soluzioni personalizzate",
-    "a 360 gradi", "chiavi in mano",
-    "da anni nel settore",
-    "non esitare a contattarci",
-    "contattaci per maggiori informazioni",
-    "i nostri servizi", "cosa offriamo",
-    "il nostro team di esperti",
-    "scopri di più", "per saperne di più",
-]
+from app.services.banned_phrases import BANNED_PHRASES as BANNED_PHRASES_IT
 
 # Default fonts that indicate lazy generation
 DEFAULT_FONTS = ["arial", "helvetica", "times new roman", "system-ui"]

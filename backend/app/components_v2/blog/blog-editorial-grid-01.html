@@ -1,0 +1,110 @@
+{# Blog Editorial Grid: asymmetric layout with 1 large featured post (2/3) + smaller posts (1/3) #}
+<section id="blog" class="relative py-24 md:py-32 overflow-hidden" style="background: var(--color-bg)">
+
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 right-1/4 w-[500px] h-[500px] rounded-full blur-3xl opacity-[0.04]" style="background: var(--color-primary)"></div>
+    <div class="absolute bottom-20 left-1/4 w-[400px] h-[400px] rounded-full blur-3xl opacity-[0.03]" style="background: var(--color-secondary)"></div>
+    <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 32px 32px;"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-6 md:px-12 z-10">
+    <div class="text-center max-w-3xl mx-auto mb-16 md:mb-20">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border mb-6" style="border-color: color-mix(in srgb, var(--color-primary) 15%, transparent); background: color-mix(in srgb, var(--color-primary) 5%, transparent);" data-animate="blur-in">
+        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--color-primary)"></span>
+        <span class="text-xs font-semibold tracking-widest uppercase font-body" style="color: var(--color-primary)">Blog</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-5" style="color: var(--color-text)" data-animate="text-split" data-split-type="words">
+        {{ blog_title | default('', true) | e }}
+      </h2>
+      {% if blog_subtitle %}
+      <p class="text-lg md:text-xl leading-relaxed font-body" style="color: var(--color-text-muted)" data-animate="fade-up" data-delay="0.2">
+        {{ blog_subtitle | e }}
+      </p>
+      {% endif %}
+    </div>
+
+    {% if blog_posts %}
+    <div class="grid lg:grid-cols-3 gap-6 md:gap-8" data-animate="stagger">
+      {% for post in blog_posts %}
+      {% if loop.first %}
+      {# Large featured post #}
+      <div class="stagger-item lg:col-span-2 lg:row-span-2 group relative rounded-2xl overflow-hidden min-h-[420px] md:min-h-[540px] cursor-pointer" style="box-shadow: 0 4px 30px rgba(0,0,0,0.08);" data-animate="fade-up">
+        {% if post.image | is_valid_image %}
+        <img
+          src="{{ post.image }}"
+          alt="{{ post.title | default('', true) | e }}"
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          loading="lazy"
+        >
+        {% else %}
+        <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/30 to-[var(--color-secondary)]/20"></div>
+        {% endif %}
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+        <div class="absolute top-4 right-4 w-10 h-10 border-t-2 border-r-2 rounded-tr-lg opacity-0 group-hover:opacity-40 transition-opacity duration-500" style="border-color: var(--color-primary)"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-8 md:p-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+          {% if post.category %}
+          <span class="inline-block px-3 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full mb-4 backdrop-blur-sm border border-white/10" style="background: color-mix(in srgb, var(--color-primary) 70%, transparent); color: #fff;">
+            {{ post.category | e }}
+          </span>
+          {% endif %}
+          <h3 class="text-2xl md:text-3xl font-heading font-bold text-white mb-3 leading-tight transition-colors duration-300" style="text-shadow: 0 2px 12px rgba(0,0,0,0.3);">
+            {{ post.title | default('', true) | e }}
+          </h3>
+          {% if post.excerpt %}
+          <p class="text-white/75 font-body mb-4 line-clamp-2 max-w-xl text-base leading-relaxed">
+            {{ post.excerpt | e }}
+          </p>
+          {% endif %}
+          <div class="flex items-center gap-4 text-sm text-white/60 font-body">
+            {% if post.author %}<span class="font-medium text-white/80">{{ post.author | e }}</span>{% endif %}
+            {% if post.author and post.date %}<span class="w-1 h-1 rounded-full bg-white/40"></span>{% endif %}
+            {% if post.date %}<span>{{ post.date | e }}</span>{% endif %}
+          </div>
+          <div class="mt-5 h-0.5 w-12 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)));"></div>
+        </div>
+      </div>
+      {% else %}
+      {# Small post card #}
+      <div class="stagger-item group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-xl cursor-pointer" style="background: var(--color-bg-alt); box-shadow: 0 2px 16px rgba(0,0,0,0.05);" data-animate="fade-up">
+        <div class="flex flex-col h-full">
+          <div class="relative h-48 overflow-hidden">
+            {% if post.image | is_valid_image %}
+            <img
+              src="{{ post.image }}"
+              alt="{{ post.title | default('', true) | e }}"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+            >
+            {% else %}
+            <div class="w-full h-full bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-secondary)]/10"></div>
+            {% endif %}
+            {% if post.category %}
+            <span class="absolute top-3 left-3 px-3 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full backdrop-blur-sm border border-white/10" style="background: color-mix(in srgb, var(--color-primary) 70%, transparent); color: #fff;">
+              {{ post.category | e }}
+            </span>
+            {% endif %}
+          </div>
+          <div class="p-5 md:p-6 flex flex-col flex-1">
+            <h3 class="text-lg font-heading font-bold mb-2 leading-snug transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--color-text)">
+              {{ post.title | default('', true) | e }}
+            </h3>
+            {% if post.excerpt %}
+            <p class="text-sm leading-relaxed font-body line-clamp-2 mb-4 flex-1" style="color: var(--color-text-muted)">
+              {{ post.excerpt | e }}
+            </p>
+            {% endif %}
+            <div class="flex items-center gap-3 text-xs font-body" style="color: var(--color-text-muted)">
+              {% if post.author %}<span class="font-medium" style="color: var(--color-text)">{{ post.author | e }}</span>{% endif %}
+              {% if post.author and post.date %}<span class="w-1 h-1 rounded-full" style="background: var(--color-text-muted)"></span>{% endif %}
+              {% if post.date %}<span>{{ post.date | e }}</span>{% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="absolute top-0 left-0 w-full h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent, var(--color-secondary)))"></div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>

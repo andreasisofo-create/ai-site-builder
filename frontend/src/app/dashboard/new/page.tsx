@@ -827,6 +827,19 @@ function NewProjectContent() {
                   />
                 </div>
 
+                {/* URL sito esistente (opzionale) */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">{language === "en" ? "Do you already have a website? Enter the URL" : "Hai gia' un sito web? Inserisci l'URL"}</label>
+                  <input
+                    type="url"
+                    value={formData.referenceUrls}
+                    onChange={e => setFormData(prev => ({ ...prev, referenceUrls: e.target.value }))}
+                    placeholder="https://www.iltuosito.it"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
+                  />
+                  <p className="mt-2 text-xs text-slate-500">{language === "en" ? "We'll analyze your site to replicate colors, fonts, and style" : "Analizzeremo il tuo sito per replicare colori, font e stile"}</p>
+                </div>
+
                 {/* Categoria — visual card grid */}
                 <div>
                   <label className="block text-sm font-medium mb-3">{language === "en" ? "Category" : "Categoria"} <span className="text-red-400">*</span></label>

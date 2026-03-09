@@ -1,0 +1,30 @@
+{# Testimonials Grid: 3 testimonianze #}
+<section id="testimonials" class="py-20 bg-[var(--color-bg-alt)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Testimonianze</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{ testimonials_title | default('', true) | e }}</h2>
+    </div>
+    {% if testimonials %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate="stagger">
+      {% for testimonial in testimonials %}
+      <div class="stagger-item bg-[var(--color-bg)] rounded-2xl p-8 shadow-sm" data-animate="tilt">
+        <div class="text-[var(--color-primary)] text-4xl mb-4" data-animate="float" data-float-range="5">&ldquo;</div>
+        <p class="text-[var(--color-text-muted)] leading-relaxed mb-6">{{ testimonial.text | default('', true) | e }}</p>
+        <div class="flex items-center gap-3">
+          {% if testimonial.avatar_url | is_valid_image %}
+          <img src="{{ testimonial.avatar_url }}" alt="{{ testimonial.author | default('', true) | e }}" class="w-10 h-10 rounded-full object-cover" loading="lazy">
+          {% else %}
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-accent)]/10"></div>
+          {% endif %}
+          <div>
+            <p class="font-semibold text-[var(--color-text)] text-sm">{{ testimonial.author | default('', true) | e }}</p>
+            <p class="text-xs text-[var(--color-text-muted)]">{{ testimonial.role | default('', true) | e }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>

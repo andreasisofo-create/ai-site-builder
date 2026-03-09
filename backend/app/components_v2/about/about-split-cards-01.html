@@ -1,0 +1,50 @@
+{# About Split Cards: stat cards creative offset grid #}
+<section id="about" class="py-20 bg-[var(--color-bg-alt)] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    {# Header #}
+    <div class="max-w-3xl mb-16" data-animate="reveal-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Chi Siamo</p>
+      <h2 class="text-3xl md:text-5xl font-bold font-heading text-[var(--color-text)] mb-6" data-animate="text-split" data-split-type="words">
+        {{ about_title | default('', true) | e }}
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      {# Text column #}
+      <div class="lg:col-span-5" data-animate="blur-slide" data-duration="1.2">
+        {% if about_subtitle %}
+        <p class="text-lg text-[var(--color-text-muted)] leading-relaxed mb-4">
+          {{ about_subtitle | e }}
+        </p>
+        {% endif %}
+        {% if about_text %}
+        <p class="text-[var(--color-text-muted)] leading-relaxed">
+          {{ about_text | e }}
+        </p>
+        {% endif %}
+        <div class="mt-8 w-20 h-1 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full"></div>
+      </div>
+
+      {# Stat Cards #}
+      {% if about_highlights %}
+      <div class="lg:col-span-7">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {% for highlight in about_highlights %}
+          <div class="{% if loop.index == 1 %}sm:-mt-8{% elif loop.index == 2 %}sm:mt-4{% elif loop.index == 3 %}sm:mt-12{% endif %}" data-animate="rotate-3d" data-delay="{{ loop.index0 * 0.15 }}">
+            <div class="{% if loop.index == 2 %}bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]{% else %}bg-[var(--color-bg)] border border-[var(--color-text)]/5{% endif %} rounded-2xl p-8 shadow-xl text-center hover:shadow-2xl transition-all duration-500 group">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-xl {% if loop.index == 2 %}bg-white/20{% elif loop.index == 3 %}bg-[var(--color-accent)]/10 group-hover:bg-[var(--color-accent)]/20{% else %}bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20{% endif %} flex items-center justify-center transition-colors">
+                <span class="text-4xl font-bold font-heading {% if loop.index == 2 %}text-white{% elif loop.index == 3 %}text-[var(--color-accent)]{% else %}text-[var(--color-primary)]{% endif %}" data-counter="{{ highlight.number | default('0', true) }}">0</span>
+              </div>
+              <p class="text-sm font-semibold {% if loop.index == 2 %}text-white/90{% else %}text-[var(--color-text)]{% endif %}">{{ highlight.label | default('', true) | e }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="absolute top-0 right-0 w-96 h-96 bg-[var(--color-primary)]/3 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-72 h-72 bg-[var(--color-accent)]/3 rounded-full blur-3xl pointer-events-none"></div>
+</section>

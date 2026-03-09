@@ -1,0 +1,48 @@
+{# Testimonials Carousel: single spotlight with CSS-only horizontal scroll/snap #}
+<section id="testimonials" class="py-20 bg-[var(--color-bg-alt)]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16" data-animate="fade-up">
+      <p class="text-sm font-semibold tracking-widest uppercase text-[var(--color-primary)] mb-4">Testimonianze</p>
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-[var(--color-text)]" data-animate="text-split" data-split-type="words">{{ testimonials_title | default('', true) | e }}</h2>
+    </div>
+
+    {% if testimonials %}
+    <div class="relative max-w-4xl mx-auto">
+      <div class="absolute -top-8 left-1/2 -translate-x-1/2 z-0 pointer-events-none" data-animate="scale-in">
+        <svg class="w-32 h-32 text-[var(--color-primary)] opacity-10" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609L9.978 5.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H0z"/></svg>
+      </div>
+
+      <div class="flex overflow-x-auto snap-x snap-mandatory gap-8 pb-8 scrollbar-hide" style="scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none;" data-animate="stagger">
+        {% for testimonial in testimonials %}
+        <div class="stagger-item snap-center flex-shrink-0 w-full max-w-3xl mx-auto">
+          <div class="bg-[var(--color-bg)] rounded-3xl p-8 md:p-12 shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));"></div>
+            <div data-animate="blur-slide" data-delay="0.2">
+              <p class="text-xl md:text-2xl lg:text-3xl text-[var(--color-text)] leading-relaxed font-body text-center mb-10 italic">&ldquo;{{ testimonial.text | default('', true) | e }}&rdquo;</p>
+            </div>
+            <div class="flex flex-col items-center gap-4" data-animate="fade-up">
+              {% if testimonial.avatar_url | is_valid_image %}
+              <img src="{{ testimonial.avatar_url }}" alt="{{ testimonial.author | default('', true) | e }}" class="w-14 h-14 rounded-full object-cover shadow-lg" loading="lazy">
+              {% else %}
+              <div class="w-14 h-14 rounded-full bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-accent)]/10 shadow-lg"></div>
+              {% endif %}
+              <div class="text-center">
+                <p class="font-semibold text-[var(--color-text)] text-lg">{{ testimonial.author | default('', true) | e }}</p>
+                <p class="text-sm text-[var(--color-text-muted)]">{{ testimonial.role | default('', true) | e }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="flex justify-center gap-2 mt-6" data-animate="fade-up">
+        {% for testimonial in testimonials %}
+        <span class="w-3 h-3 rounded-full bg-[var(--color-primary)]/30 transition-colors hover:bg-[var(--color-primary)]"></span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <style>.scrollbar-hide::-webkit-scrollbar { display: none; }</style>
+</section>
